@@ -1,7 +1,7 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Models;
 
 namespace Saku_Overclock.Services;
 

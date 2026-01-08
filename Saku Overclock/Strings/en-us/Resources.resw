@@ -1844,7 +1844,16 @@ to be installed and running</value>
     <value>Selected element</value>
   </data>
   <data name="Settings_ni_Fontsize.Text" xml:space="preserve">
-    <value>Font Size</value>
+    <value>Font size</value>
+  </data>
+  <data name="Settings_ni_Fontweight.Text" xml:space="preserve">
+    <value>Font weight</value>
+  </data>
+  <data name="Settings_ni_FontweightRegular.Content" xml:space="preserve">
+    <value>Regular</value>
+  </data>
+  <data name="Settings_ni_FontweightBold.Content" xml:space="preserve">
+    <value>Semibold</value>
   </data>
   <data name="Settings_ni_Icon.Text" xml:space="preserve">
     <value>Metrics in system tray</value>
@@ -1947,8 +1956,14 @@ You can hide this item by disabling this option. It will not be displayed in the
   <data name="Settings_ni_Values_GFXCLK" xml:space="preserve">
     <value>iGPU Frequency</value>
   </data>
+  <data name="Settings_ni_Values_DgpuFreq" xml:space="preserve">
+    <value>dGPU Frequency</value>
+  </data>
   <data name="Settings_ni_Values_GFXTEMP" xml:space="preserve">
     <value>iGPU Temperature</value>
+  </data>
+  <data name="Settings_ni_Values_DgpuTemp" xml:space="preserve">
+    <value>dGPU Temperature</value>
   </data>
   <data name="Settings_ni_Values_GFXVOLT" xml:space="preserve">
     <value>iGPU Voltage</value>

@@ -11,8 +11,6 @@
         <ThemeShadow x:Name="SharedShadow" />
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Style TargetType="ToggleButton" BasedOn="{StaticResource ActiveButton}"/>
-        <SolidColorBrush x:Name="UncheckedBrush" Color="{ThemeResource ControlStrokeColorDefaultBrush}"/>
-        <SolidColorBrush x:Name="CheckedBrush" Color="{ThemeResource AccentFillColorDefaultBrush}"/>
     </Page.Resources>
     <Grid Margin="-48,-65,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <TeachingTip x:Name="MainTeach" IsOpen="False">
@@ -281,7 +279,7 @@ Text="{Binding Version}">
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16"
                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                            Click="PresetsPage_Click">
+                                            Click="PresetsPage_Click" Tag="S">
                                         <Grid Margin="-10,-5,-5,-5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>

@@ -1,5 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
-using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Models;
 
 namespace Saku_Overclock.Contracts.Services;
 

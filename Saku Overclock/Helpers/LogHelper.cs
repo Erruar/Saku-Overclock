@@ -4,7 +4,6 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
 using System.Text;
 using Saku_Overclock.ViewModels;
-using Saku_Overclock.JsonContainers;
 using Saku_Overclock.Contracts.Services;
 
 namespace Saku_Overclock.Helpers;
@@ -158,12 +157,31 @@ internal static class LogHelper
     }
 
     public static Task Log(string message) => LogToFile($"[DEBUG] {message}", "Logs");
+
     public static Task LogWarn(string message) => LogToFile($"[WARNING] {message}", "Logs");
-    public static Task LogWarn(Exception exception) => LogToFile($"[WARNING] exception: {exception}" 
-        + exception.InnerException != null && exception.InnerException?.Message.ToString().Trim() != string.Empty 
-        ? $"\ninner exception: {exception.InnerException?.Message}" : string.Empty, "Logs");
+    public static Task LogWarn(Exception exception) => 
+    LogToFile(
+        "[WARNING] exception: " + exception +
+        (
+            exception.InnerException != null &&
+            !string.IsNullOrWhiteSpace(exception.InnerException.Message)
+                ? "\ninner exception: " + exception.InnerException.Message
+                : string.Empty
+        ),
+        "Logs"
+    );
+
     public static Task LogError(string message) => LogToFile($"[ERROR] {message}", "Logs");
-    public static Task LogError(Exception exception) => LogToFile($"[ERROR] exception: {exception}"
-        + exception.InnerException != null && exception.InnerException?.Message.ToString().Trim() != string.Empty 
-        ? $"\ninner exception: {exception.InnerException?.Message}" : string.Empty, "Logs");
+    public static Task LogError(Exception exception) =>
+    LogToFile(
+        "[ERROR] exception: " + exception +
+        (
+            exception.InnerException != null &&
+            !string.IsNullOrWhiteSpace(exception.InnerException.Message)
+                ? "\ninner exception: " + exception.InnerException.Message
+                : string.Empty
+        ),
+        "Logs"
+    );
+
 }

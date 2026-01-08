@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.SmuEngine.SmuMailBoxes;
+﻿namespace Saku_Overclock.Models;
 
 public class SmuAddressSet(uint msgAddress, uint rspAddress, uint argAddress)
 {

@@ -1,6 +1,6 @@
 using Saku_Overclock.Helpers;
 
-namespace Saku_Overclock.JsonContainers;
+namespace Saku_Overclock.Models;
 public class Preset
 {  
     public string Presetname = "Param_UnsignedPreset".GetLocalized();

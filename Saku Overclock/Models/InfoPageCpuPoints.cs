@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.JsonContainers.Helpers;
+﻿namespace Saku_Overclock.Models;
 
 public class InfoPageCpuPoints
 {

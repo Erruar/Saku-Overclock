@@ -1,4 +1,5 @@
-﻿using Microsoft.UI;
+﻿using System.Diagnostics;
+using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -6,14 +7,11 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
-using Saku_Overclock.JsonContainers.Helpers;
+using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.SmuEngine;
-using Saku_Overclock.SmuEngine.SmuMailBoxes;
 using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
@@ -26,9 +24,9 @@ namespace Saku_Overclock.Views;
 public sealed partial class ПараметрыPage
 {
     private FontIcon? _smuSymbol1; // тоже самое что и SMUSymbol
-    private Smusettings? _smusettings = new(); // Загрузка настроек быстрых команд SMU
     private readonly IAppNotificationService _notificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private readonly ISendSmuCommandService _sendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private readonly ICustomSmuSettingsService _smuSettings = App.GetService<ICustomSmuSettingsService>();
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>();
     private readonly IApplyerService _applyer = App.GetService<IApplyerService>();
     private readonly IOcFinderService _ocFinder = App.GetService<IOcFinderService>();
@@ -83,23 +81,22 @@ public sealed partial class ПараметрыPage
     }
 
 
-    #region JSON and initialization
+    #region Initialization
 
     #region Page Load 
 
-    private void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
+    private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
             _isLoaded = true;
-
             CollectSearchItems();
-            SlidersInit();
+            await SlidersInit();
             RecommendationsInit();
         }
         catch (Exception exception)
         {
-            LogHelper.TraceIt_TraceError(exception);
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -119,71 +116,6 @@ public sealed partial class ПараметрыPage
         {
             _appSettings.Preset = -1;
             _appSettings.SaveSettings();
-        }
-    }
-
-    #endregion
-
-    #region JSON only voids
-
-    private void SmuSettingsSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\smusettings.json",
-                JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void SmuSettingsLoad()
-    {
-        var filePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\smusettings.json";
-        if (File.Exists(filePath))
-        {
-            try
-            {
-                _smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(filePath))!;
-            }
-            catch
-            {
-                JsonRepair();
-            }
-        }
-        else
-        {
-            JsonRepair();
-        }
-    }
-
-    private void JsonRepair()
-    {
-        _smusettings = new Smusettings();
-        try
-        {
-            Directory.CreateDirectory(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\smusettings.json",
-                JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
-        }
-        catch
-        {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        @"\SakuOverclock\smusettings.json");
-            Directory.CreateDirectory(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\smusettings.json",
-                JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
         }
     }
 
@@ -211,9 +143,9 @@ public sealed partial class ПараметрыPage
         BdProchotTimeRecommend0.Text = data.ProchotRampTime[0];
         BdProchotTimeRecommend0.Text = data.ProchotRampTime[1];
     }
-    private void SlidersInit()
+    private async Task SlidersInit()
     {
-        if (_isLoaded == false)
+        if (!_isLoaded)
         {
             return;
         }
@@ -269,6 +201,9 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
+
+        await MainInit(PresetCom.SelectedIndex - 1);
+
         _waitforload = false;
     }
 
@@ -370,7 +305,7 @@ public sealed partial class ПараметрыPage
         Ccd28V.IsEnabled = locks;
     }
 
-    private async void MainInit(int index)
+    private async Task MainInit(int index)
     {
         try
         {
@@ -492,7 +427,6 @@ public sealed partial class ПараметрыPage
                     SuggestBox.Visibility = Visibility.Collapsed;
                     FiltersButton.Visibility = Visibility.Collapsed;
                     PresetsGrid.Visibility = Visibility.Collapsed;
-                    ActionIncompatiblePreset.IsOpen = false;
                     ActionIncompatibleCpu.Visibility = Visibility.Visible;
 
                     return; // Остановить загрузку страницы
@@ -690,8 +624,6 @@ public sealed partial class ПараметрыPage
                     _presetManager.SaveSettings();
                 }
             }
-
-            ActionIncompatiblePreset.IsOpen = false;
 
 
             try
@@ -1038,10 +970,9 @@ public sealed partial class ПараметрыPage
 
             _waitforload = false;
 
-            SmuSettingsLoad();
-            if (_smusettings != null && _smusettings.Note != string.Empty)
+            if (_smuSettings.Note != string.Empty)
             {
-                SmuNotes.Document.SetText(TextSetOptions.FormatRtf, _smusettings.Note.TrimEnd());
+                SmuNotes.Document.SetText(TextSetOptions.FormatRtf, _smuSettings.Note.TrimEnd());
                 ChangeRichEditBoxTextColor(SmuNotes, GetColorFromBrush(TextColor.Foreground));
             }
 
@@ -1062,15 +993,14 @@ public sealed partial class ПараметрыPage
 
     private void Init_QuickSMU()
     {
-        SmuSettingsLoad();
-        if (_smusettings == null || _smusettings.QuickSmuCommands == null)
+        if (_smuSettings.QuickSmuCommands == null)
         {
             return;
         }
 
         QuickSmu.Children.Clear();
         QuickSmu.RowDefinitions.Clear();
-        for (var i = 0; i < _smusettings.QuickSmuCommands.Count; i++)
+        for (var i = 0; i < _smuSettings.QuickSmuCommands.Count; i++)
         {
             var grid = new Grid
             {
@@ -1111,16 +1041,16 @@ public sealed partial class ПараметрыPage
                 Margin = new Thickness(0, -10, 0, 0),
                 FontFamily = new FontFamily("Segoe Fluent Icons"),
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Glyph = _smusettings.QuickSmuCommands[i].Symbol
+                Glyph = _smuSettings.QuickSmuCommands[i].Symbol
             };
             
             innerGrid.Children.Add(fontIcon); // Иконка команды
 
             var textBlock1 = new TextBlock
             {
-                Margin = string.IsNullOrWhiteSpace(_smusettings.QuickSmuCommands[i].Description) ? new Thickness(35, 9, 0, 0) : new Thickness(35, 0.5, 0, 0),
+                Margin = string.IsNullOrWhiteSpace(_smuSettings.QuickSmuCommands[i].Description) ? new Thickness(35, 9, 0, 0) : new Thickness(35, 0.5, 0, 0),
                 VerticalAlignment = VerticalAlignment.Top,
-                Text = _smusettings.QuickSmuCommands[i].Name,
+                Text = _smuSettings.QuickSmuCommands[i].Name,
                 FontWeight = FontWeights.SemiBold
             };
             innerGrid.Children.Add(textBlock1); // Имя команды
@@ -1129,7 +1059,7 @@ public sealed partial class ПараметрыPage
             {
                 Margin = new Thickness(35, 17.5, 0, 0),
                 VerticalAlignment = VerticalAlignment.Top,
-                Text = _smusettings.QuickSmuCommands[i].Description,
+                Text = _smuSettings.QuickSmuCommands[i].Description,
                 FontWeight = FontWeights.Light
             };
             innerGrid.Children.Add(textBlock2); // Подпись команды
@@ -1190,7 +1120,7 @@ public sealed partial class ПараметрыPage
                 Shadow = SharedShadow,
                 Content = new TextBlock
                 {
-                    Text = _smusettings.MailBoxes![_smusettings.QuickSmuCommands[i].MailIndex].Name
+                    Text = _smuSettings.MailBoxes![_smuSettings.QuickSmuCommands[i].MailIndex].Name
                 }
             };
             buttonsGrid.Children.Add(rsmuButton);
@@ -1206,7 +1136,7 @@ public sealed partial class ПараметрыPage
                 Shadow = SharedShadow,
                 Content = new TextBlock
                 {
-                    Text = _smusettings.QuickSmuCommands![i].Command + " / " + _smusettings.QuickSmuCommands![i].Argument
+                    Text = _smuSettings.QuickSmuCommands![i].Command + " / " + _smuSettings.QuickSmuCommands![i].Argument
                 }
             };
             buttonsGrid.Children.Add(cmdButton);
@@ -1222,11 +1152,11 @@ public sealed partial class ПараметрыPage
                 Shadow = SharedShadow,
                 Content = new TextBlock
                 {
-                    Text = _smusettings.QuickSmuCommands![i].Startup ? "Autorun" : "Apply"
+                    Text = _smuSettings.QuickSmuCommands![i].Startup ? "Autorun" : "Apply"
                 }
             };
             
-            if (_smusettings.QuickSmuCommands![i].Startup || _smusettings.QuickSmuCommands![i].ApplyWith)
+            if (_smuSettings.QuickSmuCommands![i].Startup || _smuSettings.QuickSmuCommands![i].ApplyWith)
             {
                 buttonsGrid.Children.Add(autoButton);
             }
@@ -1573,7 +1503,7 @@ public sealed partial class ПараметрыPage
         l.Add(new MailboxListItem("HSMP", _cpu.Hsmp));
     }
 
-    private async void AddPopulatedSmuMailboxes()
+    private void AddPopulatedSmuMailboxes()
     {
         try
         {
@@ -1591,7 +1521,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception);
+            LogHelper.TraceIt_TraceError(exception);
         }
     }
     
@@ -1605,25 +1535,17 @@ public sealed partial class ПараметрыPage
 
     private void PlayButton_Click(object sender, RoutedEventArgs e)
     {
-        SmuSettingsLoad();
         ApplySettings(1, int.Parse((sender as Button)!.Name.Replace("Play_", "")));
     }
 
-    private void EditButton_Click(object sender, RoutedEventArgs e)
+    private async void EditButton_Click(object sender, RoutedEventArgs e)
     {
-        SmuSettingsLoad();
-        QuickDialog(1, int.Parse((sender as Button)!.Name.Replace("Edit_", "")));
+        await QuickDialog(1, int.Parse((sender as Button)!.Name.Replace("Edit_", "")));
     }
 
     //SMU КОМАНДЫ
     private void ApplySettings(int mode, int commandIndex)
     {
-        SmuSettingsLoad();
-        if (_smusettings == null)
-        {
-            return;
-        }
-
         _commandReturnedValue = false;
 
         try
@@ -1638,14 +1560,14 @@ public sealed partial class ПараметрыPage
             if (mode != 0)
             {
                 args = SendSmuCommandService.MakeCmdArgs();
-                userArgs = _smusettings.QuickSmuCommands![commandIndex].Argument.Trim().Split(',');
-                TryConvertToUint(_smusettings.MailBoxes![_smusettings.QuickSmuCommands![commandIndex].MailIndex].Cmd,
+                userArgs = _smuSettings.QuickSmuCommands![commandIndex].Argument.Trim().Split(',');
+                TryConvertToUint(_smuSettings.MailBoxes![_smuSettings.QuickSmuCommands![commandIndex].MailIndex].Cmd,
                     out addrMsg);
-                TryConvertToUint(_smusettings.MailBoxes![_smusettings.QuickSmuCommands![commandIndex].MailIndex].Rsp,
+                TryConvertToUint(_smuSettings.MailBoxes![_smuSettings.QuickSmuCommands![commandIndex].MailIndex].Rsp,
                     out addrRsp);
-                TryConvertToUint(_smusettings.MailBoxes![_smusettings.QuickSmuCommands![commandIndex].MailIndex].Arg,
+                TryConvertToUint(_smuSettings.MailBoxes![_smuSettings.QuickSmuCommands![commandIndex].MailIndex].Arg,
                     out addrArg);
-                TryConvertToUint(_smusettings.QuickSmuCommands![commandIndex].Command, out command);
+                TryConvertToUint(_smuSettings.QuickSmuCommands![commandIndex].Command, out command);
             }
             else
             {
@@ -1676,8 +1598,8 @@ public sealed partial class ПараметрыPage
 
             Task.Run(async () =>
                 await LogHelper.Log(
-                    $"Sending SMU Command: {_smusettings.QuickSmuCommands?[commandIndex].Command}\n" +
-                    $"Args: {_smusettings.QuickSmuCommands?[commandIndex].Argument}\n" +
+                    $"Sending SMU Command: {_smuSettings.QuickSmuCommands?[commandIndex].Command}\n" +
+                    $"Args: {_smuSettings.QuickSmuCommands?[commandIndex].Argument}\n" +
                     $"Address MSG: {_testMailbox.MsgAddress}\n" +
                     $"Address RSP: {_testMailbox.RspAddress}\n" +
                     $"Address ARG: {_testMailbox.ArgAddress}"));
@@ -1794,10 +1716,10 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e) => QuickDialog(0, 0);
-    private void CreateQuickCommandSMU1_Click(object sender, RoutedEventArgs e) => RangeDialog();
+    private async void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e) => await QuickDialog(0, 0);
+    private async void CreateQuickCommandSMU1_Click(object sender, RoutedEventArgs e) => await RangeDialog();
 
-    private async void QuickDialog(int destination, int rowindex)
+    private async Task QuickDialog(int destination, int rowindex)
     {
         try
         {
@@ -1807,6 +1729,7 @@ public sealed partial class ПараметрыPage
                 Glyph = _smuSymbol,
                 Margin = new Thickness(-4, -2, -5, -5)
             };
+
             var symbolButton = new Button
             {
                 VerticalAlignment = VerticalAlignment.Top,
@@ -1821,6 +1744,7 @@ public sealed partial class ПараметрыPage
                 Translation = new System.Numerics.Vector3(0, 0, 12),
                 Shadow = SharedShadow
             };
+
             var comboSelSmu = new ComboBox
             {
                 Margin = new Thickness(55, 5, 0, 0),
@@ -1829,6 +1753,7 @@ public sealed partial class ПараметрыPage
                 Translation = new System.Numerics.Vector3(0, 0, 12),
                 Shadow = SharedShadow
             };
+
             var mainText = new TextBox
             {
                 Margin = new Thickness(55, 45, 0, 0),
@@ -1840,6 +1765,7 @@ public sealed partial class ПараметрыPage
                 Translation = new System.Numerics.Vector3(0, 0, 12),
                 Shadow = SharedShadow
             };
+
             var descText = new TextBox
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -1851,6 +1777,7 @@ public sealed partial class ПараметрыPage
                 Translation = new System.Numerics.Vector3(0, 0, 12),
                 Shadow = SharedShadow
             };
+
             var cmdText = new TextBox
             {
                 PlaceholderText = "Command".GetLocalized(),
@@ -1859,6 +1786,7 @@ public sealed partial class ПараметрыPage
                 Translation = new System.Numerics.Vector3(0, 0, 12),
                 Shadow = SharedShadow
             };
+
             var argText = new TextBox
             {
                 PlaceholderText = "Arguments".GetLocalized(),
@@ -1867,6 +1795,7 @@ public sealed partial class ПараметрыPage
                 Translation = new System.Numerics.Vector3(0, 0, 12),
                 Shadow = SharedShadow
             };
+
             var autoRun = new CheckBox
             {
                 Margin = new Thickness(1, 185, 0, 0),
@@ -1875,6 +1804,7 @@ public sealed partial class ПараметрыPage
                 Content = "Param_Autorun".GetLocalized(),
                 IsChecked = false
             };
+
             var applyWith = new CheckBox
             {
                 Margin = new Thickness(1, 215, 0, 0),
@@ -1883,6 +1813,7 @@ public sealed partial class ПараметрыPage
                 Content = "Param_WithApply".GetLocalized(),
                 IsChecked = false
             };
+
             try
             {
                 foreach (var item in ComboBoxMailboxSelect.Items)
@@ -1893,23 +1824,20 @@ public sealed partial class ПараметрыPage
                 comboSelSmu.SelectedIndex = ComboBoxMailboxSelect.SelectedIndex;
                 comboSelSmu.SelectionChanged += ComboSelSMU_SelectionChanged;
                 symbolButton.Click += SymbolButton_Click;
-                if (destination != 0)
+                if (destination != 0 && _smuSettings.QuickSmuCommands != null && rowindex >= 0 && _smuSettings.QuickSmuCommands.Count > rowindex)
                 {
-                    SmuSettingsLoad();
-                    if (_smusettings == null)
-                    {
-                        return;
-                    }
+                    var command = _smuSettings.QuickSmuCommands[rowindex];
 
-                    _smuSymbol = _smusettings.QuickSmuCommands![rowindex].Symbol;
-                    _smuSymbol1.Glyph = _smusettings.QuickSmuCommands![rowindex].Symbol;
-                    comboSelSmu.SelectedIndex = _smusettings.QuickSmuCommands![rowindex].MailIndex;
-                    mainText.Text = _smusettings.QuickSmuCommands![rowindex].Name;
-                    descText.Text = _smusettings.QuickSmuCommands![rowindex].Description;
-                    cmdText.Text = _smusettings.QuickSmuCommands![rowindex].Command;
-                    argText.Text = _smusettings.QuickSmuCommands![rowindex].Argument;
-                    autoRun.IsChecked = _smusettings.QuickSmuCommands![rowindex].Startup;
-                    applyWith.IsChecked = _smusettings.QuickSmuCommands![rowindex].ApplyWith;
+                    _smuSymbol = command.Symbol;
+                    _smuSymbol1.Glyph = command.Symbol;
+
+                    comboSelSmu.SelectedIndex = command.MailIndex;
+                    mainText.Text = command.Name;
+                    descText.Text = command.Description;
+                    cmdText.Text = command.Command;
+                    argText.Text = command.Argument;
+                    autoRun.IsChecked = command.Startup;
+                    applyWith.IsChecked = command.ApplyWith;
                 }
             }
             catch (Exception ex)
@@ -1982,10 +1910,6 @@ public sealed partial class ПараметрыPage
                     newQuickCommand.XamlRoot = XamlRoot;
                 }
 
-                newQuickCommand.Closed += (_, _) =>
-                {
-                    newQuickCommand = null;
-                };
                 // Отобразить ContentDialog и обработать результат
                 try
                 {
@@ -1993,15 +1917,19 @@ public sealed partial class ПараметрыPage
                     // Создать ContentDialog 
                     if (result == ContentDialogResult.Primary)
                     {
-                        SmuSettingsLoad();
+                        if (_smuSettings == null)
+                        {
+                            return;
+                        }
+
                         var saveIndex = comboSelSmu.SelectedIndex;
                         for (var i = 0; i < comboSelSmu.Items.Count; i++)
                         {
                             var adressName = false;
                             comboSelSmu.SelectedIndex = i;
-                            if (_smusettings?.MailBoxes == null && _smusettings != null)
+                            if (_smuSettings!.MailBoxes == null)
                             {
-                                _smusettings.MailBoxes =
+                                _smuSettings.MailBoxes =
                                 [
                                     new CustomMailBoxes
                                     {
@@ -2014,10 +1942,10 @@ public sealed partial class ПараметрыPage
                             }
                             else
                             {
-                                for (var d = 0; d < _smusettings?.MailBoxes?.Count; d++)
+                                for (var d = 0; d < _smuSettings?.MailBoxes?.Count; d++)
                                 {
-                                    if (_smusettings.MailBoxes[d].Name != string.Empty &&
-                                        _smusettings.MailBoxes[d].Name == comboSelSmu.SelectedItem.ToString())
+                                    if (_smuSettings.MailBoxes[d].Name != string.Empty &&
+                                        _smuSettings.MailBoxes[d].Name == comboSelSmu.SelectedItem.ToString())
                                     {
                                         adressName = true;
                                         break;
@@ -2026,7 +1954,7 @@ public sealed partial class ПараметрыPage
 
                                 if (adressName == false)
                                 {
-                                    _smusettings?.MailBoxes?.Add(new CustomMailBoxes
+                                    _smuSettings?.MailBoxes?.Add(new CustomMailBoxes
                                     {
                                         Name = comboSelSmu.SelectedItem.ToString()!,
                                         Cmd = TextBoxCmdAddress.Text,
@@ -2037,8 +1965,9 @@ public sealed partial class ПараметрыPage
                             }
                         }
 
-                        SmuSettingsSave();
-                        if (cmdText.Text != string.Empty && argText.Text != string.Empty && _smusettings != null)
+                        _smuSettings!.SaveSettings();
+
+                        if (cmdText.Text != string.Empty && argText.Text != string.Empty)
                         {
                             var run = false;
                             var apply = false;
@@ -2054,8 +1983,8 @@ public sealed partial class ПараметрыPage
 
                             if (destination == 0)
                             {
-                                _smusettings.QuickSmuCommands ??= [];
-                                _smusettings.QuickSmuCommands.Add(new QuickSmuCommands
+                                _smuSettings.QuickSmuCommands ??= [];
+                                _smuSettings.QuickSmuCommands.Add(new QuickSmuCommands
                                 {
                                     Name = mainText.Text,
                                     Description = descText.Text,
@@ -2069,20 +1998,20 @@ public sealed partial class ПараметрыPage
                             }
                             else
                             {
-                                _smusettings.QuickSmuCommands![rowindex].Symbol = _smuSymbol;
-                                _smusettings.QuickSmuCommands![rowindex].Symbol = _smuSymbol1.Glyph;
-                                _smusettings.QuickSmuCommands![rowindex].MailIndex = saveIndex;
-                                _smusettings.QuickSmuCommands![rowindex].Name = mainText.Text;
-                                _smusettings.QuickSmuCommands![rowindex].Description = descText.Text;
-                                _smusettings.QuickSmuCommands![rowindex].Command = cmdText.Text;
-                                _smusettings.QuickSmuCommands![rowindex].Argument = argText.Text;
-                                _smusettings.QuickSmuCommands![rowindex].Startup = run;
-                                _smusettings.QuickSmuCommands![rowindex].ApplyWith = apply;
+                                _smuSettings.QuickSmuCommands![rowindex].Symbol = _smuSymbol;
+                                _smuSettings.QuickSmuCommands![rowindex].Symbol = _smuSymbol1.Glyph;
+                                _smuSettings.QuickSmuCommands![rowindex].MailIndex = saveIndex;
+                                _smuSettings.QuickSmuCommands![rowindex].Name = mainText.Text;
+                                _smuSettings.QuickSmuCommands![rowindex].Description = descText.Text;
+                                _smuSettings.QuickSmuCommands![rowindex].Command = cmdText.Text;
+                                _smuSettings.QuickSmuCommands![rowindex].Argument = argText.Text;
+                                _smuSettings.QuickSmuCommands![rowindex].Startup = run;
+                                _smuSettings.QuickSmuCommands![rowindex].ApplyWith = apply;
                             }
                         }
 
                         ComboBoxMailboxSelect.SelectedIndex = saveIndex;
-                        SmuSettingsSave();
+                        _smuSettings?.SaveSettings();
                         Init_QuickSMU();
                         newQuickCommand?.Hide();
                         newQuickCommand = null;
@@ -2092,9 +2021,8 @@ public sealed partial class ПараметрыPage
 
                         if (result == ContentDialogResult.Secondary)
                         {
-                            SmuSettingsLoad();
-                            _smusettings?.QuickSmuCommands?.RemoveAt(rowindex);
-                            SmuSettingsSave();
+                            _smuSettings?.QuickSmuCommands?.RemoveAt(rowindex);
+                            _smuSettings?.SaveSettings();
                             Init_QuickSMU();
                         }
                         else
@@ -2107,8 +2035,11 @@ public sealed partial class ПараметрыPage
                 catch
                 {
                     newQuickCommand?.Hide();
-                    newQuickCommand = null;
                 }
+
+                comboSelSmu.SelectionChanged -= ComboSelSMU_SelectionChanged;
+                symbolButton.Click -= SymbolButton_Click;
+                newQuickCommand = null;
             }
             catch (Exception ex)
             {
@@ -2121,7 +2052,7 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private async void RangeDialog()
+    private async Task RangeDialog()
     {
         try
         {
@@ -2216,17 +2147,15 @@ public sealed partial class ПараметрыPage
                     // Создать ContentDialog 
                     if (result == ContentDialogResult.Primary)
                     {
-                        SmuSettingsLoad();
-                        _smusettings ??= new Smusettings();
                         var saveIndex = comboSelSmu.SelectedIndex;
                         for (var i = 0; i < comboSelSmu.Items.Count; i++)
                         {
                             var adressName = false;
                             comboSelSmu.SelectedIndex = i;
-                            if (_smusettings.MailBoxes == null)
+                            if (_smuSettings.MailBoxes == null)
                             {
-                                _smusettings.MailBoxes = [];
-                                _smusettings.MailBoxes?.Add(new CustomMailBoxes
+                                _smuSettings.MailBoxes = [];
+                                _smuSettings.MailBoxes?.Add(new CustomMailBoxes
                                 {
                                     Name = comboSelSmu.SelectedItem.ToString()!,
                                     Cmd = TextBoxCmdAddress.Text,
@@ -2236,11 +2165,11 @@ public sealed partial class ПараметрыPage
                             }
                             else
                             {
-                                for (var d = 0; d < _smusettings.MailBoxes?.Count; d++)
+                                for (var d = 0; d < _smuSettings.MailBoxes?.Count; d++)
                                 {
-                                    if (_smusettings.MailBoxes != null &&
-                                        _smusettings.MailBoxes[d].Name != string.Empty &&
-                                        _smusettings.MailBoxes[d].Name == comboSelSmu.SelectedItem.ToString())
+                                    if (_smuSettings.MailBoxes != null &&
+                                        _smuSettings.MailBoxes[d].Name != string.Empty &&
+                                        _smuSettings.MailBoxes[d].Name == comboSelSmu.SelectedItem.ToString())
                                     {
                                         adressName = true;
                                         break;
@@ -2249,7 +2178,7 @@ public sealed partial class ПараметрыPage
 
                                 if (adressName == false)
                                 {
-                                    _smusettings.MailBoxes?.Add(new CustomMailBoxes
+                                    _smuSettings.MailBoxes?.Add(new CustomMailBoxes
                                     {
                                         Name = comboSelSmu.SelectedItem.ToString()!,
                                         Cmd = TextBoxCmdAddress.Text,
@@ -2260,7 +2189,7 @@ public sealed partial class ПараметрыPage
                             }
                         }
 
-                        SmuSettingsSave();
+                        _smuSettings.SaveSettings();
                         var run = false;
                         if (cmdStart.Text != string.Empty && argStart.Text != string.Empty &&
                             argEnd.Text != string.Empty)
@@ -2279,7 +2208,7 @@ public sealed partial class ПараметрыPage
                         }
 
                         ComboBoxMailboxSelect.SelectedIndex = saveIndex;
-                        SmuSettingsSave();
+                        _smuSettings.SaveSettings();
                         Init_QuickSMU();
                         newQuickCommand?.Hide();
                         newQuickCommand = null;
@@ -2306,6 +2235,7 @@ public sealed partial class ПараметрыPage
             await LogHelper.TraceIt_TraceError(e);
         }
     }
+    
     private void CloseRangeStarted(object? sender, object? args)
     {
         DispatcherQueue.TryEnqueue(() =>
@@ -2347,12 +2277,10 @@ public sealed partial class ПараметрыPage
 
     private void SMUNotes_TextChanged(object sender, RoutedEventArgs e)
     {
-        SmuSettingsLoad();
         var documentRange = SmuNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
         documentRange.GetText(TextGetOptions.FormatRtf, out var content);
-        _smusettings ??= new Smusettings();
-        _smusettings.Note = content.TrimEnd();
-        SmuSettingsSave();
+        _smuSettings.Note = content.TrimEnd();
+        _smuSettings.SaveSettings();
     }
 
     private void ToHex_Click(object sender, RoutedEventArgs e)
@@ -2459,7 +2387,7 @@ public sealed partial class ПараметрыPage
 
     #region Event Handlers and Custom Preset voids
 
-    private void PresetChanged(object? sender, PresetManagerService.PresetId e)
+    private async void PresetChanged(object? sender, PresetManagerService.PresetId e)
     {
         if (e.PresetKey == "Custom")
         {
@@ -2470,7 +2398,7 @@ public sealed partial class ПараметрыPage
             _indexpreset = index;
             PresetCom.SelectedIndex = index + 1;
             _waitforload = false;
-            MainInit(index);
+            await MainInit(index);
         }
     }
 
@@ -2478,9 +2406,9 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            while (_isLoaded == false || _waitforload)
+            if (!_isLoaded || _waitforload)
             {
-                await Task.Delay(100);
+                return;
             }
 
             if (PresetCom.SelectedIndex != -1)
@@ -2490,7 +2418,7 @@ public sealed partial class ПараметрыPage
             }
 
             _indexpreset = PresetCom.SelectedIndex - 1;
-            MainInit(PresetCom.SelectedIndex - 1);
+            await MainInit(PresetCom.SelectedIndex - 1);
         }
         catch (Exception exception)
         {
@@ -2524,7 +2452,7 @@ public sealed partial class ПараметрыPage
     //Максимальная температура CPU (C)
     private void C1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2541,7 +2469,7 @@ public sealed partial class ПараметрыPage
     //Лимит CPU (W)
     private void C2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2558,7 +2486,7 @@ public sealed partial class ПараметрыPage
     //Реальный CPU (W)
     private void C3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2575,7 +2503,7 @@ public sealed partial class ПараметрыPage
     //Средний CPU (W)
     private void C4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2592,7 +2520,7 @@ public sealed partial class ПараметрыPage
     //Тик быстрого разгона (S)
     private void C5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2609,7 +2537,7 @@ public sealed partial class ПараметрыPage
     //Тик медленного разгона (S)
     private void C6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2627,7 +2555,7 @@ public sealed partial class ПараметрыPage
     //Максимальный ток VRM A
     private void V1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2644,7 +2572,7 @@ public sealed partial class ПараметрыPage
     //Лимит по току VRM A
     private void V2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2661,7 +2589,7 @@ public sealed partial class ПараметрыPage
     //Максимальный ток SOC A
     private void V3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2678,7 +2606,7 @@ public sealed partial class ПараметрыPage
     //Лимит по току SOC A
     private void V4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2695,7 +2623,7 @@ public sealed partial class ПараметрыPage
     //Максимальный ток PCI VDD A
     private void V5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2712,7 +2640,7 @@ public sealed partial class ПараметрыPage
     //Максимальный ток PCI SOC A
     private void V6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2729,7 +2657,7 @@ public sealed partial class ПараметрыPage
     //Отключить троттлинг на время
     private void V7_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2747,7 +2675,7 @@ public sealed partial class ПараметрыPage
     //Минимальная частота SOC 
     private void G1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2764,7 +2692,7 @@ public sealed partial class ПараметрыPage
     //Максимальная частота SOC
     private void G2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2781,7 +2709,7 @@ public sealed partial class ПараметрыPage
     //Минимальная частота Infinity Fabric
     private void G3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2798,7 +2726,7 @@ public sealed partial class ПараметрыPage
     //Максимальная частота Infinity Fabric
     private void G4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2815,7 +2743,7 @@ public sealed partial class ПараметрыPage
     //Минимальная частота кодека VCE
     private void G5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2832,7 +2760,7 @@ public sealed partial class ПараметрыPage
     //Максимальная частота кодека VCE
     private void G6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2849,7 +2777,7 @@ public sealed partial class ПараметрыPage
     //Минимальная частота частота Data Latch
     private void G7_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2866,7 +2794,7 @@ public sealed partial class ПараметрыPage
     //Максимальная частота Data Latch
     private void G8_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2883,7 +2811,7 @@ public sealed partial class ПараметрыPage
     //Минимальная частота iGpu
     private void G9_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2900,7 +2828,7 @@ public sealed partial class ПараметрыPage
     //Максимальная частота iGpu
     private void G10_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2918,7 +2846,7 @@ public sealed partial class ПараметрыPage
 
     private void A4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2934,7 +2862,7 @@ public sealed partial class ПараметрыPage
 
     private void A5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2950,7 +2878,7 @@ public sealed partial class ПараметрыPage
 
     private void A6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2966,7 +2894,7 @@ public sealed partial class ПараметрыPage
 
     private void A7_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2982,7 +2910,7 @@ public sealed partial class ПараметрыPage
 
     private void A8_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -2998,7 +2926,7 @@ public sealed partial class ПараметрыPage
 
     private void A9_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3014,7 +2942,7 @@ public sealed partial class ПараметрыPage
 
     private void A10_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3030,7 +2958,7 @@ public sealed partial class ПараметрыPage
 
     private void A11_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3046,7 +2974,7 @@ public sealed partial class ПараметрыPage
 
     private void A12_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3062,7 +2990,7 @@ public sealed partial class ПараметрыPage
 
     private void A13_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3079,7 +3007,7 @@ public sealed partial class ПараметрыPage
     //Оптимизатор кривой
     private void CCD2_8_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3095,7 +3023,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_7_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3111,7 +3039,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3127,7 +3055,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3143,7 +3071,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3159,7 +3087,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3175,7 +3103,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3191,7 +3119,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3207,7 +3135,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_8_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3223,7 +3151,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_7_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3239,7 +3167,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3255,7 +3183,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3271,7 +3199,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3287,7 +3215,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3303,7 +3231,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3319,7 +3247,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3335,7 +3263,7 @@ public sealed partial class ПараметрыPage
 
     private void O1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3351,7 +3279,7 @@ public sealed partial class ПараметрыPage
 
     private void O2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3367,7 +3295,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD_CO_Mode_Sel_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3394,7 +3322,7 @@ public sealed partial class ПараметрыPage
     //Максимальная температура CPU (C)
     private void C1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3409,7 +3337,7 @@ public sealed partial class ПараметрыPage
     //Лимит CPU (W)
     private void C2_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3424,7 +3352,7 @@ public sealed partial class ПараметрыPage
     //Реальный CPU (W)
     private void C3_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3439,7 +3367,7 @@ public sealed partial class ПараметрыPage
     //Средний CPU(W)
     private void C4_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3454,7 +3382,7 @@ public sealed partial class ПараметрыPage
     //Тик быстрого разгона (S)
     private void C5_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3469,7 +3397,7 @@ public sealed partial class ПараметрыPage
     //Тик медленного разгона (S)
     private void C6_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3484,7 +3412,7 @@ public sealed partial class ПараметрыPage
     //Параметры VRM
     private void V1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3498,7 +3426,7 @@ public sealed partial class ПараметрыPage
 
     private void V2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3512,7 +3440,7 @@ public sealed partial class ПараметрыPage
 
     private void V3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3526,7 +3454,7 @@ public sealed partial class ПараметрыPage
 
     private void V4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3540,7 +3468,7 @@ public sealed partial class ПараметрыPage
 
     private void V5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3554,7 +3482,7 @@ public sealed partial class ПараметрыPage
 
     private void V6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3568,7 +3496,7 @@ public sealed partial class ПараметрыPage
 
     private void V7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3583,7 +3511,7 @@ public sealed partial class ПараметрыPage
     //Параметры GPU
     private void G1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3597,7 +3525,7 @@ public sealed partial class ПараметрыPage
 
     private void G2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3611,7 +3539,7 @@ public sealed partial class ПараметрыPage
 
     private void G3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3625,7 +3553,7 @@ public sealed partial class ПараметрыPage
 
     private void G4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3639,7 +3567,7 @@ public sealed partial class ПараметрыPage
 
     private void G5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3653,7 +3581,7 @@ public sealed partial class ПараметрыPage
 
     private void G6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3667,7 +3595,7 @@ public sealed partial class ПараметрыPage
 
     private void G7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3681,7 +3609,7 @@ public sealed partial class ПараметрыPage
 
     private void G8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3695,7 +3623,7 @@ public sealed partial class ПараметрыPage
 
     private void G9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3709,7 +3637,7 @@ public sealed partial class ПараметрыPage
 
     private void G10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3725,7 +3653,7 @@ public sealed partial class ПараметрыPage
 
     private void A4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3739,7 +3667,7 @@ public sealed partial class ПараметрыPage
 
     private void A5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3753,7 +3681,7 @@ public sealed partial class ПараметрыPage
 
     private void A6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3767,7 +3695,7 @@ public sealed partial class ПараметрыPage
 
     private void A7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3781,7 +3709,7 @@ public sealed partial class ПараметрыPage
 
     private void A8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3795,7 +3723,7 @@ public sealed partial class ПараметрыPage
 
     private void A9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3809,7 +3737,7 @@ public sealed partial class ПараметрыPage
 
     private void A10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3823,7 +3751,7 @@ public sealed partial class ПараметрыPage
 
     private void A11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3837,7 +3765,7 @@ public sealed partial class ПараметрыPage
 
     private void A12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3851,7 +3779,7 @@ public sealed partial class ПараметрыPage
 
     private void A13m_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3866,7 +3794,7 @@ public sealed partial class ПараметрыPage
     //Новые
     private void C7_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3882,7 +3810,7 @@ public sealed partial class ПараметрыPage
 
     private void C7_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3896,7 +3824,7 @@ public sealed partial class ПараметрыPage
 
     private void G16_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3912,7 +3840,7 @@ public sealed partial class ПараметрыPage
 
     private void G16m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3926,7 +3854,7 @@ public sealed partial class ПараметрыPage
 
     private void A14_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3942,7 +3870,7 @@ public sealed partial class ПараметрыPage
 
     private void A14m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3956,7 +3884,7 @@ public sealed partial class ПараметрыPage
 
     private void A15_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3972,7 +3900,7 @@ public sealed partial class ПараметрыPage
 
     private void A15v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -3987,7 +3915,7 @@ public sealed partial class ПараметрыPage
     //Слайдеры из оптимизатора кривой 
     private void O1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4001,7 +3929,7 @@ public sealed partial class ПараметрыPage
 
     private void O2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4015,7 +3943,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4029,7 +3957,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4043,7 +3971,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4057,7 +3985,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4071,7 +3999,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4085,7 +4013,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4099,7 +4027,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4113,7 +4041,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD1_8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4127,7 +4055,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4141,7 +4069,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4155,7 +4083,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4169,7 +4097,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4183,7 +4111,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4197,7 +4125,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4211,7 +4139,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4225,7 +4153,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD2_8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4239,7 +4167,7 @@ public sealed partial class ПараметрыPage
 
     private void CCD_CO_Mode_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (!_isLoaded || _waitforload)
         {
             return;
         }
@@ -4273,7 +4201,7 @@ public sealed partial class ПараметрыPage
                 true, DeveloperSettingsMode.Visibility == Visibility.Visible);
             if (EnablePstates.IsOn)
             {
-                BtnPstateWrite_Click();
+                await BtnPstateWrite_Click();
             }
 
             if (TextBoxArg0 != null &&
@@ -4884,7 +4812,7 @@ public sealed partial class ПараметрыPage
 
     #region PState Section related voids
 
-    private async void BtnPstateWrite_Click()
+    private async Task BtnPstateWrite_Click()
     {
         try
         {
@@ -5469,7 +5397,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 if (_relay == false)
                 {
@@ -5519,7 +5447,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 await Task.Delay(20);
                 var didValue = Did0.Value;
@@ -5593,7 +5521,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 if (_relay == false)
                 {
@@ -5643,7 +5571,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 await Task.Delay(20);
                 var didValue = Did1.Value;
@@ -5671,7 +5599,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 await Task.Delay(20);
                 var didValue = Did1.Value;
@@ -5744,7 +5672,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 if (_relay == false)
                 {
@@ -5794,7 +5722,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (_waitforload == false)
+            if (!_waitforload)
             {
                 await Task.Delay(40);
                 var didValue = Did2.Value;
@@ -5827,7 +5755,7 @@ public sealed partial class ПараметрыPage
 
     private void Save_ID0()
     {
-        if (_waitforload == false)
+        if (!_waitforload)
         {
             _presetManager.Presets[_indexpreset].Did0 = Did0.Value;
             _presetManager.Presets[_indexpreset].Fid0 = Fid0.Value;
@@ -5847,7 +5775,7 @@ public sealed partial class ПараметрыPage
 
     private void Save_ID1()
     {
-        if (_waitforload == false)
+        if (!_waitforload)
         {
             _presetManager.Presets[_indexpreset].Did0 = Did0.Value;
             _presetManager.Presets[_indexpreset].Fid0 = Fid0.Value;
@@ -5867,7 +5795,7 @@ public sealed partial class ПараметрыPage
 
     private void Save_ID2()
     {
-        if (_waitforload == false)
+        if (!_waitforload)
         {
             _presetManager.Presets[_indexpreset].Did0 = Did0.Value;
             _presetManager.Presets[_indexpreset].Fid0 = Fid0.Value;

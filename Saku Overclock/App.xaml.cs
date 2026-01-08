@@ -11,7 +11,6 @@ using Saku_Overclock.Core.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Services;
-using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using WinRT.Interop;
@@ -99,6 +98,7 @@ public partial class App
                 services.AddSingleton<ITrayMenuService, TrayMenuService>();
                 services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
                 services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
+                services.AddSingleton<ICustomSmuSettingsService, CustomSmuSettingsService>();
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
                 services.AddTransient<INavigationViewService, NavigationViewService>();
                 services.AddSingleton<IActivationService, ActivationService>();

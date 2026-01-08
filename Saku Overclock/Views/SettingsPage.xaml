@@ -326,6 +326,18 @@
                             </Grid>
                             <Grid Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                                 <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
+                                    <FontIcon Glyph="&#xE8DD;"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_ni_Fontweight">Толщина шрифта</TextBlock>
+                                </StackPanel>
+                                <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0" Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
+                                    <ComboBox SelectedIndex="0" Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconFontWeight" SelectionChanged="NiIconFontWeight_SelectionChanged" CornerRadius="15">
+                                        <ComboBoxItem x:Uid="Settings_ni_FontweightRegular" Content="Обычный"/>
+                                        <ComboBoxItem x:Uid="Settings_ni_FontweightBold" Content="Полужирный"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                                <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
                                     <FontIcon Glyph="&#xE8E9;"/>
                                     <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_ni_Fontsize">Размер шрифта</TextBlock>
                                 </StackPanel>

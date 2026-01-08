@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.SmuEngine;
+using Saku_Overclock.Models;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
 using Windows.Foundation.Metadata;

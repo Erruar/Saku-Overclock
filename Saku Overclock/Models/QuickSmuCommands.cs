@@ -1,4 +1,4 @@
-namespace Saku_Overclock.JsonContainers.Helpers;
+namespace Saku_Overclock.Models;
 
 /// <summary>
 ///     Расширенный конфиг для команд QuickSMU

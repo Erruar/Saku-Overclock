@@ -1,13 +1,11 @@
 ﻿using System.Globalization;
-using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
-using Saku_Overclock.SmuEngine.SmuMailBoxes;
+using Saku_Overclock.Models;
 using Saku_Overclock.Views;
 using static Saku_Overclock.Services.CpuService;
 
-namespace Saku_Overclock.SmuEngine;
+namespace Saku_Overclock.Services;
 
 /*Created by Serzhik Sakurazhima*/
 
@@ -24,9 +22,9 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     // Профили и команды
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>();
+    private readonly ICustomSmuSettingsService _smuSettings = App.GetService<ICustomSmuSettingsService>();
     private readonly IPresetManagerService _presetManager = App.GetService<IPresetManagerService>();
     private readonly ICpuService _cpu = App.GetService<ICpuService>();
-    private Smusettings _smuSettings = new();
 
     // Связанное с железом
     private static List<(string, bool, uint)>? _commands;
@@ -83,66 +81,8 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _safeReapply = _appSettings.ReapplySafeOverclock;
         SetCodeNameGeneration();
+        _smuSettings.LoadSettings();
     }
-
-    #region JSON
-
-    /// <summary>
-    ///  Загрузка параметров быстрых команд Smu
-    /// </summary>
-    private void SmuSettingsLoad()
-    {
-        try
-        {
-            var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                               @"\SakuOverclock\smusettings.json";
-            if (Directory.Exists(folderPath)) 
-            {
-                _smuSettings = JsonConvert.DeserializeObject<Smusettings>(
-                    File.ReadAllText(folderPath)) ??
-                               new Smusettings();
-            }
-            else
-            {
-                _smuSettings = new Smusettings();
-            }
-        }
-        catch (Exception ex)
-        {
-            JsonRepair();
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    /// <summary>
-    ///  Восстановление настроек JSON
-    /// </summary>
-    private void JsonRepair()
-    {
-        _smuSettings = new Smusettings();
-        try
-        {
-            Directory.CreateDirectory(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\smusettings.json",
-                JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
-        }
-        catch
-        {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        @"\SakuOverclock\smusettings.json");
-            Directory.CreateDirectory(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\smusettings.json",
-                JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
-        }
-    }
-
-    #endregion
 
     #region Apply Overclock Options
 
@@ -167,8 +107,6 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <param name="startup">true - применяются команды при запуске (Startup или ApplyWith), false - только ApplyWith</param>
     public void ApplyQuickSmuCommand(bool startup)
     {
-        SmuSettingsLoad();
-
         if (_smuSettings.QuickSmuCommands == null)
         {
             return;
@@ -184,7 +122,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             var command = _smuSettings.QuickSmuCommands[i];
 
             // Определяем, нужно ли применять команду
-            if (command.ApplyWith || (startup && command.Startup))
+            if (command.ApplyWith || startup && command.Startup)
             {
                 ApplySingleSmuCommand(i);
             }
@@ -527,11 +465,11 @@ public class SendSmuCommandService : ISendSmuCommandService
                 // 2 - Vcn
                 // 3 - Lclk
                 // 4 - Gfx-clk
-                var mode = commandName.Contains("socclk") ? 0 : (
-                           commandName.Contains("fclk") ? 1 : (
-                           commandName.Contains("vcn") ? 2 : (
-                           commandName.Contains("lclk") ? 3 : (
-                           commandName.Contains("gfx") ? 4 : 3))));
+                var mode = commandName.Contains("socclk") ? 0 : 
+                           commandName.Contains("fclk") ? 1 : 
+                           commandName.Contains("vcn") ? 2 : 
+                           commandName.Contains("lclk") ? 3 : 
+                           commandName.Contains("gfx") ? 4 : 3;
 
                 RavenSetSubsystemMinMaxFrequency(args, mode, commandName.Contains("max"));
 
@@ -712,7 +650,6 @@ public class SendSmuCommandService : ISendSmuCommandService
                             $"{DateTime.Now:HH:mm:ss} | Date: {DateTime.Now:dd.MM.yyyy} | MailBox: {mailbox} | CMD: {commandIndex} | Range: {startIndex}-{endIndex}");
                     }
 
-                    SmuSettingsLoad();
                     for (var j = startes; j < endes; j++)
                     {
                         if (_cancelRange)

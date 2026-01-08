@@ -4,8 +4,6 @@ using Microsoft.UI.Xaml.Controls;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
-using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;

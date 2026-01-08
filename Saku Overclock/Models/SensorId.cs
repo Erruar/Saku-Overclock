@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.SmuEngine;
+﻿namespace Saku_Overclock.Models;
 
 /// <summary>
 /// Типы сенсоров, доступных для чтения из SMU таблицы.

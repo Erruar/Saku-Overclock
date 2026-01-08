@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.JsonContainers;
+﻿namespace Saku_Overclock.Models;
 
 internal class Powercfg
 {

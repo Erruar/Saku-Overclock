@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
@@ -24,6 +24,7 @@ public sealed partial class ГлавнаяPage
 {
     private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Обновление данных сенсоров системы
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Сервис горячих клавиш
+    private readonly INavigationService _navigationService = App.GetService<INavigationService>(); // Навигация в приложении
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
@@ -92,49 +93,31 @@ public sealed partial class ГлавнаяPage
 
     private void PresetChanged(object? sender, PresetManagerService.PresetId e)
     {
-        var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot);
         _userSwitchPreset = true;
-        var uncheckedThickness = new Thickness(1);
+
+        var buttons = VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot);
         var checkedThickness = new Thickness(2);
-        if (e.PresetKey == "Custom")
+        var uncheckedThickness = new Thickness(1);
+
+        foreach (var button in buttons)
         {
-            _selectedIndex = e.PresetIndex;
-            foreach (var button in toggleButtons)
-            {
-                if (button.Tag is int index && index == _selectedIndex)
-                {
-                    button.IsChecked = true;
-                    button.BorderThickness = checkedThickness;
-                    button.BorderBrush = CheckedBrush;
-                }
-                else
-                {
-                    button.IsChecked = false;
-                    button.BorderThickness = uncheckedThickness;
-                    button.BorderBrush = UncheckedBrush;
-                }
-            }
+            PresetPivot.SelectedIndex = e.PresetKey == "Custom" ? 0 : 1;
+            var isChecked = e.PresetKey == "Custom"
+                ? button.Tag is int index && index == e.PresetIndex
+                : button.Tag is string tag && tag == $"Preset_{e.PresetKey}";
+
+            button.IsChecked = isChecked;
+            button.BorderThickness = isChecked ? checkedThickness : uncheckedThickness;
+
+            VisualStateManager.GoToState(
+                button,
+                isChecked ? "Checked" : "Unchecked",
+                true);
         }
-        else
-        {
-            foreach (var button in toggleButtons)
-            {
-                if (button.Tag is string premadeTag && premadeTag == "Preset_" + e.PresetKey)
-                {
-                    button.IsChecked = true;
-                    button.BorderThickness = checkedThickness;
-                    button.BorderBrush = CheckedBrush;
-                }
-                else
-                {
-                    button.IsChecked = false;
-                    button.BorderThickness = uncheckedThickness;
-                    button.BorderBrush = UncheckedBrush;
-                }
-            }
-        }
+
         _userSwitchPreset = false;
     }
+
 
     #region Page Initialization
 
@@ -561,10 +544,9 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void PresetsPage_Click(object sender, RoutedEventArgs e)
     {
-        if (_isHelpButtonsExpanded)
+        if (_isHelpButtonsExpanded || sender is FrameworkElement { Tag: "S" })
         {
-            var navigationService = App.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
+            _navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
         }
     }
 
@@ -573,8 +555,7 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void OverclockPage_Click(object sender, RoutedEventArgs e)
     {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
     }
 
     /// <summary>
@@ -582,8 +563,7 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void SettingsPage_Click(object sender, RoutedEventArgs e)
     {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
     }
 
     /// <summary>

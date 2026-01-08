@@ -1,7 +1,7 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
-using Saku_Overclock.SmuEngine.SmuMailBoxes;
 using Saku_Overclock.Views.Windows.TaskDialog;
 using ZenStates.Core;
 using static ZenStates.Core.Cpu;

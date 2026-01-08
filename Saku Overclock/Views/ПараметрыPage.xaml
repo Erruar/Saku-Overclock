@@ -5642,10 +5642,6 @@
                     </Grid>
                 </Grid>
             </ScrollViewer>
-            <InfoBar Grid.Row="0" x:Name="ActionIncompatiblePreset" x:Uid="Param_IncompatiblePreset" IsOpen="False"
-                     IsClosable="False" IsIconVisible="True" Title="Упс... кажется вы делаете что-то не так!"
-                     Message="Вы не можете изменять готовые пресеты! На то они и готовые. Выберите один из своих сохранённых пресетов"
-                     VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <Grid Grid.Row="0" x:Name="ActionIncompatibleCpu" Visibility="Collapsed" HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center"

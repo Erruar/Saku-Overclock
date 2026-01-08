@@ -1,4 +1,4 @@
-﻿using Saku_Overclock.JsonContainers;
+﻿using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using static Saku_Overclock.Services.PresetManagerService;
 

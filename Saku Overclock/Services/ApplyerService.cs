@@ -1,7 +1,6 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
-using Saku_Overclock.ViewModels;
+using Saku_Overclock.Models;
 using static Saku_Overclock.Services.CpuService;
 using static Saku_Overclock.Services.PresetManagerService;
 
@@ -12,7 +11,6 @@ public partial class ApplyerService(
     ISendSmuCommandService sendSmuCommand,
     IOcFinderService ocFinder,
     IPresetManagerService presetManager,
-    INavigationService navigationService,
     ICpuService cpuService)
     : IApplyerService
 {

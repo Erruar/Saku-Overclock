@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.JsonContainers;
+﻿namespace Saku_Overclock.Models;
 
 internal class NiIconsSettings
 {
@@ -21,7 +21,13 @@ public class NiIconsElements
     /// </summary>
     public int IconShape = 0;
 
-    public int FontSize = 9;
+    /// <summary>
+    ///     Толщина шрифта:
+    ///     0 - Обычный, 1 - Жирный
+    /// </summary>
+    public int FontWeight = 0;
+
+    public int FontSize = 12;
     public double BgOpacity = 1.0d;
     public bool IsGradient = false;
     public string SecondColor = "143BB6";

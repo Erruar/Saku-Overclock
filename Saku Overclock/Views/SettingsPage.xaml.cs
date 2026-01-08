@@ -15,7 +15,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
@@ -23,6 +22,7 @@ using static System.Environment;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
+using Saku_Overclock.Models;
 
 namespace Saku_Overclock.Views;
 
@@ -1319,6 +1319,7 @@ public sealed partial class SettingsPage
         NiIconsColorPickerColorPicker.Color = ParseColor(selectedIcon.Color);
         SettingsNiGradientToggle.IsOn = selectedIcon.IsGradient;
         NiIconShapeCombobox.SelectedIndex = selectedIcon.IconShape;
+        NiIconFontWeight.SelectedIndex = selectedIcon.FontWeight;
         SettingsNiFontsize.Value = selectedIcon.FontSize;
         SettingsNiOpacity.Value = selectedIcon.BgOpacity;
     }
@@ -1724,6 +1725,24 @@ public sealed partial class SettingsPage
                         });
                     }
 
+                    if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_DgpuFreq".GetLocalized()))
+                    {
+                        niIconSelectedComboBox.Items.Add(new ComboBoxItem
+                        {
+                            Content = "Settings_ni_Values_DgpuFreq".GetLocalized(),
+                            Name = "Settings_ni_Values_DgpuFreq"
+                        });
+                    }
+
+                    if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_DgpuTemp".GetLocalized()))
+                    {
+                        niIconSelectedComboBox.Items.Add(new ComboBoxItem
+                        {
+                            Content = "Settings_ni_Values_DgpuTemp".GetLocalized(),
+                            Name = "Settings_ni_Values_DgpuTemp"
+                        });
+                    }
+
                     if (niIconSelectedComboBox.Items.Count >= 1)
                     {
                         niIconSelectedComboBox.SelectedIndex = 0;
@@ -1833,6 +1852,7 @@ public sealed partial class SettingsPage
                 ParseColor(_niicons.Elements[_appSettings.NiIconsType].Color);
             SettingsNiGradientToggle.IsOn = _niicons.Elements[_appSettings.NiIconsType].IsGradient;
             NiIconShapeCombobox.SelectedIndex = _niicons.Elements[_appSettings.NiIconsType].IconShape;
+            NiIconFontWeight.SelectedIndex = _niicons.Elements[_appSettings.NiIconsType].FontWeight;
             SettingsNiFontsize.Value = _niicons.Elements[_appSettings.NiIconsType].FontSize;
             SettingsNiOpacity.Value = _niicons.Elements[_appSettings.NiIconsType].BgOpacity;
         }
@@ -1881,6 +1901,25 @@ public sealed partial class SettingsPage
 
         SettingsNiEnabledElementGrid.CornerRadius =
             IsTrayMonIconShowing.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
+
+        _backgroundDataUpdater.UpdateTrayMonIcons();
+    }
+
+
+    /// <summary>
+    ///     Изменение толщины шрифта на иконке
+    /// </summary>
+    private void NiIconFontWeight_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        NiLoad();
+        _niicons.Elements[_appSettings.NiIconsType].FontWeight =
+            NiIconFontWeight.SelectedIndex;
+        NiSave();
 
         _backgroundDataUpdater.UpdateTrayMonIcons();
     }
@@ -1958,7 +1997,8 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[_appSettings.NiIconsType].IsGradient = true;
+        _niicons.Elements[_appSettings.NiIconsType].IsGradient = 
+            sender is ToggleSwitch { IsOn: true };
         NiSave();
 
         _backgroundDataUpdater.UpdateTrayMonIcons();
@@ -2053,8 +2093,9 @@ public sealed partial class SettingsPage
         _niicons.Elements[_appSettings.NiIconsType].ContextMenuType = 1;
         _niicons.Elements[_appSettings.NiIconsType].Color = "FF6ACF";
         _niicons.Elements[_appSettings.NiIconsType].IconShape = 0;
-        _niicons.Elements[_appSettings.NiIconsType].FontSize = 9;
-        _niicons.Elements[_appSettings.NiIconsType].BgOpacity = 0.5d;
+        _niicons.Elements[_appSettings.NiIconsType].FontSize = 12;
+        _niicons.Elements[_appSettings.NiIconsType].BgOpacity = 1;
+        _niicons.Elements[_appSettings.NiIconsType].FontWeight = 0;
         NiSave();
         TrayMonIconElements_SelectionChanged(null, null);
 

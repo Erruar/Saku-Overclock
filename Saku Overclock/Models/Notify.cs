@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-namespace Saku_Overclock.JsonContainers;
+namespace Saku_Overclock.Models;
 
 public class Notify
 {

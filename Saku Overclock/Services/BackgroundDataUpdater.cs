@@ -8,7 +8,7 @@ using H.NotifyIcon;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
@@ -39,7 +39,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
     private readonly List<MinMax> _niiconsMinMaxValues =
     [
-        new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
+        new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
     ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
 
     private readonly Dictionary<string, TaskbarIcon>
@@ -82,6 +82,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private readonly string _gfxfreqText = "Settings_ni_Values_GFXCLK".GetLocalized();
     private readonly string _gfxtempText = "Settings_ni_Values_GFXTEMP".GetLocalized();
     private readonly string _gfxvoltText = "Settings_ni_Values_GFXVOLT".GetLocalized();
+    private readonly string _dgpufreqText = "Settings_ni_Values_DgpuFreq".GetLocalized();
+    private readonly string _dgputempText = "Settings_ni_Values_DgpuTemp".GetLocalized();
 
     private readonly string _niCurrentvalueText = "Settings_ni_Values_CurrentValue".GetLocalized();
     private readonly string _niMinvalueText = "Settings_ni_Values_MinValue".GetLocalized();
@@ -1039,7 +1041,11 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                 ("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTempValue, "C", _niiconsMinMaxValues[9],
                     _gfxtempText),
                 ("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V", _niiconsMinMaxValues[10],
-                    _gfxvoltText)
+                    _gfxvoltText),
+                ("Settings_ni_Values_DgpuFreq", sensorsInformation.NvidiaGpuFrequency, "GHz", _niiconsMinMaxValues[11],
+                    _dgpufreqText),
+                ("Settings_ni_Values_DgpuTemp", sensorsInformation.NvidiaGpuTemperature, "C", _niiconsMinMaxValues[12],
+                    _dgputempText)
             };
 
             foreach (var (key, value, unit, minMax, textControl) in iconUpdates)
@@ -1079,12 +1085,12 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         string description) // Обновляет текущее значение показателей на трей иконках
     {
         // Ограничение и округление текущего, минимального и максимального значений
-        var currentValueText = $"{currentValue:0.###}";
-        var minValueText = $"{minMaxValue.Min:0.###}";
-        var maxValueText = $"{minMaxValue.Max:0.###}";
+        var currentValueText = $"{currentValue:0.#}";
+        var minValueText = $"{minMaxValue.Min:0.#}";
+        var maxValueText = $"{minMaxValue.Max:0.#}";
 
 
-        var tooltip = $"Saku Overclock© -\nTrayMon\n{description}" +
+        var tooltip = $"{description}" +
                       _niCurrentvalueText + currentValueText + unit; // Сам тултип
 
 
@@ -1112,7 +1118,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
         lock (_trayIconsLock)
         {
-            iconsToDispose = _trayIcons.Values.ToArray();
+            iconsToDispose = [.. _trayIcons.Values];
             _trayIcons.Clear();
         }
 
@@ -1144,7 +1150,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
     private void CreateNotifyIcons()
     {
-        var needsSave = false;
         NiLoad(); // Сначала загрузить конфиг со всеми настройками
 
         // Если нет элементов, не создаём иконки
@@ -1159,11 +1164,11 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
             {
                 foreach (var element in _niicons.Elements.Where(element => element.IsEnabled))
                 {
-                    if (string.IsNullOrWhiteSpace(element.Guid) || !Guid.TryParse(element.Guid, out var parsedGuid))
+                    if (!Guid.TryParse(element.Guid, out var parsedGuid) || parsedGuid == Guid.Empty)
                     {
                         parsedGuid = Guid.NewGuid();
                         element.Guid = parsedGuid.ToString();
-                        needsSave = true;
+                        NiSave();
                     }
 
                     // Проверяем есть ли уже TaskbarIcon с таким ID
@@ -1229,11 +1234,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                 LogHelper.LogError($"Критическая ошибка в CreateNotifyIcons: {ex.Message}");
             }
         });
-
-        if (needsSave)
-        {
-            NiSave();
-        }
 
         _isIconsCreated = true;
     }
@@ -1358,7 +1358,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                     // Создаем новую (с кешированием)
                     var newIcon = UpdateIconText(newText, element.Color,
                         element.IsGradient ? element.SecondColor : string.Empty,
-                        element.FontSize, element.IconShape, element.BgOpacity);
+                        element.FontSize, element.IconShape, element.BgOpacity, 
+                        element.FontWeight == 1);
 
                     if (newIcon != null)
                     {
@@ -1399,7 +1400,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     }
 
     private static Icon? UpdateIconText(string? newText, string newColor, string secondColor, int fontSize,
-        int iconShape, double opacity)
+        int iconShape, double opacity, bool useBold)
     {
         GraphicsPath? path = null;
         var hIcon = IntPtr.Zero;
@@ -1444,7 +1445,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         // Определение позиции текста
         var textBrush = new SolidBrush(GetContrastColor(newColor, secondColor != string.Empty ? secondColor : null));
         var textPosition = GetTextPosition(newText, fontSize, out var fontSizeT, out var newTextT);
-        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, FontStyle.Bold, GraphicsUnit.Pixel);
+        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, useBold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
 
         // Рисуем текст
         g.DrawString(newTextT, font, textBrush, textPosition);
