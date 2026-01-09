@@ -1959,6 +1959,9 @@ You can hide this item by disabling this option. It will not be displayed in the
   <data name="Settings_ni_Values_DgpuFreq" xml:space="preserve">
     <value>dGPU Frequency</value>
   </data>
+  <data name="Settings_ni_Values_RamUsage" xml:space="preserve">
+    <value>RAM Usage</value>
+  </data>
   <data name="Settings_ni_Values_GFXTEMP" xml:space="preserve">
     <value>iGPU Temperature</value>
   </data>

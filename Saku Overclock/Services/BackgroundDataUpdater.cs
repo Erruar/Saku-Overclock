@@ -39,7 +39,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
     private readonly List<MinMax> _niiconsMinMaxValues =
     [
-        new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
+        new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
     ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
 
     private readonly Dictionary<string, TaskbarIcon>
@@ -84,6 +84,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private readonly string _gfxvoltText = "Settings_ni_Values_GFXVOLT".GetLocalized();
     private readonly string _dgpufreqText = "Settings_ni_Values_DgpuFreq".GetLocalized();
     private readonly string _dgputempText = "Settings_ni_Values_DgpuTemp".GetLocalized();
+    private readonly string _ramusageText = "Settings_ni_Values_RamUsage".GetLocalized();
 
     private readonly string _niCurrentvalueText = "Settings_ni_Values_CurrentValue".GetLocalized();
     private readonly string _niMinvalueText = "Settings_ni_Values_MinValue".GetLocalized();
@@ -996,7 +997,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                 sensorsInformation.CpuVoltage,
                 sensorsInformation.ApuFrequency,
                 sensorsInformation.ApuTempValue,
-                sensorsInformation.ApuVoltage
+                sensorsInformation.ApuVoltage,
+                sensorsInformation.NvidiaGpuFrequency,
+                sensorsInformation.NvidiaGpuTemperature,
+                sensorsInformation.RamUsagePercent
             };
 
             for (var i = 0; i < sensorValues.Length && i < _niiconsMinMaxValues.Count; i++)
@@ -1045,7 +1049,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                 ("Settings_ni_Values_DgpuFreq", sensorsInformation.NvidiaGpuFrequency, "GHz", _niiconsMinMaxValues[11],
                     _dgpufreqText),
                 ("Settings_ni_Values_DgpuTemp", sensorsInformation.NvidiaGpuTemperature, "C", _niiconsMinMaxValues[12],
-                    _dgputempText)
+                    _dgputempText),
+                ("Settings_ni_Values_RamUsage", sensorsInformation.RamUsagePercent, "%", _niiconsMinMaxValues[13],
+                    _ramusageText)
             };
 
             foreach (var (key, value, unit, minMax, textControl) in iconUpdates)

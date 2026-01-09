@@ -1743,6 +1743,15 @@ public sealed partial class SettingsPage
                         });
                     }
 
+                    if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_RamUsage".GetLocalized()))
+                    {
+                        niIconSelectedComboBox.Items.Add(new ComboBoxItem
+                        {
+                            Content = "Settings_ni_Values_RamUsage".GetLocalized(),
+                            Name = "Settings_ni_Values_RamUsage"
+                        });
+                    }
+
                     if (niIconSelectedComboBox.Items.Count >= 1)
                     {
                         niIconSelectedComboBox.SelectedIndex = 0;

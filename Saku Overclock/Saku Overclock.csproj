@@ -14,10 +14,10 @@
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AssemblyVersion>1.0.18.312</AssemblyVersion>
-    <FileVersion>1.0.18.312</FileVersion>
+    <AssemblyVersion>1.0.18.313</AssemblyVersion>
+    <FileVersion>1.0.18.313</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.18.312</Version>
+    <Version>1.0.18.313</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>

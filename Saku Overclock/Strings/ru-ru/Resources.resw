@@ -1996,6 +1996,9 @@ Overclock будут проигнорированы,
   <data name="Settings_ni_Values_DgpuFreq" xml:space="preserve">
     <value>Частота dGPU</value>
   </data>
+  <data name="Settings_ni_Values_RamUsage" xml:space="preserve">
+    <value>Использование ОЗУ</value>
+  </data>
   <data name="Settings_ni_Values_GFXTEMP" xml:space="preserve">
     <value>Температура iGPU</value>
   </data>
