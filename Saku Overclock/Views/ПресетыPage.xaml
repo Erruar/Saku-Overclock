@@ -1263,10 +1263,10 @@
                                                         HorizontalAlignment="Stretch" Minimum="-50" Maximum="30"
                                                         Value="0" VerticalAlignment="Center" />
                                                 </Grid>
-                                                <Border Margin="2,5,2,0" Visibility="{Binding ElementName=CurveOptimizerCustomGrid, Path=Visibility}"
+                                                <!--<Border Margin="2,5,2,0" Visibility="{Binding ElementName=CurveOptimizerCustomGrid, Path=Visibility}"
                                                         Background="{ThemeResource CircleElevationBorderBrush}"
-                                                        Height="1" HorizontalAlignment="Stretch" />
-                                                <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
+                                                        Height="1" HorizontalAlignment="Stretch" />-->
+                                                <Grid Visibility="Collapsed" Margin="0,3,0,0" HorizontalAlignment="Stretch">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                                         <TextBlock Text="Stream Stabilizer v4.0"
                                                                    x:Uid="Preset_StreamStabilizer"

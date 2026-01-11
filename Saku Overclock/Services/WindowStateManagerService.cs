@@ -158,11 +158,11 @@ public class WindowStateManagerService(
 
         // TODO: Перенести пользователя на страницу первоначальной настройки приложения
         // при первом запуске программы (в работе)
-        /*if (settingsService.AppFirstRun)
+        if (settingsService.AppFirstRun)
         {
             var navigationService = App.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(ОбучениеViewModel).FullName!);
-        }*/
+            navigationService.NavigateTo(typeof(ViewModels.ОбучениеViewModel).FullName!);
+        }
 
         // Скрыть приложение при запуске, если это включено в настройках
         if (settingsService.AutostartType is

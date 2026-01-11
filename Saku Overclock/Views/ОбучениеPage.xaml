@@ -78,17 +78,17 @@
         <PipsPager Visibility="Collapsed" x:Name="Pager" Margin="0,0,15,0" IsEnabled="False" NumberOfPages="3" Orientation="Vertical" PreviousButtonVisibility="Collapsed" NextButtonVisibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" />
 
         <!--Секция с лицензией -->
-        <Grid x:Name="LicenseSection" Visibility="Collapsed" Margin="0,60,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="LicenseSection" Visibility="Collapsed" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="60"/>
+                <RowDefinition Height="70"/>
                 <RowDefinition />
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,0">
-                <FontIcon Glyph="&#xE729;" FontWeight="Bold" FontSize="20" />
-                <TextBlock Text="Лицензия приложения" FontSize="24" FontWeight="Bold" Margin="5,3,0,0"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
+                <FontIcon Glyph="&#xE729;" FontWeight="Bold" FontSize="22" />
+                <TextBlock Text="Лицензия приложения" FontSize="32" Margin="8,-3,0,0"/>
             </StackPanel>
-            <FlipView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="40,0,40,0" Grid.Row="1">
+            <FlipView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="40,6,40,0" Grid.Row="1">
                 <ScrollViewer CornerRadius="12">
                     <StackPanel Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                         <StackPanel Margin="30,30,30,0" x:Name="LicenseText"/>

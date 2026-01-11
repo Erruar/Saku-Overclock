@@ -26,7 +26,10 @@
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="62" />
+                        <RowDefinition Height="2"/>
+
+                        <!-- TODO: Fix Advanced cooler page -->
+                        <!--<RowDefinition Height="62" />-->
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,0,0,0" CornerRadius="16" Shadow="{ThemeResource SharedShadow}"
@@ -137,7 +140,8 @@
                         </ScrollViewer>
                     </Grid>
 
-                    <Grid Grid.Row="1" Margin="0,10,0,2" CornerRadius="16" Shadow="{ThemeResource SharedShadow}"
+                    <!-- TODO: Fix Advanced cooler page -->
+                    <Grid Grid.Row="1" Visibility="Collapsed" Margin="0,10,0,2" CornerRadius="16" Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}"
                           BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
                           BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">

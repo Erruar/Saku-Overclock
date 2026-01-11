@@ -40,20 +40,6 @@
           "System.Reflection.Metadata": "9.0.1"
         }
       },
-      "LiveChartsCore.SkiaSharpView.WinUI": {
-        "type": "Direct",
-        "requested": "[2.0.0-rc6.1, )",
-        "resolved": "2.0.0-rc6.1",
-        "contentHash": "sFFXTGabI82g69TNzhfFn8wbKTVGbznIx4HfsE810EID9wAcT5hGVwRGvHUVKgv5xfLmysoNKobYchyt+TJd3w==",
-        "dependencies": {
-          "LiveChartsCore": "2.0.0-rc6.1",
-          "LiveChartsCore.SkiaSharpView": "2.0.0-rc6.1",
-          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
-          "Microsoft.WindowsAppSDK": "1.7.250606001",
-          "SkiaSharp.HarfBuzz": "3.119.0",
-          "SkiaSharp.Views.WinUI": "3.119.0"
-        }
-      },
       "Microsoft.Extensions.Hosting": {
         "type": "Direct",
         "requested": "[9.0.10, )",
@@ -235,21 +221,6 @@
         "type": "Transitive",
         "resolved": "8.3.1.1",
         "contentHash": "UsJtQsfAJoFDZrXc4hCUfRPMqccfKZ0iumJ/upcUjz/cmsTgVFGNEL5yaJWmkqsuFYdMWbj/En5/kS4PFl9hBA=="
-      },
-      "LiveChartsCore": {
-        "type": "Transitive",
-        "resolved": "2.0.0-rc6.1",
-        "contentHash": "yaeFXCpH7AspjMKzXNdfr1Ikg06Dm+a4XRW/8wBtHAa/TEVJLY8yBsG6pNpjrPk+FpRaSImlNYw7pv298W1XPw=="
-      },
-      "LiveChartsCore.SkiaSharpView": {
-        "type": "Transitive",
-        "resolved": "2.0.0-rc6.1",
-        "contentHash": "FU+0uIxL3xR631+4aN296L+M3f6qWrIEUJr8+SSmcGVVa27iB0+ko55IRInZGdYlmaR+8mRTPAXObXT6/1EMDQ==",
-        "dependencies": {
-          "LiveChartsCore": "2.0.0-rc6.1",
-          "SkiaSharp": "2.88.9",
-          "SkiaSharp.HarfBuzz": "2.88.9"
-        }
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

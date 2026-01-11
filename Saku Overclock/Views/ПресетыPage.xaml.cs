@@ -1986,7 +1986,9 @@ public sealed partial class ПресетыPage
 
     private void StreamStabilizerModeCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
-        if (!_isLoaded)
+        // TODO: Fix Stream Stabilizer in v1.1
+        return;
+        /*if (!_isLoaded)
         {
             return;
         }
@@ -2031,7 +2033,7 @@ public sealed partial class ПресетыPage
                 break; // Base lock
         }
 
-        AppSettings.SaveSettings();
+        AppSettings.SaveSettings();*/
     }
 
 
@@ -2042,10 +2044,10 @@ public sealed partial class ПресетыPage
             return;
         }
 
-        SetPowerConfig("PROCTHROTTLEMIN 100");
+        /*SetPowerConfig("PROCTHROTTLEMIN 100");
         SetPowerConfig("PROCTHROTTLEMAX 100");
         SetPowerConfig($"PROCFREQMAX {(int)StreamStabilizerTargetMhz.Value}");
-        SavePowerConfig();
+        SavePowerConfig();*/
 
         AppSettings.StreamStabilizerMaxMHz = (int)StreamStabilizerTargetMhz.Value;
         AppSettings.SaveSettings();
@@ -2058,10 +2060,10 @@ public sealed partial class ПресетыPage
             return;
         }
 
-        SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
+        /*SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
         SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
         SetPowerConfig("PROCFREQMAX 0");
-        SavePowerConfig();
+        SavePowerConfig();*/
 
         AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
         AppSettings.SaveSettings();
