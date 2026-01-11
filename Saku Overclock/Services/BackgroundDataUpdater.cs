@@ -1076,6 +1076,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
             {
                 minMaxValues[index].Min = currentValue;
             }
+            if (index == 4 && currentValue > 150) 
+            { 
+                currentValue = 150; // Фикс потенциально невозможной температуры
+            }
 
             minMaxValues[index].Max = Math.Max(minMaxValues[index].Max, currentValue);
             minMaxValues[index].Min = Math.Min(minMaxValues[index].Min, currentValue);

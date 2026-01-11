@@ -123,6 +123,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Octokit" Version="14.0.0" />
+    <PackageReference Include="ScottPlot.WinUI" Version="5.1.57" />
     <PackageReference Include="System.Management" Version="9.0.10" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.10" />
     <PackageReference Include="System.Threading.AccessControl" Version="9.0.10" />

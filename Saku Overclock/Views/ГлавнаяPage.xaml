@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:Saku_Overclock.ViewModels" xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+    xmlns:viewmodels="using:Saku_Overclock.ViewModels" xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI" xmlns:scott="using:ScottPlot.WinUI"
     d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -109,43 +109,9 @@ Text="{Binding Version}">
                                 <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsTemp" Text="43С"/>
                             </StackPanel>
                             <Grid Grid.Row="1">
-                                <lvc:CartesianChart Margin="-25,-40,-25,0" x:Name="Chart"
-                                                    SyncContext="{x:Bind Sync}" ZoomMode="None" Background="Transparent">
-                                    <lvc:CartesianChart.Series>
-                                        <lvc:SeriesCollection>
-                                            <lvc:XamlLineSeries Values="{x:Bind Values}"
-                                                                Fill="{lvc:LinearGradientPaint Colors='#4065b2, #FE3e4c76',StartPoint='1, 1',
-                                                                EndPoint='0.5, 0'}"
-                                                                GeometryFill="{x:Null}"
-                                                                GeometryStroke="{x:Null}" Stroke="{lvc:LinearGradientPaint Colors='#2196f3, #1e7af5',StartPoint='0, 0',
-                                                                EndPoint='1, 1',StrokeWidth=6}" />
-                                        </lvc:SeriesCollection>
-                                    </lvc:CartesianChart.Series>
-                                    <lvc:CartesianChart.XAxes>
-                                        <lvc:AxesCollection>
-                                            <lvc:XamlAxis ShowSeparatorLines="False"
-                                                          LabelsPaint="{x:Null}"
-                                                          NamePaint="{x:Null}"
-                                                          IsVisible="False"
-                                                          AnimationsSpeed="0"
-                                                          MinLimit="0"
-                                                          MaxLimit="10"/>
-                                        </lvc:AxesCollection>
-                                    </lvc:CartesianChart.XAxes>
-                                    <lvc:CartesianChart.YAxes>
-                                        <lvc:AxesCollection>
-                                            <lvc:XamlAxis ShowSeparatorLines="False"
-                                                          LabelsPaint="{x:Null}"
-                                                          NamePaint="{x:Null}"
-                                                          IsVisible="False"
-                                                          AnimationsSpeed="0"
-                                                          MinLimit="0"
-                                                          MaxLimit="100"
-                                                          ForceStepToMin="True"
-                                                          MinStep="1"/>
-                                        </lvc:AxesCollection>
-                                    </lvc:CartesianChart.YAxes>
-                                </lvc:CartesianChart>
+                                <scott:WinUIPlot x:Name="TemperaturePlot" 
+                         Margin="-25,-40,-25,0" 
+                         Background="Transparent"/>
                             </Grid>
                         </Grid>
                         <Grid Grid.Column="2">

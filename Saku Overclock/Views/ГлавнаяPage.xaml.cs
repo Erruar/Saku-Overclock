@@ -1,9 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.Themes;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -15,6 +11,7 @@ using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
+using ScottPlot.TickGenerators;
 using Windows.UI.Text;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
@@ -62,7 +59,6 @@ public sealed partial class ГлавнаяPage
         _maxCpuFreq =
             1d; // Кешируемая максимальная частота процессора, используется в индикаторах, чтобы показать процент от максимальной частоты
 
-    private bool _isTemperatureChartFirstLoad = true; // Показатель первой загрузки графика температуры
     private bool _isWindowVisible = true; // Показатель видимости окна
     private bool _isHelpButtonsExpanded; // Показатели отображения кнопок помощи возле блока "Не видите свой пресет?"
 
@@ -89,6 +85,8 @@ public sealed partial class ГлавнаяPage
         Loaded += ГлавнаяPage_Loaded;
 
         App.MainWindow.WindowStateChanged += OnVisibilityChanged;
+
+        InitializeChart();
     }
 
     private void PresetChanged(object? sender, PresetManagerService.PresetId e)
@@ -131,27 +129,6 @@ public sealed partial class ГлавнаяPage
         try
         {
             LoadPresetsToPivot();
-
-            // Принудительная блокировка автомасштабирования
-            Chart.YAxes.First().MinLimit = 0;
-            Chart.YAxes.First().MaxLimit = 100;
-
-            // Фикс неправильной темы
-            var theme = ActualTheme == ElementTheme.Dark ||
-                        (ActualTheme == ElementTheme.Default &&
-                         Application.Current.RequestedTheme == ApplicationTheme.Dark)
-                ? LvcThemeKind.Dark
-                : LvcThemeKind.Light;
-
-            LiveCharts.Configure(config =>
-            {
-                config.AddDefaultTheme(requestedTheme: theme);
-            });
-
-            if (!_cpu.IsAvailable)
-            {
-                return;
-            }
 
             InfoCpuName.Text = _cpu.CpuName;
             InfoCpuCores.Text = _cpu.Cores + "C/" +
@@ -449,55 +426,84 @@ public sealed partial class ГлавнаяPage
         }
     }
 
-    /// <summary>
-    ///     Точки графика температуры
-    /// </summary>
-    public ObservableCollection<int> Values
-    {
-        get;
-        set;
-    } = [];
+    private ScottPlot.Plottables.DataStreamer? _streamer;
+    private bool _isFirstLoad = true;
+    private const int Capacity = 11;
 
-    /// <summary>
-    ///     lock-обьект для обновления точек графика температуры
-    /// </summary>
-    public object Sync
+    private void InitializeChart()
     {
-        get;
-    } = new();
+        var plot = TemperaturePlot.Plot;
 
-    /// <summary>
-    ///     Обновление положения точки температуры на графике
-    /// </summary>
-    private void UpdateTemperatureChartPointPosition(int temperature)
+        _streamer = plot.Add.DataStreamer(Capacity);
+        _streamer.ViewScrollLeft();
+
+        // Стиль линии
+        _streamer.LineColor = ScottPlot.Color.FromHex("#1e7af5");
+        _streamer.LineWidth = 6;
+
+        // Заливка (прозрачный фон под графиком)
+        _streamer.FillY = true;
+        _streamer.FillYBelowColor = ScottPlot.Color.FromHex("#FE3e4c76");
+        TemperaturePlot.Menu = null;
+        plot.Axes.Frame(false);
+        TemperaturePlot.UserInputProcessor.Disable();
+        // УБИВАЕМ ШТРИХИ (AXES)
+        // Самое важное: заменяем автоматический генератор на пустой ручной.
+        // Это предотвращает создание объектов Tick[] и LabelStyle при каждом рендере.
+
+        // Левая ось (Y)
+        var leftAxis = plot.Axes.Left;
+        leftAxis.TickGenerator = new NumericManual(); // Отключаем расчет тиков
+        leftAxis.MajorTickStyle.Length = 0;           // Убираем длину штрихов
+        leftAxis.MinorTickStyle.Length = 0;
+        leftAxis.FrameLineStyle.IsVisible = false;    // Убираем вертикальную линию оси
+
+        // Нижняя ось (X)
+        var bottomAxis = plot.Axes.Bottom;
+        bottomAxis.TickGenerator = new NumericManual(); // Отключаем расчет тиков
+        bottomAxis.MajorTickStyle.Length = 0;
+        bottomAxis.MinorTickStyle.Length = 0;
+        bottomAxis.FrameLineStyle.IsVisible = false;  // Убираем горизонтальную линию оси
+
+        // Убираем сетку
+        plot.Grid.IsVisible = false;
+
+        // ОПТИМИЗАЦИЯ LAYOUT (предотвращает аллокации при пересчете размеров)
+        // Убираем все отступы вокруг графика
+        plot.Axes.Margins(0, 0);
+        // Фиксируем Layout, чтобы не пересчитывать его каждый кадр
+        plot.Layout.Fixed(new ScottPlot.PixelPadding(0));
+
+        plot.FigureBackground.Color = ScottPlot.Colors.Transparent;
+        plot.DataBackground.Color = ScottPlot.Colors.Transparent;
+
+        plot.Axes.SetLimitsY(0, 100);
+    }
+
+    public void UpdateTemperatureChartPointPosition(int temperature)
     {
-        // Ограничиваем значение в диапазоне 0-100
-        temperature = Math.Clamp(temperature, 0, 100);
+        // Не создаем замыканий и лишних объектов здесь
+        double val = Math.Clamp(temperature, 0, 100);
 
-        lock (Sync)
+        TemperaturePlot.DispatcherQueue.TryEnqueue(() =>
         {
-            if (_isTemperatureChartFirstLoad)
+            // При первой загрузке
+            if (_isFirstLoad)
             {
-                // При первой загрузке заполняем весь график одинаковыми значениями,
-                // чтобы график не казался непрогруженным
-                Values.Clear();
-                for (var i = 0; i < 10; i++)
-                {
-                    Values.Add(temperature);
-                }
-
-                _isTemperatureChartFirstLoad = false;
+                var initialData = new double[Capacity];
+                Array.Fill(initialData, val);
+                _streamer?.AddRange(initialData);
+                _isFirstLoad = false;
             }
             else
             {
-                // Обычное обновление
-                Values.Add(temperature);
-                if (Values.Count > 10)
-                {
-                    Values.RemoveAt(0);
-                }
+                // Добавляем точку. DataStreamer работает по принципу кольцевого буфера,
+                // память не выделяется.
+                _streamer?.Add(val);
             }
-        }
+
+            TemperaturePlot.Refresh();
+        });
     }
 
     #endregion
@@ -840,7 +846,7 @@ public sealed partial class ГлавнаяPage
         {
             return;
         }
-        
+
         PresetPivot.SelectedIndex = PresetPivot.SelectedIndex == 1 ? 0 : 1;
     }
 
@@ -855,7 +861,7 @@ public sealed partial class ГлавнаяPage
     #region Mouse Events & Blocks behavior
 
     private int _previousMode = -1;
-    
+
     /// <summary>
     ///     Открывает выбранный пользователем TeachingTip, с защитой от быстрых нажатий
     /// </summary>
@@ -901,7 +907,7 @@ public sealed partial class ГлавнаяPage
             MainTeach.IsOpen = true;
             await Task.Delay(300); // Время анимации открытия
             _isAnimating = false;
-            
+
             _previousMode = currMode;
         }
         catch (Exception ex)
@@ -1028,7 +1034,7 @@ public sealed partial class ГлавнаяPage
                 ExpandGrid.Visibility = Visibility.Collapsed;
             }
             else
-            {                
+            {
                 ExpandGrid.Visibility = Visibility.Visible;
                 ExpandStoryboard.Begin();
             }
@@ -1039,7 +1045,7 @@ public sealed partial class ГлавнаяPage
         {
             await LogHelper.LogError(ex);
         }
-        
+
     }
 
     #endregion
