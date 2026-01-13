@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:Saku_Overclock.ViewModels" xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI" xmlns:scott="using:ScottPlot.WinUI"
+    xmlns:viewmodels="using:Saku_Overclock.ViewModels" xmlns:scott="using:ScottPlot.WinUI"
     d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -37,8 +37,10 @@
                 <StackPanel HorizontalAlignment="Right" Margin="0,0,14,0" VerticalAlignment="Top" Background="{ThemeResource AccentColor}" CornerRadius="3">
                     <TextBlock FontSize="10" Padding="3,0,3,0"
 FontWeight="Bold"
-Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-Text="{Binding Version}">
+Foreground="{ThemeResource DefaultFGColorAccentBrush}">
+                        <TextBlock.Text>
+                            <Binding Path="Version" />
+                        </TextBlock.Text>
                         <TextBlock.DataContext>
                             <viewmodels:ГлавнаяViewModel/>
                         </TextBlock.DataContext>
@@ -450,9 +452,27 @@ Text="{Binding Version}">
                             </Button.RenderTransform>
 
                             <Button.Resources>
-                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{Binding Color, Source={ThemeResource AccentTextFillColorTertiaryBrush}}"/>
-                                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{Binding Color, Source={ThemeResource AccentTextFillColorTertiaryBrush}}"/>
-                                <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="{Binding Color, Source={ThemeResource AccentTextFillColorTertiaryBrush}}"/>
+                                <!-- ReSharper disable once Xaml.RedundantResource -->
+                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver">
+                                    <SolidColorBrush.Color>
+                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                                        <Binding Path="Color" Source="{ThemeResource AccentTextFillColorTertiaryBrush}" />
+                                    </SolidColorBrush.Color>
+                                </SolidColorBrush>
+                                <!-- ReSharper disable once Xaml.RedundantResource -->
+                                <SolidColorBrush x:Key="ButtonBackgroundPressed">
+                                    <SolidColorBrush.Color>
+                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                                        <Binding Path="Color" Source="{ThemeResource AccentTextFillColorTertiaryBrush}" />
+                                    </SolidColorBrush.Color>
+                                </SolidColorBrush>
+                                <!-- ReSharper disable once Xaml.RedundantResource -->
+                                <SolidColorBrush x:Key="ButtonBackgroundDisabled">
+                                    <SolidColorBrush.Color>
+                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                                        <Binding Path="Color" Source="{ThemeResource AccentTextFillColorTertiaryBrush}" />
+                                    </SolidColorBrush.Color>
+                                </SolidColorBrush>
                                 <Storyboard x:Name="ButtonAnimationStoryboard">
                                     <!-- Анимация CornerRadius -->
                                     <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ApplyButton" 

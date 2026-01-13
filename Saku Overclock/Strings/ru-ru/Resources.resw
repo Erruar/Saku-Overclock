@@ -2362,6 +2362,9 @@ Asus. Может не поддерживаться на
 фиксированном режиме работы 
 всех кулеров вашего ноутбука</value>
   </data>
+  <data name="Cooler_AsusModeAvailabilityDesc" xml:space="preserve">
+    <value>Режим управления кулерами Asus может не работать на новых ноутбуках. Проблема будет исправлена в будущих версиях</value>
+  </data>
   <data name="Cooler_DownloadNBFC_AfterDesc" xml:space="preserve">
     <value>После успешной установки NBFC нажмите "Далее"</value>
   </data>
@@ -2373,6 +2376,13 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Cooler_DownloadNBFC_Title" xml:space="preserve">
     <value>Загрузить NBFC</value>
+  </data>
+  <data name="Cooler_Experimental.Text" xml:space="preserve">
+    <value>Экспериментально</value>
+  </data>
+  <data name="Cooler_Experimental_Tip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Экспериментально
+Страница ещё дорабатывается. Некоторые функции могут работать нестабильно или быть недоступны.</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Ошибка</value>
@@ -2851,6 +2861,9 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Cooler_NbfcNoConfigFiles.Content" xml:space="preserve">
     <value>Файлы конфигурации не найдены</value>
+  </data>
+  <data name="Cooler_NbfcServiceUnavailable" xml:space="preserve">
+    <value>Не удалось получить данные от сервиса NBFC перезагрузите устройство или переустановите NBFC</value>
   </data>
   <data name="Param_Apply_DevOptions.ToolTipService.ToolTip" xml:space="preserve">
     <value>Применить параметры разработчика

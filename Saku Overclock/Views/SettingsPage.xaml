@@ -957,7 +957,7 @@
                         <ImageIcon Source="/Assets/SplashScreen.scale-200.png" Width="200" Height="200" HorizontalAlignment="Center"></ImageIcon>
                         <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}"/>
                         <TextBlock HorizontalAlignment="Center" Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}"/>
-                        <TextBlock HorizontalAlignment="Center" Text="@Serzhik Sakura 2023-2025" Style="{ThemeResource BodyTextBlockStyle}"/>
+                        <TextBlock HorizontalAlignment="Center" Text="@Serzhik Sakura 2023-2026" Style="{ThemeResource BodyTextBlockStyle}"/>
                         <TextBlock HorizontalAlignment="Center" x:Uid="Settings_AboutDescription" Style="{ThemeResource BodyTextBlockStyle}"/>
                         <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,40" CornerRadius="26" Height="51" Margin="{StaticResource XSmallTopMargin}" Width="300" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="Discord_Click">
                             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Left">

@@ -2348,6 +2348,9 @@ speed! To turn back on
 switches or in manual 
 set the value to 0</value>
   </data>
+  <data name="Cooler_AsusModeAvailabilityDesc" xml:space="preserve">
+    <value>Asus cooler control mode may not work on new laptops. The issue will be fixed in future versions</value>
+  </data>
   <data name="Cooler_DownloadNBFC_AfterDesc" xml:space="preserve">
     <value>After the NBFC has been successfully installed, click "Next"</value>
   </data>
@@ -2359,6 +2362,13 @@ set the value to 0</value>
   </data>
   <data name="Cooler_DownloadNBFC_Title" xml:space="preserve">
     <value>Download NBFC</value>
+  </data>
+  <data name="Cooler_Experimental.Text" xml:space="preserve">
+    <value>Experimental</value>
+  </data>
+  <data name="Cooler_Experimental_Tip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Experimental
+The page is still being finalized. Some functions may be unstable or unavailable.</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
@@ -2836,6 +2846,9 @@ this curve</value>
   </data>
   <data name="Cooler_NbfcNoConfigFiles.Content" xml:space="preserve">
     <value>No configuration files found</value>
+  </data>
+  <data name="Cooler_NbfcServiceUnavailable" xml:space="preserve">
+    <value>Data could not be received from the NBFC service. Restart the device or reinstall NBFC</value>
   </data>
   <data name="Param_Apply_DevOptions.ToolTipService.ToolTip" xml:space="preserve">
     <value>Apply developer settings

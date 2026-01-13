@@ -5,27 +5,22 @@ using Windows.ApplicationModel;
 
 namespace Saku_Overclock.ViewModels;
 
+#pragma warning disable CS0162 // Unreachable code detected
+
 public partial class ГлавнаяViewModel : ObservableRecipient
 {
-    private static readonly string Versioning = $"CC-{Assembly.GetExecutingAssembly().GetName().Version?.Revision}"; // RC-9
-    public ГлавнаяViewModel()
-    {
-        _versionDescription = GetVersionDescription();
-        _version = Versioning;
-        _version = GetVersion();
-    }
-    private string _versionDescription;
+    private static readonly string Versioning = SettingsViewModel.VersionId == 0 
+        // ReSharper disable once HeuristicUnreachableCode
+        ? $"CC-{Assembly.GetExecutingAssembly().GetName().Version.Revision}"
+        : "v1.0";
+
     public string VersionDescription
     {
-        get => _versionDescription;
-        set => SetProperty(ref _versionDescription, value);
-    } 
-    private string _version;
-    public string Version
-    {
-        get => _version;
-        set => SetProperty(ref _version, value);
-    }
+        get;
+    } = GetVersionDescription();
+
+    public string Version => Versioning;
+
     private static string GetVersionDescription()
     {
         Version version;

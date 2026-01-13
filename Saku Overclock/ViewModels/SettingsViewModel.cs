@@ -16,15 +16,12 @@ namespace Saku_Overclock.ViewModels;
 
 public partial class SettingsViewModel : ObservableRecipient
 {
-    private string _versionDescription;
-
     public string VersionDescription
     {
-        get => _versionDescription;
-        set => SetProperty(ref _versionDescription, value);
+        get;
     }
 
-    public const int VersionId = 0;
+    public const int VersionId = 2;
     private static string? _versionString;
 
     public SettingsViewModel()
@@ -38,7 +35,7 @@ public partial class SettingsViewModel : ObservableRecipient
             _ => "Unknown Version"
         };
 
-        _versionDescription = GetVersionDescription();
+        VersionDescription = GetVersionDescription();
     }
 
     private static string GetVersionDescription()

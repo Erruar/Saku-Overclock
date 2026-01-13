@@ -20,6 +20,19 @@ public sealed partial class ОбучениеPage : Page
     public ОбучениеPage()
     {
         InitializeComponent();
+        TrayMenuService.SetMinimalMode();
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        Loaded -= OnLoaded;
+        Unloaded -= OnUnloaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
         RunIntroSequence();
     }
 

@@ -231,17 +231,17 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = 110.0;
 
-    public string NbfcAnswerSpeedFan1
+    public double NbfcAnswerSpeedFan1
     {
         get;
         set;
-    } = string.Empty;
+    } = -1;
 
-    public string NbfcAnswerSpeedFan2
+    public double NbfcAnswerSpeedFan2
     {
         get;
         set;
-    } = string.Empty;
+    } = -1;
 
     public int AsusCoolerServiceType
     {

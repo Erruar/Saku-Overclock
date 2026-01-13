@@ -7,7 +7,9 @@
     Loaded="OnLoaded">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
+        <!-- ReSharper disable once Xaml.RedundantResource -->
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
+        <!-- ReSharper disable once Xaml.RedundantResource -->
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
     </Page.Resources>
     <Grid Canvas.ZIndex="4">
@@ -108,7 +110,7 @@
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="1" PointerEntered="TitleIcon_PointerEntered" x:Name="TitleIcon"
+                <Grid Grid.Column="1" PointerEntered="TitleIcon_PointerEntered"
                       PointerExited="TitleIcon_PointerExited" Margin="0,0,0,0"
                       Canvas.ZIndex="4"
                       Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
@@ -195,8 +197,10 @@
                                            VerticalAlignment="Center"
                                            FontSize="8"
                                            FontWeight="Bold"
-                                           Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                                           Text="{Binding Version}">
+                                           Foreground="{ThemeResource DefaultFGColorAccentBrush}">
+                                    <TextBlock.Text>
+                                        <Binding Path="Version" />
+                                    </TextBlock.Text>
                                     <TextBlock.DataContext>
                                         <local:ГлавнаяViewModel/>
                                     </TextBlock.DataContext>

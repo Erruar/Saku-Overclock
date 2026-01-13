@@ -340,7 +340,7 @@ public interface IAppSettingsService
     /// <summary>
     ///     Ответ NBFC для первого кулера
     /// </summary>
-    string NbfcAnswerSpeedFan1
+    double NbfcAnswerSpeedFan1
     {
         get;
         set;
@@ -349,7 +349,7 @@ public interface IAppSettingsService
     /// <summary>
     ///     Ответ NBFC для второго кулера
     /// </summary>
-    string NbfcAnswerSpeedFan2
+    double NbfcAnswerSpeedFan2
     {
         get;
         set;
