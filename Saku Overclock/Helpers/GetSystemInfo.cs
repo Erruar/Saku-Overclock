@@ -307,12 +307,12 @@ internal class GetSystemInfo
         var batTime = "";
         if ((int)timeSpan.TotalHours > 0)
         {
-            batTime += $"{(int)timeSpan.TotalHours}h"; // Часы, если они есть
+            batTime += $"{(int)timeSpan.TotalHours}h "; // Часы, если они есть
         }
 
         if (timeSpan.Minutes > 0)
         {
-            batTime += $"{timeSpan.Minutes}m"; // Минуты, если они есть
+            batTime += $"{timeSpan.Minutes}m "; // Минуты, если они есть
         }
 
         if (timeSpan.Seconds > 0 || batTime == string.Empty)
@@ -845,7 +845,7 @@ internal class GetSystemInfo
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Distinct());
 
-        return ($"{capacity} GB {memoryConfig.Type} @ {speed} MT/s",
+        return ($"{capacity} GB {memoryConfig.Type.ToString().ToUpper()} @ {speed} MT/s",
             speed + "MT/s", producer, model, $"{modules.Count} * 64 bit", memoryConfig.MemoryTimings);
     }
 

@@ -1,5 +1,6 @@
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
+using Saku_Overclock.Helpers;
 
 namespace Saku_Overclock.Services;
 
@@ -263,23 +264,30 @@ public class AppSettingsService : IAppSettingsService
 
     public void LoadSettings()
     {
-        var settings = _fileService.Read<AppSettingsService>(_applicationDataFolder, FileName);
-
-        if (settings == null)
+        try
         {
-            return;
-        }
+            var settings = _fileService.Read<AppSettingsService>(_applicationDataFolder, FileName);
 
-        foreach (var prop in typeof(AppSettingsService).GetProperties())
-        {
-            if (prop is { CanRead: true, CanWrite: true })
+            if (settings == null)
             {
-                var value = prop.GetValue(settings);
-                if (value != null)
+                return;
+            }
+
+            foreach (var prop in typeof(AppSettingsService).GetProperties())
+            {
+                if (prop is { CanRead: true, CanWrite: true })
                 {
-                    prop.SetValue(this, value);
+                    var value = prop.GetValue(settings);
+                    if (value != null)
+                    {
+                        prop.SetValue(this, value);
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
         }
     }
 

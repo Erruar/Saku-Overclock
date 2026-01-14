@@ -440,8 +440,8 @@ public sealed partial class КулерPage
                 var fanCount = AsusWinIoWrapper.HealthyTable_FanCounts();
                 if (fanCount == -1)
                 {
-                    //_unavailableFlag = true;
-                    //AsusOptionsButton.IsEnabled = false;
+                    _unavailableFlag = true;
+                    AsusOptionsButton.IsEnabled = false;
                     AsusUnavailable.Visibility = Visibility.Visible;
                     ToolTipService.SetToolTip(AsusUnavailable, "Cooler_AsusModeUnsupportedSign".GetLocalized());
                 }
