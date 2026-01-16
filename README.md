@@ -468,31 +468,39 @@ Something didn't go as planned? Don't worry, our community is here to help.
 
 
 <!-- USAGE EXAMPLES -->
-## 🧠 Easy setup. Advanced features. Maximum performance.
+## ✨ Unlock Your Performance
 
-Saku Overclock provides a user-friendly experience for users. Navigate to the “Presets management” page and choose the one that best meets your needs, whether it's reducing temperature, improving performance, or addressing specific issues such as the 0.4GHz problem on AMD Ryzen processors.
+Saku Overclock is designed to adapt to your expertise level. Whether you want a one-click boost or granular control, we've got you covered.
 
-Wishing to extract the full potential from your laptop? Access the “Overclock” page, where you can manually adjust the desired settings. If you are unsure where to start, the software offers intelligent suggestions and guidance to help you achieve optimal settings and maximum performance.
+### 1. Choose Your Mode
+*   **For Beginners (Presets):**  
+    Navigate to the **Presets Management** page. Select a pre-configured preset to instantly cool down your device, boost FPS, or fix specific CPU throttling issues (like the Ryzen 0.4GHz bug).
+*   **For Enthusiasts (Manual Tuning):**  
+    Head to the **Overclock** page. Tweak power limits, curves, and specific sensor values.
+    > **Tip:** Unsure about a setting? Saku offers intelligent suggestions to guide you toward stable values.
 
-After finding the ideal settings, click the “Apply” button in the **lower right corner**, which looks like a **music playback icon**. Saku Overclock will then decide how and what adjustments to make. You can experiment with parameters or contact our Discord community for assistance if needed.
+### 2. Apply & Monitor
+Once you've configured your settings, click the **Play Button** (▶) in the bottom right corner.
+*   **Smart Management:** Saku actively monitors the system to ensure your settings stick, bypassing aggressive manufacturer power limits without stressing the hardware.
+*   **Safety Notifications:** Pay attention to warning notifications in the app notification center. There you can see which options were not applied.
 
-Some laptop manufacturers have implemented an automatic power recovery mechanism in their firmware to address factory power limitations or specific operating modes. However, Saku Overclock prevents this by automatically reverting values set in the program, without placing additional stress on the system.
+---
 
-### 🔥 Reliability and Temperature Issues:
+### 🛡️ Safety & Recovery Guide
 
-**Saku Overclock will not cause overheating** if certain risks are avoided. These include:
-- Setting maximum temperature limits above 90 degrees Celsius.
-- Simultaneously setting excessive power limits and using short time intervals for them.
-- Creating custom NBFC configurations to control fans, especially if the fan service is set to disabled or read-only mode especially **without proper knowledge**, as this may **stop the fan** operation. Be cautious.
-- Using obscure or random SMU commands in developer mode without proper understanding or warning.
-- Increasing the frequency or voltage **beyond the acceptable processor limits** is not guaranteed to be stable and may be dangerous.
+We prioritize the safety of your hardware. Saku Overclock includes built-in limits, but responsible usage is key.
 
-⚠️ All potentially dangerous parameters are indicated by special icons. Please hover the cursor over them to read important explanations before making any changes.
+**✅ Best Practices:**
+*   Avoid setting temperature limits above **90°C**.
+*   Do not disable fans (via NBFC) unless you know exactly what you are doing.
+*   Increase values incrementally.
 
-### 🆘 Something went wrong after applying the settings
-
-If your laptop starts to behave abnormally or you experience freezes, blue screens, or a complete shutdown after applying overclock settings, please change the settings. Saku Overclock strives to provide a safe overclocking experience, and all settings are tested on real hardware before being released. If your laptop freezes or the screen goes blank, press and hold the power button for 5-10 seconds until it turns off. Then, you can reboot your laptop normally. Overclock settings will not function after reboot if you have not enabled autorun for Saku Overclock.
-If you experience any issues with the program, please do not hesitate to contact us.
+**🆘 Emergency Recovery (Read This):**
+If you push the system too far and experience a freeze or black screen:
+1.  **Don't Panic.** This is a normal part of the tuning process.
+2.  **Force Shutdown:** Hold the Power button for 5-10 seconds until the laptop turns off.
+3.  **Reboot:** Turn the laptop back on.
+    *   *By default, Saku does not auto-apply settings on boot.* Your system will start with safe, stock settings, allowing you to try again.
 
 ### 🛠️ Something get wrong?
 
@@ -503,21 +511,23 @@ Encountering usage issues? Our community is here to help.
 
 
 <!-- ROADMAP -->
-## 📈 Roadmap
+## 🗺️ Roadmap & Future Vision
 
-- [x] Add Readme
-- [x] Add back to top links
-- [x] Add and create first Beta version
-- [x] Add and create first Release Candidate version
-- [ ] Add and create first Release version
-- [ ] Multi-language Support
-    - [x] English
-    - [x] Russian
-    - [ ] More?
+We are currently in a critical phase: **The V1.0 Release**. Our primary focus is ensuring rock-solid stability for the core features.
+
+Once the release settles, development will be driven by community feedback and polls. However, we already have some game-changing technologies on the horizon:
+
+### ✔️ Coming Soon
+- [ ] **OC Finder Next**: The next evolution of our tuning algorithm. It won't just suggest settings; it will actively run stress tests and iteratively refine parameters to find the absolute peak performance for your specific silicon.
+- [ ] **Stream Stabilizer**: A dynamic resource maneuvering engine. It adjusts CPU properties in real-time to ensure rock-solid frame times during streaming or heavy multitasking.
+- [ ] **Advanced Thermal Management**: Full control over fan curves, including "Smart Curves" that adapt to your workflow.
+- [ ] **Preset Automation**: Automatic preset switching based on power source (Battery vs. AC Adapter).
+
+### 🌍 Global Reach
+- [x] English Support
+- [ ] Community-contributed translations (Coming post-release)
 
 See the [open issues](https://github.com/Erruar/Saku-Overclock/issues) for a full list of proposed features (and known issues).
-
-
 
 
 <!-- CONTRIBUTING -->
