@@ -243,15 +243,6 @@ Individual core voltage tuning with multiple compatibility modes:
 
 ---
 
-### ⚙️ CPU Power States Management
-
-**Dynamic Performance Scaling**  
-Fine-tune your processor's power states for optimal performance across different workloads. While hardware limitations prevent absolute frequency control, these settings guide your CPU toward your desired performance targets.
-
-> *Ideal for users who want granular control over performance scaling behavior*
-
----
-
 ### ⚠️ SMU Command Interface
 
 <div align="center">
