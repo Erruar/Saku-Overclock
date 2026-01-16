@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -72,308 +73,199 @@ public sealed partial class ОбучениеPage : Page
         LicenseText.Children.Add(formattedText);
         showLicenseSection.Begin();
     }
-    
+
     private async void RunIntroSequence()
     {
         try
         {
-            await Task.Delay(1000);
-
-            var hideAnimationAndShowLogo = new Storyboard();
-            {
-                var fadeOut = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.25)),
-                    EnableDependentAnimation = true
-                };
-                var fadeIn = new DoubleAnimation
-                {
-                    To = 1,
-                    BeginTime = TimeSpan.FromSeconds(1.25),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.25)),
-                    EnableDependentAnimation = true
-                };
-                Storyboard.SetTarget(fadeIn, WelcomeLogoImage);
-                Storyboard.SetTargetProperty(fadeIn, "Opacity");
-
-                Storyboard.SetTarget(fadeOut, WelcomeLogoIntro);
-                Storyboard.SetTargetProperty(fadeOut, "Opacity");
-                hideAnimationAndShowLogo.Children.Add(fadeOut);
-                hideAnimationAndShowLogo.Children.Add(fadeIn);
-
-                hideAnimationAndShowLogo.Completed += (_, _) =>
-                {
-                    WelcomeLogoIntro.Stop();
-                    WelcomeLogoIntro.Source = null;
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                };
-            }
-
-
-            var rotateImageLogoAndAppearText = new Storyboard();
-            {
-                var rotateKeyFrames = new DoubleAnimationUsingKeyFrames
-                {
-                    EnableDependentAnimation = true
-                };
-
-                rotateKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
-                {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0)),
-                    Value = -360
-                });
-                rotateKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
-                {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.6)),
-                    Value = -10
-                });
-                rotateKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
-                {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(2.2)),
-                    Value = 0
-                });
-
-                var rotateIn1 = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(2.1),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-
-                var scaleX = new DoubleAnimation
-                {
-                    To = 200 / LogoAnimation.ActualHeight,
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.5)),
-                    EnableDependentAnimation = true
-                };
-                var scaleY = new DoubleAnimation
-                {
-                    To = 200 / LogoAnimation.ActualHeight,
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.5)),
-                    EnableDependentAnimation = true
-                };
-                var fadeIn = new DoubleAnimation
-                {
-                    To = 1,
-                    BeginTime = TimeSpan.FromSeconds(1),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-
-                Storyboard.SetTarget(rotateKeyFrames, LogoImageRotateTransform);
-                Storyboard.SetTargetProperty(rotateKeyFrames, "Angle");
-
-                Storyboard.SetTarget(rotateIn1, LogoTextRotateTransform);
-                Storyboard.SetTargetProperty(rotateIn1, "Angle");
-
-                Storyboard.SetTarget(scaleX, LogoImageScaleTransform);
-                Storyboard.SetTargetProperty(scaleX, "ScaleX");
-
-                Storyboard.SetTarget(scaleY, LogoImageScaleTransform);
-                Storyboard.SetTargetProperty(scaleY, "ScaleY");
-
-                var logoTranslate = new DoubleAnimation
-                {
-                    To = -(LogoAnimation.ActualWidth * 0.4),
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.0)),
-                    EnableDependentAnimation = true
-                };
-                Storyboard.SetTarget(logoTranslate, LogoImageTranslateTransform);
-                Storyboard.SetTargetProperty(logoTranslate, "X");
-                rotateImageLogoAndAppearText.Children.Add(logoTranslate);
-
-                var logoTextTranslate = new DoubleAnimation
-                {
-                    From = 140,
-                    To = -30,
-                    BeginTime = TimeSpan.FromSeconds(1),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.7)),
-                    EnableDependentAnimation = true
-                };
-                Storyboard.SetTarget(logoTextTranslate, LogoTextTranslateTransform);
-                Storyboard.SetTargetProperty(logoTextTranslate, "Y");
-                rotateImageLogoAndAppearText.Children.Add(logoTextTranslate);
-
-                Storyboard.SetTarget(fadeIn, LogoText);
-                Storyboard.SetTargetProperty(fadeIn, "Opacity");
-
-                rotateImageLogoAndAppearText.Children.Add(rotateKeyFrames);
-                rotateImageLogoAndAppearText.Children.Add(rotateIn1);
-                rotateImageLogoAndAppearText.Children.Add(scaleX);
-                rotateImageLogoAndAppearText.Children.Add(scaleY);
-                rotateImageLogoAndAppearText.Children.Add(fadeIn);
-            }
-
-            var hideLogoTextAndAppearWelcome = new Storyboard();
-            {
-                var fadeOut2 = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-                var fadeIn2 = new DoubleAnimation
-                {
-                    To = 1,
-                    BeginTime = TimeSpan.FromSeconds(0.5),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.0)),
-                    EnableDependentAnimation = true
-                };
-                var fadeIn3 = new DoubleAnimation
-                {
-                    To = 1,
-                    BeginTime = TimeSpan.FromSeconds(1.5),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-                var fadeIn4 = new DoubleAnimation
-                {
-                    To = 1,
-                    BeginTime = TimeSpan.FromSeconds(2.0),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-
-                Storyboard.SetTarget(fadeOut2, LogoText);
-                Storyboard.SetTargetProperty(fadeOut2, "Opacity");
-
-                Storyboard.SetTarget(fadeIn2, AfterAnimationPanel);
-                Storyboard.SetTargetProperty(fadeIn2, "Opacity");
-
-                Storyboard.SetTarget(fadeIn3, SakuText);
-                Storyboard.SetTargetProperty(fadeIn3, "Opacity");
-
-                Storyboard.SetTarget(fadeIn4, OverclockText);
-                Storyboard.SetTargetProperty(fadeIn4, "Opacity");
-
-                var logoTranslate1 = new DoubleAnimation
-                {
-                    To = -(LogoAnimation.ActualHeight * 0.2),
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(1.0)),
-                    EnableDependentAnimation = true
-                };
-                var textTranslate = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(1.5),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-                var textTranslate1 = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(2.0),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-                    EnableDependentAnimation = true
-                };
-                Storyboard.SetTarget(logoTranslate1, LogoImageTranslateTransform);
-                Storyboard.SetTargetProperty(logoTranslate1, "Y");
-
-                Storyboard.SetTarget(textTranslate, SakuTextTranslateTransform);
-                Storyboard.SetTargetProperty(textTranslate, "Y");
-
-                Storyboard.SetTarget(textTranslate1, OverclockTextTranslateTransform);
-                Storyboard.SetTargetProperty(textTranslate1, "Y");
-
-                hideLogoTextAndAppearWelcome.Children.Add(logoTranslate1);
-                hideLogoTextAndAppearWelcome.Children.Add(textTranslate);
-                hideLogoTextAndAppearWelcome.Children.Add(textTranslate1);
-                hideLogoTextAndAppearWelcome.Children.Add(fadeIn2);
-                hideLogoTextAndAppearWelcome.Children.Add(fadeIn3);
-                hideLogoTextAndAppearWelcome.Children.Add(fadeIn4);
-                hideLogoTextAndAppearWelcome.Children.Add(fadeOut2);
-
-            }
-
-            var hideAllAndGoToLicense = new Storyboard();
-            {
-                var fadeOut3 = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(0),
-                    Duration = new Duration(TimeSpan.FromSeconds(1)),
-                    EnableDependentAnimation = true
-                };
-                var fadeOut4 = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(2),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.3)),
-                    EnableDependentAnimation = true
-                };
-                var logoTranslate2 = new DoubleAnimation
-                {
-                    To = 0,
-                    BeginTime = TimeSpan.FromSeconds(2),
-                    Duration = new Duration(TimeSpan.FromSeconds(0.3)),
-                    EnableDependentAnimation = true
-                };
-
-                Storyboard.SetTarget(fadeOut3, AfterAnimationPanel);
-                Storyboard.SetTargetProperty(fadeOut3, "Opacity");
-
-                Storyboard.SetTarget(fadeOut4, LogoAnimation);
-                Storyboard.SetTargetProperty(fadeOut4, "Opacity");
-
-                Storyboard.SetTarget(logoTranslate2, LogoImageTranslateTransform);
-                Storyboard.SetTargetProperty(logoTranslate2, "Y");
-
-                hideAllAndGoToLicense.Children.Add(fadeOut3);
-                hideAllAndGoToLicense.Children.Add(fadeOut4);
-                hideAllAndGoToLicense.Children.Add(logoTranslate2);
-            }
-
+            // ------------------------------------------------------------
+            // 1. ЗАПУСК LOTTIE (БОЛЬШОЕ ЛОГО)
+            // ------------------------------------------------------------
+            // Загружаем анимацию
             IAnimatedVisualSource2 newIntro = new AnimatedVisuals.SakuLogo();
+            WelcomeLogoIntro.Source = newIntro;
+
+            // "Прогрев" первого кадра (опционально, убирает моргание)
+            await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
+            await Task.Delay(50); // Даем потоку отрисовки вздохнуть
+
+            // Играем основную часть (Рисование)
+            // Логотип сейчас огромный (500x500) по центру
+            await WelcomeLogoIntro.PlayAsync(0, 350d / 373d, false);
+            WelcomeLogoIntro.Pause();
+
+            // Пауза "Наслаждения брендом"
+            await Task.Delay(TimeSpan.FromSeconds(0.6));
+
+            // ------------------------------------------------------------
+            // 2. БЕЗОПАСНАЯ ПОДМЕНА (Lottie -> PNG)
+            // ------------------------------------------------------------
+            // Мы делаем это ДО движения, чтобы не перегружать рендерер.
+
+            var hideStoryBoard = new Storyboard();
+
+            var hideDuration = new Duration(TimeSpan.FromSeconds(1.1)); // Чуть больше секунды
+            var animHide = new DoubleAnimation
             {
-                WelcomeLogoIntro.Source = newIntro;
-                WelcomeLogoIntro.AnimationOptimization = PlayerAnimationOptimization.Resources;
+                To = 0,
+                Duration = hideDuration
+            };
 
-                await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
+            var animShow = new DoubleAnimation
+            {
+                To = 1,
+                Duration = hideDuration
+            };
 
-                await Task.Delay(TimeSpan.FromSeconds(0.1));
+            Storyboard.SetTarget(animHide, WelcomeLogoIntro);
+            Storyboard.SetTargetProperty(animHide, "Opacity");
 
-                await WelcomeLogoIntro.PlayAsync(0, 350d / 373d, false);
+            Storyboard.SetTarget(animShow, WelcomeLogoImage);
+            Storyboard.SetTargetProperty(animShow, "Opacity");
 
-                WelcomeLogoIntro.Pause();
-                WelcomeLogoIntro.SetProgress(350d / 373d);
+            // Добавляем в сториборд
+            hideStoryBoard.Children.Add(animHide);
+            hideStoryBoard.Children.Add(animShow);
 
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
-                hideAnimationAndShowLogo.Begin();
+            hideStoryBoard.Begin();
 
-                await Task.Delay(TimeSpan.FromSeconds(3));
-                rotateImageLogoAndAppearText.Begin();
+            await Task.Delay(TimeSpan.FromSeconds(1.1));
 
-                await Task.Delay(TimeSpan.FromSeconds(4.5));
-                AfterAnimationPanel.Visibility = Visibility.Visible;
-                hideLogoTextAndAppearWelcome.Begin();
+            WelcomeLogoIntro.Source = null; // Выгружаем ресурсы (теперь безопасно)
 
-                await Task.Delay(TimeSpan.FromSeconds(5.5));
-                hideAllAndGoToLicense.Begin();
+            // ------------------------------------------------------------
+            // 3. АНИМАЦИЯ: "КИНЕТИЧЕСКИЙ РАЗЪЕЗД"
+            // ------------------------------------------------------------
 
-                await Task.Delay(TimeSpan.FromSeconds(4.5));
-                OpenLicenseSection();
+            var moveStoryboard = new Storyboard();
 
-                WelcomeLogoIntro.Visibility = Visibility.Collapsed;
-                LogoText.Visibility = Visibility.Collapsed;
-                LogoAnimation.Visibility = Visibility.Collapsed;
-                AfterAnimationPanel.Visibility = Visibility.Collapsed;
-            }
+            // QuinticEase EaseOut - "Apple Curve". 
+            // Очень резкий старт и очень долгая, мягкая остановка.
+            var quintEase = new QuinticEase { EasingMode = EasingMode.EaseOut };
+            var duration = new Duration(TimeSpan.FromSeconds(1.1)); // Чуть больше секунды
+
+            // === А. Логотип: Уменьшение ===
+            // Уменьшаем с 1.0 (500px) до 0.4 (200px) - подбери scale по вкусу
+            var animScaleX = new DoubleAnimation
+            {
+                To = 0.4,
+                Duration = duration,
+                EasingFunction = quintEase
+            };
+            var animScaleY = new DoubleAnimation
+            {
+                To = 0.4,
+                Duration = duration,
+                EasingFunction = quintEase
+            };
+
+            // === Б. Логотип: Сдвиг Влево ===
+            // Сдвигаем влево, чтобы освободить место справа
+            var animMoveLogo = new DoubleAnimation
+            {
+                To = -160,
+                Duration = duration,
+                EasingFunction = quintEase
+            };
+
+            // === В. Текст: Сдвиг Вправо (Навстречу) ===
+            // Текст "выезжает" из-за логотипа вправо. 
+            // Он был на -50, станет на 140 (справа от лого)
+            var animMoveText = new DoubleAnimation
+            {
+                To = 130,
+                Duration = duration,
+                EasingFunction = quintEase
+            };
+
+            var animMoveGrid = new DoubleAnimation
+            {
+                To = -100,
+                Duration = duration,
+                EasingFunction = quintEase
+            };
+
+            // === Г. Текст: Проявление ===
+            // Появляется чуть позже начала движения
+            var animFadeText = new DoubleAnimation
+            {
+                To = 1,
+                BeginTime = TimeSpan.FromSeconds(0.15),
+                Duration = new Duration(TimeSpan.FromSeconds(0.8))
+                // Тут Easing не обязателен, линейное появление смотрится чисто
+            };
+
+            // --- Привязки ---
+
+            // Лого Scale
+            Storyboard.SetTarget(animScaleX, LogoScale);
+            Storyboard.SetTargetProperty(animScaleX, "ScaleX");
+            Storyboard.SetTarget(animScaleY, LogoScale);
+            Storyboard.SetTargetProperty(animScaleY, "ScaleY");
+
+            // Лого Move
+            Storyboard.SetTarget(animMoveLogo, LogoTranslate);
+            Storyboard.SetTargetProperty(animMoveLogo, "X");
+
+            // Текст Move
+            Storyboard.SetTarget(animMoveText, TextTransform);
+            Storyboard.SetTargetProperty(animMoveText, "X");
+
+            Storyboard.SetTarget(animMoveGrid, GridTransform);
+            Storyboard.SetTargetProperty(animMoveGrid, "X");
+
+            // Текст Fade
+            Storyboard.SetTarget(animFadeText, TextPanel);
+            Storyboard.SetTargetProperty(animFadeText, "Opacity");
+
+            // Добавляем в сториборд
+            moveStoryboard.Children.Add(animScaleX);
+            moveStoryboard.Children.Add(animScaleY);
+            moveStoryboard.Children.Add(animMoveLogo);
+            moveStoryboard.Children.Add(animMoveText);
+            moveStoryboard.Children.Add(animMoveGrid);
+            moveStoryboard.Children.Add(animFadeText);
+
+            moveStoryboard.Begin();
+
+            // Ждем чтения (3-4 секунды)
+            await Task.Delay(3500);
+
+            // ------------------------------------------------------------
+            // 4. ФИНАЛ: УХОД НА ЛИЦЕНЗИЮ
+            // ------------------------------------------------------------
+            var exitStoryboard = new Storyboard();
+
+            // Все плавно растворяется
+            var fadeOutAll = new DoubleAnimation
+            {
+                To = 0,
+                Duration = TimeSpan.FromSeconds(0.5)
+            };
+
+            Storyboard.SetTarget(fadeOutAll, CenterContent);
+            Storyboard.SetTargetProperty(fadeOutAll, "Opacity");
+
+            exitStoryboard.Children.Add(fadeOutAll);
+            exitStoryboard.Begin();
+
+            await Task.Delay(500);
+
+            // Переход
+            OpenLicenseSection();
+
+            // Скрываем, чтобы не мешало кликам
+            CenterContent.Visibility = Visibility.Collapsed;
 
         }
-        catch
+        catch (Exception ex)
         {
-            // Игнорим
+            // Логирование, если нужно. 
+            // В продакшене лучше не игнорировать полностью, но для UI анимации - безопасно.
+            System.Diagnostics.Debug.WriteLine($"Animation Error: {ex.Message}");
         }
     }
+
 
     public void AcceptButton_Click(object sender, RoutedEventArgs e)
     {

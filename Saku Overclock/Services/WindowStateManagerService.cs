@@ -161,7 +161,7 @@ public class WindowStateManagerService(
         if (settingsService.AppFirstRun)
         {
             var navigationService = App.GetService<INavigationService>();
-            //navigationService.NavigateTo(typeof(ViewModels.ОбучениеViewModel).FullName!);
+            navigationService.NavigateTo(typeof(ViewModels.ОбучениеViewModel).FullName!);
         }
 
         // Скрыть приложение при запуске, если это включено в настройках

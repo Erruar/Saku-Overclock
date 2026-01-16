@@ -13,65 +13,63 @@
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
     </Page.Resources>
 
-    <Grid Margin="-56,-96,-56,0">  
+    <Grid Margin="-56,-96,-56,0">
 
-        <!-- Кнопки для следующего пункта -->
-        <StackPanel x:Name="AfterAnimationPanel" Margin="70,100,0,0" Orientation="Vertical" Opacity="0" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <TextBlock Text="Добро пожаловать в" FontWeight="Normal" FontSize="44"/>
-            <Grid Height="Auto" HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Margin="0,0,0,0" Text="Saku" x:Name="SakuText" Opacity="0" FontWeight="ExtraBold" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48">
-                    <TextBlock.RenderTransform>
-                        <TranslateTransform x:Name="SakuTextTranslateTransform" Y="30"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <TextBlock Grid.Column="1" Margin="10,0,0,0" Text="Overclock" x:Name="OverclockText" Opacity="0" FontWeight="ExtraBold" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48">
-                    <TextBlock.RenderTransform>
-                        <TranslateTransform x:Name="OverclockTextTranslateTransform" Y="30"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-            </Grid>
-        </StackPanel> 
-        <Grid  x:Name="LogoAnimation" Margin="0,0,0, 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"> 
-            <AnimatedVisualPlayer x:Name="WelcomeLogoIntro" 
-                              Width="Auto"
-                              HorizontalAlignment="Stretch"
-                              AutoPlay="False" > 
-            </AnimatedVisualPlayer>
-            <Grid Margin="0,80,0,80" Width="Auto" HorizontalAlignment="Stretch">
+        <!-- Общий контейнер по центру экрана -->
+        <Grid x:Name="CenterContent" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="GridTransform" X="0"/>
+            </Grid.RenderTransform>
+
+            <!-- 
+   Слой с ТЕКСТОМ. 
+   Он лежит "под" логотипом (Z-index ниже по определению).
+   Изначально: Прозрачный и сдвинут немного влево (под лого).
+-->
+            <StackPanel x:Name="TextPanel" 
+            Orientation="Vertical" 
+            Opacity="0"
+            VerticalAlignment="Center"
+            Margin="30,0,0,0">
+                <!-- Отступ слева, чтобы текст не прилипал к лого в финале -->
+
+                <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="TextTransform" X="-30"/>
+                </StackPanel.RenderTransform>
+
+                <TextBlock Text="Saku Overclock" 
+               FontWeight="ExtraBold" 
+               FontSize="48" 
+               Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
+
+                <TextBlock Text="Добро пожаловать" 
+               FontWeight="Light" 
+               FontSize="26" 
+               Opacity="0.6"
+               Margin="2,5,0,0"/>
+            </StackPanel>
+
+            <Grid x:Name="LogoWrapper" Margin="0,0,0, 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RenderTransform>
-                    <TranslateTransform x:Name="LogoImageTranslateTransform"/>
-                </Grid.RenderTransform>
-                <Image x:Name="WelcomeLogoImage"  Opacity="0" RenderTransformOrigin="0.5,0.5" Source="/Assets/StoreLogo.png" Width="Auto" HorizontalAlignment="Stretch">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform x:Name="LogoImageScaleTransform"/>
-                            <RotateTransform x:Name="LogoImageRotateTransform"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                </Image>
-            </Grid>
-            
-            <TextBlock x:Name="LogoText" 
-                       Text="Saku Overclock" 
-                       Margin="210,80,0,-40" 
-                       HorizontalAlignment="Left" 
-                       Opacity="0" 
-                       VerticalAlignment="Center" 
-                       FontWeight="ExtraBlack"   
-                       FontSize="52">
-                <TextBlock.RenderTransform>
                     <TransformGroup>
-                        <TranslateTransform x:Name="LogoTextTranslateTransform"/>
-                        <RotateTransform x:Name="LogoTextRotateTransform" Angle="-5"/>
+                        <!-- Scale и Translate для анимации -->
+                        <ScaleTransform x:Name="LogoScale" ScaleX="1.0" ScaleY="1.0" CenterX="250" CenterY="250"/>
+                        <TranslateTransform x:Name="LogoTranslate" X="0"/>
                     </TransformGroup>
-                </TextBlock.RenderTransform>
-            </TextBlock>
-
-            <!--<FontIcon Glyph="&#xE945;" FontWeight="Black" FontSize="300" Foreground="White"/>-->
+                </Grid.RenderTransform>
+                <AnimatedVisualPlayer x:Name="WelcomeLogoIntro" 
+                      Width="Auto"
+                      HorizontalAlignment="Stretch"
+                      AutoPlay="False" >
+                </AnimatedVisualPlayer>
+                <Grid Margin="0,80,0,80" Width="Auto" HorizontalAlignment="Stretch">
+                    <Grid.RenderTransform>
+                        <TranslateTransform x:Name="LogoImageTranslateTransform"/>
+                    </Grid.RenderTransform>
+                    <Image x:Name="WelcomeLogoImage"  Opacity="0" RenderTransformOrigin="0.5,0.5" Source="/Assets/StoreLogo.png" Width="Auto" HorizontalAlignment="Stretch">
+                    </Image>
+                </Grid>
+            </Grid>
         </Grid>
 
         <!-- PipsPager для видимости навигации -->
@@ -95,7 +93,7 @@
                         <CheckBox Margin="30,5,30,20" x:Name="LicenseAcceptButton" IsChecked="False">Я ознакомился с лицензионным соглашением и подтверждаю его соблюдение</CheckBox>
                     </StackPanel>
                 </ScrollViewer>
-                <ScrollViewer>
+                <ScrollViewer CornerRadius="12">
                     <TextBlock>Second page of license</TextBlock>
                 </ScrollViewer>
                 <FlipView.ItemsPanel >
