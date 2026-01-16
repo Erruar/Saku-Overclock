@@ -435,43 +435,33 @@ Done! You set up Cooler tweaks page.
 
 ## 🔨 Built With
 
-The program was developed using the Universal Windows Platform (UWP) framework and WinUI 3 interface based on the **C# programming language**.
+Saku Overclock is built using **C#**, utilizing **WinUI 3** and the **Windows App SDK** to provide a modern, native Windows experience.
 
-### ❓ What other components does Saku Overclock include?
- - **ZenStates-Core (C#)**: Provides access to all hidden overclocking options through memory addresses and system management unit (SMU). 
- - **Saku RTSS CLI (C++)**: Library that helps to change the in-game overlay to display information about your device's sensors and FPS.
- - **NBFC (C#)**: Executable to adjust cooler curves and speeds.
- - **Collapse Launcher elements (C#)**: Some code elements to improve UI/UX.
- - **inpoutx64.dll (C++)**: Library to obtain access to memory.
- - **PawnIO (pawn)**: Driver that provides universal hardware access to apply overclock settings.
+### 🧩 Core Components & Libraries
 
-
+*   **ZenStates-Core**: Powering the backend, this C# library handles communication with the System Management Unit (SMU) to access hidden optimization settings.
+*   **Saku RTSS CLI**: A custom C++ bridge that manages the In-Game Overlay, displaying real-time sensor data and FPS.
+*   **NBFC (Notebook Fan Control)**: The engine responsible for managing fan speeds and custom cooling curves.
+*   **PawnIO**: A low-level driver ensuring universal hardware access for applying overclocking settings safely.
+*   **inpoutx64**: Essential library for direct memory access operations.
+*   **Collapse Launcher**: UI/UX components adapted to enhance the visual interface and user experience.
+<br/>
 
 <!-- GETTING STARTED -->
-## ⏩ Getting Started
+## ⚡ Getting Started
 
-Ready to unlock your laptop's true potential? Saku Overclock installs in minutes and starts delivering results immediately.
+Get up and running in minutes. Saku Overclock is designed to be plug-and-play, handling the complex setup for you.
 
-### Prerequisites
-
-**Enhanced Fan Control (Optional)**  
-For advanced cooling management, install [Notebook Fan Controller](https://github.com/hirschmann/nbfc/releases) before proceeding. This enables custom fan curves and thermal profiles.  
-*Skip this step if you prefer automatic thermal management.*
-
-### ⚡ Quick Installation
-
-Experience professional overclocking in three simple steps:
-
-1. **Download** the latest release from our [releases page](https://github.com/Erruar/Saku-Overclock/releases)
-2. **Run** the installer and follow the standard Windows installation process  
-3. **Launch** Saku Overclock from your desktop and begin optimizing
-
-That's it. Your laptop is now ready for precision tuning.
+1. **Download** the latest installer from our [releases page](https://github.com/Erruar/Saku-Overclock/releases).
+2. **Install** the app by running the setup file (standard Windows installation).
+3. **Launch** Saku Overclock.
+4. **Done!** You are ready to start optimizing.
+> **Note:** On the first launch, the app might ask to install the **PawnIO driver**. Please allow this — it is a safe, required component that lets the app communicate with your laptop's hardware.
 
 ### 🛠️ Need Assistance?
-
-Encountering installation issues? Our community is here to help.  
+Something didn't go as planned? Don't worry, our community is here to help.  
 [**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
