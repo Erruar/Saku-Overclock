@@ -484,7 +484,6 @@ Once you've configured your settings, click the **Play Button** (▶) in the bot
 *   **Smart Management:** Saku actively monitors the system to ensure your settings stick, bypassing aggressive manufacturer power limits without stressing the hardware.
 *   **Safety Notifications:** Pay attention to warning notifications in the app notification center. There you can see which options were not applied.
 
----
 
 ### 🛡️ Safety & Recovery Guide
 
@@ -529,72 +528,48 @@ Once the release settles, development will be driven by community feedback and p
 
 See the [open issues](https://github.com/Erruar/Saku-Overclock/issues) for a full list of proposed features (and known issues).
 
-
 <!-- CONTRIBUTING -->
 ## 👋 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make Saku Overclock better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 
-1. [Fork the Project](https://github.com/Erruar/Saku-Overclock/fork)
-2. Create your Feature Branch 
-3. Commit your Changes in your fork
-4. Push to the Branch 
-5. [Open a Pull Request](https://github.com/Erruar/Saku-Overclock/pulls)
-6. Wait for accepting or rejecting!
+**Don't forget to give the project a star! Thanks again!**
+
+1. [Fork](https://github.com/Erruar/Saku-Overclock/fork) the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. [**Open a Pull Request**](https://github.com/Erruar/Saku-Overclock/pulls)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## ⚖️ License & Legal
 
-
-<!-- LICENSE -->
-## 📄 License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
-This project is distributed under the terms of the **GPL-3.0** license. For more information, see the file [`LICENSE.md `](./LICENSE.md ).
+**Saku Overclock** is free and open-source software distributed under the **GPL-v3.0**.
+See [`LICENSE.md`](./LICENSE.md) for more information.
 
-The application also contains **individual code elements** from the [Collapse Launcher project](https://github.com/CollapseLauncher/Collapse), distributed under the [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE).
-All borrowed code fragments are properly **marked** as belonging to Collapse Launcher, and in accordance with the terms of the MIT license contain **the full text of the license**, as well as an indication of authorship and a link to the original source.
+**Acknowledgments**
+This project incorporates UI/UX components from [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), used under the MIT License. All adapted code is explicitly attributed in the source files.
+
+### Distribution Guidelines
+We welcome the distribution of Saku Overclock on software portals and tech blogs. To ensure compliance with the license and the best experience for users:
+
+1.  **Credit the Author:** You must explicitly mention **Serzhik Sakurajima (Erruar)** as the creator.
+2.  **Original Content:** We strictly encourage writing unique reviews rather than copying this Readme. Unique content ranks better in search engines (SEO) and provides real value.
+3.  **Community Links:** Please include links to our [GitHub Repository](https://github.com/Erruar/Saku-Overclock) and [Discord Community](https://discord.com/invite/eFcP6TSjEZ).
 
 
-## 🔒 Legal & Licensing
+## 📬 Contact
 
-For my part, I'll mention a few important points about publishing my app on third-party resources.:
+Have questions, suggestions, or partnership offers?
 
-### 🎭 Copyright Policy
+*   **Community & Support:** [Join our Discord Server](https://discord.com/invite/eFcP6TSjEZ)
+*   **Email:** erruarbrorder@gmail.com
 
-You **have the right to distribute** builds of my application on third-party resources and platforms. However:
-
-* You can copy the source code of a project only as the license GPL-v3-only allows.
-* Copying the README **in full** or without modification to your website — **is not permitted without my consent**.
-
-If you want to share the program on a third-party site, please **be sure to include me as the author** of the project in the description. Just posting a link to the application **is not enough** — I have done a lot of work to create this tool, and I count on your respect for my work.
-
-### ☀️ How do I properly place this app on my website?
-
-The most correct way is to **install the app**, test it and create **your own screenshots**. You can write a **review** with your personal opinion about the functionality, convenience or features of the work. This is much better than mindlessly copying the Readme text.
-
-So, for example, they correctly applied to [Softpedia](https://www.softpedia.com/get/Tweak/System-Tweak/Saku-Overclock.shtml#download) and [Top4Downloads](https://www.top4download.com/saku-overclock/tuykfucn.html), for which I am sincerely grateful to them.
-
-When publishing, do not forget:
-
-* **Specify me as the author of the program** (Serzhik Sakurajima / Erruar),
-* Add a link to [our Discord community](https://discord.com/invite/eFcP6TSjEZ) — this will help new users to adapt faster.
-
-Thanks for understanding. I'm trying to make this tool better, including for you.
-
-### ✅ Fossa License Status
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_large)
-
-<!-- CONTACT -->
-## 💬 Contact
-
-You can contact our community on Discord using the provided link, or you can contact me directly via email.
-
-* **Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ)
-* **erruarbrorder@gmail.com**
 
 
 
