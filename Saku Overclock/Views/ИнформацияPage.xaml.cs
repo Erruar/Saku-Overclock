@@ -32,14 +32,17 @@ public sealed partial class ИнформацияPage
 
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private readonly ICpuService _cpu = App.GetService<ICpuService>(); // Ядро приложения
-    private readonly IPstateService _pstates = App.GetService<IPstateService>(); // Производительные состояния процессора
+
+    private readonly IPstateService
+        _pstates = App.GetService<IPstateService>(); // Производительные состояния процессора
+
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
     private bool _doNotTrackBattery; // Флаг не использования батареи 
     private bool _isBatteryInformationLoaded; // Флаг обновления информации о батарее
     private bool _isDiscreteGpuInformationLoaded; // Флаг обновления информации о дискретной видеокарте
-    private string _ramStringCache = string.Empty; // Кешированная информация об ОЗУ
+    private readonly Dictionary<uint, string> _ramStringCache = new(); // Кешированная информация об ОЗУ
     private List<MemoryModule> _cachedMemoryModules = [];
     private string _cachedMemoryType = string.Empty;
     private readonly List<Point> _cpuPointer = []; // Лист графика использования процессора
@@ -72,7 +75,10 @@ public sealed partial class ИнформацияPage
     private int _numberOfCores; // Количество ядер
     private int _numberOfLogicalProcessors; // Количество потоков
     private DispatcherTimer? _dispatcherTimer; // Таймер для автообновления информации
-    private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Фоновое обновление информации
+
+    private readonly IBackgroundDataUpdater
+        _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Фоновое обновление информации
+
     private SensorsInformation? _sensorsInformation; // Информация с датчиков
 
     private static readonly string BatFromWall = "InfoBatteryAC".GetLocalized(); // Устройство от сети
@@ -190,7 +196,7 @@ public sealed partial class ИнформацияPage
                 }
             }
 
-            IntegratedVramType.Text = _cachedMemoryType;
+            IntegratedVramType.Text = _cachedMemoryType.ToUpper();
             IntegratedVramWidth.Text = _cachedMemoryModules.Count * 64 + " bit";
         }
         catch (Exception ex)
@@ -237,7 +243,7 @@ public sealed partial class ИнформацияPage
                 }
 
                 CpuCodename.Text = _cpu.CpuCodeName;
-                SmuVersion.Text = _cpu.SmuVersion;
+                SmuVersion.Text = _cpu.SmuVersion + " / " + _cpu.PowerTableVersion.ToString("X");
             }
             else
             {
@@ -375,10 +381,10 @@ public sealed partial class ИнформацияPage
 
             if (pstates.Count > i && pstates[i].Success && pstates[i].Data.IsEnabled)
             {
-
                 textBlock.Text =
                     $"{pstates[i].Data.FrequencyMHz / 1000} {GhzFreq}";
-                textBlockDesc.Text = $"(FID {pstates[i].Data.Fid}" + (pstates[i].Data.Did > 0 ? $"/ DID {pstates[i].Data.Did})" : ")");
+                textBlockDesc.Text = $"(FID {pstates[i].Data.Fid}" +
+                                     (pstates[i].Data.Did > 0 ? $"/ DID {pstates[i].Data.Did})" : ")");
                 _pstatesList[i] = pstates[i].Data.FrequencyMHz / 1000;
             }
             else
@@ -751,7 +757,7 @@ public sealed partial class ИнформацияPage
             // Обновление средней частоты и P-state
             if (frequencyCount > 0)
             {
-                var avgFrequency = Math.Round(totalFrequency / frequencyCount, 3);
+                var avgFrequency = Math.Round(totalFrequency / frequencyCount, 2);
                 CpuFrequency.Text = $"{avgFrequency} {GhzFreq}";
                 SetBarMaxValueHelper(CpuFrequencyBar, avgFrequency);
 
@@ -1327,19 +1333,18 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private string GetRamText(uint index)
     {
-        if (_ramStringCache != string.Empty)
+        // Кеш с учётом индекса
+        if (_ramStringCache.TryGetValue(index, out var cached))
         {
-            return _ramStringCache;
+            return cached;
         }
 
-        if (_cachedMemoryModules != null)
-        {
-            _ramStringCache = index < _cachedMemoryModules.Count ? _cachedMemoryModules[(int)index].Capacity : "Unknown";
-            return _ramStringCache;
-        }
+        var result = index < _cachedMemoryModules.Count ? _cachedMemoryModules[(int)index].Capacity : "Unknown";
 
-        return "Unknown";
+        _ramStringCache[index] = result;
+        return result;
     }
+
 
     /// <summary>
     ///     Получение текста для VRM

@@ -76,13 +76,6 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem Visibility="Collapsed" CornerRadius="9"
-                                        ToolTipService.ToolTip="DEBUG @ Enter first setup mode page"
-                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
-                        <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82F;"/>
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
                 </NavigationView.MenuItems>
                 <NavigationView.HeaderTemplate>
                     <DataTemplate>
