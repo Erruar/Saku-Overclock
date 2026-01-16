@@ -36,11 +36,6 @@
 
     <a href="#-about-the-project"><strong>👉 Explore full features list</strong></a>
 
-> [!IMPORTANT]
-> Closed testing of Saku Overclock Release is currently underway.
-> If you want to follow the development, check out Discord!
-* **Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ)
-
 ## 🖥️ Interface Preview
 Here's how Saku Overclock looks in action:
 
@@ -127,12 +122,6 @@ Switch between optimized configurations instantly. Share your perfect settings w
     <p> </p>
     <p  >The application has a convenient notification system. If you have applied something or not, or an error has occurred, you will find out about it first! To save laptop resources, notifications are cleared themselves if there are more than 6 of them</p>
     <p> </p>
-    <br />
-    <br />
-    <h1 align="center">Changelog</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-changelog.png"></img> 
-    <p> </p>
-    <p  >To always stay up to date with all events, you can always open a changelog right in the notification window! The pictures are hidden in spoilers to save CPU resources and save your internet</p>
     <br />
     <br />
     <h1 align="center">Profile Switcher</h1>
@@ -411,43 +400,7 @@ Done! You set up Cooler tweaks page.
 
 ---
 
-**Ready for advanced coolers control?** Check out NBFC forks to get more configuration files! Or go to **Advanced Cooler Tweaking** to create own configurations for NBFC and manage cooler curve
-    <h1 align="center">Advanced Cooler Tweaking</h1>
-    <h2 align="center">Readme</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/3.png"></img>
-    <p  >• Advanced Cooler Tweaking, Readme: There you can found an example of config, copy it to clipboard</p>
-    <br />
-    <br />
-    <h2 align="center">Fan Curve Editor</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/4.png"></img>
-    <p  >• Advanced Cooler Tweaking, Fan Curve Editor: Allows users to change fan curves on your laptop. All values have autosaving when you change them! After changing I just recommend you to enter in normal mode and switch to Disabled and Enabled then it should work normally. Or reboot</p> 
-    <br />
-    <br />
-    <h2 align="center">Fan Curve Editor</h2>
-    <h3 align="center">Color changing</h3>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/5.png"></img>
-    <p  >• Advanced Cooler Tweaking, Fan Curve Editor, Color changing: you can highlight your fan curve into other color (haven't autosaving)</p>
-    <br />
-    <br />
-    <h2 align="center">Main menu</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/6.png"></img> 
-    <p  >• Advanced Cooler Tweaking, menu: There you can open closed tab (CTRL + F4 to close tab) or edit existed config or create new one: empty (for PRO users), from example or from any others. Note: you can delete custom configs via Saku Overclock only if they have "Custom" in their name</p>
-    <br />
-    <br />
-    <h2 align="center">Config Editor</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/7.png"></img>
-    <p  >• Advanced Cooler Tweaking, Config Editor: You can edit config as you need or remove it and delete for custom. Note: THERE IS NO AUTOSAVING! PRESS ON SAVE BUTTON MANUALLY! NOW THERE IS NO ```CTRL + S```!!!</p>
-    <br />
-    <br /> 
-    <h1 align="center">Config Editor</h1>
-    <h2 align="center">Common configs</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/8.png"></img> 
-    <p  >• Config Editor, Common configs: You can only rename it, when you press button with icon like pencil</p>
-    <br />
-    <br />
-    <h2 align="center">Custom configs</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/9.png"></img>
-    <p  >• Config Editor, Custom configs: You can only rename it or delete PERMANENTLY when you press button with icon like pencil</p>
+**Ready for advanced coolers control?** Check out NBFC forks to get more configuration files!
   </ol>
 </details>
 
