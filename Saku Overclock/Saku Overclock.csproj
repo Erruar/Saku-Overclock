@@ -133,12 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Saku Overclock.Core\Saku Overclock.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="ZenStates-Core">
-      <HintPath>ZenStates-Core.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\ZenStates.Core.Dev\ZenStates-Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
