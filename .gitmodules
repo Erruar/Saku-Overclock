@@ -1,0 +1,4 @@
+[submodule "ZenStates.Core.Dev"]
+	path = ZenStates.Core.Dev
+	url = https://github.com/irusanov/ZenStates-Core
+	branch = dev
