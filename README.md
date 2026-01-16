@@ -347,15 +347,9 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary><b>Saku PowerMon Pro</b></summary>
   <ol>
-    <h1 align="center">PowerMon main window</h1>
+    <h1 align="center">Saku PowerMon Pro: Raw sensor data view</h1>
    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/main.png"></img>
-    <p  > Here you can see the entire ALL important values of you system. You can see and add notes to values (for example "GPU clock (MHz)")</p> 
-    <br />
-    <br />
-    <h1 align="center">How to open Saku PowerMon</h1>
-   <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/open_1.png"></img>
-   <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/open_2.png"></img>
-    <p  > Here you can see how to open Saku PowerMon Pro</p> 
+    <p  >This tool displays the raw sensor data reported directly by your device's SMU. It is primarily designed for troubleshooting. While you can use it to monitor specific values and tag them with your own notes, its main purpose is to help solve technical issues. If you encounter a problem, I might ask for a screenshot of this window to understand exactly how your system is behaving.</p> 
   </ol>
 </details>
 
