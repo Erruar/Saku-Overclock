@@ -170,7 +170,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
   <summary><b>Overclock page</b></summary>
   <ol>
 
-## 🎛️ Overclock page showcase
+### Overclock page showcase
 
 **Your laptop's hidden potential awaits.** Saku Overclock's advanced parameter control transforms any compatible Ryzen laptop into a performance beast.
 
@@ -199,10 +199,10 @@ Take control of voltage regulation with professional-grade current and timing ad
 Unlock additional performance from your iGPU and CPU subsystems. Our intelligent algorithms work within thermal and power constraints to maximize real-world performance. You can set any frequency for them with smart suggestions.
 
 **Legacy Issue Resolution**  
-Automatically fixes the notorious Ryzen 0.4 GHz frequency bug that affects thousands of laptops. One click to restore full performance potential. You can found that option in **Advanced CPU parameters** section.
+Automatically fixes the notorious Ryzen 0.4 GHz frequency bug that affects thousands of laptops. One click to restore full performance potential. You can found that option in **Special CPU modes** section.
 
 **iGPU overclocking**
-You can easily overclock your iGPU and set any frequency for best performance. Available in **Advanced CPU parameters** section.
+You can easily overclock your iGPU and set any frequency for best performance. Available in **Advanced frequency settings** section.
 
 ---
 
@@ -225,19 +225,19 @@ Individual core voltage tuning with multiple compatibility modes:
 
 **Ready to transform your laptop?** Every parameter is tested, every setting is safe, every improvement is measurable.
 <br/>
-## 😎 Overclock page: Developer options
+### Overclock page: Developer options
 <div align="center">
   <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageDeveloperOptions.png" width="100%">
   <p><i>Smart compatibility detection shows only the options your hardware supports</i></p>
 </div>
 
-## 🔬 Expert-Level Controls
+### Expert-Level Controls
 
 *These advanced features are designed for experienced overclockers and developers who understand the risks involved.*
 
 ---
 
-### ⚠️ SMU Command Interface
+### SMU Command Interface
 
 <div align="center">
   <p><strong>🚨 EXPERT MODE ONLY</strong> - Requires advanced knowledge of AMD SMU architecture</p>
