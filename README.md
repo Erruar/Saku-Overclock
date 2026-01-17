@@ -447,64 +447,69 @@ Saku Overclock is built using **C#**, utilizing **WinUI 3** and the **Windows Ap
 *   **Collapse Launcher**: UI/UX components adapted to enhance the visual interface and user experience.
 <br/>
 
-<!-- GETTING STARTED -->
-## ⚡ Getting Started
+## ⚡ Get Started in Seconds
 
-Get up and running in minutes. Saku Overclock is designed to be plug-and-play, handling the complex setup for you.
+Saku Overclock works immediately after installation. You do not need technical expertise to use the application.
 
-1. **Download** the latest installer from our [releases page](https://github.com/Erruar/Saku-Overclock/releases).
-2. **Install** the app by running the setup file (standard Windows installation).
-3. **Launch** Saku Overclock.
-4. **Done!** You are ready to start optimizing.
-> **Note:** On the first launch, the app might ask to install the **PawnIO driver**. Please allow this — it is a safe, required component that lets the app communicate with your laptop's hardware.
+1.  **Download** the installer from the [Releases page](https://github.com/Erruar/Saku-Overclock/releases).
+2.  **Install** the application.
+3.  **Launch** Saku Overclock.
+    *   *During the first launch, a setup screen will help you personalize the experience.*
+4.  **Choose a preset** on the main dashboard (for example, "Maximum" or "Eco") and click the ▶ **Apply**.
+5.  **The system is now optimized.**
 
-### 🛠️ Need Assistance?
-Something didn't go as planned? Don't worry, our community is here to help.  
+> **Note:** The application may ask to install the **PawnIO driver** on the first launch. This driver is safe and required for the application to communicate with the hardware. Please allow the installation.
+
+
+## ✨ Tailored to Your Needs
+
+Saku Overclock adapts to your requirements, whether you need a quick result or full control.
+
+### Quick Start
+After the setup, the main dashboard displays real-time system monitoring and a list of presets. Select a preset and apply the settings to improve performance immediately. You do not need to configure anything else.
+
+### Advanced Tuning
+If you want to customize the settings, Saku Overclock offers advanced tools:
+*   **Presets Management:** View and edit profiles using simple visual sliders. This page helps you understand the effect of each preset.
+*   **Overclock Page:** Adjust specific power, thermal, current limits and processor behavior.
+    *   **Safety Limits:** The application restricts values to safe ranges to prevent hardware damage.
+    *   **Smart Suggestions:** The system analyzes your hardware and suggests stable values.
+
+### Automation
+Once you find the best configuration, go to **Settings**. Enable **Startup with OS** and **Auto-apply latest settings**. The application will automatically optimize your device every time the system boots.
+
+
+## 🛡️ Stability & Safety Guide
+
+We prioritize the safety of your hardware. Follow these rules to ensure a stable experience.
+
+### Incremental Tuning
+When you create custom presets, do not maximize values immediately.
+1.  Increase a value slightly (for example, add **+5W** to the power limit).
+2.  Apply the setting.
+3.  Test the system stability under load.
+4.  If the system is stable, you can increase the value again.
+
+### Notification Center
+After you apply a preset, check the **Notification Center** in the application.
+*   The notification confirms settings are applied.
+*   If a setting was **not applied**, the notification will explain the reason.
+*   The notification may provide a link to the FAQ or suggest disabling the incompatible option.
+
+### Recovery from System Freeze
+If you set values that are too high, the device may freeze or shut down. **This is normal during the tuning process.**
+
+1.  **Force Shutdown:** Hold the power button on your device for 5–10 seconds until the screen turns off.
+2.  **Turn On:** Power on the device.
+3.  **Try Again:** By default, Saku Overclock **does not apply settings on boot after crash**. Your device will start with factory settings. You can open the application, lower the values in your preset, and try again.
+
+
+## 🤝 Need Assistance?
+
+If you encounter an issue or have a suggestion, please let us know.
+
 [**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## ✨ Unlock Your Performance
-
-Saku Overclock is designed to adapt to your expertise level. Whether you want a one-click boost or granular control, we've got you covered.
-
-### 1. Choose Your Mode
-*   **For Beginners (Presets):**  
-    Navigate to the **Presets Management** page. Select a pre-configured preset to instantly cool down your device, boost FPS, or fix specific CPU throttling issues (like the Ryzen 0.4GHz bug).
-*   **For Enthusiasts (Manual Tuning):**  
-    Head to the **Overclock** page. Tweak power limits, curves, and specific sensor values.
-    > **Tip:** Unsure about a setting? Saku offers intelligent suggestions to guide you toward stable values.
-
-### 2. Apply & Monitor
-Once you've configured your settings, click the **Play Button** (▶) in the bottom right corner.
-*   **Smart Management:** Saku actively monitors the system to ensure your settings stick, bypassing aggressive manufacturer power limits without stressing the hardware.
-*   **Safety Notifications:** Pay attention to warning notifications in the app notification center. There you can see which options were not applied.
-
-
-### 🛡️ Safety & Recovery Guide
-
-We prioritize the safety of your hardware. Saku Overclock includes built-in limits, but responsible usage is key.
-
-**Best Practices:**
-*   Avoid setting temperature limits above **90°C**.
-*   Do not disable fans (via NBFC) unless you know exactly what you are doing.
-*   Increase values incrementally.
-
-**Emergency Recovery (Read This):**
-If you push the system too far and experience a freeze or black screen:
-1.  **Don't Panic.** This is a normal part of the tuning process.
-2.  **Force Shutdown:** Hold the Power button for 5-10 seconds until the laptop turns off.
-3.  **Reboot:** Turn the laptop back on.
-    *   *By default, Saku does not auto-apply settings on boot.* Your system will start with safe, stock settings, allowing you to try again.
-
-### 🛠️ Something get wrong?
-
-Encountering usage issues? Our community is here to help.  
-[**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
 
 
 
