@@ -283,48 +283,32 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary><b>Sensor monitoring</b></summary>
   <ol>
-    <h1 align="center">Information page</h1>
-   <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
-    <p  > Here you can see the contents of the Information page. This page is allowing you to see important values of you system</p>
-    <br />
-    <br />
-    <h1 align="center">Processor</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
-    <p  >• Processor: Allows users to show the current properties of your processor. Such as Frequency, Voltages, Powers, Temperatures in real time!</p>
-    <br />
-    <br />
-    <h1 align="center">Power Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/5.png"></img> 
-    <p  >• Power Information: Allows users to watch VRM powers, Currents and timings of your CPU</p>
-    <br />
-    <br /><h1 align="center">GPU Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/6.png"></img>
-    <p  >• GPU Information: Shows the common iGPU and dGPU power metrics.</p>
-    <br />
-    <br />
-    <h1 align="center">RAM Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/7.png"></img>
-    <p  >• RAM Information: Allows users to know their common RAM information, SoC power, voltage, timings and current frequency!</p>
-    <br />
-    <br />
-    <h1 align="center">Battery Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/8.png"></img>
-    <p  >• Battery Information: Shows the most informative battery information such as health, cycles, power charge rate, state and battery percent</p>
-    <br />
-    <br />
-    <h1 align="center">CPU Power States</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/9.png"></img>
-    <p  >• CPU Power States: There you can see PStates of you CPU</p> 
-    <br />
-    <br />
-    <h1 align="center">In-Game metrics</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/10.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/11.png"></img>
-    <p  >• In-Game metrics: You can enable In-Game metrics via RTSS, Saku Overclock will show only needed metrics!</p> 
+    <h3 align="center">CPU section</h2>
+    <img alt="CPU Monitoring Dashboard with Per-Core Data" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png">
+    <p>The <strong>Sensor Monitoring</strong> dashboard provides a centralized view of your system status. Use the navigation panel on the left to switch between different hardware components. The <strong>Tools</strong> section at the bottom allows you to enable the <strong>In-Game Overlay</strong> or <strong>TrayMon</strong> for background monitoring.</p>
+    <p>The <strong>CPU</strong> section (shown above) displays real-time data for each core. You can toggle between Frequency, Voltage, Power, and Temperature views. Below the core grid, visual bars show <strong>Common metrics</strong> and <strong>Power sensors</strong>, followed by the static <strong>Specifications</strong> of your processor.</p>
+    <br>
+    <h3 align="center">VRM & Currents</h3>
+    <img alt="VRM and Power Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/vrm.png">
+    <p>Monitor the power delivery system. This view shows detailed <strong>VRM properties</strong>, including current amperage and power consumption metrics.</p>
+    <br>
+    <h3 align="center">Graphics (GFX)</h3>
+    <img alt="Graphics Card Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/gfx.png">
+    <p>View properties for all detected graphics adapters. The top blocks identify the installed GPUs.</p>
+    <p>Below, you can see real-time and static data such as core frequency, temperature, VRAM usage, memory type, and driver version. The application currently supports monitoring for <strong>Nvidia</strong> discrete GPUs and all <strong>iGPU</strong> (Integrated Graphics) models.</p>
+    <br>
+    <h3 align="center">Memory (RAM)</h3>
+    <img alt="RAM Information and Timings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/ram.png">
+    <p>Inspect your memory configuration. The top section lists installed modules with their slot number, capacity, and bus width.</p>
+    <p>The <strong>Specifications</strong> area tracks real-time frequency, FCLK, SoC voltage, and SoC power. You can also view primary <strong>Timings</strong> and <strong>Advanced info</strong>, which includes the manufacturer name and module part numbers.</p>
+    <br>
+    <h3 align="center">Battery Health</h3>
+    <img alt="Battery Status and Health" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/battery.png">
+    <p>Check the detailed status of your battery. This section displays the charge level, wear level, and current power state (charging/discharging). It also provides recommendations for charging habits and battery replacement based on the health data.</p>
+    <br>
+    <h3 align="center">CPU Power States</h3>
+    <img alt="CPU P-States Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/pstates.png">
+    <p>Analyze how the processor manages power. This view repeats the <strong>Common metrics</strong> for context and adds a <strong>Power states</strong> section. It lists all available performance states (P-States) and highlights the currently active state.</p>
   </ol>
 </details>
 
