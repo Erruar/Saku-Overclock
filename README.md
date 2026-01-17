@@ -104,7 +104,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 <details>
   <summary><b>Main  </b><kbd>Click to Expand</kbd></summary>
   <ol>
-    <h1>🖥️Main page showcase</h1>
+    <h2>🖥️Main page showcase</h1>
     <p>The main page of my application will greet you at launch</p>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/AppTheme.png"></img>
     <p align="center"><i>*background of the application automatically adjusts to the color of your wallpaper.</i></p>
@@ -117,14 +117,14 @@ Switch between optimized configurations instantly. Share your perfect settings w
 <details>
   <summary><b>App Taskbar</b></summary>
   <ol>
-    <h1 align="center">Notifications</h1>
+    <h1>Notifications</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-notifications.png"></img>
     <p> </p>
     <p  >View the detailed status of every action in the Notification Center. The system explains which settings were applied and identifies any errors. These logs persist across application restarts for easy troubleshooting.</p>
     <p> </p>
     <br />
     <br />
-    <h1 align="center">Preset Switcher</h1>
+    <h1>Preset Switcher</h1>
     <div align="center">
       <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-profiles.gif" width="100%">
       <p><i>*Animation will be smoother on your device</i></p>
@@ -137,41 +137,35 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 
 <details>
-  <summary><b>Premaded presets</b></summary>
+  <summary><b>Presets management</b></summary>
   <ol>
-    <h1 align="center">Minimum premaded presets</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
-    <p> </p>
-    <p  >Minimum preset will keep your processor cold, but I don`t recommend to use it under CPU load! Use it only if u have the latest battery percent, and it is important to be online right now</p>
-    <br />
-    <br />
-    <h1 align="center">Eco preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
-    <p> </p>
-    <p  >Eco preset will save your battery and keep performance</p>
-    <br />
-    <br />
-    <h1 align="center">Balance preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
-    <p> </p>
-    <p  >Balance preset will allow you to play more without charging</p>
-    <br />
-    <br />
-    <h1 align="center">Speed preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
-    <p> </p>
-    <p  >Speed preset will provide better performance than normal</p>
-    <br />
-    <br />
-    <h1 align="center">Maximum preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
-    <p> </p>
-    <p  >Maximum preset will give you almost maximum performance of your cpu</p>
-    <p> </p>
+    <h2>Custom Presets Management</h2>
+    <p>The <strong>Fast settings</strong> interface allows you to create and modify personal configurations without complex technical knowledge. Simple sliders control the device performance.</p>
+    <p>On the left side, you can enable <strong>Extra features</strong>, such as the RTSS in-game overlay or the "Reapply options" function to bypass vendor restrictions. You can also access the <strong>Advanced mode</strong> for deeper tuning.</p>
+    <img alt="Custom Preset General View with Fast Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/custom.png">
+    <p><em>The interface provides tooltips for each slider to explain its function.</em></p>
+    <br>
+    <img alt="Custom Preset Undervolting Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/custom-1.png">
+    <p><em>Scroll down to access safe undervolting options for supported systems.</em></p>
+    <br>
+    <h2>Premade Presets Overview</h2>
+    <p>The application provides ready-to-use presets. The interface displays a <strong>Preset summary</strong> with three visual indicators: Performance, Energy efficiency, and Temperatures.</p>
+    <p>You can choose an <strong>Optimization level</strong> to adjust the preset intensity:</p>
+    <ul>
+      <li><strong>Light:</strong> Basic optimization.</li>
+      <li><strong>Standard:</strong> Balanced settings.</li>
+      <li><strong>Powerful:</strong> Maximum effect (includes undervolting).</li>
+    </ul>
+    <br>
+    <img alt="Premade Preset Summary View" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade.png">
+    <br>
+    <img alt="Premade Preset Optimization Levels and Suitable Tasks" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade-1.png">
+    <p><em>The "Suitable for" section helps you choose the right preset for your current task.</em></p>
+    <br>
+    <img alt="Premade Preset Detailed Settings List" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade-2.png">
+    <p><em>Expand the "Applicable settings" list to see exactly which parameters the preset changes.</em></p>
   </ol>
 </details>
-
-
 <details>
   <summary><b>Overclock page</b></summary>
   <ol>
