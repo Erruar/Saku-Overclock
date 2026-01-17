@@ -108,7 +108,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
     <p>The main page of my application will greet you at launch</p>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/AppTheme.png"></img>
     <p align="center"><i>*background of the application automatically adjusts to the color of your wallpaper.</i></p>
-    <h1>🖌️Themes that you like</h1>
+    <h2>🖌️Themes that you like</h1>
     <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it or even change background to anything (including GIF)</p>
   </ol>
 </details>
@@ -120,18 +120,18 @@ Switch between optimized configurations instantly. Share your perfect settings w
     <h1 align="center">Notifications</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-notifications.png"></img>
     <p> </p>
-    <p  >The application has a convenient notification system. If you have applied something or not, or an error has occurred, you will find out about it first! To save laptop resources, notifications are cleared themselves if there are more than 6 of them</p>
+    <p  >View the detailed status of every action in the Notification Center. The system explains which settings were applied and identifies any errors. These logs persist across application restarts for easy troubleshooting.</p>
     <p> </p>
     <br />
     <br />
-    <h1 align="center">Profile Switcher</h1>
+    <h1 align="center">Preset Switcher</h1>
     <div align="center">
       <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-profiles.gif" width="100%">
       <p><i>*Animation will be smoother on your device</i></p>
     </div>
     <p> </p>
-    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + P</strong> for premade profiles.</p>
-   <i>*You can see key bindings in application settings</i>
+    <p>Use the Preset Switcher feature to change presets instantly using hotkeys. A non-intrusive overlay displays the active preset name and description. Use <strong>CTRL + ALT + W</strong> for custom presets and <strong>CTRL + ALT + P</strong> for premade presets.</p>
+    <i>*You can view the key bindings in the application settings.</i>
   </ol>
 </details>
 
