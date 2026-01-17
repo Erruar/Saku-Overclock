@@ -266,9 +266,9 @@ Access AMD's System Management Unit for unprecedented control over your processo
 
 ---
 
-### 🛡️ Important Safety Notice
+### ⚠️ Important Safety Notice
 
-> **⚠️ CRITICAL WARNING**  
+> **CRITICAL WARNING**  
 > SMU commands provide direct hardware access and can permanently damage your processor if used incorrectly. These features are intended for:
 > - Experienced overclockers with SMU knowledge
 > - Hardware developers and researchers  
@@ -364,7 +364,7 @@ Click on Download to download NBFC automatically
 <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
 ---
 
-### ☀️ Cooler page usage
+### Cooler page usage
 - Set **Cooler management** option to **Enabled**
 - Set **Cooler control type** option to whatever you want. For example: **Completely fixed mode** if you want to control both coolers without curve
 - Set **Fixed rotation mode** option to whatever you want. For example: **Manual** and 70% setting
@@ -375,9 +375,9 @@ Done! You set up Cooler tweaks page.
 
 ---
 
-### 🛡️ Important Safety Notice
+### ⚠️ Important Safety Notice
 
-> **⚠️ CRITICAL WARNING**  
+> **CRITICAL WARNING**  
 > NBFC provide direct hardware access and can permanently damage your Embedded Controller (EC) if used incorrectly.
 > **Use configurations that are 100% tested on your laptop and fully compatible. Suggest button can suggest wrong configurations!**
 >
@@ -437,7 +437,7 @@ Done! You set up Cooler tweaks page.
 
 Saku Overclock is built using **C#**, utilizing **WinUI 3** and the **Windows App SDK** to provide a modern, native Windows experience.
 
-### 🧩 Core Components & Libraries
+### Core Components & Libraries
 
 *   **ZenStates-Core**: Powering the backend, this C# library handles communication with the System Management Unit (SMU) to access hidden optimization settings.
 *   **Saku RTSS CLI**: A custom C++ bridge that manages the In-Game Overlay, displaying real-time sensor data and FPS.
@@ -489,12 +489,12 @@ Once you've configured your settings, click the **Play Button** (▶) in the bot
 
 We prioritize the safety of your hardware. Saku Overclock includes built-in limits, but responsible usage is key.
 
-**✅ Best Practices:**
+**Best Practices:**
 *   Avoid setting temperature limits above **90°C**.
 *   Do not disable fans (via NBFC) unless you know exactly what you are doing.
 *   Increase values incrementally.
 
-**🆘 Emergency Recovery (Read This):**
+**Emergency Recovery (Read This):**
 If you push the system too far and experience a freeze or black screen:
 1.  **Don't Panic.** This is a normal part of the tuning process.
 2.  **Force Shutdown:** Hold the Power button for 5-10 seconds until the laptop turns off.
@@ -516,13 +516,13 @@ We are currently in a critical phase: **The V1.0 Release**. Our primary focus is
 
 Once the release settles, development will be driven by community feedback and polls. However, we already have some game-changing technologies on the horizon:
 
-### ✔️ Coming Soon
+### Coming Soon
 - [ ] **OC Finder Next**: The next evolution of our tuning algorithm. It won't just suggest settings; it will actively run stress tests and iteratively refine parameters to find the absolute peak performance for your specific silicon.
 - [ ] **Stream Stabilizer**: A dynamic resource maneuvering engine. It adjusts CPU properties in real-time to ensure rock-solid frame times during streaming or heavy multitasking.
 - [ ] **Advanced Thermal Management**: Full control over fan curves, including "Smart Curves" that adapt to your workflow.
 - [ ] **Preset Automation**: Automatic preset switching based on power source (Battery vs. AC Adapter).
 
-### 🌍 Global Reach
+### Global Reach
 - [x] English Support
 - [ ] Community-contributed translations (Coming post-release)
 
