@@ -144,10 +144,10 @@ Switch between optimized configurations instantly. Share your perfect settings w
     <p>On the left side, you can enable <strong>Extra features</strong>, such as the RTSS in-game overlay or the "Reapply options" function to bypass vendor restrictions. You can also access the <strong>Advanced mode</strong> for deeper tuning.</p>
     <img alt="Custom Preset General View with Fast Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/custom.png">
     <p><em>The interface provides tooltips for each slider to explain its function.</em></p>
-    <br>
+    <br/>
     <img alt="Custom Preset Undervolting Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/custom-1.png">
     <p><em>Scroll down to access safe undervolting options for supported systems.</em></p>
-    <br>
+    <br/>
     <h2>Premade Presets Overview</h2>
     <p>The application provides ready-to-use presets. The interface displays a <strong>Preset summary</strong> with three visual indicators: Performance, Energy efficiency, and Temperatures.</p>
     <p>You can choose an <strong>Optimization level</strong> to adjust the preset intensity:</p>
@@ -156,12 +156,12 @@ Switch between optimized configurations instantly. Share your perfect settings w
       <li><strong>Standard:</strong> Balanced settings.</li>
       <li><strong>Powerful:</strong> Maximum effect (includes undervolting).</li>
     </ul>
-    <br>
+    <br/>
     <img alt="Premade Preset Summary View" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade.png">
-    <br>
+    <br/>
     <img alt="Premade Preset Optimization Levels and Suitable Tasks" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade-1.png">
     <p><em>The "Suitable for" section helps you choose the right preset for your current task.</em></p>
-    <br>
+    <br/>
     <img alt="Premade Preset Detailed Settings List" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade-2.png">
     <p><em>Expand the "Applicable settings" list to see exactly which parameters the preset changes.</em></p>
   </ol>
@@ -287,25 +287,25 @@ Access AMD's System Management Unit for unprecedented control over your processo
     <img alt="CPU Monitoring Dashboard with Per-Core Data" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png">
     <p>The <strong>Sensor Monitoring</strong> dashboard provides a centralized view of your system status. Use the navigation panel on the left to switch between different hardware components. The <strong>Tools</strong> section at the bottom allows you to enable the <strong>In-Game Overlay</strong> or <strong>TrayMon</strong> for background monitoring.</p>
     <p>The <strong>CPU</strong> section (shown above) displays real-time data for each core. You can toggle between Frequency, Voltage, Power, and Temperature views. Below the core grid, visual bars show <strong>Common metrics</strong> and <strong>Power sensors</strong>, followed by the static <strong>Specifications</strong> of your processor.</p>
-    <br>
+    <br/>
     <h3 align="center">VRM & Currents</h3>
     <img alt="VRM and Power Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/vrm.png">
     <p>Monitor the power delivery system. This view shows detailed <strong>VRM properties</strong>, including current amperage and power consumption metrics.</p>
-    <br>
+    <br/>
     <h3 align="center">Graphics (GFX)</h3>
     <img alt="Graphics Card Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/gfx.png">
     <p>View properties for all detected graphics adapters. The top blocks identify the installed GPUs.</p>
     <p>Below, you can see real-time and static data such as core frequency, temperature, VRAM usage, memory type, and driver version. The application currently supports monitoring for <strong>Nvidia</strong> discrete GPUs and all <strong>iGPU</strong> (Integrated Graphics) models.</p>
-    <br>
+    <br/>
     <h3 align="center">Memory (RAM)</h3>
     <img alt="RAM Information and Timings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/ram.png">
     <p>Inspect your memory configuration. The top section lists installed modules with their slot number, capacity, and bus width.</p>
     <p>The <strong>Specifications</strong> area tracks real-time frequency, FCLK, SoC voltage, and SoC power. You can also view primary <strong>Timings</strong> and <strong>Advanced info</strong>, which includes the manufacturer name and module part numbers.</p>
-    <br>
+    <br/>
     <h3 align="center">Battery Health</h3>
     <img alt="Battery Status and Health" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/battery.png">
     <p>Check the detailed status of your battery. This section displays the charge level, wear level, and current power state (charging/discharging). It also provides recommendations for charging habits and battery replacement based on the health data.</p>
-    <br>
+    <br/>
     <h3 align="center">CPU Power States</h3>
     <img alt="CPU P-States Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/pstates.png">
     <p>Analyze how the processor manages power. This view repeats the <strong>Common metrics</strong> for context and adds a <strong>Power states</strong> section. It lists all available performance states (P-States) and highlights the currently active state.</p>
@@ -373,39 +373,43 @@ Done! You set up Cooler tweaks page.
 <details>
   <summary><b>Settings</b></summary>
   <ol>
-    <h1 align="center">⚙️ Settings page</h1>
-    <h2>Behavior section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img> 
-
-**Avaiable options**
-- **Add application to the Windows autostart list:** No startup options, Hide to tray, Startup with OS, Startup & Tray
-- **Set application to close to the system tray:** Do not hide in tray, Hide by minimize button, Hide by close button
-- **Enable automatic apply overclocking options when the application is opened:** All the settings that were previously configured will be applied automatically upon starting Saku Overclock. No more need to manually click the "Apply" button
-- **Check for updates:** Display the availability of an update on a separate page as soon as it becomes available
-- **Reapply overclock settings every second:** Overrides the set overclocking parameters every few seconds in order to avoid conflicting with the vendor's software or BIOS settings
-    <br />
-    <h2>Theme section</h2>
-    <h3 align="center">Application themes</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png"></img> 
-    <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it and change theme background</p> 
-    <h3 align="center">Background theme settings</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png"></img> 
-    <p  >There you can change theme background from file or from link to image. GIF file type is supported</p> 
-    <h3 align="center">Theme manager</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_thememanager.png"></img> 
-    <p>Manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
-    <h2>TrayMon section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon.png"></img> 
-    <p>Always be aware of the data from your sensors in any application. TrayMon displays information from your selected sensors in the Windows system tray, with full customization, so you can always keep up to date with current temperatures, frequencies, power, and other information from the sensors available on your system.</p>
-    <h2>RTSS section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay.png"></img> 
-    <p>Do you like to play? So are we, so the application has monitoring of system indicators and their output as an overlay over the game using RTSS! You can completely customize which colors will have which setting, which sensors to display, and what size they should be. You can also use additional customization if you have the skills to work with RTSS, you can edit the applied overlay parameters to suit your needs.</p>
-    <h2>Keybinds section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_keybinds.png"></img> 
-    <p>Check out application keybindings and enable or disable them all.</p>
-    <h2>About section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_about.png"></img> 
-    <p>About up section with join our discord button.</p>
+    <h2 align="center">General Behavior</h2>
+    <img alt="General Behavior Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png">
+    <p>Configure how the application interacts with your system:</p>
+    <ul>
+        <li><strong>Startup & Tray:</strong> Choose whether the application starts with Windows and how it minimizes (to the taskbar or system tray).</li>
+        <li><strong>Auto-apply:</strong> Automatically load your saved overclocking profile when the application starts. This eliminates the need to press "Apply" manually.</li>
+        <li><strong>Updates:</strong> Enable automatic checks for new versions.</li>
+        <li><strong>Reapply Options:</strong> Force the application to re-apply settings every few seconds. This is useful if the BIOS or vendor software tries to reset your custom values.</li>
+    </ul>
+    <br/>
+    <h2 align="center">Visual Customization</h2>
+    <h3 align="center">Themes</h3>
+    <img alt="Theme Selection Menu" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themes.png">
+    <img alt="Advanced Theme Customization" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png">
+    <p>Personalize the interface. You can select from built-in themes or create a custom design. The settings allow you to adjust the transparency of the background image and the opacity of the darkening mask.</p>
+    <h3 align="center">Background</h3>
+    <img alt="Background Image Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png">
+    <p>Set a custom background using a local file or a direct URL. The application supports <strong>GIF</strong> animations for dynamic backgrounds.</p>
+    <br/>
+    <h2 align="center">TrayMon (Taskbar Monitoring)</h2>
+    <img alt="TrayMon General Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon.png">
+    <img alt="TrayMon Sensor Selection" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon_extra.png">
+    <p>Monitor your hardware directly from the Windows system tray. TrayMon displays real-time data from selected sensors (such as temperature, frequency, or power) near the system clock. You can customize the font, colors, background.</p>
+    <br/>
+    <h2 align="center">RTSS In-Game Overlay</h2>
+    <img alt="RTSS Overlay Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay.png">
+    <img alt="RTSS Sensor Configuration" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay_extra.png">
+    <p>View system metrics while gaming. This feature integrates with <strong>RivaTuner Statistics Server (RTSS)</strong> to draw an overlay on top of your game.</p>
+    <p>You can select which sensors to display, assign specific colors, and change text in labels. Advanced users can manually edit the overlay formatting code for precise control.</p>
+    <br/>
+    <h2 align="center">Key Bindings</h2>
+    <img alt="Key Bindings List" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_keybinds.png">
+    <p>View the list of global hotkeys used for quick actions (like switching presets). You can enable or disable all hotkeys from this menu.</p>
+    <br/>
+    <h2 align="center">About</h2>
+    <img alt="About Section" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_about.png">
+    <p>View application information, check the current version, and access the direct link to join the Discord community.</p>
   </ol>
 </details>
 
