@@ -326,9 +326,9 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary><b>Cooler tweaking</b></summary>
   <ol>
-    <h1 align="center">🍃 Cooler tweaks page</h1> 
+    <h3 align="center">Cooler tweaks page</h1> 
     <p>There you can adjust your cooler spinning with Notebook fan controller app or natively on Asus laptops with ASUS System Control Interface</p>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/1.png"></img>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/cooler_main.png"></img>
     <h2>⚙️ Easy to set up</h2>
 
 **Additional operations for NBFC Method**
@@ -336,10 +336,10 @@ Access AMD's System Management Unit for unprecedented control over your processo
 - **Click on suggest** button (button with question symbol) to see suggested configurations
 - **Choose configuration** from list
 <br/>
-<h3>The program has an automatic detection of non-installed NBFC</h3>
-Click on Download to download NBFC automatically
+<h3>The program has an automatic detection of supported NBFC configs (Experimental)</h3>
+You can get configuration recommendation with suggest button
 
-<img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
+<img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/cooler_suggest.png"></img>
 ---
 
 ### Cooler page usage
