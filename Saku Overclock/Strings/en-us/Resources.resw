@@ -2650,6 +2650,15 @@ methods are available.</value>
   <data name="Main_Battery.Text" xml:space="preserve">
     <value>Battery</value>
   </data>
+  <data name="Main_GpuInfo" xml:space="preserve">
+    <value>Graphics</value>
+  </data>
+  <data name="Main_GpuFreq" xml:space="preserve">
+    <value>GPU Frequency:</value>
+  </data>
+  <data name="Main_GpuVramSize" xml:space="preserve">
+    <value>VRAM Size:</value>
+  </data>
   <data name="Info_BatteryState.Text" xml:space="preserve">
     <value>Battery state</value>
   </data>

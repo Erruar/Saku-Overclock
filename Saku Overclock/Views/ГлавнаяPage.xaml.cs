@@ -64,7 +64,10 @@ public sealed partial class ГлавнаяPage
 
     private readonly string
         _batteryUnavailable = "Main_BatteryUnavailable".GetLocalized(); // Кешированные строки перевода
+    private bool _isBatteryUnavailable;
+    private bool _isNvidiaGpuAvailable;
 
+    private readonly string _graphics = "Main_GpuInfo".GetLocalized();
     private readonly string _ghzInfo = "infoAGHZ".GetLocalized();
     private readonly string _powerSumDisabled = "Info_PowerSumInfo_Disabled".GetLocalized();
     private readonly string _fromWall = "InfoBatteryAC".GetLocalized();
@@ -268,6 +271,9 @@ public sealed partial class ГлавнаяPage
             _maxCpuFreq = info.CpuFrequency;
         }
 
+        _isBatteryUnavailable = info.BatteryUnavailable;
+        _isNvidiaGpuAvailable = info.IsNvidiaGpuAvailable;
+
         // Обновляем UI только в UI потоке!
         DispatcherQueue.TryEnqueue(() =>
         {
@@ -330,10 +336,26 @@ public sealed partial class ГлавнаяPage
     {
         if (info.BatteryUnavailable)
         {
-            if (IndicatorsBatteryPercent.Text != "N/A")
+            if (info.IsNvidiaGpuAvailable)
             {
-                IndicatorsBatteryPercent.Text = "N/A";
-                IndicatorsBatteryPercentRing.Value = 0;
+                IndicatorsBatteryPercent.Text = info.NvidiaGpuUsage + "%";
+                IndicatorsBatteryPercentRing.Value = info.NvidiaGpuUsage;
+                if (BatteryText.Text != _graphics)
+                {
+                    BatteryText.Text = _graphics;
+                }
+                if (IndicatorsBatteryPercentIcon.Glyph != "\uF211")
+                {
+                    IndicatorsBatteryPercentIcon.Glyph = "\uF211";
+                }
+            }
+            else
+            {
+                if (IndicatorsBatteryPercent.Text != "N/A")
+                {
+                    IndicatorsBatteryPercent.Text = "N/A";
+                    IndicatorsBatteryPercentRing.Value = 0;
+                }
             }
         }
         else
@@ -417,11 +439,28 @@ public sealed partial class ГлавнаяPage
                 break;
 
             case 8:
-                MainAdditionalInfo1Name.Text = info.BatteryUnavailable ? _batteryUnavailable : info.BatteryHealth;
-                MainAdditionalInfo2Name.Text = info.BatteryUnavailable ? _batteryUnavailable : info.BatteryCycles;
-                MainAdditionalInfo3Name.Text = info.BatteryUnavailable ? _batteryUnavailable :
-                    info.BatteryLifeTime < 0 ? _fromWall :
-                    GetSystemInfo.ConvertBatteryLifeTime(info.BatteryLifeTime);
+                if (info.BatteryUnavailable)
+                {
+                    if (info.IsNvidiaGpuAvailable)
+                    {
+                        MainAdditionalInfo1Name.Text = $"{Math.Round(info.NvidiaGpuTemperature, 1):F1}C";
+                        MainAdditionalInfo2Name.Text = $"{Math.Round(info.NvidiaGpuFrequency, 1):F1} {_ghzInfo}";
+                        MainAdditionalInfo3Name.Text = info.NvidiaVramSize;
+                    }
+                    else
+                    {
+                        MainAdditionalInfo1Name.Text = _batteryUnavailable;
+                        MainAdditionalInfo2Name.Text = _batteryUnavailable;
+                        MainAdditionalInfo3Name.Text = _batteryUnavailable;
+                    }
+                }
+                else
+                {
+                    MainAdditionalInfo1Name.Text = info.BatteryHealth;
+                    MainAdditionalInfo2Name.Text = info.BatteryCycles;
+                    MainAdditionalInfo3Name.Text = info.BatteryLifeTime < 0 ? _fromWall :
+                        GetSystemInfo.ConvertBatteryLifeTime(info.BatteryLifeTime);
+                }
                 break;
         }
     }
@@ -1005,11 +1044,21 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "SoC EDC:";
                 break;
             case 8:
+                if (_isBatteryUnavailable && _isNvidiaGpuAvailable)
+                {
+                    MainAdditionalInfoDesc.Text = "Main_GpuInfo".GetLocalized();
+                    MainAdditionalInfo1Desc.Text = "Main_GpuTemp".GetLocalized();
+                    MainAdditionalInfo2Desc.Text = "Main_GpuFreq".GetLocalized();
+                    MainAdditionalInfo3Desc.Text = "Main_GpuVramSize".GetLocalized();
+                }
+                else
+                {
+                    MainAdditionalInfoDesc.Text = "Main_BatteryInfo".GetLocalized();
+                    MainAdditionalInfo1Desc.Text = "infoABATWear/Text".GetLocalized() + ":";
+                    MainAdditionalInfo2Desc.Text = "infoABATCycles/Text".GetLocalized() + ":";
+                    MainAdditionalInfo3Desc.Text = "infoABATRemainTime/Text".GetLocalized() + ":";
+                }
                 MainTeach.Target = BatteryPlacer;
-                MainAdditionalInfoDesc.Text = "Main_BatteryInfo".GetLocalized();
-                MainAdditionalInfo1Desc.Text = "infoABATWear/Text".GetLocalized() + ":";
-                MainAdditionalInfo2Desc.Text = "infoABATCycles/Text".GetLocalized() + ":";
-                MainAdditionalInfo3Desc.Text = "infoABATRemainTime/Text".GetLocalized() + ":";
                 break;
         }
     }

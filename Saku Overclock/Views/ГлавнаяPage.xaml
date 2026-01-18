@@ -210,7 +210,7 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_Battery" Text="Battery" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_Battery" x:Name="BatteryText" Text="Battery" TextWrapping="Wrap"/>
                                             <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsBatteryPercent" Text="N/A"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">

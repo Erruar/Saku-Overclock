@@ -4,8 +4,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
@@ -15,8 +17,10 @@ public sealed partial class ОбучениеPage : Page
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
     private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
     private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>(); // Управление треем
+    private static readonly IThemeSelectorService ThemeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private bool _isLoaded;
 
     public ОбучениеPage()
     {
@@ -34,7 +38,354 @@ public sealed partial class ОбучениеPage : Page
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        _isLoaded = true;
         RunIntroSequence();
+        LoadQuickSettings();
+    }
+
+    private void LoadQuickSettings()
+    {
+        try
+        {
+            AutoStartComboBox.SelectedIndex = AppSettings.AutostartType is > -1 and < 4 ? AppSettings.AutostartType : 0;
+            AppHideTypeComboBox.SelectedIndex =
+                AppHideTypeComboBox.SelectedIndex is > -1 and < 3 ? AppSettings.HidingType : 2;
+
+            ApplyStart.IsOn = AppSettings.ReapplyLatestSettingsOnAppLaunch;
+            AutoCheckUpdates.IsOn = AppSettings.CheckForUpdates;
+            AutoReapply.IsOn = AppSettings.ReapplyOverclock;
+            AutoReapplyNumberBox.Value = AppSettings.ReapplyOverclockTimer;
+            AutoReapplyNumberBoxPanel.Visibility = AutoReapply.IsOn ? Visibility.Visible : Visibility.Collapsed;
+            InitializeThemeSettings();
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }    
+    }
+
+    /// <summary>
+    ///     Загружает параметры тем приложения
+    /// </summary>
+    private void InitializeThemeSettings()
+    {
+        ThemeComboBox.Items.Clear();
+
+        try
+        {
+            // Проверяем, что есть темы для загрузки
+            if (ThemeSelectorService.Themes.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var theme in ThemeSelectorService.Themes)
+            {
+                try
+                {
+                    // Локализуем только темы с префиксом "Theme_"
+                    var displayName = theme.ThemeName.Contains("Theme_")
+                        ? theme.ThemeName.GetLocalized()
+                        : theme.ThemeName;
+
+                    ThemeComboBox.Items.Add(displayName);
+                }
+                catch
+                {
+                    ThemeComboBox.Items.Add(theme.ThemeName);
+                }
+            }
+
+            // Проверяем индекс темы
+            if (AppSettings.ThemeType < 0 || AppSettings.ThemeType >= ThemeSelectorService.Themes.Count)
+            {
+                // Сбрасываем на дефолтную тему
+                AppSettings.ThemeType = 0;
+                AppSettings.SaveSettings();
+            }
+
+            // Загружаем параметры выбранной темы
+            var selectedTheme = ThemeSelectorService.Themes[AppSettings.ThemeType];
+
+            // Устанавливаем выбранную тему
+            ThemeComboBox.SelectedIndex = AppSettings.ThemeType;
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+
+            // Сбрасываем на безопасные значения
+            AppSettings.ThemeType = 0;
+            AppSettings.SaveSettings();
+        }
+    }
+
+    /// <summary>
+    ///     Применяет выбранную тему из ThemeComboBox
+    /// </summary>
+    private void ThemesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        AppSettings.ThemeType = ThemeComboBox.SelectedIndex > -1 ? ThemeComboBox.SelectedIndex : 0;
+        AppSettings.SaveSettings();
+
+        if (ThemeSelectorService.Themes.Count == 0)
+        {
+            ThemeSelectorService.SetThemeAsync(ElementTheme.Default); // Список пуст -> системная тема
+            return;
+        }
+
+        if (AppSettings.ThemeType < 0 ||
+            AppSettings.ThemeType >= ThemeSelectorService.Themes.Count) // Защита от некорректного индекса
+        {
+            AppSettings.ThemeType = 0;
+            AppSettings.SaveSettings();
+        }
+
+        var selectedTheme = ThemeSelectorService.Themes[AppSettings.ThemeType];
+
+        if (AppSettings.ThemeType == 0)
+        {
+            ThemeSelectorService.SetThemeAsync(ElementTheme.Default);
+        }
+        else
+        {
+            ThemeSelectorService.SetThemeAsync(selectedTheme.ThemeLight
+                ? ElementTheme.Light
+                : ElementTheme.Dark); // Переключение состояния темы, на светлую, тёмную
+        }
+
+        // Обновляем UI-элементы
+        UpdateTheme();
+    }
+
+    /// <summary>
+    ///     Обновляет тему приложения в реальном времени
+    /// </summary>
+    private static void UpdateTheme()
+    {
+        NotificationsService.ShowNotification("Theme applied!",
+            "DEBUG MESSAGE",
+            InfoBarSeverity.Success);
+    }
+
+    /// <summary>
+    ///     Изменяет тип автозагрузки
+    /// </summary>
+    private void AutoStartComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        AppSettings.AutostartType = AutoStartComboBox.SelectedIndex;
+        if (AutoStartComboBox.SelectedIndex is 2 or 3)
+        {
+            AutoStartHelper.SetStartupTask();
+        }
+        else
+        {
+            AutoStartHelper.RemoveStartupTask();
+        }
+
+        AppSettings.SaveSettings();
+    }
+
+    /// <summary>
+    ///     Изменяет тип скрытия приложения в трей
+    /// </summary>
+    private void AppHideType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        AppSettings.HidingType = AppHideTypeComboBox.SelectedIndex;
+        AppSettings.SaveSettings();
+    }
+
+    /// <summary>
+    ///     Изменяет состояние переприменения последних применённых параметров разгона при запуске программы (включены,
+    ///     выключены)
+    /// </summary>
+    private void ApplyOptionsOnStart_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        AppSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
+
+        AppSettings.SaveSettings();
+    }
+
+    /// <summary>
+    ///     Изменяет состояние переприменение последних применённых параметров каждые несколько секунд (включено, выключено)
+    /// </summary>
+    private void AutoReapplyOptionsEverySeconds_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        if (AutoReapply.IsOn)
+        {
+            AutoReapplyNumberBoxPanel.Visibility = Visibility.Visible;
+            AppSettings.ReapplyOverclock = true;
+            AppSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
+        }
+        else
+        {
+            AutoReapplyNumberBoxPanel.Visibility = Visibility.Collapsed;
+            AppSettings.ReapplyOverclock = false;
+            AppSettings.ReapplyOverclockTimer = 3;
+        }
+
+        AppSettings.SaveSettings();
+    }
+
+    /// <summary>
+    ///     Изменяет состояние переприменение последних применённых параметров каждые несколько секунд (время переприменения)
+    /// </summary>
+    private void AutoReapplyOptionsEverySecondsNumberBox_ValueChanged(NumberBox sender,
+        NumberBoxValueChangedEventArgs args)
+    {
+        try
+        {
+            if (!_isLoaded)
+            {
+                return;
+            }
+
+            AppSettings.ReapplyOverclock = true;
+            AppSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
+            AppSettings.SaveSettings();
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
+    }
+
+    /// <summary>
+    ///     Изменяет состояние автоматической проверки наличия обновлений программы (включено, выключено)
+    /// </summary>
+    private void AutoCheckUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        AppSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
+
+        AppSettings.SaveSettings();
+    }
+
+    /// <summary>
+    ///     Центрует текст в AutoReapplyNumberBox
+    /// </summary>
+    private void AutoReapplyOptionsEverySecondsNumberBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        var texts = VisualTreeHelper.FindVisualChildren<ScrollContentPresenter>(AutoReapplyNumberBox);
+        foreach (var text in texts)
+        {
+            text.Margin = new Thickness(12, 7, 0, 0);
+        }
+
+        var contents = VisualTreeHelper.FindVisualChildren<ContentControl>(AutoReapplyNumberBox);
+        foreach (var content in contents)
+        {
+            var presents = VisualTreeHelper.FindVisualChildren<ContentPresenter>(content);
+            foreach (var present in presents)
+            {
+                var texts1 = VisualTreeHelper.FindVisualChildren<TextBlock>(present);
+                foreach (var text in texts1)
+                {
+                    text.Margin = new Thickness(0, 2, 0, 0);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Изменяет состояние AutoReapplyNumberBox
+    /// </summary>
+    private void AutoReapplyOptionsEverySeconds_FocusEngaged(object sender, object args) =>
+        AutoReapplyNumberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
+
+    /// <summary>
+    ///     Изменяет состояние AutoReapplyNumberBox
+    /// </summary>
+    private void AutoReapplyOptionsEverySeconds_FocusDisengaged(object sender, object args) =>
+        AutoReapplyNumberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
+
+    /// <summary>
+    ///     Изменяет состояние привязанных ToggleSwitch
+    /// </summary>
+    private void ToggleTheSwitchByTag(object sender, object e)
+    {
+        if (sender is FrameworkElement { Tag: string targetName })
+        {
+            // Ищем элемент по имени на текущей странице и меняем его состояние
+            var targetToggle = FindName(targetName) as ToggleSwitch;
+            if (targetToggle != null)
+            {
+                targetToggle.IsOn = !targetToggle.IsOn;
+            }
+        }
+    }
+
+    private void TargetNumberBox_FocusEngaged(object sender, object args)
+    {
+        if (sender is NumberBox numberBox)
+        {
+            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
+        }
+    }
+
+    private void TargetNumberBox_FocusDisengaged(object sender, object args)
+    {
+        if (sender is NumberBox numberBox)
+        {
+            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
+        }
+    }
+
+    private void TargetNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        var name = sender.Tag.ToString();
+
+        if (name != null)
+        {
+            object sliderObject;
+
+            try
+            {
+                sliderObject = FindName(name);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.TraceIt_TraceError(ex);
+                return;
+            }
+
+            if (sliderObject is Slider slider)
+            {
+                if (slider.Maximum < sender.Value)
+                {
+                    slider.Maximum = ПараметрыPage.FromValueToUpperFive(sender.Value);
+                }
+            }
+        }
     }
 
     public static void ShowNavbarAndControls()
@@ -180,7 +531,7 @@ public sealed partial class ОбучениеPage : Page
 
             var animMoveGrid = new DoubleAnimation
             {
-                To = -100,
+                To = -50,
                 Duration = duration,
                 EasingFunction = quintEase
             };
@@ -267,42 +618,56 @@ public sealed partial class ОбучениеPage : Page
     }
 
 
-    public void AcceptButton_Click(object sender, RoutedEventArgs e)
+    public async void AcceptButton_Click(object sender, RoutedEventArgs e)
     {
         if (LicenseAcceptButton.IsChecked == false)
         {
             AcceptErrTeachingTip.IsOpen = true;
             return;
         }
-        TrainingSection.Visibility = Visibility.Visible;
+
+        try
+        {
+            await ChangeSection(LicenseSection, QuickSettings);
+        }
+        catch (Exception ex) 
+        {
+            await LogHelper.LogError(ex);
+        }
+    }
+
+    private async Task ChangeSection(Grid from, Grid to)
+    {
+
+        to.Visibility = Visibility.Visible;
         var storyboard = new Storyboard();
         var fadeOut = new DoubleAnimation
         {
             To = 0,
             BeginTime = TimeSpan.FromSeconds(0),
-            Duration = new Duration(TimeSpan.FromSeconds(1.5)),
+            Duration = new Duration(TimeSpan.FromSeconds(0.9)),
             EnableDependentAnimation = true
         };
         var fadeIn = new DoubleAnimation
         {
             To = 1,
-            BeginTime = TimeSpan.FromSeconds(1.5),
-            Duration = new Duration(TimeSpan.FromSeconds(1.5)),
+            BeginTime = TimeSpan.FromSeconds(0.9),
+            Duration = new Duration(TimeSpan.FromSeconds(0.9)),
             EnableDependentAnimation = true
         };
-        Storyboard.SetTarget(fadeIn, TrainingSection);
+        Storyboard.SetTarget(fadeIn, to);
         Storyboard.SetTargetProperty(fadeIn, "Opacity");
 
-        Storyboard.SetTarget(fadeOut, LicenseSection);
+        Storyboard.SetTarget(fadeOut, from);
         Storyboard.SetTargetProperty(fadeOut, "Opacity");
         storyboard.Children.Add(fadeOut);
         storyboard.Children.Add(fadeIn);
         storyboard.Begin();
-        storyboard.Completed += (_, _) =>
-        {
-            LicenseSection.Visibility = Visibility.Collapsed;
-            Pager.SelectedPageIndex = 2;
-        };
+
+        Pager.SelectedPageIndex += 1;
+        await Task.Delay(TimeSpan.FromSeconds(1.8));
+
+        from.Visibility = Visibility.Collapsed;
     }
 
     private async void DisagreeTraining_Click(object sender, RoutedEventArgs e)
@@ -336,5 +701,46 @@ public sealed partial class ОбучениеPage : Page
             ShowNavbarAndControls();
             var navigationService = App.GetService<INavigationService>();
             navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+    }
+
+    private async void QuickSettingsDone_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(QuickSettings, TrainingSection);
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
+    }
+
+    private void TrainingDone_Click(object sender, RoutedEventArgs e)
+    {
+        ShowNavbarAndControls();
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!);
+    }
+
+    private async void ApplyButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ApplyTeach.IsOpen)
+            {
+                ApplyTeach.IsOpen = false;
+                await Task.Delay(300);
+            }
+            ApplyTeach.Title = "Apply_Success".GetLocalized();
+            ApplyTeach.Subtitle = "";
+            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+            ApplyTeach.IsOpen = true;
+            await Task.Delay(3000);
+            ApplyTeach.IsOpen = false;
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
     }
 }

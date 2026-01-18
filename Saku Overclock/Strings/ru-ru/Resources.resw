@@ -2663,6 +2663,15 @@ Asus. Может не поддерживаться на
   <data name="Main_Battery.Text" xml:space="preserve">
     <value>Батарея</value>
   </data>
+  <data name="Main_GpuInfo" xml:space="preserve">
+    <value>Видеокарта</value>
+  </data>
+  <data name="Main_GpuFreq" xml:space="preserve">
+    <value>Частота GPU:</value>
+  </data>
+  <data name="Main_GpuVramSize" xml:space="preserve">
+    <value>Объём VRAM:</value>
+  </data>
   <data name="Info_BatteryState.Text" xml:space="preserve">
     <value>Состояние батареи</value>
   </data>
