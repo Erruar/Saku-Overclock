@@ -104,11 +104,11 @@ Switch between optimized configurations instantly. Share your perfect settings w
 <details>
   <summary><b>Main  </b><kbd>Click to Expand</kbd></summary>
   <ol>
-    <h1>🖥️Main page showcase</h1>
+    <h2>🖥️Main page showcase</h1>
     <p>The main page of my application will greet you at launch</p>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/AppTheme.png"></img>
     <p align="center"><i>*background of the application automatically adjusts to the color of your wallpaper.</i></p>
-    <h1>🖌️Themes that you like</h1>
+    <h2>🖌️Themes that you like</h1>
     <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it or even change background to anything (including GIF)</p>
   </ol>
 </details>
@@ -117,66 +117,60 @@ Switch between optimized configurations instantly. Share your perfect settings w
 <details>
   <summary><b>App Taskbar</b></summary>
   <ol>
-    <h1 align="center">Notifications</h1>
+    <h1>Notifications</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-notifications.png"></img>
     <p> </p>
-    <p  >The application has a convenient notification system. If you have applied something or not, or an error has occurred, you will find out about it first! To save laptop resources, notifications are cleared themselves if there are more than 6 of them</p>
+    <p  >View the detailed status of every action in the Notification Center. The system explains which settings were applied and identifies any errors. These logs persist across application restarts for easy troubleshooting.</p>
     <p> </p>
     <br />
     <br />
-    <h1 align="center">Profile Switcher</h1>
+    <h1>Preset Switcher</h1>
     <div align="center">
       <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-profiles.gif" width="100%">
       <p><i>*Animation will be smoother on your device</i></p>
     </div>
     <p> </p>
-    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + P</strong> for premade profiles.</p>
-   <i>*You can see key bindings in application settings</i>
+    <p>Use the Preset Switcher feature to change presets instantly using hotkeys. A non-intrusive overlay displays the active preset name and description. Use <strong>CTRL + ALT + W</strong> for custom presets and <strong>CTRL + ALT + P</strong> for premade presets.</p>
+    <i>*You can view the key bindings in the application settings.</i>
   </ol>
 </details>
 
 
 <details>
-  <summary><b>Premaded presets</b></summary>
+  <summary><b>Presets management</b></summary>
   <ol>
-    <h1 align="center">Minimum premaded presets</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
-    <p> </p>
-    <p  >Minimum preset will keep your processor cold, but I don`t recommend to use it under CPU load! Use it only if u have the latest battery percent, and it is important to be online right now</p>
-    <br />
-    <br />
-    <h1 align="center">Eco preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
-    <p> </p>
-    <p  >Eco preset will save your battery and keep performance</p>
-    <br />
-    <br />
-    <h1 align="center">Balance preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
-    <p> </p>
-    <p  >Balance preset will allow you to play more without charging</p>
-    <br />
-    <br />
-    <h1 align="center">Speed preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
-    <p> </p>
-    <p  >Speed preset will provide better performance than normal</p>
-    <br />
-    <br />
-    <h1 align="center">Maximum preset</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
-    <p> </p>
-    <p  >Maximum preset will give you almost maximum performance of your cpu</p>
-    <p> </p>
+    <h2>Custom Presets Management</h2>
+    <p>The <strong>Fast settings</strong> interface allows you to create and modify personal configurations without complex technical knowledge. Simple sliders control the device performance.</p>
+    <p>On the left side, you can enable <strong>Extra features</strong>, such as the RTSS in-game overlay or the "Reapply options" function to bypass vendor restrictions. You can also access the <strong>Advanced mode</strong> for deeper tuning.</p>
+    <img alt="Custom Preset General View with Fast Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/custom.png">
+    <p><em>The interface provides tooltips for each slider to explain its function.</em></p>
+    <br/>
+    <img alt="Custom Preset Undervolting Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/custom-1.png">
+    <p><em>Scroll down to access safe undervolting options for supported systems.</em></p>
+    <br/>
+    <h2>Premade Presets Overview</h2>
+    <p>The application provides ready-to-use presets. The interface displays a <strong>Preset summary</strong> with three visual indicators: Performance, Energy efficiency, and Temperatures.</p>
+    <p>You can choose an <strong>Optimization level</strong> to adjust the preset intensity:</p>
+    <ul>
+      <li><strong>Light:</strong> Basic optimization.</li>
+      <li><strong>Standard:</strong> Balanced settings.</li>
+      <li><strong>Powerful:</strong> Maximum effect (includes undervolting).</li>
+    </ul>
+    <br/>
+    <img alt="Premade Preset Summary View" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade.png">
+    <br/>
+    <img alt="Premade Preset Optimization Levels and Suitable Tasks" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade-1.png">
+    <p><em>The "Suitable for" section helps you choose the right preset for your current task.</em></p>
+    <br/>
+    <img alt="Premade Preset Detailed Settings List" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/Preset/premade-2.png">
+    <p><em>Expand the "Applicable settings" list to see exactly which parameters the preset changes.</em></p>
   </ol>
 </details>
-
-
 <details>
   <summary><b>Overclock page</b></summary>
   <ol>
 
-## 🎛️ Overclock page showcase
+### Overclock page showcase
 
 **Your laptop's hidden potential awaits.** Saku Overclock's advanced parameter control transforms any compatible Ryzen laptop into a performance beast.
 
@@ -205,10 +199,10 @@ Take control of voltage regulation with professional-grade current and timing ad
 Unlock additional performance from your iGPU and CPU subsystems. Our intelligent algorithms work within thermal and power constraints to maximize real-world performance. You can set any frequency for them with smart suggestions.
 
 **Legacy Issue Resolution**  
-Automatically fixes the notorious Ryzen 0.4 GHz frequency bug that affects thousands of laptops. One click to restore full performance potential. You can found that option in **Advanced CPU parameters** section.
+Automatically fixes the notorious Ryzen 0.4 GHz frequency bug that affects thousands of laptops. One click to restore full performance potential. You can found that option in **Special CPU modes** section.
 
 **iGPU overclocking**
-You can easily overclock your iGPU and set any frequency for best performance. Available in **Advanced CPU parameters** section.
+You can easily overclock your iGPU and set any frequency for best performance. Available in **Advanced frequency settings** section.
 
 ---
 
@@ -231,28 +225,19 @@ Individual core voltage tuning with multiple compatibility modes:
 
 **Ready to transform your laptop?** Every parameter is tested, every setting is safe, every improvement is measurable.
 <br/>
-## 😎 Overclock page: Developer options
+### Overclock page: Developer options
 <div align="center">
   <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageDeveloperOptions.png" width="100%">
   <p><i>Smart compatibility detection shows only the options your hardware supports</i></p>
 </div>
 
-## 🔬 Expert-Level Controls
+### Expert-Level Controls
 
 *These advanced features are designed for experienced overclockers and developers who understand the risks involved.*
 
 ---
 
-### ⚙️ CPU Power States Management
-
-**Dynamic Performance Scaling**  
-Fine-tune your processor's power states for optimal performance across different workloads. While hardware limitations prevent absolute frequency control, these settings guide your CPU toward your desired performance targets.
-
-> *Ideal for users who want granular control over performance scaling behavior*
-
----
-
-### ⚠️ SMU Command Interface
+### SMU Command Interface
 
 <div align="center">
   <p><strong>🚨 EXPERT MODE ONLY</strong> - Requires advanced knowledge of AMD SMU architecture</p>
@@ -275,9 +260,9 @@ Access AMD's System Management Unit for unprecedented control over your processo
 
 ---
 
-### 🛡️ Important Safety Notice
+### ⚠️ Important Safety Notice
 
-> **⚠️ CRITICAL WARNING**  
+> **CRITICAL WARNING**  
 > SMU commands provide direct hardware access and can permanently damage your processor if used incorrectly. These features are intended for:
 > - Experienced overclockers with SMU knowledge
 > - Hardware developers and researchers  
@@ -298,48 +283,32 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary><b>Sensor monitoring</b></summary>
   <ol>
-    <h1 align="center">Information page</h1>
-   <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
-    <p  > Here you can see the contents of the Information page. This page is allowing you to see important values of you system</p>
-    <br />
-    <br />
-    <h1 align="center">Processor</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
-    <p  >• Processor: Allows users to show the current properties of your processor. Such as Frequency, Voltages, Powers, Temperatures in real time!</p>
-    <br />
-    <br />
-    <h1 align="center">Power Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/5.png"></img> 
-    <p  >• Power Information: Allows users to watch VRM powers, Currents and timings of your CPU</p>
-    <br />
-    <br /><h1 align="center">GPU Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/6.png"></img>
-    <p  >• GPU Information: Shows the common iGPU and dGPU power metrics.</p>
-    <br />
-    <br />
-    <h1 align="center">RAM Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/7.png"></img>
-    <p  >• RAM Information: Allows users to know their common RAM information, SoC power, voltage, timings and current frequency!</p>
-    <br />
-    <br />
-    <h1 align="center">Battery Information</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/8.png"></img>
-    <p  >• Battery Information: Shows the most informative battery information such as health, cycles, power charge rate, state and battery percent</p>
-    <br />
-    <br />
-    <h1 align="center">CPU Power States</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/9.png"></img>
-    <p  >• CPU Power States: There you can see PStates of you CPU</p> 
-    <br />
-    <br />
-    <h1 align="center">In-Game metrics</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/10.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/11.png"></img>
-    <p  >• In-Game metrics: You can enable In-Game metrics via RTSS, Saku Overclock will show only needed metrics!</p> 
+    <h3 align="center">CPU section</h2>
+    <img alt="CPU Monitoring Dashboard with Per-Core Data" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png">
+    <p>The <strong>Sensor Monitoring</strong> dashboard provides a centralized view of your system status. Use the navigation panel on the left to switch between different hardware components. The <strong>Tools</strong> section at the bottom allows you to enable the <strong>In-Game Overlay</strong> or <strong>TrayMon</strong> for background monitoring.</p>
+    <p>The <strong>CPU</strong> section (shown above) displays real-time data for each core. You can toggle between Frequency, Voltage, Power, and Temperature views. Below the core grid, visual bars show <strong>Common metrics</strong> and <strong>Power sensors</strong>, followed by the static <strong>Specifications</strong> of your processor.</p>
+    <br/>
+    <h3 align="center">VRM & Currents</h3>
+    <img alt="VRM and Power Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/vrm.png">
+    <p>Monitor the power delivery system. This view shows detailed <strong>VRM properties</strong>, including current amperage and power consumption metrics.</p>
+    <br/>
+    <h3 align="center">Graphics (GFX)</h3>
+    <img alt="Graphics Card Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/gfx.png">
+    <p>View properties for all detected graphics adapters. The top blocks identify the installed GPUs.</p>
+    <p>Below, you can see real-time and static data such as core frequency, temperature, VRAM usage, memory type, and driver version. The application currently supports monitoring for <strong>Nvidia</strong> discrete GPUs and all <strong>iGPU</strong> (Integrated Graphics) models.</p>
+    <br/>
+    <h3 align="center">Memory (RAM)</h3>
+    <img alt="RAM Information and Timings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/ram.png">
+    <p>Inspect your memory configuration. The top section lists installed modules with their slot number, capacity, and bus width.</p>
+    <p>The <strong>Specifications</strong> area tracks real-time frequency, FCLK, SoC voltage, and SoC power. You can also view primary <strong>Timings</strong> and <strong>Advanced info</strong>, which includes the manufacturer name and module part numbers.</p>
+    <br/>
+    <h3 align="center">Battery Health</h3>
+    <img alt="Battery Status and Health" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/battery.png">
+    <p>Check the detailed status of your battery. This section displays the charge level, wear level, and current power state (charging/discharging). It also provides recommendations for charging habits and battery replacement based on the health data.</p>
+    <br/>
+    <h3 align="center">CPU Power States</h3>
+    <img alt="CPU P-States Information" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/pstates.png">
+    <p>Analyze how the processor manages power. This view repeats the <strong>Common metrics</strong> for context and adds a <strong>Power states</strong> section. It lists all available performance states (P-States) and highlights the currently active state.</p>
   </ol>
 </details>
 
@@ -347,15 +316,9 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary><b>Saku PowerMon Pro</b></summary>
   <ol>
-    <h1 align="center">PowerMon main window</h1>
+    <h1 align="center">Saku PowerMon Pro: Raw sensor data view</h1>
    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/main.png"></img>
-    <p  > Here you can see the entire ALL important values of you system. You can see and add notes to values (for example "GPU clock (MHz)")</p> 
-    <br />
-    <br />
-    <h1 align="center">How to open Saku PowerMon</h1>
-   <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/open_1.png"></img>
-   <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/open_2.png"></img>
-    <p  > Here you can see how to open Saku PowerMon Pro</p> 
+    <p  >This tool displays the raw sensor data reported directly by your device's SMU. It is primarily designed for troubleshooting. While you can use it to monitor specific values and tag them with your own notes, its main purpose is to help solve technical issues. If you encounter a problem, I might ask for a screenshot of this window to understand exactly how your system is behaving.</p> 
   </ol>
 </details>
 
@@ -363,9 +326,9 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary><b>Cooler tweaking</b></summary>
   <ol>
-    <h1 align="center">🍃 Cooler tweaks page</h1> 
+    <h3 align="center">Cooler tweaks page</h1> 
     <p>There you can adjust your cooler spinning with Notebook fan controller app or natively on Asus laptops with ASUS System Control Interface</p>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/1.png"></img>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/cooler_main.png"></img>
     <h2>⚙️ Easy to set up</h2>
 
 **Additional operations for NBFC Method**
@@ -373,13 +336,13 @@ Access AMD's System Management Unit for unprecedented control over your processo
 - **Click on suggest** button (button with question symbol) to see suggested configurations
 - **Choose configuration** from list
 <br/>
-<h3>The program has an automatic detection of non-installed NBFC</h3>
-Click on Download to download NBFC automatically
+<h3>The program has an automatic detection of supported NBFC configs (Experimental)</h3>
+You can get configuration recommendation with suggest button
 
-<img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
+<img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/cooler_suggest.png"></img>
 ---
 
-### ☀️ Cooler page usage
+### Cooler page usage
 - Set **Cooler management** option to **Enabled**
 - Set **Cooler control type** option to whatever you want. For example: **Completely fixed mode** if you want to control both coolers without curve
 - Set **Fixed rotation mode** option to whatever you want. For example: **Manual** and 70% setting
@@ -390,9 +353,9 @@ Done! You set up Cooler tweaks page.
 
 ---
 
-### 🛡️ Important Safety Notice
+### ⚠️ Important Safety Notice
 
-> **⚠️ CRITICAL WARNING**  
+> **CRITICAL WARNING**  
 > NBFC provide direct hardware access and can permanently damage your Embedded Controller (EC) if used incorrectly.
 > **Use configurations that are 100% tested on your laptop and fully compatible. Suggest button can suggest wrong configurations!**
 >
@@ -410,39 +373,43 @@ Done! You set up Cooler tweaks page.
 <details>
   <summary><b>Settings</b></summary>
   <ol>
-    <h1 align="center">⚙️ Settings page</h1>
-    <h2>Behavior section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img> 
-
-**Avaiable options**
-- **Add application to the Windows autostart list:** No startup options, Hide to tray, Startup with OS, Startup & Tray
-- **Set application to close to the system tray:** Do not hide in tray, Hide by minimize button, Hide by close button
-- **Enable automatic apply overclocking options when the application is opened:** All the settings that were previously configured will be applied automatically upon starting Saku Overclock. No more need to manually click the "Apply" button
-- **Check for updates:** Display the availability of an update on a separate page as soon as it becomes available
-- **Reapply overclock settings every second:** Overrides the set overclocking parameters every few seconds in order to avoid conflicting with the vendor's software or BIOS settings
-    <br />
-    <h2>Theme section</h2>
-    <h3 align="center">Application themes</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png"></img> 
-    <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it and change theme background</p> 
-    <h3 align="center">Background theme settings</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png"></img> 
-    <p  >There you can change theme background from file or from link to image. GIF file type is supported</p> 
-    <h3 align="center">Theme manager</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_thememanager.png"></img> 
-    <p>Manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
-    <h2>TrayMon section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon.png"></img> 
-    <p>Always be aware of the data from your sensors in any application. TrayMon displays information from your selected sensors in the Windows system tray, with full customization, so you can always keep up to date with current temperatures, frequencies, power, and other information from the sensors available on your system.</p>
-    <h2>RTSS section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay.png"></img> 
-    <p>Do you like to play? So are we, so the application has monitoring of system indicators and their output as an overlay over the game using RTSS! You can completely customize which colors will have which setting, which sensors to display, and what size they should be. You can also use additional customization if you have the skills to work with RTSS, you can edit the applied overlay parameters to suit your needs.</p>
-    <h2>Keybinds section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_keybinds.png"></img> 
-    <p>Check out application keybindings and enable or disable them all.</p>
-    <h2>About section</h2>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_about.png"></img> 
-    <p>About up section with join our discord button.</p>
+    <h2 align="center">General Behavior</h2>
+    <img alt="General Behavior Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png">
+    <p>Configure how the application interacts with your system:</p>
+    <ul>
+        <li><strong>Startup & Tray:</strong> Choose whether the application starts with Windows and how it minimizes (to the taskbar or system tray).</li>
+        <li><strong>Auto-apply:</strong> Automatically load your saved overclocking profile when the application starts. This eliminates the need to press "Apply" manually.</li>
+        <li><strong>Updates:</strong> Enable automatic checks for new versions.</li>
+        <li><strong>Reapply Options:</strong> Force the application to re-apply settings every few seconds. This is useful if the BIOS or vendor software tries to reset your custom values.</li>
+    </ul>
+    <br/>
+    <h2 align="center">Visual Customization</h2>
+    <h3 align="center">Themes</h3>
+    <img alt="Theme Selection Menu" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themes.png">
+    <img alt="Advanced Theme Customization" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png">
+    <p>Personalize the interface. You can select from built-in themes or create a custom design. The settings allow you to adjust the transparency of the background image and the opacity of the darkening mask.</p>
+    <h3 align="center">Background</h3>
+    <img alt="Background Image Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png">
+    <p>Set a custom background using a local file or a direct URL. The application supports <strong>GIF</strong> animations for dynamic backgrounds.</p>
+    <br/>
+    <h2 align="center">TrayMon (Taskbar Monitoring)</h2>
+    <img alt="TrayMon General Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon.png">
+    <img alt="TrayMon Sensor Selection" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon_extra.png">
+    <p>Monitor your hardware directly from the Windows system tray. TrayMon displays real-time data from selected sensors (such as temperature, frequency, or power) near the system clock. You can customize the font, colors, background.</p>
+    <br/>
+    <h2 align="center">RTSS In-Game Overlay</h2>
+    <img alt="RTSS Overlay Settings" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay.png">
+    <img alt="RTSS Sensor Configuration" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay_extra.png">
+    <p>View system metrics while gaming. This feature integrates with <strong>RivaTuner Statistics Server (RTSS)</strong> to draw an overlay on top of your game.</p>
+    <p>You can select which sensors to display, assign specific colors, and change text in labels. Advanced users can manually edit the overlay formatting code for precise control.</p>
+    <br/>
+    <h2 align="center">Key Bindings</h2>
+    <img alt="Key Bindings List" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_keybinds.png">
+    <p>View the list of global hotkeys used for quick actions (like switching presets). You can enable or disable all hotkeys from this menu.</p>
+    <br/>
+    <h2 align="center">About</h2>
+    <img alt="About Section" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_about.png">
+    <p>View application information, check the current version, and access the direct link to join the Discord community.</p>
   </ol>
 </details>
 
@@ -450,166 +417,146 @@ Done! You set up Cooler tweaks page.
 
 ## 🔨 Built With
 
-The program was developed using the Universal Windows Platform (UWP) framework and WinUI 3 interface based on the **C# programming language**.
+Saku Overclock is built using **C#**, utilizing **WinUI 3** and the **Windows App SDK** to provide a modern, native Windows experience.
 
-### ❓ What other components does Saku Overclock include?
- - **ZenStates-Core (C#)**: Provides access to all hidden overclocking options through memory addresses and system management unit (SMU). 
- - **Saku RTSS CLI (C++)**: Library that helps to change the in-game overlay to display information about your device's sensors and FPS.
- - **NBFC (C#)**: Executable to adjust cooler curves and speeds.
- - **Collapse Launcher elements (C#)**: Some code elements to improve UI/UX.
- - **inpoutx64.dll (C++)**: Library to obtain access to memory.
- - **PawnIO (pawn)**: Driver that provides universal hardware access to apply overclock settings.
+### Core Components & Libraries
+
+*   **ZenStates-Core**: Powering the backend, this C# library handles communication with the System Management Unit (SMU) to access hidden optimization settings.
+*   **Saku RTSS CLI**: A custom C++ bridge that manages the In-Game Overlay, displaying real-time sensor data and FPS.
+*   **NBFC (Notebook Fan Control)**: The engine responsible for managing fan speeds and custom cooling curves.
+*   **PawnIO**: A low-level driver ensuring universal hardware access for applying overclocking settings safely.
+*   **inpoutx64**: Essential library for direct memory access operations.
+*   **Collapse Launcher**: UI/UX components adapted to enhance the visual interface and user experience.
+<br/>
+
+## ⚡ Get Started in Seconds
+
+Saku Overclock works immediately after installation. You do not need technical expertise to use the application.
+
+1.  **Download** the installer from the [Releases page](https://github.com/Erruar/Saku-Overclock/releases).
+2.  **Install** the application.
+3.  **Launch** Saku Overclock.
+    *   *During the first launch, a setup screen will help you personalize the experience.*
+4.  **Choose a preset** on the main dashboard (for example, "Maximum" or "Eco") and click the ▶ **Apply**.
+5.  **The system is now optimized.**
+
+> **Note:** The application may ask to install the **PawnIO driver** on the first launch. This driver is safe and required for the application to communicate with the hardware. Please allow the installation.
 
 
+## ✨ Tailored to Your Needs
 
-<!-- GETTING STARTED -->
-## ⏩ Getting Started
+Saku Overclock adapts to your requirements, whether you need a quick result or full control.
 
-Ready to unlock your laptop's true potential? Saku Overclock installs in minutes and starts delivering results immediately.
+### Quick Start
+After the setup, the main dashboard displays real-time system monitoring and a list of presets. Select a preset and apply the settings to improve performance immediately. You do not need to configure anything else.
 
-### Prerequisites
+### Advanced Tuning
+If you want to customize the settings, Saku Overclock offers advanced tools:
+*   **Presets Management:** View and edit profiles using simple visual sliders. This page helps you understand the effect of each preset.
+*   **Overclock Page:** Adjust specific power, thermal, current limits and processor behavior.
+    *   **Safety Limits:** The application restricts values to safe ranges to prevent hardware damage.
+    *   **Smart Suggestions:** The system analyzes your hardware and suggests stable values.
 
-**Enhanced Fan Control (Optional)**  
-For advanced cooling management, install [Notebook Fan Controller](https://github.com/hirschmann/nbfc/releases) before proceeding. This enables custom fan curves and thermal profiles.  
-*Skip this step if you prefer automatic thermal management.*
+### Automation
+Once you find the best configuration, go to **Settings**. Enable **Startup with OS** and **Auto-apply latest settings**. The application will automatically optimize your device every time the system boots.
 
-### ⚡ Quick Installation
 
-Experience professional overclocking in three simple steps:
+## 🛡️ Stability & Safety Guide
 
-1. **Download** the latest release from our [releases page](https://github.com/Erruar/Saku-Overclock/releases)
-2. **Run** the installer and follow the standard Windows installation process  
-3. **Launch** Saku Overclock from your desktop and begin optimizing
+We prioritize the safety of your hardware. Follow these rules to ensure a stable experience.
 
-That's it. Your laptop is now ready for precision tuning.
+### Incremental Tuning
+When you create custom presets, do not maximize values immediately.
+1.  Increase a value slightly (for example, add **+5W** to the power limit).
+2.  Apply the setting.
+3.  Test the system stability under load.
+4.  If the system is stable, you can increase the value again.
 
-### 🛠️ Need Assistance?
+### Notification Center
+After you apply a preset, check the **Notification Center** in the application.
+*   The notification confirms settings are applied.
+*   If a setting was **not applied**, the notification will explain the reason.
+*   The notification may provide a link to the FAQ or suggest disabling the incompatible option.
 
-Encountering installation issues? Our community is here to help.  
+### Recovery from System Freeze
+If you set values that are too high, the device may freeze or shut down. **This is normal during the tuning process.**
+
+1.  **Force Shutdown:** Hold the power button on your device for 5–10 seconds until the screen turns off.
+2.  **Turn On:** Power on the device.
+3.  **Try Again:** By default, Saku Overclock **does not apply settings on boot after crash**. Your device will start with factory settings. You can open the application, lower the values in your preset, and try again.
+
+
+## 🤝 Need Assistance?
+
+If you encounter an issue or have a suggestion, please let us know.
+
 [**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## 🧠 Easy setup. Advanced features. Maximum performance.
-
-Saku Overclock provides a user-friendly experience for users. Navigate to the “Presets management” page and choose the one that best meets your needs, whether it's reducing temperature, improving performance, or addressing specific issues such as the 0.4GHz problem on AMD Ryzen processors.
-
-Wishing to extract the full potential from your laptop? Access the “Overclock” page, where you can manually adjust the desired settings. If you are unsure where to start, the software offers intelligent suggestions and guidance to help you achieve optimal settings and maximum performance.
-
-After finding the ideal settings, click the “Apply” button in the **lower right corner**, which looks like a **music playback icon**. Saku Overclock will then decide how and what adjustments to make. You can experiment with parameters or contact our Discord community for assistance if needed.
-
-Some laptop manufacturers have implemented an automatic power recovery mechanism in their firmware to address factory power limitations or specific operating modes. However, Saku Overclock prevents this by automatically reverting values set in the program, without placing additional stress on the system.
-
-### 🔥 Reliability and Temperature Issues:
-
-**Saku Overclock will not cause overheating** if certain risks are avoided. These include:
-- Setting maximum temperature limits above 90 degrees Celsius.
-- Simultaneously setting excessive power limits and using short time intervals for them.
-- Creating custom NBFC configurations to control fans, especially if the fan service is set to disabled or read-only mode especially **without proper knowledge**, as this may **stop the fan** operation. Be cautious.
-- Using obscure or random SMU commands in developer mode without proper understanding or warning.
-- Increasing the frequency or voltage **beyond the acceptable processor limits** is not guaranteed to be stable and may be dangerous.
-
-⚠️ All potentially dangerous parameters are indicated by special icons. Please hover the cursor over them to read important explanations before making any changes.
-
-### 🆘 Something went wrong after applying the settings
-
-If your laptop starts to behave abnormally or you experience freezes, blue screens, or a complete shutdown after applying overclock settings, please change the settings. Saku Overclock strives to provide a safe overclocking experience, and all settings are tested on real hardware before being released. If your laptop freezes or the screen goes blank, press and hold the power button for 5-10 seconds until it turns off. Then, you can reboot your laptop normally. Overclock settings will not function after reboot if you have not enabled autorun for Saku Overclock.
-If you experience any issues with the program, please do not hesitate to contact us.
-
-### 🛠️ Something get wrong?
-
-Encountering usage issues? Our community is here to help.  
-[**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
 
 
 
 
 <!-- ROADMAP -->
-## 📈 Roadmap
+## 🗺️ Roadmap & Future Vision
 
-- [x] Add Readme
-- [x] Add back to top links
-- [x] Add and create first Beta version
-- [x] Add and create first Release Candidate version
-- [ ] Add and create first Release version
-- [ ] Multi-language Support
-    - [x] English
-    - [x] Russian
-    - [ ] More?
+We are currently in a critical phase: **The V1.0 Release**. Our primary focus is ensuring rock-solid stability for the core features.
+
+Once the release settles, development will be driven by community feedback and polls. However, we already have some game-changing technologies on the horizon:
+
+### Coming Soon
+- [ ] **OC Finder Next**: The next evolution of our tuning algorithm. It won't just suggest settings; it will actively run stress tests and iteratively refine parameters to find the absolute peak performance for your specific silicon.
+- [ ] **Stream Stabilizer**: A dynamic resource maneuvering engine. It adjusts CPU properties in real-time to ensure rock-solid frame times during streaming or heavy multitasking.
+- [ ] **Advanced Thermal Management**: Full control over fan curves, including "Smart Curves" that adapt to your workflow.
+- [ ] **Preset Automation**: Automatic preset switching based on power source (Battery vs. AC Adapter).
+
+### Global Reach
+- [x] English Support
+- [ ] Community-contributed translations (Coming post-release)
 
 See the [open issues](https://github.com/Erruar/Saku-Overclock/issues) for a full list of proposed features (and known issues).
-
-
-
 
 <!-- CONTRIBUTING -->
 ## 👋 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make Saku Overclock better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 
-1. [Fork the Project](https://github.com/Erruar/Saku-Overclock/fork)
-2. Create your Feature Branch 
-3. Commit your Changes in your fork
-4. Push to the Branch 
-5. [Open a Pull Request](https://github.com/Erruar/Saku-Overclock/pulls)
-6. Wait for accepting or rejecting!
+**Don't forget to give the project a star! Thanks again!**
+
+1. [Fork](https://github.com/Erruar/Saku-Overclock/fork) the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. [**Open a Pull Request**](https://github.com/Erruar/Saku-Overclock/pulls)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## ⚖️ License & Legal
 
-
-<!-- LICENSE -->
-## 📄 License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
-This project is distributed under the terms of the **GPL-3.0** license. For more information, see the file [`LICENSE.md `](./LICENSE.md ).
+**Saku Overclock** is free and open-source software distributed under the **GPL-v3.0**.
+See [`LICENSE.md`](./LICENSE.md) for more information.
 
-The application also contains **individual code elements** from the [Collapse Launcher project](https://github.com/CollapseLauncher/Collapse), distributed under the [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE).
-All borrowed code fragments are properly **marked** as belonging to Collapse Launcher, and in accordance with the terms of the MIT license contain **the full text of the license**, as well as an indication of authorship and a link to the original source.
+**Acknowledgments**
+This project incorporates UI/UX components from [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), used under the MIT License. All adapted code is explicitly attributed in the source files.
+
+### Distribution Guidelines
+We welcome the distribution of Saku Overclock on software portals and tech blogs. To ensure compliance with the license and the best experience for users:
+
+1.  **Credit the Author:** You must explicitly mention **Serzhik Sakurajima (Erruar)** as the creator.
+2.  **Original Content:** We strictly encourage writing unique reviews rather than copying this Readme. Unique content ranks better in search engines (SEO) and provides real value.
+3.  **Community Links:** Please include links to our [GitHub Repository](https://github.com/Erruar/Saku-Overclock) and [Discord Community](https://discord.com/invite/eFcP6TSjEZ).
 
 
-## 🔒 Legal & Licensing
+## 📬 Contact
 
-For my part, I'll mention a few important points about publishing my app on third-party resources.:
+Have questions, suggestions, or partnership offers?
 
-### 🎭 Copyright Policy
+*   **Community & Support:** [Join our Discord Server](https://discord.com/invite/eFcP6TSjEZ)
+*   **Email:** erruarbrorder@gmail.com
 
-You **have the right to distribute** builds of my application on third-party resources and platforms. However:
-
-* You can copy the source code of a project only as the license GPL-v3-only allows.
-* Copying the README **in full** or without modification to your website — **is not permitted without my consent**.
-
-If you want to share the program on a third-party site, please **be sure to include me as the author** of the project in the description. Just posting a link to the application **is not enough** — I have done a lot of work to create this tool, and I count on your respect for my work.
-
-### ☀️ How do I properly place this app on my website?
-
-The most correct way is to **install the app**, test it and create **your own screenshots**. You can write a **review** with your personal opinion about the functionality, convenience or features of the work. This is much better than mindlessly copying the Readme text.
-
-So, for example, they correctly applied to [Softpedia](https://www.softpedia.com/get/Tweak/System-Tweak/Saku-Overclock.shtml#download) and [Top4Downloads](https://www.top4download.com/saku-overclock/tuykfucn.html), for which I am sincerely grateful to them.
-
-When publishing, do not forget:
-
-* **Specify me as the author of the program** (Serzhik Sakurajima / Erruar),
-* Add a link to [our Discord community](https://discord.com/invite/eFcP6TSjEZ) — this will help new users to adapt faster.
-
-Thanks for understanding. I'm trying to make this tool better, including for you.
-
-### ✅ Fossa License Status
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_large)
-
-<!-- CONTACT -->
-## 💬 Contact
-
-You can contact our community on Discord using the provided link, or you can contact me directly via email.
-
-* **Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ)
-* **erruarbrorder@gmail.com**
 
 
 
