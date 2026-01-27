@@ -28,4 +28,10 @@ public interface IOcFinderService
     /// </summary>
     /// <returns>Доступность андервольтинга</returns>
     bool IsUndervoltingAvailable();
+
+    /// <summary>
+    ///     Возвращает базовую мощность процессора
+    /// </summary>
+    /// <returns>Базовая мощность процессора</returns>
+    int GetCpuPower();
 }

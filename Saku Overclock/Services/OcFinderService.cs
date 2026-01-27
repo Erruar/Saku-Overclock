@@ -373,9 +373,13 @@ public class OcFinderService : IOcFinderService
         }
 
         _validatedCpuPower = cpuPower;
+        var codenameGeneration = Cpu.GetCodenameGeneration();
+        var isCpuHighPower = codenameGeneration == CodenameGeneration.Fp8 
+            || codenameGeneration == CodenameGeneration.Am5;
+        // Позволяет использовать реальную базовую мощность а не ограниченную на 45, на Strix Halo и Dragon Range
 
         // Ограничение для мобильных платформ
-        if (_validatedCpuPower > 45 && !_isPlatformPc)
+        if (_validatedCpuPower > 45 && !_isPlatformPc && !isCpuHighPower)
         {
             _validatedCpuPower = 45d;
         }
@@ -864,6 +868,8 @@ public class OcFinderService : IOcFinderService
 
     // Публичные методы для теста андервольтинга
     public bool IsUndervoltingAvailable() => CheckUndervoltingFeature();
+
+    public int GetCpuPower() => (int)_validatedCpuPower;
 
     public PresetMetrics GetPresetMetrics(PresetType type, OptimizationLevel level)
     {
