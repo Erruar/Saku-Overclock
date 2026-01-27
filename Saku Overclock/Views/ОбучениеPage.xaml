@@ -214,6 +214,90 @@
                 </StackPanel>
             </Button>
         </Grid>
+        <Grid x:Name="OcFinderScanSection" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
+                <FontIcon Glyph="&#xE9D9;" FontSize="22" />
+                <TextBlock Text="OC Finder — Подготовка готовых пресетов" FontSize="32" Margin="8,-3,0,0"/>
+            </StackPanel>
+            <Grid Grid.Row="1" HorizontalAlignment="Center" Height="130" Margin="0,-30,0,0" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="130"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" CornerRadius="16" Margin="0,0,7,0" Padding="24,18,24,10" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                    <FontIcon FontSize="40" Glyph="&#xEC0A;"/>
+                </Grid>
+                <Grid Grid.Column="1" CornerRadius="16" Margin="0,0,7,0" Padding="24,18,24,10" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                    <FontIcon FontSize="40" Glyph="&#xECAD;"/>
+                </Grid>
+                <Grid Grid.Column="2" CornerRadius="16" Margin="0,0,7,0" Padding="24,18,24,10" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                    <FontIcon FontSize="40" Glyph="&#xF158;"/>
+                </Grid>
+            </Grid>
+            <FontIcon Margin="0,-5,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" FontSize="80" Glyph="&#xE71E;">
+                <FontIcon.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform x:Name="SearchScale" ScaleX="2.0" ScaleY="2.0" CenterX="34" CenterY="34"/>
+                        <TranslateTransform x:Name="SearchTransform" X="5"/>
+                    </TransformGroup>
+                </FontIcon.RenderTransform>
+            </FontIcon>
+            <TextBlock Grid.Row="2" x:Name="SearchSign" Margin="0,-120,0,0" FontSize="21" VerticalAlignment="Center" HorizontalAlignment="Center" x:Uid="OcFinderSystemScanning" Text="Сканируем систему"/>
+        </Grid>
+        <Grid x:Name="OcFinderPresetsSection" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
+                <FontIcon Glyph="&#xE9D9;" FontSize="22" />
+                <TextBlock Text="OC Finder - Готовые пресеты" FontSize="32" Margin="8,-3,0,0"/>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" Margin="40,0,40,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid CornerRadius="16" Margin="0,0,7,0" Padding="24,18,24,10" Grid.Column="0" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" Text="Кнопка применить"/>
+                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" Text="После применения пресета можно увидеть статус применения"/>
+
+                        
+                    </Grid>
+                    <Grid CornerRadius="16" Margin="3,0,3,0" Padding="24,18,24,10" Grid.Column="1" Background="{ThemeResource ControlStrokeColorDefaultBrush}" HorizontalAlignment="Stretch">
+                        
+                    </Grid>
+                    <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="2" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                        
+                    </Grid>
+                    <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="3" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                        
+                    </Grid>
+                    <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="4" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                        
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+
+            <Button Grid.Row="2" Width="250" CornerRadius="12" x:Name="PresetsDone" Click="PresetsDone_Click" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Margin="0,0,00,10">
+                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
+                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
+                    <TextBlock Margin="5,0,0,0" Text="Продолжить" FontWeight="Bold" FontSize="16"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
         <Grid x:Name="TrainingSection" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="70"/>

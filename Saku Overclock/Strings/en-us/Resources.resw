@@ -3325,6 +3325,21 @@ Set up a personalized undervolting level that will be applied to all premade pre
   <data name="OcFinderUnableToSetUndervoltingStatus" xml:space="preserve">
     <value>Undervolting is not available on this system. No changes will be applied</value>
   </data>
+  <data name="OcFinderUndervoltingAvailableStatus" xml:space="preserve">
+    <value>Undervolting is available on this system</value>
+  </data>
+  <data name="OcFinderPresetsCreating" xml:space="preserve">
+    <value>Generating suitable presets</value>
+  </data>
+  <data name="OcFinderCpuPower" xml:space="preserve">
+    <value>The processor's power is</value>
+  </data>
+  <data name="OcFinderSystemScanning.Text" xml:space="preserve">
+    <value>Scanning the system</value>
+  </data>
+  <data name="OcFinderSystemScanningFinal" xml:space="preserve">
+    <value>Finishing touches. Completing the scan</value>
+  </data>
   <data name="PawnIoInstallDriver.Text" xml:space="preserve">
     <value>Driver installation required</value>
   </data>

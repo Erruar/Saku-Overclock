@@ -1,10 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
@@ -18,6 +16,7 @@ public sealed partial class ОбучениеPage : Page
     private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
     private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>(); // Управление треем
     private static readonly IThemeSelectorService ThemeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
+    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>(); // Управление готовыми пресетами
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private bool _isLoaded;
@@ -707,7 +706,240 @@ public sealed partial class ОбучениеPage : Page
     {
         try
         {
-            await ChangeSection(QuickSettings, TrainingSection);
+            await ChangeSection(QuickSettings, OcFinderScanSection);
+            await AnimateOcFinderSearch();
+            await ChangeSection(OcFinderScanSection, TrainingSection /*OcFinderPresetsSection*/);
+
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
+    }
+
+    private async Task AnimateOcFinderSearch()
+    {
+        // Общие easing'и
+        var quintEaseOut = new QuinticEase { EasingMode = EasingMode.EaseOut };
+        var quintEaseInOut = new QuinticEase { EasingMode = EasingMode.EaseInOut };
+
+        // === 1. Движение влево ===
+        // Scale: 2.0 -> 1.7
+        // X: 5 -> -126
+        // Длительность: 1.1с
+        {
+            var sb = new Storyboard
+            {
+                Duration = TimeSpan.FromSeconds(1.1)
+            };
+
+            var scaleX = new DoubleAnimation
+            {
+                To = 1.7,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+            var scaleY = new DoubleAnimation
+            {
+                To = 1.7,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+            var moveX = new DoubleAnimation
+            {
+                To = -126,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+
+            Storyboard.SetTarget(scaleX, SearchScale);
+            Storyboard.SetTargetProperty(scaleX, "ScaleX");
+            Storyboard.SetTarget(scaleY, SearchScale);
+            Storyboard.SetTargetProperty(scaleY, "ScaleY");
+
+            Storyboard.SetTarget(moveX, SearchTransform);
+            Storyboard.SetTargetProperty(moveX, "X");
+
+            sb.Children.Add(scaleX);
+            sb.Children.Add(scaleY);
+            sb.Children.Add(moveX);
+
+            sb.Begin();
+            await Task.Delay(TimeSpan.FromSeconds(1.1));
+        }
+
+        // === 2. Долгое движение вправо ===
+        // Scale: 1.7 -> 1.5
+        // X: -126 -> 134
+        // Длительность: 1.8с
+        {
+            var sb = new Storyboard
+            {
+                Duration = TimeSpan.FromSeconds(1.8)
+            };
+
+            var scaleX = new DoubleAnimation
+            {
+                To = 1.5,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseInOut
+            };
+            var scaleY = new DoubleAnimation
+            {
+                To = 1.5,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseInOut
+            };
+            var moveX = new DoubleAnimation
+            {
+                To = 134,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseInOut
+            };
+
+            Storyboard.SetTarget(scaleX, SearchScale);
+            Storyboard.SetTargetProperty(scaleX, "ScaleX");
+            Storyboard.SetTarget(scaleY, SearchScale);
+            Storyboard.SetTargetProperty(scaleY, "ScaleY");
+
+            Storyboard.SetTarget(moveX, SearchTransform);
+            Storyboard.SetTargetProperty(moveX, "X");
+
+            sb.Children.Add(scaleX);
+            sb.Children.Add(scaleY);
+            sb.Children.Add(moveX);
+
+            sb.Begin();
+            SearchSign.Text = "OcFinderCpuPower".GetLocalized() + OcFinder.GetCpuPower() + "W";
+                
+            await Task.Delay(TimeSpan.FromSeconds(2.9));
+        }
+
+        // === 3. Движение влево ===
+        // Scale: 1.5 -> 1.3
+        // X: 134 -> 4
+        // Длительность: 1.1с
+        {
+            var sb = new Storyboard
+            {
+                Duration = TimeSpan.FromSeconds(1.1)
+            };
+
+            var scaleX = new DoubleAnimation
+            {
+                To = 1.3,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+            var scaleY = new DoubleAnimation
+            {
+                To = 1.3,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+            var moveX = new DoubleAnimation
+            {
+                To = 4,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+
+            Storyboard.SetTarget(scaleX, SearchScale);
+            Storyboard.SetTargetProperty(scaleX, "ScaleX");
+            Storyboard.SetTarget(scaleY, SearchScale);
+            Storyboard.SetTargetProperty(scaleY, "ScaleY");
+
+            Storyboard.SetTarget(moveX, SearchTransform);
+            Storyboard.SetTargetProperty(moveX, "X");
+
+            sb.Children.Add(scaleX);
+            sb.Children.Add(scaleY);
+            sb.Children.Add(moveX);
+
+            sb.Begin();
+            SearchSign.Text = OcFinder.IsUndervoltingAvailable()
+                ? "OcFinderUndervoltingAvailableStatus".GetLocalized()
+                : "OcFinderUnableToSetUndervoltingStatus".GetLocalized();
+            await Task.Delay(TimeSpan.FromSeconds(4));
+        }
+
+        // === 4. Увеличение лупы ===
+        // Scale: 1.3 -> 2.0
+        // Длительность: 0.5с
+        {
+            var sb = new Storyboard
+            {
+                Duration = TimeSpan.FromSeconds(0.5)
+            };
+
+            var scaleX = new DoubleAnimation
+            {
+                To = 2.0,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+            var scaleY = new DoubleAnimation
+            {
+                To = 2.0,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+
+            Storyboard.SetTarget(scaleX, SearchScale);
+            Storyboard.SetTargetProperty(scaleX, "ScaleX");
+            Storyboard.SetTarget(scaleY, SearchScale);
+            Storyboard.SetTargetProperty(scaleY, "ScaleY");
+
+            sb.Children.Add(scaleX);
+            sb.Children.Add(scaleY);
+
+            sb.Begin();
+            SearchSign.Text = "OcFinderPresetsCreating".GetLocalized();
+            await Task.Delay(TimeSpan.FromSeconds(4.5));
+        }
+
+        // === 5. Быстрое уменьшение лупы ===
+        // Scale: 2.0 -> 1.7
+        // Длительность: 0.3с
+        {
+            var sb = new Storyboard
+            {
+                Duration = TimeSpan.FromSeconds(0.3)
+            };
+
+            var scaleX = new DoubleAnimation
+            {
+                To = 1.7,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+            var scaleY = new DoubleAnimation
+            {
+                To = 1.7,
+                Duration = sb.Duration,
+                EasingFunction = quintEaseOut
+            };
+
+            Storyboard.SetTarget(scaleX, SearchScale);
+            Storyboard.SetTargetProperty(scaleX, "ScaleX");
+            Storyboard.SetTarget(scaleY, SearchScale);
+            Storyboard.SetTargetProperty(scaleY, "ScaleY");
+
+            sb.Children.Add(scaleX);
+            sb.Children.Add(scaleY);
+
+            sb.Begin();
+            SearchSign.Text = "OcFinderSystemScanningFinal".GetLocalized();
+            await Task.Delay(TimeSpan.FromSeconds(4.8));
+        }
+    }
+
+    private async void PresetsDone_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(OcFinderPresetsSection, TrainingSection);
+
         }
         catch (Exception ex)
         {

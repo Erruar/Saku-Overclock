@@ -3341,6 +3341,21 @@ Asus. Может не поддерживаться на
   <data name="OcFinderUnableToSetUndervoltingStatus" xml:space="preserve">
     <value>Андервольтинг недоступен и не будет применён на данной системе</value>
   </data>
+  <data name="OcFinderUndervoltingAvailableStatus" xml:space="preserve">
+    <value>Андервольтинг доступен на данной системе</value>
+  </data>
+  <data name="OcFinderPresetsCreating" xml:space="preserve">
+    <value>Определяем подходящие пресеты</value>
+  </data>
+  <data name="OcFinderCpuPower" xml:space="preserve">
+    <value>Мощность вашего процессора </value>
+  </data>
+  <data name="OcFinderSystemScanning.Text" xml:space="preserve">
+    <value>Сканируем систему</value>
+  </data>
+  <data name="OcFinderSystemScanningFinal" xml:space="preserve">
+    <value>Финальные штрихи. Завершение сканирования</value>
+  </data>
   <data name="PawnIoInstallDriver.Text" xml:space="preserve">
     <value>Требуется установка драйвера</value>
   </data>
