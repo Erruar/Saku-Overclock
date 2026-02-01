@@ -9,7 +9,6 @@ using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
-// ReSharper disable once RedundantExtendsListEntry
 public sealed partial class ОбучениеPage : Page
 {
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
@@ -934,21 +933,10 @@ public sealed partial class ОбучениеPage : Page
         }
     }
 
-    private async void PresetsDone_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await ChangeSection(OcFinderPresetsSection, TrainingSection);
-
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    }
-
     private void TrainingDone_Click(object sender, RoutedEventArgs e)
     {
+        AppSettings.AppFirstRun = false;
+        AppSettings.SaveSettings();
         ShowNavbarAndControls();
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!);

@@ -1510,6 +1510,11 @@
                                 <Grid HorizontalAlignment="Stretch"
                                       Background="{ThemeResource ControlStrokeColorDefaultBrush}" Height="Auto"
                                       CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                    <Grid.ContextFlyout>
+                                        <MenuBarItemFlyout>
+                                            <MenuFlyoutItem x:Uid="Info_GenerateDebugReport" Text="Создать отчёт" Click="DebugReport_Click"/>
+                                        </MenuBarItemFlyout>
+                                    </Grid.ContextFlyout>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition />
@@ -1681,7 +1686,6 @@
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
-
                             </Grid>
 
                             <!-- Секция Дискретная графика -->

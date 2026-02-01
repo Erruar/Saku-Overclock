@@ -3332,7 +3332,7 @@ Set up a personalized undervolting level that will be applied to all premade pre
     <value>Generating suitable presets</value>
   </data>
   <data name="OcFinderCpuPower" xml:space="preserve">
-    <value>The processor's power is</value>
+    <value>The processor's power is </value>
   </data>
   <data name="OcFinderSystemScanning.Text" xml:space="preserve">
     <value>Scanning the system</value>
@@ -3360,5 +3360,53 @@ Set up a personalized undervolting level that will be applied to all premade pre
   </data>
   <data name="UnsupportedPlatformMessage" xml:space="preserve">
     <value>Platform is not supported. Settings cannot be applied</value>
+  </data>
+  <data name="FirstLaunchLicenseAgreement.Content" xml:space="preserve">
+    <value>I agree to the License Agreement</value>
+  </data>
+  <data name="FirstLaunchLicenseAgreementError.Subtitle" xml:space="preserve">
+    <value>Please make sure you’ve reviewed the License Agreement before continuing</value>
+  </data>
+  <data name="FirstLaunchLicenseAgreeButton.Content" xml:space="preserve">
+    <value>Agree</value>
+  </data>
+  <data name="FirstLaunchLicenseApplyQuickSettingsButton.Content" xml:space="preserve">
+    <value>Apply settings</value>
+  </data>
+  <data name="FirstLaunchQuickSettings.Text" xml:space="preserve">
+    <value>Quick settings</value>
+  </data>
+  <data name="FirstLaunchTrainingApplyButton.Text" xml:space="preserve">
+    <value>Apply button</value>
+  </data>
+  <data name="FirstLaunchTrainingApplyButtonStatus.Text" xml:space="preserve">
+    <value>After applying the preset, you can see the application status</value>
+  </data>
+  <data name="FirstLaunchFinishSetup.Text" xml:space="preserve">
+    <value>Finish setup</value>
+  </data>
+  <data name="FirstLaunchFinishSection.Text" xml:space="preserve">
+    <value>Final touches</value>
+  </data>
+  <data name="FirstLaunchTrainingSettingArea.Text" xml:space="preserve">
+    <value>Area with setting</value>
+  </data>
+  <data name="FirstLaunchTrainingSettingBySlider.Text" xml:space="preserve">
+    <value>Slider Settings</value>
+  </data>
+  <data name="FirstLaunchTrainingSettingBySliderDesc.Text" xml:space="preserve">
+    <value>You can set the value within safe limits using the slider or exceeding it using the input field next to it</value>
+  </data>
+  <data name="FirstLaunchTrainingChangingSetting.Text" xml:space="preserve">
+    <value>Switching settings</value>
+  </data>
+  <data name="FirstLaunchTrainingChangingSettingDesc.Text" xml:space="preserve">
+    <value>To switch any parameter in the program, just click on the setting area instead of reaching for the settings item</value>
+  </data>
+  <data name="FirstLaunchOcFinderPreparingPresets.Text" xml:space="preserve">
+    <value>Preparing presets</value>
+  </data>
+  <data name="Info_GenerateDebugReport.Text" xml:space="preserve">
+    <value>Debug report</value>
   </data>
 </root>

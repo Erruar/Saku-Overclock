@@ -1788,6 +1788,14 @@ public sealed partial class ИнформацияPage
     private void NiIconsButton_Click(object sender, RoutedEventArgs e) =>
         _appSettings.NiIconsEnabled = NiIconsButton.IsChecked == true;
 
+    /// <summary>
+    ///     Обработчик создания дебаг репорта
+    /// </summary>
+    private void DebugReport_Click(object sender, RoutedEventArgs e)
+    {
+        _cpu.GenerateDebugReport();
+    }
+
     #region Flyouts and Banner Buttons handlers
 
     /// <summary>

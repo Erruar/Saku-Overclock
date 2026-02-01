@@ -3377,4 +3377,52 @@ Asus. Может не поддерживаться на
   <data name="UnsupportedPlatformMessage" xml:space="preserve">
     <value>Платформа не поддерживается. Невозможно применить настройки</value>
   </data>
+  <data name="FirstLaunchLicenseAgreement.Content" xml:space="preserve">
+    <value>Я ознакомился с лицензионным соглашением и подтверждаю его соблюдение</value>
+  </data>
+  <data name="FirstLaunchLicenseAgreementError.Subtitle" xml:space="preserve">
+    <value>Перед продолжением рекомендуем ознакомиться с лицензионным соглашением</value>
+  </data>
+  <data name="FirstLaunchLicenseAgreeButton.Content" xml:space="preserve">
+    <value>Принять</value>
+  </data>
+  <data name="FirstLaunchLicenseApplyQuickSettingsButton.Content" xml:space="preserve">
+    <value>Применить настройки</value>
+  </data>
+  <data name="FirstLaunchQuickSettings.Text" xml:space="preserve">
+    <value>Быстрая настройка</value>
+  </data>
+  <data name="FirstLaunchTrainingApplyButton.Text" xml:space="preserve">
+    <value>Кнопка применить</value>
+  </data>
+  <data name="FirstLaunchTrainingApplyButtonStatus.Text" xml:space="preserve">
+    <value>После применения пресета можно увидеть статус применения</value>
+  </data>
+  <data name="FirstLaunchFinishSetup.Text" xml:space="preserve">
+    <value>Завершить настройку</value>
+  </data>
+  <data name="FirstLaunchFinishSection.Text" xml:space="preserve">
+    <value>Финальные штрихи</value>
+  </data>
+  <data name="FirstLaunchTrainingSettingArea.Text" xml:space="preserve">
+    <value>Область с настройкой</value>
+  </data>
+  <data name="FirstLaunchTrainingSettingBySlider.Text" xml:space="preserve">
+    <value>Настройка слайдером</value>
+  </data>
+  <data name="FirstLaunchTrainingSettingBySliderDesc.Text" xml:space="preserve">
+    <value>Вы можете выставить значение в безопасных пределах при помощи слайдера или превышающее его при помощи поля для ввода возле него</value>
+  </data>
+  <data name="FirstLaunchTrainingChangingSetting.Text" xml:space="preserve">
+    <value>Переключение настроек</value>
+  </data>
+  <data name="FirstLaunchTrainingChangingSettingDesc.Text" xml:space="preserve">
+    <value>Для переключения любого параметра в программе достаточно нажать на область с настройкой вместо того чтобы тянуться к элементу настройки</value>
+  </data>
+  <data name="FirstLaunchOcFinderPreparingPresets.Text" xml:space="preserve">
+    <value>Подготовка пресетов</value>
+  </data>
+  <data name="Info_GenerateDebugReport.Text" xml:space="preserve">
+    <value>Создать отчёт</value>
+  </data>
 </root>

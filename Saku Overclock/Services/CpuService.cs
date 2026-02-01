@@ -1,4 +1,7 @@
-﻿using Saku_Overclock.Contracts.Services;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Text;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
@@ -467,4 +470,94 @@ public class CpuService : ICpuService
 
     public double GetCoreMultiplier(int core) => (_cpu?.GetCoreMulti(core) ?? 0) / 10.0; // Конвертируем в GHz
     public float? GetCpuTemperature() => _cpu?.GetCpuTemperature();
+    public void GenerateDebugReport()
+    {
+        var sb = new StringBuilder();
+
+        void AddHeading(string heading)
+        {
+            sb.AppendLine("------------------------------------------------------------------");
+            sb.AppendLine(heading);
+            sb.AppendLine("------------------------------------------------------------------");
+        }
+
+        var downloadsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads");
+
+        var dateFormat = "dd.MM.yyyy HH-mm";
+        var date = DateTime.Now;
+        var fileName = $"SakuDebugReport {CpuCodeName} {date.ToString(dateFormat)}.txt";
+        var filePath = Path.Combine(downloadsPath, fileName);
+
+        if (File.Exists(filePath))
+        {
+            fileName = $"SakuDebugReport {CpuCodeName} {date:dd.MM.yyyy HH-mm-ss}.txt";
+            filePath = Path.Combine(downloadsPath, fileName);
+        }
+
+        var appInstance = App.GetService<ViewModels.SettingsViewModel>();
+        var appName = appInstance.VersionDescription;
+
+        sb.AppendLine(appName);
+        sb.AppendLine(
+            "ZenStates-Core Version: " +
+            _cpu?.Version +
+            (IsAvailable ? "" : " UNAVAILABLE. Saku Overclock in failsafe mode!")
+        );
+
+        sb.AppendLine();
+
+        AddHeading("Common System Info");
+
+        var ocFinder = App.GetService<IOcFinderService>();
+
+        sb.AppendLine($"OS:                        {GetSystemInfo.GetOsVersion()}");
+        sb.AppendLine($"CpuName:           {CpuName}");
+        sb.AppendLine($"CodeName:         {CpuCodeName}");
+        sb.AppendLine($"CpuId:                   {_cpu?.systemInfo.CpuId.ToString("X8")}");
+        sb.AppendLine($"PhysicalCores:   {GetCpuPhysicalCores()}");
+        sb.AppendLine($"Threads:               {_cpu?.systemInfo.Threads}");
+        sb.AppendLine($"SmuVersion:        {SmuVersion}");
+        sb.AppendLine($"TableVersion:      {PowerTableVersion.ToString("X8")}");
+        sb.AppendLine($"BaseCpuPower:  {ocFinder.GetCpuPower()}W");
+        sb.AppendLine($"UndervoltingAvailable:  {ocFinder.IsUndervoltingAvailable().ToString().ToLower()}");
+
+        sb.AppendLine();
+
+        AddHeading("Applied Preset");
+
+        var appSettings = App.GetService<IAppSettingsService>();
+
+        sb.AppendLine($"Preset:     {appSettings.Preset}");
+        sb.AppendLine($"AdjustLine: {appSettings.RyzenAdjLine}");
+
+        sb.AppendLine();
+
+        AddHeading("PM Table: Smu Power Table");
+
+        if (PowerTable == null || PowerTable.Length == 0)
+        {
+            sb.AppendLine("PowerTable: UNAVAILABLE");
+        }
+        else
+        {
+            for (var i = 0; i < PowerTable.Length; i++)
+            {
+                var offset = (i * 4).ToString("X3");
+                var value = PowerTable[i].ToString("F8", CultureInfo.InvariantCulture);
+
+                sb.AppendLine($"{i} Offset {offset}: {value}");
+            }
+        }
+
+        File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+
+        if (File.Exists(filePath))
+        {
+            var fullPath = Path.GetFullPath(filePath);
+            Process.Start("explorer.exe", $"/select,\"{fullPath}\"");
+        }
+    }
+
 }

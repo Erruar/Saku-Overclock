@@ -278,4 +278,9 @@ public interface ICpuService
     /// </summary>
     /// <returns>Температура процессора</returns>
     float? GetCpuTemperature();
+
+    /// <summary>
+    ///     Создаёт и показывает дебаг репорт
+    /// </summary>
+    void GenerateDebugReport();
 }

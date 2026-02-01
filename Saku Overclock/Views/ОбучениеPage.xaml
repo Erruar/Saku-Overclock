@@ -36,7 +36,7 @@
                            FontSize="48" 
                            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
 
-                <TextBlock Text="Добро пожаловать" 
+                <TextBlock Text="" 
                            FontWeight="Light" 
                            FontSize="26" 
                            Opacity="0.6"
@@ -84,7 +84,7 @@
                 <ScrollViewer CornerRadius="12">
                     <StackPanel Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                         <StackPanel Margin="30,30,30,0" x:Name="LicenseText"/>
-                        <CheckBox Margin="30,5,30,20" x:Name="LicenseAcceptButton" IsChecked="False">Я ознакомился с лицензионным соглашением и подтверждаю его соблюдение</CheckBox>
+                        <CheckBox Margin="30,5,30,20" x:Name="LicenseAcceptButton" IsChecked="False" x:Uid="FirstLaunchLicenseAgreement">Я ознакомился с лицензионным соглашением и подтверждаю его соблюдение</CheckBox>
                     </StackPanel>
                 </ScrollViewer>
                 <FlipView.ItemsPanel>
@@ -93,17 +93,16 @@
                     </ItemsPanelTemplate>
                 </FlipView.ItemsPanel>
             </FlipView>
-            <TeachingTip IsOpen="False" Target="{x:Bind AcceptLicenseButton}" x:Name="AcceptErrTeachingTip" Subtitle="Вы не прочли лицензионное соглашение" Title="Вы уверены?">
+            <TeachingTip IsOpen="False" Target="{x:Bind AcceptLicenseButton}" x:Name="AcceptErrTeachingTip" x:Uid="FirstLaunchLicenseAgreementError" Subtitle="Вы не прочли лицензионное соглашение" Title="">
                 <TeachingTip.IconSource>
-                    <FontIconSource Glyph="&#xEB90;"/>
+                    <FontIconSource Glyph="&#xE8BC;"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <Button Grid.Row="2" Width="250" CornerRadius="12" x:Name="AcceptLicenseButton" Click="AcceptButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Margin="0,0,40,10">
-                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
-                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
-                    <TextBlock Margin="5,0,0,0" Text="Принять" FontWeight="Bold" FontSize="16"/>
-                </StackPanel>
-            </Button>
+            <Button Grid.Row="2" Width="250" CornerRadius="12" 
+                    x:Uid="FirstLaunchLicenseAgreeButton" FontWeight="Bold" 
+                    x:Name="AcceptLicenseButton" Click="AcceptButton_Click" 
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" 
+                    Style="{StaticResource AccentButtonStyle}" Margin="0,0,40,10"/>
         </Grid>
         <Grid x:Name="QuickSettings" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
@@ -113,7 +112,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
                 <FontIcon Glyph="&#xE90F;" FontWeight="Bold" FontSize="22" />
-                <TextBlock Text="Быстрая настройка" FontSize="32" Margin="8,-3,0,0"/>
+                <TextBlock x:Uid="FirstLaunchQuickSettings" Text="Быстрая настройка" FontSize="32" Margin="8,-3,0,0"/>
             </StackPanel>
             <ScrollViewer Grid.Row="1" Margin="40,0,31,0">
                 <StackPanel Orientation="Vertical" Margin="0,0,10,0">
@@ -207,12 +206,11 @@
                     </Grid>
                 </StackPanel>
             </ScrollViewer>
-            <Button Grid.Row="2" Width="250" CornerRadius="12" x:Name="QuickSettingsDone" Click="QuickSettingsDone_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Margin="0,0,40,10">
-                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
-                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
-                    <TextBlock Margin="5,0,0,0" Text="Продолжить" FontWeight="Bold" FontSize="16"/>
-                </StackPanel>
-            </Button>
+            <Button Grid.Row="2" Width="250" CornerRadius="12" FontWeight="Bold" 
+                    x:Name="QuickSettingsDone" Click="QuickSettingsDone_Click" 
+                    x:Uid="FirstLaunchLicenseApplyQuickSettingsButton"
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" 
+                    Style="{StaticResource AccentButtonStyle}" Margin="0,0,40,10"/>
         </Grid>
         <Grid x:Name="OcFinderScanSection" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
@@ -222,7 +220,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
                 <FontIcon Glyph="&#xE9D9;" FontSize="22" />
-                <TextBlock Text="OC Finder — Подготовка готовых пресетов" FontSize="32" Margin="8,-3,0,0"/>
+                <TextBlock x:Uid="FirstLaunchOcFinderPreparingPresets" Text="Подготовка пресетов" FontSize="32" Margin="8,-3,0,0"/>
             </StackPanel>
             <Grid Grid.Row="1" HorizontalAlignment="Center" Height="130" Margin="0,-30,0,0" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -250,54 +248,6 @@
             </FontIcon>
             <TextBlock Grid.Row="2" x:Name="SearchSign" Margin="0,-120,0,0" FontSize="21" VerticalAlignment="Center" HorizontalAlignment="Center" x:Uid="OcFinderSystemScanning" Text="Сканируем систему"/>
         </Grid>
-        <Grid x:Name="OcFinderPresetsSection" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="70"/>
-                <RowDefinition/>
-                <RowDefinition Height="60"/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
-                <FontIcon Glyph="&#xE9D9;" FontSize="22" />
-                <TextBlock Text="OC Finder - Готовые пресеты" FontSize="32" Margin="8,-3,0,0"/>
-            </StackPanel>
-            <ScrollViewer Grid.Row="1" Margin="40,0,40,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid CornerRadius="16" Margin="0,0,7,0" Padding="24,18,24,10" Grid.Column="0" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" Text="Кнопка применить"/>
-                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" Text="После применения пресета можно увидеть статус применения"/>
-
-                        
-                    </Grid>
-                    <Grid CornerRadius="16" Margin="3,0,3,0" Padding="24,18,24,10" Grid.Column="1" Background="{ThemeResource ControlStrokeColorDefaultBrush}" HorizontalAlignment="Stretch">
-                        
-                    </Grid>
-                    <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="2" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        
-                    </Grid>
-                    <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="3" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        
-                    </Grid>
-                    <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="4" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        
-                    </Grid>
-                </Grid>
-            </ScrollViewer>
-
-            <Button Grid.Row="2" Width="250" CornerRadius="12" x:Name="PresetsDone" Click="PresetsDone_Click" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Margin="0,0,00,10">
-                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
-                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
-                    <TextBlock Margin="5,0,0,0" Text="Продолжить" FontWeight="Bold" FontSize="16"/>
-                </StackPanel>
-            </Button>
-        </Grid>
-
         <Grid x:Name="TrainingSection" Visibility="Collapsed" Opacity="0" Margin="0,30,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="70"/>
@@ -306,7 +256,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
                 <FontIcon Glyph="&#xE930;" FontSize="22" />
-                <TextBlock Text="Завершение настройки" FontSize="32" Margin="8,-3,0,0"/>
+                <TextBlock x:Uid="FirstLaunchFinishSection" Text="Завершение настройки" FontSize="32" Margin="8,-3,0,0"/>
             </StackPanel>
             <ScrollViewer Grid.Row="1" Margin="40,0,40,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -316,8 +266,8 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid CornerRadius="16" Margin="0,0,7,0" Padding="24,18,24,10" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" Text="Кнопка применить"/>
-                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" Text="После применения пресета можно увидеть статус применения"/>
+                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" x:Uid="FirstLaunchTrainingApplyButton" Text="Кнопка применить"/>
+                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" x:Uid="FirstLaunchTrainingApplyButtonStatus" Text="После применения пресета можно увидеть статус применения"/>
 
                         <TeachingTip x:Name="ApplyTeach" Target="{Binding ElementName=ApplyButton}"/>
                         <Button x:Name="ApplyButton" CornerRadius="16" MinHeight="52" Click="ApplyButton_Click"
@@ -335,8 +285,11 @@
                         </Button>
                     </Grid>
                     <Grid CornerRadius="16" Margin="3,0,3,0" Padding="24,18,24,10" Grid.Column="1" Background="{ThemeResource ControlStrokeColorDefaultBrush}" HorizontalAlignment="Stretch">
-                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" Text="Настройка слайдером"/>
-                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" Text="Вы можете выставить значение в безопасных пределах при помощи слайдера или превышающее его при помощи поля для ввода возле него"/>
+                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" 
+                                   x:Uid="FirstLaunchTrainingSettingBySlider" Text="Настройка слайдером"/>
+                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" 
+                                   x:Uid="FirstLaunchTrainingSettingBySliderDesc" 
+                                   Text="Вы можете выставить значение в безопасных пределах при помощи слайдера или превышающее его при помощи поля для ввода возле него"/>
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -358,8 +311,11 @@
                         </Grid>
                     </Grid>
                     <Grid CornerRadius="16" Margin="7,0,0,0" Padding="24,18,24,10" Grid.Column="2" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" Text="Переключение настроек"/>
-                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" Text="Для переключения любого параметра в программе достаточно нажать на область с настройкой вместо того чтобы тянуться к элементу настройки"/>
+                        <TextBlock VerticalAlignment="Top" FontSize="17" FontWeight="SemiBold" 
+                                   x:Uid="FirstLaunchTrainingChangingSetting" Text="Переключение настроек"/>
+                        <TextBlock VerticalAlignment="Top" Margin="0,30,0,0" TextWrapping="Wrap" 
+                                   x:Uid="FirstLaunchTrainingChangingSettingDesc" 
+                                   Text="Для переключения любого параметра в программе достаточно нажать на область с настройкой вместо того чтобы тянуться к элементу настройки"/>
                         <Grid PointerPressed="ToggleTheSwitchByTag" Tag="TrainingToggle" CornerRadius="15" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource LayerFillColorAltBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -367,7 +323,9 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <FontIcon Grid.Column="0" Margin="17,0,0,0" Glyph="&#xE71A;"/>
-                            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" Margin="16,0,0,0">Область с настройкой</TextBlock>
+                            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                       TextWrapping="Wrap" Margin="16,0,0,0" 
+                                       x:Uid="FirstLaunchTrainingSettingArea">Область с настройкой</TextBlock>
                             <ToggleSwitch Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0" OffContent="" OnContent="" x:Name="TrainingToggle"/>
                         </Grid>
                     </Grid>
@@ -376,7 +334,7 @@
             <Button Grid.Row="2" Width="250" CornerRadius="12" x:Name="TrainingDone" Click="TrainingDone_Click" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Margin="0,0,00,10">
                 <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
                     <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
-                    <TextBlock Margin="5,0,0,0" Text="Завершить" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Margin="5,0,0,0" x:Uid="FirstLaunchFinishSetup" Text="Завершить" FontWeight="Bold" FontSize="16"/>
                 </StackPanel>
             </Button>
         </Grid>
