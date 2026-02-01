@@ -498,9 +498,9 @@ public class OcFinderService : IOcFinderService
             LaptopCurves = basePreset.LaptopCurves,
             DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 1.25,
-            ThermalMultiplier = 1.20,
-            StapmBonus = 3.5,
-            FastBonus = 2.0
+            ThermalMultiplier = 1.10,
+            StapmBonus = 2.3,
+            FastBonus = 0.97
         };
     }
 
