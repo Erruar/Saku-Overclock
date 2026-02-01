@@ -243,6 +243,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
+            0x005D0008 or
+            0x005D0009 or
             0x0064020c or
             0x00650005 => 6,
 
@@ -288,12 +290,12 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0005 or
             0x004C0006 or
             0x004C0007 or
-            0x004C0008 or
-            0x0064020c or
-            0x00650005 => 7, // Krackan Point not sure
-
-            // Hawk Point -> индекс 43
-            0x004C0009 => 43,
+            0x004C0008 => 7,
+            0x004C0009 => 43,  // Hawk Point -> индекс 43
+            0x005D0008 or
+            0x005D0009 => 302, // Strix Point not sure
+            0x0064020c => 341, // Strix Halo not sure
+            0x00650005 => 295, // Krackan Point not sure
 
             0x00540004 or      // Zen 4
             0x00540104 => 99,
@@ -350,8 +352,13 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0006 or
             0x004C0007 or
             0x004C0008 or
-            0x004C0009 or
-            0x00650005 => 8,
+            0x004C0009 => 8,
+
+            // Strix Point and up → индекс 12
+            0x005D0008 or
+            0x005D0009 or
+            0x0064020c or
+            0x00650005 => 12,
 
             0x00540004 or    // Zen 4
             0x00540104 or  
@@ -405,8 +412,13 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0006 or
             0x004C0007 or
             0x004C0008 or
-            0x004C0009 or
-            0x00650005 => 9,
+            0x004C0009 => 9,
+
+            // Strix Point and up → индекс 13
+            0x005D0008 or
+            0x005D0009 or
+            0x0064020c or
+            0x00650005 => 13,
 
             0x00540004 or    // Zen 4
             0x00540104 or    // Zen 4
@@ -461,6 +473,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
+            0x005D0008 or
+            0x005D0009 or
             0x00650005 => 12,
 
             0x00540004 or     // Zen 4
@@ -515,13 +529,18 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0006 or
             0x004C0007 or
             0x004C0008 or
-            0x004C0009 or
-            0x00650005 => 13,
+            0x004C0009 => 13,
 
-            0x00540004 or     // Zen 4
+            // Strix Point and up → индекс 172
+            0x005D0008 or
+            0x005D0009 => 176, // Strix Point
+            0x0064020c => 202, // Strix Halo
+            0x00650005 => 172, // Krackan Point
+
+            0x00540004 or      // Zen 4
             0x00540104 => 63,
-            0x00540208 => 64, // Dragon Range
-            0x00620105 or     // Zen 5
+            0x00540208 => 64,  // Dragon Range
+            0x00620105 or      // Zen 5
             0x00620205 => 51, 
 
             _ => -1
@@ -570,6 +589,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 30,
             0x004C0009 => 33, // Hawk Point
+            0x005D0008 or
+            0x005D0009 or     // Strix Point not sure
             0x00650005 => 32, // Krackan Point
 
             _ => -1
@@ -618,6 +639,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 32, // Phoenix
             0x004C0009 => 35, // Hawk Point
+            0x005D0008 or
+            0x005D0009 or     // Strix Point not sure
             0x00650005 => 33, // Krackan Point, not sure, can be 36
 
             _ => -1
@@ -671,7 +694,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 => 10,
-            0x00650005 => 14, // Krackan Point using EDC limit for TDC
+            0x005D0008 or
+            0x005D0009 => 14, // Strix Point
+            0x0064020c => 16, // Strix Halo
+            0x00650005 => 14, // Krackan Point
 
             0x00540004 or    // Zen 4
             0x00540104 or 
@@ -726,13 +752,18 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 => 11,
-            0x00650005 => 176, // Krackan Point using SoC TDC from SVI2
 
-            0x00540004 or     // Zen 4
+            // Strix Point and up → индекс 181, 207, 176 using SoC TDC from SVI2
+            0x005D0008 or
+            0x005D0009 => 181, // Strix Point
+            0x0064020c => 207, // Strix Halo
+            0x00650005 => 176, // Krackan Point
+
+            0x00540004 or      // Zen 4
             0x00540104 => 53,
-            0x00540208 => 54, // Dragon Range
+            0x00540208 => 54,  // Dragon Range
             0x00620105 or 
-            0x00620205 => 55, // Zen 5
+            0x00620205 => 55,  // Zen 5
 
             _ => -1
         };
@@ -781,13 +812,16 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
-            0x00650005 => 14,
+            0x005D0008 or
+            0x005D0009 => 14, // Strix Point
+            0x0064020c => 16, // Strix Halo
+            0x00650005 => 14, // Krackan Point
 
-            0x00540004 or    // Zen 4
+            0x00540004 or     // Zen 4
             0x00540104 or 
             0x00540208 or
             0x00620105 or
-            0x00620205 => 8, // Zen 5
+            0x00620205 => 8,  // Zen 5
 
             _ => -1
         };
@@ -836,7 +870,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
-            0x00650005 => 15,
+            0x005D0008 or
+            0x005D0009 => 15, // Strix Point
+            0x0064020c => 17, // Strix Halo
+            0x00650005 => 15, // Krackan Point
 
             0x00540004 or     // Zen 4
             0x00540104 => 53, 
@@ -897,6 +934,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
+            0x005D0008 or
+            0x005D0009 or
             0x00650005 => 16,
 
             0x00540004 or     // Zen 4
@@ -954,6 +993,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
+            0x005D0008 or
+            0x005D0009 or
             0x00650005 => 17,
 
             0x00540004 or     // Zen 4
@@ -1002,7 +1043,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0008 or
             0x004C0009 or
             0x0064020c => 22, // Strix Halo
-            0x00650005 => 18, // Krackan Point
+            0x005D0008 or
+            0x005D0009 or
+            0x00650005 => 20, // Krackan Point
 
             0x00540004 or     // Zen 4
             0x00540104 or 
@@ -1026,27 +1069,6 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x001E000A or
             0x001E0101 => 151,
 
-            /*// Renoir and up → индекс 23
-            0x00370000 or
-            0x00370001 or
-            0x00370002 or
-            0x00370003 or
-            0x00370004 or
-            0x00370005 or
-            0x003F0000 or
-            0x00400001 or
-            0x00400002 or
-            0x00400003 or
-            0x00400004 or
-            0x00400005 or
-            0x00450004 or
-            0x00450005 or
-            0x004C0006 or
-            0x004C0007 or
-            0x004C0008 or
-            0x004C0009 or
-            0x0064020c => 23,*/
-
             // Renoir and up → индекс 363, 370, 224 и т.д
             0x00370000 or
             0x00370001 or
@@ -1069,8 +1091,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 211, // Phoenix
             0x004C0009 => 214, // Hawk Point
+            0x005D0008 or
+            0x005D0009 => 304, // Strix Point
             0x0064020c => 340, // Strix Halo
-            0x00650005 => 297,  // Krackan Point
+            0x00650005 => 297, // Krackan Point
 
             0x00540004 or      // Zen 4
             0x00540104 => 98,
@@ -1111,6 +1135,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
+            0x005D0008 or
+            0x005D0009 or
             0x0064020c or // Strix Halo
             0x00650005 => 24, 
 
@@ -1146,6 +1172,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 or
             0x004C0009 or
+            0x005D0008 or
+            0x005D0009 or
             0x0064020c or // Strix Halo
             0x00650005 => 25,
 
@@ -1191,7 +1219,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 605, // Phoenix
             0x004C0009 => 582, // Hawk Point
-            0x00650005 => 578, // Krackan Point - Not Sure
+            0x005D0008 or
+            0x005D0009 => 624, // Strix Point
+            0x0064020c => 732, // Strix Halo always 1
+            0x00650005 => 579, // Krackan Point always 1 can change only on ES
 
             0x00540004 or      // Zen 4
             0x00540104 or      // Incorrect
@@ -1237,7 +1268,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 606, // Phoenix
             0x004C0009 => 583, // Hawk Point
-            0x00650005 => 579, // Krackan Point - Not Sure
+            0x005D0008 or
+            0x005D0009 => 625, // Strix Point
+            0x0064020c => 733, // Strix Halo
+            0x00650005 => 580, // Krackan Point (5 - balanced, 15 - performance, limit 30)
 
             0x00540004 or      // Zen 4
             0x00540104 or      // Incorrect
@@ -1286,8 +1320,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0005 or
             0x004C0006 or
             0x004C0007 or
-            0x004C0008 => 213,
-            0x004C0009 => 216,
+            0x004C0008 => 213, // Phoenix
+            0x004C0009 => 216, // Hawk Point
+            0x005D0008 or
+            0x005D0009 => 305, // Strix Point
             0x0064020c => 342, // Strix Halo
             0x00650005 => 298, // Krackan Point
 
@@ -1334,8 +1370,10 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0005 or
             0x004C0006 or
             0x004C0007 or
-            0x004C0008 => 210,
-            0x004C0009 => 42,
+            0x004C0008 => 210, // Phoenix
+            0x004C0009 => 42,  // Hawk Point 
+            0x005D0008 or
+            0x005D0009 => 42,  // Strix Point not sure
             0x0064020c => 339, // Strix Halo
             0x00650005 => 296, // Krackan Point
 
@@ -1401,6 +1439,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0005 or
             0x004C0008 or
             0x004C0009 => 112, // Hawk Point
+            0x005D0008 or
+            0x005D0009 => 182, // Strix Point
+            0x0064020c => 208, // Strix Halo
             0x00650005 => 177, // Krackan Point
 
             0x00540004 or      // Zen 4
@@ -1460,6 +1501,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0005 or
             0x004C0008 or
             0x004C0009 => 110, // Hawk Point
+            0x005D0008 or
+            0x005D0009 => 180, // Strix Point
+            0x0064020c => 206, // Strix Halo
             0x00650005 => 175, // Krackan Point
 
             0x00540004 or
@@ -1520,6 +1564,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 549,
             0x004C0009 => 553,
+            0x005D0008 or
+            0x005D0009 => 667, // Strix Point
             0x0064020c => 788, // Strix Halo
             0x00650005 => 610, // Krackan Point
 
@@ -1577,6 +1623,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 517,
             0x004C0009 => 105, // Hawk Point → Use only two, from SVI2
+            0x005D0008 or
+            0x005D0009 => 643, // Strix Point
             0x0064020c => 756, // Strix Halo
             0x00650005 => 594, // Krackan Point
 
@@ -1634,6 +1682,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 525,
             0x004C0009 => 529,
+            0x005D0008 or
+            0x005D0009 => 655, // Strix Point
             0x0064020c => 772, // Strix Halo
             0x00650005 => 602, // Krackan Point
 
@@ -1691,7 +1741,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0007 or
             0x004C0008 => 509,
             0x004C0009 => 513,
-            0x0064020c => 740, // Strix Halo
+            0x005D0008 or
+            0x005D0009 => 679, // Strix Point
+            0x0064020c => 804, // Strix Halo
             0x00650005 => 618, // Krackan Point
 
             0x00540004 or      // Zen 4
