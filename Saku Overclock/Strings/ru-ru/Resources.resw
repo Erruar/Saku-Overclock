@@ -3388,6 +3388,9 @@ Asus. Может не поддерживаться на
   <data name="FirstLaunchFinishSection.Text" xml:space="preserve">
     <value>Финальные штрихи</value>
   </data>
+  <data name="FirstLaunchLicenseSection.Text" xml:space="preserve">
+    <value>Лицензия приложения</value>
+  </data>
   <data name="FirstLaunchTrainingSettingArea.Text" xml:space="preserve">
     <value>Область с настройкой</value>
   </data>

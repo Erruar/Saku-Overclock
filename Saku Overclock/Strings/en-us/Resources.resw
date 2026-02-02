@@ -3387,6 +3387,9 @@ Set up a personalized undervolting level that will be applied to all premade pre
   <data name="FirstLaunchFinishSection.Text" xml:space="preserve">
     <value>Final touches</value>
   </data>
+  <data name="FirstLaunchLicenseSection.Text" xml:space="preserve">
+    <value>License agreement</value>
+  </data>
   <data name="FirstLaunchTrainingSettingArea.Text" xml:space="preserve">
     <value>Area with setting</value>
   </data>
