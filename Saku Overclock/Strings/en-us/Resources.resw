@@ -2483,55 +2483,54 @@ methods are available.</value>
     <value>You have successfully switched the RTSS overlay display in the game!</value>
   </data>
   <data name="LicenseText" xml:space="preserve">
-    <value>ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ ПОЛЬЗОВАТЕЛЯ
+    <value># SAKU OVERCLOCK SOFTWARE LICENSE AGREEMENT
 
-**ВАЖНО! ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ НАСТОЯЩЕЕ ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ ПЕРЕД ИСПОЛЬЗОВАНИЕМ ПРОГРАММЫ SAKU OVERCLOCK.**
+## PLEASE READ THIS SOFTWARE LICENSE AGREEMENT CAREFULLY BEFORE USING THE SOFTWARE. BY DOWNLOADING OR USING SAKU OVERCLOCK, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS AGREEMENT.
 
-Настоящее Лицензионное соглашение (далее "Соглашение") является юридическим договором между вами (физическим или юридическим лицом) и разработчиком программы Saku Overclock (далее "Разработчик"). Используя данное программное обеспечение (далее "Программа"), вы подтверждаете, что ознакомились с условиями настоящего Соглашения и согласны с ними.
+### 1. General
 
-**1. ПРЕДОСТАВЛЕНИЕ ЛИЦЕНЗИИ**
-   1.1. Программа предоставляется "как есть" ("AS IS") и предназначена для использования исключительно профессионалами.
-   1.2. Вы получаете неисключительную, непередаваемую лицензию на использование Программы в соответствии с условиями данного Соглашения.
+The Saku Overclock software, including any code, documentation, and interfaces (collectively the "Saku Software"), is licensed to you under the terms of this Agreement. The Developer retains ownership of the Saku Software and reserves all rights not expressly granted to you.
 
-**2. ОГРАНИЧЕНИЯ ИСПОЛЬЗОВАНИЯ**
-   2.1. Вы не вправе:
-       - Распространять, изменять, декомпилировать или производить обратную инженерную разработку Программы. 
-       - Использовать Программу для целей, нарушающих законы или права третьих лиц.
-       - Называть себя автором программы, как-либо её изменять, при этом говоря людям, что вы её автор.
-       - Создавать программы на основе данной программы без изменения основного функционала.
-   2.2. Программа не предназначена для использования обычными пользователями, которые не обладают знаниями в области разгона компьютерных систем.
+### 2. Permitted Use and Rights
 
-**3. ОТВЕТСТВЕННОСТЬ И РИСКИ**
-   3.1. Разгон процессоров или графических адаптеров с использованием Программы может повлечь за собой нестабильную работу устройства, перегрев, повреждение оборудования или потерю гарантии.
-   3.2. Разработчик не несет ответственности за любой ущерб, прямой или косвенный, причинённый в результате использования Программы.
-   3.3. Использование Программы осуществляется на ваш собственный страх и риск.
+The Saku Software is distributed as an open-source project.
 
-**4. КОНФИДЕНЦИАЛЬНОСТЬ**
-   4.1. Программа не собирает, не обрабатывает и не передаёт данные пользователей.
-   4.2. Разработчик не несёт ответственности за последствия, связанные с использованием Программы в системах с уязвимостями или недостатками безопасности.
+*   **Use and Modification:** You are permitted to use, study, and modify the source code of the Saku Software.
 
-**5. ОГРАНИЧЕНИЕ ГАРАНТИЙ**
-   5.1. Программа предоставляется без каких-либо явных или подразумеваемых гарантий, включая, но не ограничиваясь, гарантии пригодности для конкретной цели или соответствия ожиданиям.
-   5.2. Ни автор, ни ваше оборудование не гарантируют правильную работу программы на вашем оборудовании.
+*   **Distribution:** You have the right to create and distribute modified versions (forks), provided that you attribute the original Developer and comply with the project's source code distribution license.
 
-**6. ИЗМЕНЕНИЕ УСЛОВИЙ**
-   6.1. Разработчик оставляет за собой право вносить изменения в настоящее Соглашение без предварительного уведомления. Актуальная версия Соглашения доступна на официальном сайте Программы.
+*   **No Misrepresentation:** You may not distribute modified versions as the original Saku Software or remove any copyright notices.
 
-**7. РАСПРОСТРАНЕНИЕ И ИСПОЛЬЗОВАНИЕ КОДА**
-   7.1. Программа является проектом с открытым исходным кодом (open-source). Вы имеете право создавать форки проекта с обязательным сохранением ссылки на оригинальный репозиторий и указанием Разработчика как автора.
-   7.2. Изменённые версии программы не должны вводить пользователей в заблуждение относительно авторства или оригинальности.
-   7.3. При размещении программы на сторонних ресурсах необходимо указать оригинального автора (Разработчика) и ссылку на официальный сайт или репозиторий программы.
+### 3. Functionality and Compatibility
 
-**8. ОБРАТНАЯ СВЯЗЬ И ПРЕДЛОЖЕНИЯ**
-   8.1. Если у вас возникают проблемы при использовании Программы, вы можете отправить описание проблемы, скриншоты и последовательность действий, приведших к проблеме, в раздел Issues главного репозитория Программы.
-   8.2. Разработчик не гарантирует оперативное решение всех проблем, но постарается учитывать поступающие сообщения.
-   8.3. Вы также можете отправить свои предложения по улучшению функциональности Программы через Issues или лично связаться с Разработчиком. Доступ к сообществу программы предоставляется через Discord-сервер, информация о котором доступна в официальном репозитории.
+The Saku Software is intended to modify the factory operating parameters of hardware.
 
-**9. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ**
-   9.1. Устанавливая или используя Программу, вы подтверждаете, что полностью понимаете и принимаете все условия настоящего Соглашения.
-   9.2. Если какое-либо положение данного Соглашения будет признано недействительным, остальные положения сохраняют свою юридическую силу.
+*   **Hardware Dependency:** The availability of Saku Software features (such as thermal management or performance control) is determined solely by your device manufacturer.
 
-Если вы не согласны с любым из условий настоящего Соглашения, прекратите использование Программы и удалите её с вашего устройства.</value>
+*   **Functional Limitations:** If a specific feature does not function on your device, this is a result of hardware or software limitations imposed by the hardware manufacturer, not a defect in the Saku Software. The Developer does not guarantee compatibility with all device models.
+
+### 4. Risk Warning
+
+Use of the Saku Software implies intervention in the standard operating modes of your hardware. You acknowledge and accept the following risks:
+
+*   Reduced system stability and potential data loss.
+
+*   Reduction in the lifespan of computer components.
+
+*   Irreversible physical damage to hardware.
+
+*   Voiding of the hardware manufacturer’s warranty.
+
+**You assume full responsibility for operating hardware in modes other than factory specifications.**
+
+### 5. Disclaimer of Warranties
+
+## TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SAKU OVERCLOCK SOFTWARE IS PROVIDED "AS IS", WITH ALL FAULTS AND WITHOUT WARRANTY OF ANY KIND. THE DEVELOPER DISCLAIMS ALL WARRANTIES, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS.
+
+### 6. Limitation of Liability
+
+## IN NO EVENT SHALL THE DEVELOPER BE LIABLE FOR PERSONAL INJURY, OR ANY INCIDENTAL, SPECIAL, INDIRECT, OR CONSEQUENTIAL DAMAGES WHATSOEVER, INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF PROFITS, CORRUPTION OR LOSS OF DATA, HARDWARE FAILURE, OR ANY OTHER COMMERCIAL DAMAGES OR LOSSES, ARISING OUT OF OR RELATED TO YOUR USE OR INABILITY TO USE THE SAKU OVERCLOCK SOFTWARE, HOWEVER CAUSED.
+</value>
   </data>
   <data name="Param_Filters_By.Text" xml:space="preserve">
     <value>Sort by factors:</value>
