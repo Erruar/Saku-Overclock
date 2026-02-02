@@ -417,7 +417,9 @@ public sealed partial class ОбучениеPage : Page
 
             showLicenseSection.Children.Add(fadeIn);
         }
-
+        NotesWriterService.UpdateReleaseNotesBrushes(AccentTextBrush.Background,
+                TextSecondaryBrush.Background,
+                ControlStrongBrush.Background);
         var formattedText = NotesWriterService.FormatReleaseNotesAsRichText("LicenseText".GetLocalized());
         LicenseText.Children.Add(formattedText);
         showLicenseSection.Begin();

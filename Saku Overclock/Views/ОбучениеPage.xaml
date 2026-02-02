@@ -10,7 +10,9 @@
     mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
-        <Button x:Name="HiddenButton" Visibility="Collapsed"/>
+        <Border x:Name="AccentTextBrush" Background="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+        <Border x:Name="TextSecondaryBrush" Background="{ThemeResource TextFillColorSecondaryBrush}"/>
+        <Border x:Name="ControlStrongBrush" Background="{ThemeResource ControlStrongFillColorDefaultBrush}"/>
     </Page.Resources>
 
     <Grid Margin="-56,-96,-56,0" MaxWidth="1200">
@@ -78,7 +80,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="40,20,0,10">
                 <FontIcon Glyph="&#xE729;" FontWeight="Bold" FontSize="22" />
-                <TextBlock Text="Лицензия приложения" FontSize="32" Margin="8,-3,0,0"/>
+                <TextBlock x:Uid="FirstLaunchLicenseSection" Text="Лицензия приложения" FontSize="32" Margin="8,-3,0,0"/>
             </StackPanel>
             <FlipView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="40,6,40,0" Grid.Row="1">
                 <ScrollViewer CornerRadius="12">
