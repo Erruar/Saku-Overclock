@@ -25,7 +25,6 @@ public class WindowStateManagerService(
         _settings.ColorValuesChanged +=
             Settings_ColorValuesChanged;
 
-        App.MainWindow.WindowStateChanged += MainWindow_WindowStateChanged;
         App.MainWindow.Activated += MainWindow_Activated;
         App.MainWindow.Closed += MainWindow_Closed;
 
@@ -101,11 +100,6 @@ public class WindowStateManagerService(
             var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(App.MainWindow.AppWindow.Id);
             nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
 
-            if (rightInset < 0 || leftInset < 0)
-            {
-                throw new InvalidDataException("TitleBar tnset value incorrect");
-            }
-
             return (rightInset / scaleAdjustment, 
                     leftInset / scaleAdjustment);
         }
@@ -134,19 +128,8 @@ public class WindowStateManagerService(
         _dispatcherQueue?.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    // Тип скрытия в трей: 0 - выкл, 1 - при сворачивании приложения сразу в трей, 2 - при закрытии приложения сразу в трей
-    private enum HidingType
-    {
-        MinimizeToTray = 1,
-        CloseToTray = 2
-    }
-
-    // Тип автостарта: 0 - выкл, 1 - при запуске приложения сразу в трей, 2 - автостарт с системой, 3 - автостарт и трей
-    private enum AutoStartType
-    {
-        HideToTray = 1,
-        AutoStartWithHideToTray = 3
-    }
+    // Тип автостарта: 0 - выкл, 1 - автостарт с системой, 2 - автостарт и трей
+    private const int AutoStartWithHideToTray = 2;
 
     /// <summary>
     ///     Приложение активировано и загрузило UI
@@ -165,21 +148,8 @@ public class WindowStateManagerService(
         }
 
         // Скрыть приложение при запуске, если это включено в настройках
-        if (settingsService.AutostartType is
-            (int)AutoStartType.HideToTray or (int)AutoStartType.AutoStartWithHideToTray)
-        {
-            App.MainWindow.Hide();
-        }
-    }
-
-
-    /// <summary>
-    ///     Сворачивает в трей приложение если включено скрытие по нажатии свернуть на окне
-    /// </summary>
-    private void MainWindow_WindowStateChanged(object? sender, WindowState e)
-    {
-        if (settingsService.HidingType == (int)HidingType.MinimizeToTray &&
-            App.MainWindow.WindowState == WindowState.Minimized)
+        if (settingsService.AutostartType ==
+            AutoStartWithHideToTray)
         {
             App.MainWindow.Hide();
         }
@@ -190,7 +160,7 @@ public class WindowStateManagerService(
     /// </summary>
     private void AppWindow_Closing(AppWindow sender, AppWindowClosingEventArgs args)
     {
-        if (settingsService.HidingType == (int)HidingType.CloseToTray)
+        if (settingsService.HideToTray)
         {
             args.Cancel = true; // Отменяем закрытие
             App.MainWindow.Hide(); // Скрываем в трей

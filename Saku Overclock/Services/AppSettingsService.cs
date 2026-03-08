@@ -37,12 +37,11 @@ public class AppSettingsService : IAppSettingsService
     } =
         0;
 
-    public int HidingType
+    public bool HideToTray
     {
         get;
         set;
-    } =
-        2;
+    } = true;
 
     public bool CheckForUpdates
     {
@@ -57,12 +56,6 @@ public class AppSettingsService : IAppSettingsService
     } = true;
 
     public bool ReapplyLatestSettingsOnAppLaunch
-    {
-        get;
-        set;
-    } = true;
-
-    public bool ReapplySafeOverclock
     {
         get;
         set;

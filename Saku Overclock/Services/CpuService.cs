@@ -5,7 +5,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
-using Saku_Overclock.Views.Windows.TaskDialog;
+using Saku_Overclock.Views.Window.TaskDialog;
 using ZenStates.Core;
 using static ZenStates.Core.Cpu;
 
@@ -71,13 +71,9 @@ public class CpuService : ICpuService
                         {
                             return true;
                         }
-
-                        return false;
                     }
                     return false;
                 }
-
-                return true;
             }
             return true;
         }
@@ -342,11 +338,11 @@ public class CpuService : ICpuService
             var convertedModules = new List<MemoryModule>();
             foreach (var module in modules)
             {
-                convertedModules.Add(new MemoryModule()
+                convertedModules.Add(new MemoryModule
                 {
                     Capacity = module.Capacity.ToString(),
-                    Manufacturer = module.Manufacturer.ToString(),
-                    PartNumber = module.PartNumber.ToString()
+                    Manufacturer = module.Manufacturer,
+                    PartNumber = module.PartNumber
                 });
             }
 
@@ -402,10 +398,10 @@ public class CpuService : ICpuService
 
     private static uint GetBits(uint val, int offset, int n)
     {
-        return (val >> offset) & (uint)(~(-1 << n));
+        return (val >> offset) & (uint)~(-1 << n);
     }
 
-    public enum UmcAddress
+    private enum UmcAddress
     {
         UmcBase,
         UmcOffset1,
@@ -536,7 +532,7 @@ public class CpuService : ICpuService
 
         AddHeading("PM Table: Smu Power Table");
 
-        if (PowerTable == null || PowerTable.Length == 0)
+        if (PowerTable.Length == 0)
         {
             sb.AppendLine("PowerTable: UNAVAILABLE");
         }

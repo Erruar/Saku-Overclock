@@ -15,7 +15,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
 using static System.Environment;
@@ -39,7 +38,6 @@ public sealed partial class SettingsPage
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
     private readonly IAppNotificationService _notificationsService = App.GetService<IAppNotificationService>(); // Уведомления
-    private readonly ISendSmuCommandService _sendSmuCommand = App.GetService<ISendSmuCommandService>(); // SendSmuService для определения состояния безопасного применения параметров разгона
     private readonly IRtssSettingsService _rtssSettings = App.GetService<IRtssSettingsService>(); // Настройки RTSS
     private readonly IBackgroundDataUpdater _backgroundDataUpdater = App.GetService<IBackgroundDataUpdater>(); // Обновление данных
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Горячие клавиши
@@ -68,22 +66,20 @@ public sealed partial class SettingsPage
     {
         try
         {
-            AutoStartComboBox.SelectedIndex = _appSettings.AutostartType is > -1 and < 4 ? _appSettings.AutostartType : 0;
-            AppHideTypeComboBox.SelectedIndex =
-                AppHideTypeComboBox.SelectedIndex is > -1 and < 3 ? _appSettings.HidingType : 2;
-
+            AutoStartComboBox.SelectedIndex = _appSettings.AutostartType is > -1 and < 3 ? _appSettings.AutostartType : 0;
+            AppHideToTray.IsOn = _appSettings.HideToTray;
             ApplyStart.IsOn = _appSettings.ReapplyLatestSettingsOnAppLaunch;
             AutoCheckUpdates.IsOn = _appSettings.CheckForUpdates;
             AutoReapply.IsOn = _appSettings.ReapplyOverclock;
-            AutoReapplyNumberBox.Value = _appSettings.ReapplyOverclockTimer;
-            AutoReapplyNumberBoxPanel.Visibility = AutoReapply.IsOn ? Visibility.Visible : Visibility.Collapsed;
-            SafeReapply.IsOn = _appSettings.ReapplySafeOverclock;
-            ThemeType.Visibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-            ThemeCustomBg.Visibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
             RtssSettingsEnable.IsOn = _appSettings.RtssMetricsEnabled;
             RtssAdvancedCodeEditor.IsOn = _rtssSettings.IsAdvancedCodeEditorEnabled;
             EnableKeybindingsSetting.IsOn = _appSettings.HotkeysEnabled;
-
+            EnableKeybindingsSettingGrid.CornerRadius = _appSettings.HotkeysEnabled ? new CornerRadius(15,15,0,0) : new CornerRadius(15);
+            if (!_appSettings.HotkeysEnabled)
+            {
+                ((ScaleTransform)KeybindingsGrid.RenderTransform).ScaleX = 0.0;
+            }
+            
             InitializeRtss();
             InitializeThemeSettings();
             InitializeTrayMonIcons();
@@ -155,22 +151,8 @@ public sealed partial class SettingsPage
                 _appSettings.SaveSettings();
             }
 
-            // Загружаем параметры выбранной темы
-            var selectedTheme = _themeSelectorService.Themes[_appSettings.ThemeType];
-            ThemeOpacity.Value = selectedTheme.ThemeOpacity;
-            ThemeMaskOpacity.Value = selectedTheme.ThemeMaskOpacity;
-            AdvancedThemeOptions.IsOn = selectedTheme.ThemeCustom;
-            ThemeCustomBg.IsOn = selectedTheme.ThemeCustomBg;
-
-            UpdateThemeCustomInterface();
-
             // Устанавливаем выбранную тему
             ThemeComboBox.SelectedIndex = _appSettings.ThemeType;
-
-            // Настройка типа темы - тёмный, светлый, показываем только для тем пользователя (больше 7)
-            ThemeType.Visibility = _appSettings.ThemeType > 7
-                ? Visibility.Visible
-                : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
@@ -227,7 +209,7 @@ public sealed partial class SettingsPage
     #region Helpers
 
     /// <summary>
-    ///     Вспомогательный метод для преобразования HEX в Windows.UI.Color
+    ///     Вспомогательный метод для преобразования HEX в Color
     /// </summary>
     private static Color ParseColor(string hex)
     {
@@ -261,44 +243,18 @@ public sealed partial class SettingsPage
     /// </summary>
     private void Discord_Click(object sender, RoutedEventArgs e) =>
         Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
-
+    
     /// <summary>
-    ///     Центрует текст в AutoReapplyNumberBox
+    ///     Открывает ссылку на EULA
     /// </summary>
-    private void AutoReapplyOptionsEverySecondsNumberBox_Loaded(object sender, RoutedEventArgs e)
-    {
-        var texts = VisualTreeHelper.FindVisualChildren<ScrollContentPresenter>(AutoReapplyNumberBox);
-        foreach (var text in texts)
-        {
-            text.Margin = new Thickness(12, 7, 0, 0);
-        }
-
-        var contents = VisualTreeHelper.FindVisualChildren<ContentControl>(AutoReapplyNumberBox);
-        foreach (var content in contents)
-        {
-            var presents = VisualTreeHelper.FindVisualChildren<ContentPresenter>(content);
-            foreach (var present in presents)
-            {
-                var texts1 = VisualTreeHelper.FindVisualChildren<TextBlock>(present);
-                foreach (var text in texts1)
-                {
-                    text.Margin = new Thickness(0, 2, 0, 0);
-                }
-            }
-        }
-    }
-
+    private void Eula_Click(object sender, RoutedEventArgs e) =>
+        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/blob/master/EULA.md") { UseShellExecute = true });
+    
     /// <summary>
-    ///     Изменяет состояние AutoReapplyNumberBox
+    ///     Открывает ссылку на лицензию кода приложения
     /// </summary>
-    private void AutoReapplyOptionsEverySeconds_FocusEngaged(object sender, object args) =>
-        AutoReapplyNumberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
-
-    /// <summary>
-    ///     Изменяет состояние AutoReapplyNumberBox
-    /// </summary>
-    private void AutoReapplyOptionsEverySeconds_FocusDisengaged(object sender, object args) =>
-        AutoReapplyNumberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
+    private void CodeLicense_Click(object sender, RoutedEventArgs e) =>
+        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md") { UseShellExecute = true });
 
     /// <summary>
     ///     Изменяет состояние привязанных ToggleSwitch
@@ -323,32 +279,6 @@ public sealed partial class SettingsPage
         SettingsNiColorPicker.Flyout.ShowAt(SettingsNiColorPicker);
 
     /// <summary>
-    ///     Обновляет отображение расширенных параметров темы
-    /// </summary>
-    private void UpdateThemeCustomInterface()
-    {
-        if (!AdvancedThemeOptions.IsOn)
-        {
-            ThemeOpacity.Visibility = Visibility.Collapsed;
-            ThemeMaskOpacity.Visibility = Visibility.Collapsed;
-            ThemeMaskOpacity.Visibility = Visibility.Collapsed;
-            ThemeCustomBg.Visibility = Visibility.Collapsed;
-            ThemeType.Visibility = Visibility.Collapsed;
-            ThemeBgButton.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            ThemeOpacity.Visibility = Visibility.Visible;
-            ThemeMaskOpacity.Visibility = Visibility.Visible;
-            ThemeMaskOpacity.Visibility = Visibility.Visible;
-            ThemeCustomBg.Visibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-            ThemeType.Visibility = Visibility.Visible;
-            ThemeBgButton.Visibility = Visibility.Visible;
-            ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
-        }
-    }
-
-    /// <summary>
     ///     Обновляет тему приложения в реальном времени
     /// </summary>
     private void UpdateTheme()
@@ -358,16 +288,31 @@ public sealed partial class SettingsPage
             InfoBarSeverity.Success);
     }
 
-    /// <summary>
-    ///     Проверяет корректность и доступность выбранной темы
-    /// </summary>
-    private bool CheckThemeType() => _isLoaded
-                                     && _appSettings.ThemeType > -1
-                                     && _appSettings.ThemeType < _themeSelectorService.Themes.Count;
-
     #endregion
 
     #region Event Handlers
+    
+    /// <summary>
+    ///     Смещает панель навигации Pivot
+    /// </summary>
+    private void PivotSettings_Loaded(object sender, RoutedEventArgs e)
+    {
+        var pivot = sender as Pivot;
+        var headers = VisualTreeHelper.FindVisualChildren<ContentPresenter>(pivot!);
+        var items = VisualTreeHelper.FindVisualChildren<ItemsPresenter>(pivot!);
+        foreach (var item in items)
+        {
+            item.Margin = new Thickness(0, 22, 0, 0);
+        }
+        foreach (var header in headers)
+        {
+            var contentPresenters = VisualTreeHelper.FindVisualChildren<PivotHeaderPanel>(header);
+            foreach (var content in contentPresenters)
+            {
+                content.Margin = new Thickness(SettingsName.Text == "Settings" ? 110 : 150, 0, 0, 0);
+            }
+        }
+    }
 
     /// <summary>
     ///     Изменяет состояние горячих клавиш (включены, выключены)
@@ -381,21 +326,21 @@ public sealed partial class SettingsPage
 
         //SettingsKeybindingsTooltip.IsOpen = true;
 
-        var hotkeysDisabled = false;
-        if (!_appSettings.HotkeysEnabled)
-        {
-            hotkeysDisabled = true;
-        }
+        var hotkeysDisabled = !_appSettings.HotkeysEnabled;
 
         _appSettings.HotkeysEnabled = EnableKeybindingsSetting.IsOn;
+        
+        EnableKeybindingsSettingGrid.CornerRadius = _appSettings.HotkeysEnabled ? new CornerRadius(15,15,0,0) : new CornerRadius(15);
 
         if (_appSettings.HotkeysEnabled && hotkeysDisabled)
         {
+            ExpandStoryboard.Begin();
             _hotkeysService.Enable();
         }
 
         if (!_appSettings.HotkeysEnabled)
         {
+            CollapseStoryboard.Begin();
             _hotkeysService.Disable();
         }
 
@@ -413,7 +358,7 @@ public sealed partial class SettingsPage
         }
 
         _appSettings.AutostartType = AutoStartComboBox.SelectedIndex;
-        if (AutoStartComboBox.SelectedIndex is 2 or 3)
+        if (AutoStartComboBox.SelectedIndex is 1 or 2)
         {
             AutoStartHelper.SetStartupTask();
         }
@@ -428,14 +373,14 @@ public sealed partial class SettingsPage
     /// <summary>
     ///     Изменяет тип скрытия приложения в трей
     /// </summary>
-    private void AppHideType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void AppHideToTray_OnToggled(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded)
         {
             return;
         }
 
-        _appSettings.HidingType = AppHideTypeComboBox.SelectedIndex;
+        _appSettings.HideToTray = AppHideToTray.IsOn;
         _appSettings.SaveSettings();
     }
 
@@ -465,43 +410,11 @@ public sealed partial class SettingsPage
             return;
         }
 
-        if (AutoReapply.IsOn)
-        {
-            AutoReapplyNumberBoxPanel.Visibility = Visibility.Visible;
-            _appSettings.ReapplyOverclock = true;
-            _appSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
-        }
-        else
-        {
-            AutoReapplyNumberBoxPanel.Visibility = Visibility.Collapsed;
-            _appSettings.ReapplyOverclock = false;
-            _appSettings.ReapplyOverclockTimer = 3;
-        }
+        _appSettings.ReapplyOverclock = AutoReapply.IsOn;
+
+        _appSettings.ReapplyOverclockTimer = 3;
 
         _appSettings.SaveSettings();
-    }
-
-    /// <summary>
-    ///     Изменяет состояние переприменение последних применённых параметров каждые несколько секунд (время переприменения)
-    /// </summary>
-    private void AutoReapplyOptionsEverySecondsNumberBox_ValueChanged(NumberBox sender,
-        NumberBoxValueChangedEventArgs args)
-    {
-        try
-        {
-            if (!_isLoaded)
-            {
-                return;
-            }
-
-            _appSettings.ReapplyOverclock = true;
-            _appSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
-            _appSettings.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
     }
 
     /// <summary>
@@ -517,28 +430,6 @@ public sealed partial class SettingsPage
         _appSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
 
         _appSettings.SaveSettings();
-    }
-
-    /// <summary>
-    ///     Изменяет состояние применения только безопасных параметров разгона (включено, выключено)
-    /// </summary>
-    private void SafeReapply_Toggled(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (!_isLoaded)
-            {
-                return;
-            }
-
-            _appSettings.ReapplySafeOverclock = SafeReapply.IsOn;
-            _sendSmuCommand.SafeReapply = SafeReapply.IsOn;
-            _appSettings.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
     }
 
     #endregion
@@ -583,92 +474,14 @@ public sealed partial class SettingsPage
                 ? ElementTheme.Light
                 : ElementTheme.Dark); // Переключение состояния темы, на светлую, тёмную
         }
-
-        // Обновляем UI-элементы
-        var customThemeVisibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-        AdvancedThemeOptions.IsOn = selectedTheme.ThemeCustom;
-        ThemeOpacity.Value = selectedTheme.ThemeOpacity;
-        ThemeMaskOpacity.Value = selectedTheme.ThemeMaskOpacity;
-        ThemeCustomBg.Visibility = customThemeVisibility;
-        ThemeCustomBg.IsOn = selectedTheme.ThemeCustomBg;
-        ThemeType.Visibility = customThemeVisibility;
-        ThemeType.IsOn = selectedTheme.ThemeLight;
-        ThemeBgButton.Visibility = selectedTheme.ThemeCustomBg ? Visibility.Visible : Visibility.Collapsed;
-
-        UpdateThemeCustomInterface();
+        
         UpdateTheme();
     }
-
-    /// <summary>
-    ///     Переключает доступность расширенных параметров темы
-    /// </summary>
-    private void AdvancedThemeOptions_Toggled(object sender, RoutedEventArgs e)
-    {
-        if (CheckThemeType())
-        {
-            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeCustom = AdvancedThemeOptions.IsOn;
-            _themeSelectorService.SaveThemeInSettings();
-            UpdateThemeCustomInterface();
-        }
-    }
-
-    /// <summary>
-    ///     Изменяет состояние темы с тёмной на светлую и наоборот
-    /// </summary>
-    private void ThemeType_Toggled(object sender, RoutedEventArgs e)
-    {
-        if (CheckThemeType())
-        {
-            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeLight = ThemeType.IsOn;
-            _themeSelectorService.SaveThemeInSettings();
-            UpdateTheme();
-        }
-    }
-
-    /// <summary>
-    ///     Изменяет интенсивность цвета
-    /// </summary>
-    private void ThemeColorIntensity_ValueChanged(object sender, object args)
-    {
-        if (CheckThemeType())
-        {
-            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeOpacity = ThemeOpacity.Value;
-            _themeSelectorService.SaveThemeInSettings();
-            UpdateTheme();
-        }
-    }
-
-    /// <summary>
-    ///     Изменяет прозрачность маски
-    /// </summary>
-    private void ThemeBackgroundMaskOpacity_ValueChanged(object sender, object args)
-    {
-        if (CheckThemeType())
-        {
-            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
-            _themeSelectorService.SaveThemeInSettings();
-            UpdateTheme();
-        }
-    }
-
-    /// <summary>
-    ///     Изменяет состояние своего фона
-    /// </summary>
-    private void ThemeCustomBackground_Toggled(object sender, RoutedEventArgs e)
-    {
-        if (CheckThemeType())
-        {
-            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
-            _themeSelectorService.SaveThemeInSettings();
-            ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
-            UpdateTheme();
-        }
-    }
-
+    
     /// <summary>
     ///     Открывает диалог выбора фона для темы
     /// </summary>
-    private async void OpenSelectThemeBackgroundDialog_Click(object sender, RoutedEventArgs e)
+    private async void OpenSelectThemeBackgroundDialog_Click()
     {
         try
         {
@@ -835,7 +648,7 @@ public sealed partial class SettingsPage
                 ofn.fileTitle = new string(new char[64]);
                 ofn.maxFileTitle = ofn.fileTitle.Length;
 
-                ofn.initialDir = Path.GetFullPath(SpecialFolder.MyPictures.ToString());
+                ofn.initialDir = Path.GetFullPath(nameof(SpecialFolder.MyPictures));
                 ofn.title = "Saku Overclock: Open image for theme background...";
                 ofn.defExt = "png";
 
@@ -897,326 +710,9 @@ public sealed partial class SettingsPage
     /// <summary>
     ///     Открывает диалог менеджера тем
     /// </summary>
-    private async void OpenThemeManagerDialog_Click(object sender, RoutedEventArgs e)
+    private void OpenThemeManagerDialog_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            // Отрыть редактор тем  
-            var themeLoaderPanel = new StackPanel
-            {
-                Orientation = Orientation.Vertical,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch
-            };
-            var themerDialog = new ContentDialog
-            {
-                Title = "ThemeManagerTitle".GetLocalized(),
-                Content = new ScrollViewer
-                {
-                    MaxHeight = 300,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Content = new StackPanel
-                    {
-                        Orientation = Orientation.Vertical,
-                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                        Children =
-                        {
-                            themeLoaderPanel
-                        }
-                    }
-                },
-                CloseButtonText = "ThemeDone".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
-            };
-            try
-            {
-                if (_themeSelectorService.Themes.Count != 0)
-                {
-                    for (var element = 8; element < _themeSelectorService.Themes.Count; element++)
-                    {
-                        var baseThemeName = _themeSelectorService.Themes[element].ThemeName;
-                        Uri? baseThemeUri;
-                        if (_themeSelectorService.Themes[element].ThemeBackground != "")
-                        {
-                            try
-                            {
-                                baseThemeUri = new Uri(_themeSelectorService.Themes[element].ThemeBackground);
-                            }
-                            catch
-                            {
-                                baseThemeUri = null;
-                            }
-                        }
-                        else
-                        {
-                            baseThemeUri = null;
-                        }
-
-                        var sureDelete =
-                            new Button
-                            {
-                                CornerRadius = new CornerRadius(15),
-                                Content = "Delete".GetLocalized()
-                            };
-                        var buttonDelete = new Button
-                        {
-                            VerticalAlignment = VerticalAlignment.Center,
-                            HorizontalAlignment = HorizontalAlignment.Right,
-                            CornerRadius = new CornerRadius(15, 0, 0, 15),
-                            Content = new FontIcon
-                            {
-                                Glyph = "\uE74D"
-                            },
-                            Flyout = new Flyout
-                            {
-                                Content = sureDelete
-                            }
-                        };
-                        var textBoxThemeName = new TextBox
-                        {
-                            MaxLength = 13,
-                            CornerRadius = new CornerRadius(15, 0, 0, 15),
-                            Width = 300,
-                            PlaceholderText = "ThemeNewName".GetLocalized(),
-                            Text = baseThemeName
-                        };
-                        var newNameThemeSetButton = new Button
-                        {
-                            CornerRadius = new CornerRadius(0, 15, 15, 0),
-                            Content = new FontIcon
-                            {
-                                Glyph = "\uEC61"
-                            }
-                        };
-                        var editFlyout = new Flyout
-                        {
-                            Content = new StackPanel
-                            {
-                                Orientation = Orientation.Horizontal,
-                                Children =
-                                {
-                                    textBoxThemeName,
-                                    newNameThemeSetButton
-                                }
-                            }
-                        };
-                        var buttonEdit = new Button
-                        {
-                            VerticalAlignment = VerticalAlignment.Center,
-                            HorizontalAlignment = HorizontalAlignment.Right,
-                            CornerRadius = new CornerRadius(0, 15, 15, 0),
-                            Content = new FontIcon
-                            {
-                                Glyph = "\uE8AC"
-                            },
-                            Flyout = editFlyout
-                        };
-                        var themeNameText = new TextBlock
-                        {
-                            MaxWidth = 330,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center,
-                            TextWrapping = TextWrapping.Wrap,
-                            Text = baseThemeName,
-                            FontWeight = new FontWeight(800)
-                        };
-                        var buttonsPanel = new StackPanel
-                        {
-                            Visibility = Visibility.Collapsed,
-                            Orientation = Orientation.Horizontal,
-                            HorizontalAlignment = HorizontalAlignment.Right,
-                            Margin = new Thickness(0, 0, 4, 0),
-                            Children =
-                            {
-                                buttonDelete,
-                                buttonEdit
-                            }
-                        };
-                        var eachButton = new Button
-                        {
-                            CornerRadius = new CornerRadius(17),
-                            Width = 430,
-                            Content = new Grid
-                            {
-                                MinHeight = 40,
-                                Margin = new Thickness(-15, -5, -15, -6),
-                                CornerRadius = new CornerRadius(4),
-                                VerticalAlignment = VerticalAlignment.Stretch,
-                                HorizontalAlignment = HorizontalAlignment.Stretch,
-                                Children =
-                                {
-                                    new Border
-                                    {
-                                        MinHeight = 40,
-                                        CornerRadius = new CornerRadius(17),
-                                        Width = 430,
-                                        Opacity = _themeSelectorService.Themes[element].ThemeOpacity,
-                                        VerticalAlignment = VerticalAlignment.Stretch,
-                                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                                        Background = new ImageBrush
-                                        {
-                                            ImageSource = new BitmapImage
-                                            {
-                                                UriSource = baseThemeUri
-                                            }
-                                        }
-                                    },
-                                    new Grid
-                                    {
-                                        MinHeight = 40,
-                                        VerticalAlignment = VerticalAlignment.Stretch,
-                                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                                        Background =
-                                            (Brush)Application.Current.Resources["BackgroundImageMaskAcrylicBrush"],
-                                        Opacity = _themeSelectorService.Themes[element].ThemeMaskOpacity
-                                    },
-                                    new Grid
-                                    {
-                                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                                        Children =
-                                        {
-                                            themeNameText,
-                                            buttonsPanel
-                                        }
-                                    }
-                                }
-                            }
-                        };
-                        sureDelete.Name = element.ToString();
-                        if (element > 8)
-                        {
-                            eachButton.Margin = new Thickness(0, 10, 0, 0);
-                        }
-
-                        newNameThemeSetButton.Click += (_, _) =>
-                        {
-                            if (textBoxThemeName.Text != "" || textBoxThemeName.Text != baseThemeName)
-                            {
-                                _themeSelectorService.Themes[int.Parse(sureDelete.Name)].ThemeName =
-                                    textBoxThemeName.Text;
-                                themeNameText.Text = textBoxThemeName.Text;
-                                editFlyout.Hide();
-                                _themeSelectorService.SaveThemeInSettings();
-                                InitializePage();
-                            }
-                        };
-                        eachButton.PointerEntered += (_, _) =>
-                        {
-                            themeNameText.Margin = new Thickness(-90, 0, 0, 0);
-                            buttonsPanel.Visibility = Visibility.Visible;
-                        };
-                        eachButton.PointerExited += (_, _) =>
-                        {
-                            themeNameText.Margin = new Thickness(0);
-                            buttonsPanel.Visibility = Visibility.Collapsed;
-                        };
-                        sureDelete.Click += (_, _) =>
-                        {
-                            try
-                            {
-                                _themeSelectorService.Themes.RemoveAt(int.Parse(sureDelete.Name));
-                                _themeSelectorService.SaveThemeInSettings();
-                                _appSettings.ThemeType = 0;
-                                _appSettings.SaveSettings();
-                                InitializePage();
-                                themeLoaderPanel.Children.Remove(eachButton);
-                            }
-                            catch
-                            {
-                                themeLoaderPanel.Children.Remove(eachButton);
-                            }
-                        };
-                        themeLoaderPanel.Children.Add(eachButton);
-                    }
-                }
-
-                var newTheme = new Button
-                {
-                    CornerRadius = new CornerRadius(15),
-                    Width = 430,
-                    Style = (Style)Application.Current.Resources["AccentButtonStyle"],
-                    Content = new TextBlock
-                    {
-                        FontWeight = new FontWeight(700),
-                        Text = "ThemeNewName".GetLocalized()
-                    }
-                };
-                if (themeLoaderPanel.Children.Count > 0)
-                {
-                    newTheme.Margin = new Thickness(0, 10, 0, 0);
-                }
-
-                themeLoaderPanel.Children.Add(newTheme);
-                // Добавить новую тему
-                newTheme.Click += (_, _) =>
-                {
-                    var textBoxThemeName = new TextBox
-                    {
-                        MaxLength = 13,
-                        CornerRadius = new CornerRadius(15, 0, 0, 15),
-                        Width = 300,
-                        PlaceholderText = "ThemeNewName".GetLocalized()
-                    };
-                    var newNameThemeSetButton = new Button
-                    {
-                        CornerRadius = new CornerRadius(0, 15, 15, 0),
-                        Content = new FontIcon
-                        {
-                            Glyph = "\uEC61"
-                        }
-                    };
-                    newTheme.Flyout = new Flyout
-                    {
-                        Content = new StackPanel
-                        {
-                            Orientation = Orientation.Horizontal,
-                            Children =
-                            {
-                                textBoxThemeName,
-                                newNameThemeSetButton
-                            }
-                        }
-                    };
-                    newNameThemeSetButton.Click += (_, _) =>
-                    {
-                        if (textBoxThemeName.Text != "")
-                        {
-                            try
-                            {
-                                _themeSelectorService.Themes.Add(new ThemeClass { ThemeName = textBoxThemeName.Text });
-                                newTheme.Flyout.Hide();
-                                themerDialog.Hide();
-                                _themeSelectorService.SaveThemeInSettings();
-                                InitializePage();
-                            }
-                            catch (Exception ex)
-                            {
-                                LogHelper.LogError(ex);
-                            }
-                        }
-                    };
-                };
-            }
-            catch
-            {
-                throw new Exception("Themer:Error#1 Cant load themes to edit");
-            }
-
-
-            // Use this code to associate the dialog to the appropriate AppWindow by setting
-            // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                themerDialog.XamlRoot = XamlRoot;
-            }
-
-            await themerDialog.ShowAsync();
-            UpdateTheme();
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
+        App.GetService<INavigationService>().NavigateTo(typeof(УправлениеТемамиViewModel).FullName!);
     }
 
     #endregion

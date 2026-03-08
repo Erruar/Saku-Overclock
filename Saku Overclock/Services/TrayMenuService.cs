@@ -9,6 +9,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Icon = System.Drawing.Icon;
+using PowerWindow = Saku_Overclock.Views.Window.PowerMon.PowerWindow;
 
 namespace Saku_Overclock.Services;
 

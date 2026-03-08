@@ -618,7 +618,7 @@ public sealed partial class ГлавнаяPage
         new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ") { UseShellExecute = true });
 
     /// <summary>
-    ///     Скрывает панель навигации Pivot и смезает её вверх
+    ///     Скрывает панель навигации Pivot и смещает её вверх
     /// </summary>
     private void PivotPresets_Loaded(object sender, RoutedEventArgs e)
     {
@@ -696,7 +696,14 @@ public sealed partial class ГлавнаяPage
             }
 
             _doubleClickApplyPrev = name + desc + toggle?.Tag;
-            _selectedIndex = (int?)toggle?.Tag ?? -1;
+            if (toggle?.Tag is string)
+            {
+                _selectedIndex = -1;
+            }
+            else
+            {
+                _selectedIndex = (int?)toggle?.Tag ?? -1;
+            }
 
             await Task.Delay(20);
             _userSwitchPreset = false;

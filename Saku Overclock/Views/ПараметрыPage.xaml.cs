@@ -1647,7 +1647,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            var newWindow = new PowerWindow();
+            var newWindow = new Window.PowerMon.PowerWindow();
             var micaBackdrop = new MicaBackdrop
             {
                 Kind = MicaKind.BaseAlt

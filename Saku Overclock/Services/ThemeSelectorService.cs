@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Windows.UI.ViewManagement;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
@@ -11,11 +12,12 @@ namespace Saku_Overclock.Services;
 public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsService) : IThemeSelectorService
 {
     private ElementTheme _theme = ElementTheme.Default;
+    private static readonly UISettings _uiSettings = new();
 
     public List<ThemeClass> Themes
     {
         get;
-        set;
+        private set;
     } = localThemeSettingsService.GetDefaultThemes();
 
     public void Initialize()
@@ -94,6 +96,21 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
             
             themeOpacity = Themes[themeType].ThemeOpacity;
             themeMaskOpacity = Themes[themeType].ThemeMaskOpacity;
+            
+            // Исправление некорректного отображения теней в приложении на HDR дисплеях
+            if (themeType is 0 or 2)
+            {
+                var background = _uiSettings.GetColorValue(UIColorType.Background);
+                int? target = HdrUtility.IsHdrSupported() && HdrUtility.IsHdrEnabled() 
+                    ? background != Microsoft.UI.Colors.White ? 1 : themeType == 0 ? 0 : null 
+                    : 0;
+
+                if (target.HasValue && (int)Themes[themeType].ThemeMaskOpacity != target)
+                {
+                    themeMaskOpacity = Themes[themeType].ThemeMaskOpacity = target.Value;
+                    SaveThemeInSettings();
+                }
+            }
         }
         else
         {

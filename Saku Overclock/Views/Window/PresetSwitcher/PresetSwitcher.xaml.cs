@@ -8,7 +8,7 @@ using Saku_Overclock.Wrappers;
 using WinRT.Interop;
 using Visual = Microsoft.UI.Composition.Visual;
 
-namespace Saku_Overclock.PresetSwitcher;
+namespace Saku_Overclock.Views.Window.PresetSwitcher;
 
 public sealed partial class PresetSwitcher
 {

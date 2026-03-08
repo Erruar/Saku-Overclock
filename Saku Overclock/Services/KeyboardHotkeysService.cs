@@ -119,7 +119,7 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
         {
             try
             {
-                await PresetSwitcher.PresetSwitcher.ShowOverlay(
+                await Views.Window.PresetSwitcher.PresetSwitcher.ShowOverlay(
                     App.GetService<IThemeSelectorService>(),
                     settingsService,
                     preset.Value.PresetName,
@@ -148,7 +148,7 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
         {
             try
             {
-                await PresetSwitcher.PresetSwitcher.ShowOverlay(
+                await Views.Window.PresetSwitcher.PresetSwitcher.ShowOverlay(
                     App.GetService<IThemeSelectorService>(),
                     settingsService,
                     settingsService.RtssMetricsEnabled

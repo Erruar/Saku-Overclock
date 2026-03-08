@@ -28,7 +28,7 @@
         <Grid Canvas.ZIndex="4">
             <NavigationView
                 x:Name="NavigationViewControl"
-                Canvas.ZIndex="0"
+                Canvas.ZIndex="0" OpenPaneLength="257"
                 PaneOpened="NavigationViewControl_PaneOpened"
                 PaneClosed="NavigationViewControl_PaneClosed"
                 IsBackButtonVisible="Visible"

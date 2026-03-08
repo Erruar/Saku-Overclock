@@ -255,7 +255,7 @@
                                                         </FontIcon>
                                                     </StackPanel>
                                                     <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap"
-                                                               MaxWidth="170" x:Uid="Preset_RtssOverlayDesc"
+                                                               MaxWidth="170" x:Uid="Preset_TrayMonDesc"
                                                                Text="Включает умный мониторинг показателей прямо в трее вашей системы" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
@@ -385,58 +385,10 @@
                                                                   SelectionChanged="AutostartCom_SelectionChanged">
                                                             <ComboBoxItem x:Uid="Settings_Start_Nothing"
                                                                           Content="Ничего не делать" />
-                                                            <ComboBoxItem x:Uid="Settings_Start_Mini"
-                                                                          Content="Скрываться в трей" />
                                                             <ComboBoxItem x:Uid="Settings_Start_Boot"
-                                                                          Content="Автостарт с ситемой" />
+                                                                          Content="Автостарт с системой" />
                                                             <ComboBoxItem x:Uid="Settings_Start_MiniBoot"
                                                                           Content="Автостарт в трее" />
-                                                        </ComboBox>
-                                                    </Grid>
-                                                </Border>
-                                                <Border Grid.Column="0" Height="10" Background="Transparent" />
-                                            </Grid>
-                                        </Grid>
-                                    </ScrollViewer>
-                                </FlipViewItem>
-                                <FlipViewItem Margin="-8,0,-8,0">
-                                    <ScrollViewer>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="0.53*" />
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" Margin="23,0,0,0"
-                                                            VerticalAlignment="Center" HorizontalAlignment="Left"
-                                                            Orientation="Vertical">
-                                                    <TextBlock HorizontalAlignment="Left" FontWeight="SemiBold"
-                                                               FontSize="17" x:Uid="Preset_AppHide"
-                                                               Text="Параметры скрытия" />
-                                                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap"
-                                                               MaxWidth="170" x:Uid="Preset_AppHideDesc"
-                                                               Text="Скрывать программу в трей при закрытии или сворачивании или не скрывать программу вообще" />
-                                                </StackPanel>
-                                                <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
-                                                <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="10" Margin="0,4,10,-4"
-                                                        Shadow="{ThemeResource SharedShadow}"
-                                                        Translation="0,0,10">
-                                                    <Grid Margin="0,-9,0,-9" HorizontalAlignment="Center">
-                                                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}"
-                                                                  Margin="{StaticResource XSmallTopMargin}"
-                                                                  CornerRadius="10" SelectedIndex="0" x:Name="HideCom"
-                                                                  SelectionChanged="HideCom_SelectionChanged">
-                                                            <ComboBoxItem x:Uid="Settings_Hide_Nothing_Minimum"
-                                                                          Content="Не скрываться" />
-                                                            <ComboBoxItem x:Uid="Settings_Hide_Minimize_Minimum"
-                                                                          Content="При сворачивании" />
-                                                            <ComboBoxItem x:Uid="Settings_Hide_Close_Minimum"
-                                                                          Content="При закрытии" />
                                                         </ComboBox>
                                                     </Grid>
                                                 </Border>

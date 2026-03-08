@@ -136,7 +136,10 @@
     <value>Personalization</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Theme of the application</value>
+    <value>App theme</value>
+  </data>
+  <data name="Settings_ThemeDesc.Text" xml:space="preserve">
+    <value>Personalize the look of the interface</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
     <value>Light</value>
@@ -158,6 +161,33 @@
   </data>
   <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md</value>
+  </data>
+  <data name="Settings_Community.Text" xml:space="preserve">
+    <value>Community</value>
+  </data>
+  <data name="Settings_Community_Discord.Text" xml:space="preserve">
+    <value>Join our community, chat with other Saku Overclock users</value>
+  </data>
+  <data name="Settings_Community_Join.Content" xml:space="preserve">
+    <value>Join community</value>
+  </data>
+  <data name="Settings_Licensing_View.Content" xml:space="preserve">
+    <value>View license</value>
+  </data>
+  <data name="Settings_Licensing.Text" xml:space="preserve">
+    <value>Legal information</value>
+  </data>
+  <data name="Settings_Licensing_Eula.Text" xml:space="preserve">
+    <value>Software license agreement</value>
+  </data>
+  <data name="Settings_Licensing_EulaDesc.Text" xml:space="preserve">
+    <value>View the software license agreement for Saku Overclock</value>
+  </data>
+  <data name="Settings_Licensing_CodeLicense.Text" xml:space="preserve">
+    <value>Open source license</value>
+  </data>
+  <data name="Settings_Licensing_CodeLicenseDesc.Text" xml:space="preserve">
+    <value>View the Saku Overclock open source license</value>
   </data>
   <data name="AppNotificationSamplePayload" xml:space="preserve">
     <value>&lt;toast launch="action=ToastClick"&gt;
@@ -245,19 +275,16 @@
     <value>Saved presets:</value>
   </data>
   <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
-    <value>Auto-apply latest settings when opening</value>
+    <value>Apply latest preset when opening</value>
   </data>
   <data name="Settings_Auto_Reapply.Text" xml:space="preserve">
-    <value>Reapply latest applied settings every few seconds</value>
+    <value>Reapply options</value>
   </data>
   <data name="Settings_Name.Text" xml:space="preserve">
-    <value>Settings page</value>
+    <value>Settings</value>
   </data>
   <data name="Settings_Start_Boot.Content" xml:space="preserve">
     <value>Startup with OS</value>
-  </data>
-  <data name="Settings_Start_Mini.Content" xml:space="preserve">
-    <value>Hide to tray</value>
   </data>
   <data name="Main_Disc.Text" xml:space="preserve">
     <value>Discord</value>
@@ -1274,7 +1301,7 @@ that you can disable checkbox</value>
     <value>Speed</value>
   </data>
   <data name="ThemeAdvanced.Text" xml:space="preserve">
-    <value>Toggle advanced theme settings</value>
+    <value>Theme settings</value>
   </data>
   <data name="ThemeChangeBgText.Text" xml:space="preserve">
     <value>Change background</value>
@@ -1283,13 +1310,25 @@ that you can disable checkbox</value>
     <value>Use custom background image</value>
   </data>
   <data name="ThemeManager.Text" xml:space="preserve">
-    <value>Theme manager</value>
+    <value>Theme management</value>
+  </data>
+  <data name="ThemeManagerDesc.Text" xml:space="preserve">
+    <value>Customize, manage, and create application themes</value>
+  </data>
+  <data name="ThemeManagerButton.Content" xml:space="preserve">
+    <value>Manage</value>
   </data>
   <data name="ThemeMaskOpacity.Text" xml:space="preserve">
     <value>Background blur intensity</value>
   </data>
+  <data name="ThemeMaskOpacityDesc.Text" xml:space="preserve">
+    <value>Changing background blur strength</value>
+  </data>
   <data name="ThemeOpacity.Text" xml:space="preserve">
     <value>Color intensity</value>
+  </data>
+  <data name="ThemeOpacityDesc.Text" xml:space="preserve">
+    <value>Changing background image opacity</value>
   </data>
   <data name="Theme_Clouds" xml:space="preserve">
     <value>Candy clouds</value>
@@ -1654,11 +1693,14 @@ AND DO NOT TOUCH IT!</value>
   <data name="Settings_Auto_Updates.Text" xml:space="preserve">
     <value>Check for updates</value>
   </data>
-  <data name="Settings_Reapply_Safe.Text" xml:space="preserve">
-    <value>Reapply only safe parameters</value>
+  <data name="Settings_Auto_UpdatesDesc.Text" xml:space="preserve">
+    <value>Notify about new versions on startup</value>
   </data>
   <data name="ThemeLight.Text" xml:space="preserve">
-    <value>Light theme</value>
+    <value>Theme type</value>
+  </data>
+  <data name="ThemeLightDesc.Text" xml:space="preserve">
+    <value>Sets the theme type: light or dark</value>
   </data>
   <data name="infoAFREQCPU.Text" xml:space="preserve">
     <value>Frequency</value>
@@ -1904,17 +1946,14 @@ without opening extra windows</value>
   <data name="Settings_RTSS_AdvancedCode_Enable.Text" xml:space="preserve">
     <value>RTSS Overlay Code Editor</value>
   </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable_TextDesc.Text" xml:space="preserve">
+    <value>Direct overlay code editing</value>
+  </data>
   <data name="Settings_RTSS_AdvancedCode_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>RTSS Overlay Code Editor
-It allows you to customize the overlay 
-display to your liking by adding more 
-metrics, rearranging their order, or making 
-other adjustments not possible through 
-the standard interface. You can manually 
-edit the code in a convenient text field with 
-autosave functionality, ensuring your 
-changes are always current and saved 
-automatically</value>
+    <value>Advanced editor for complete overlay customization.
+Manually adjust metrics, layout, and formatting 
+using raw code. Changes in the editor field 
+are saved automatically.</value>
   </data>
   <data name="Settings_RTSS_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS In-Game Overlay
@@ -2090,7 +2129,10 @@ UPDATE</value>
     <value>Switch RTSS Overlay state with overlay alert</value>
   </data>
   <data name="Settings_Keybinds_Enable.Text" xml:space="preserve">
-    <value>Use Hotkeys</value>
+    <value>Global Hotkeys</value>
+  </data>
+  <data name="Settings_Keybinds_Desc.Text" xml:space="preserve">
+    <value>Quick access to features using keyboard shortcuts without switching windows</value>
   </data>
   <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
     <value>Advanced Features:</value>
@@ -2580,8 +2622,8 @@ Use of the Saku Software implies intervention in the standard operating modes of
   <data name="Settings_Pivot_Behaviour.Text" xml:space="preserve">
     <value>Behavior</value>
   </data>
-  <data name="Settings_Pivot_Keybinds.Text" xml:space="preserve">
-    <value>Keybinds</value>
+  <data name="Settings_Pivot_Monitoring.Text" xml:space="preserve">
+    <value>Monitoring</value>
   </data>
   <data name="Settings_Pivot_Theme.Text" xml:space="preserve">
     <value>Theme</value>
@@ -2611,16 +2653,7 @@ Use of the Saku Software implies intervention in the standard operating modes of
     <value>Could not find the releases on GitHub.</value>
   </data>
   <data name="Settings_AppHide.Text" xml:space="preserve">
-    <value>Hide to tray when clicked</value>
-  </data>
-  <data name="Settings_Hide_Close.Content" xml:space="preserve">
-    <value>Close window button</value>
-  </data>
-  <data name="Settings_Hide_Minimize.Content" xml:space="preserve">
-    <value>Minimize window button</value>
-  </data>
-  <data name="Settings_Hide_Nothing.Content" xml:space="preserve">
-    <value>Do not hide in the tray</value>
+    <value>Hide when closing</value>
   </data>
   <data name="ThemeBgGifWarn" xml:space="preserve">
     <value>GIFs are animated but lead to huge GPU usage</value>
@@ -3037,6 +3070,9 @@ ensures maximum performance</value>
   <data name="Preset_RtssOverlayDesc.Text" xml:space="preserve">
     <value>Monitoring FPS, temperature, and CPU usage in the game. Without minimizing windows. Requires RTSS</value>
   </data>
+  <data name="Preset_TrayMonDesc.Text" xml:space="preserve">
+    <value>System metrics in the tray. Monitor without extra windows</value>
+  </data>
   <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
     <value>On</value>
   </data>
@@ -3181,7 +3217,7 @@ Reduces the voltage on your processor, for better performance at the same power 
 Set up a personalized undervolting level that will be applied to all premade presets. "0" value completely disables the undervolting function. Recommended default value is "-10", however, you can experiment with more aggressive settings (for example, "-15", "-20"). In case of instability of the system, you should reduce the intensity of undervolting, use values closer to zero (for example, instead of "-20" set "-10" or "-5")</value>
   </data>
   <data name="Preset_AppHideDesc.Text" xml:space="preserve">
-    <value>Hide the program in the tray when closing or minimizing, or not hide the program at all</value>
+    <value>Hide program in system tray when closing</value>
   </data>
   <data name="Preset_AppStartDesc.Text" xml:space="preserve">
     <value>Run the program when power on device. The startup mode can be selected: in the tray, with a window, or not to start</value>
@@ -3190,7 +3226,7 @@ Set up a personalized undervolting level that will be applied to all premade pre
     <value>Auto Reapply</value>
   </data>
   <data name="Preset_AutoApplyOptionsDesc.Text" xml:space="preserve">
-    <value>Automatically apply last applied overclocking parameters after opening the program</value>
+    <value>Restore last applied overclocking parameters after opening the program</value>
   </data>
   <data name="Preset_ReapplyOptions.Text" xml:space="preserve">
     <value>Reapply options</value>

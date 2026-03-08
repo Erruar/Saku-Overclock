@@ -152,25 +152,18 @@
                         <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,-6,17,0" Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
                             <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15" SelectedIndex="0" x:Name="AutoStartComboBox" SelectionChanged="AutoStartComboBox_SelectionChanged">
                                 <ComboBoxItem x:Uid="Settings_Start_Nothing" Content="Ничего не делать"/>
-                                <ComboBoxItem x:Uid="Settings_Start_Mini" Content="Скрываться в трей"/>
-                                <ComboBoxItem x:Uid="Settings_Start_Boot" Content="Автостарт с ситемой"/>
+                                <ComboBoxItem x:Uid="Settings_Start_Boot" Content="Автостарт с системой"/>
                                 <ComboBoxItem x:Uid="Settings_Start_MiniBoot" Content="Автостарт в трее"/>
                             </ComboBox>
                         </Grid>
                     </Grid>
 
-                    <Grid Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                    <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AppHideToTray" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                         <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
                             <FontIcon Glyph="&#xE92C;"/>
-                            <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_AppHide">Параметры скрытия</TextBlock>
+                            <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_AppHide">Скрывать в трей</TextBlock>
                         </StackPanel>
-                        <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,-6,17,0" Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
-                            <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15" SelectedIndex="0" x:Name="AppHideTypeComboBox" SelectionChanged="AppHideType_SelectionChanged">
-                                <ComboBoxItem x:Uid="Settings_Hide_Nothing" Content="Ничего не делать"/>
-                                <ComboBoxItem x:Uid="Settings_Hide_Minimize" Content="Свернуть - в трей"/>
-                                <ComboBoxItem x:Uid="Settings_Hide_Close" Content="Закрыть - в трей"/>
-                            </ComboBox>
-                        </Grid>
+                        <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0" OffContent="" OnContent="" x:Name="AppHideToTray" Toggled="AppHideToTray_OnToggled"/>
                     </Grid>
                     <Grid PointerPressed="ToggleTheSwitchByTag" Tag="ApplyStart" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                         <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
@@ -185,19 +178,6 @@
                             <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_Auto_Reapply">Автоприменять каждые (с)</TextBlock>
                         </StackPanel>
                         <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0" OffContent="" OnContent="" x:Name="AutoReapply" Toggled="AutoReapplyOptionsEverySeconds_Click"/>
-                    </Grid>
-                    <Grid x:Name="AutoReapplyNumberBoxPanel" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                        <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE72A;"/>
-                            <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_Auto_Reapply_Set">Автоприменять каждые (с)</TextBlock>
-                        </StackPanel>
-                        <Grid Height="32" Width="120" VerticalAlignment="Bottom" 
-                              Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Right" 
-                              CornerRadius="15" Margin="-140,-17,17,9">
-                            <NumberBox GotFocus="AutoReapplyOptionsEverySeconds_FocusEngaged" LostFocus="AutoReapplyOptionsEverySeconds_FocusDisengaged" Width="120" Height="32" Loaded="AutoReapplyOptionsEverySecondsNumberBox_Loaded"
-                                       x:Name="AutoReapplyNumberBox" CornerRadius="15" SpinButtonPlacementMode="Inline" SmallChange="1"
-                                       LargeChange="10" ValueChanged="AutoReapplyOptionsEverySecondsNumberBox_ValueChanged" Minimum="1" Value="3" Maximum="60" BorderThickness="0"/>
-                        </Grid>
                     </Grid>
                     <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AutoCheckUpdates" CornerRadius="0,0,15,15" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                         <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">

@@ -8,7 +8,7 @@ namespace Saku_Overclock.Helpers;
 /// <summary>
 /// Вспомогательный класс для управления автозапуском приложения Saku Overclock через планировщик заданий Windows
 /// </summary>
-internal class AutoStartHelper
+internal abstract class AutoStartHelper
 {
     private const string TaskName = "Saku Overclock";
     private const string TaskDescription = "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
@@ -25,7 +25,7 @@ internal class AutoStartHelper
         using var taskService = new TaskService();
         var executablePath = GetExecutablePath();
 
-        if (AppSettings.AutostartType == 2 || AppSettings.AutostartType == 3)
+        if (AppSettings.AutostartType is 1 or 2)
         {
             var existingTask = taskService.GetTask(TaskName);
 

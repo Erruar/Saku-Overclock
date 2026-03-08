@@ -8,7 +8,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
 
-namespace Saku_Overclock.Views;
+namespace Saku_Overclock.Views.Window.PowerMon;
 
 internal partial class PowerWindow : IDisposable
 {

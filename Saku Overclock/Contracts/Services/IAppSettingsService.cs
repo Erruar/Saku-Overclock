@@ -24,9 +24,8 @@ public interface IAppSettingsService
     /// <summary>
     ///     Тип автостарта:
     ///     0 - выкл,
-    ///     1 - при запуске приложения сразу в трей,
-    ///     2 - автостарт с системой,
-    ///     3 - автостарт и трей
+    ///     1 - автостарт с системой,
+    ///     2 - автостарт и трей
     /// </summary>
     int AutostartType
     {
@@ -35,12 +34,9 @@ public interface IAppSettingsService
     }
 
     /// <summary>
-    ///     Тип скрытия в трей:
-    ///     0 - выкл,
-    ///     1 - при сворачивании приложения сразу в трей,
-    ///     2 - при закрытии приложения сразу в трей
+    ///     При закрытии приложения сразу в трей
     /// </summary>
-    int HidingType
+    bool HideToTray
     {
         get;
         set;
@@ -68,15 +64,6 @@ public interface IAppSettingsService
     ///     При запуске приложения переприменять последние применённые параметры
     /// </summary>
     bool ReapplyLatestSettingsOnAppLaunch
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Переприменять последние безопасные параметры
-    /// </summary>
-    bool ReapplySafeOverclock
     {
         get;
         set;

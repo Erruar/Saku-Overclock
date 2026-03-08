@@ -132,6 +132,8 @@ public partial class App
                 services.AddTransient<ОбновлениеViewModel>();
                 services.AddTransient<ОбучениеPage>();
                 services.AddTransient<ОбучениеViewModel>();
+                services.AddTransient<УправлениеТемамиPage>();
+                services.AddTransient<УправлениеТемамиViewModel>();
                 // Configuration
                 services.Configure<LocalSettingsOptions>(
                     context.Configuration.GetSection(nameof(LocalSettingsOptions)));

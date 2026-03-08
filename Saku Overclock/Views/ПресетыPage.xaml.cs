@@ -86,15 +86,6 @@ public sealed partial class ПресетыPage
             AutostartCom.SelectedIndex = 0;
         }
 
-        try
-        {
-            HideCom.SelectedIndex = AppSettings.HidingType;
-        }
-        catch
-        {
-            HideCom.SelectedIndex = 2;
-        }
-
         ReapplyOptionsSetOnly(AppSettings.ReapplyOverclock ? ReapplyOptionsEnabled : ReapplyOptionsDisabled);
         AutoApplyOptionsSetOnly(AppSettings.ReapplyLatestSettingsOnAppLaunch
             ? AutoApplyOptionsEnabled
@@ -945,7 +936,7 @@ public sealed partial class ПресетыPage
         }
 
         AppSettings.AutostartType = AutostartCom.SelectedIndex;
-        if (AutostartCom.SelectedIndex == 2 || AutostartCom.SelectedIndex == 3)
+        if (AutostartCom.SelectedIndex is 1 or 2)
         {
             AutoStartHelper.SetStartupTask();
         }
@@ -954,17 +945,6 @@ public sealed partial class ПресетыPage
             AutoStartHelper.RemoveStartupTask();
         }
 
-        AppSettings.SaveSettings();
-    }
-
-    private void HideCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.HidingType = HideCom.SelectedIndex;
         AppSettings.SaveSettings();
     }
 
@@ -1782,7 +1762,7 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            var endMode = PresetType.Balance;
+            PresetType endMode;
             var selectedItem = PresetsControl.SelectedItem;
             var selectedIndex = PresetsControl.SelectedIndex;
 
@@ -1987,7 +1967,6 @@ public sealed partial class ПресетыPage
     private void StreamStabilizerModeCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
         // TODO: Fix Stream Stabilizer in v1.1
-        return;
         /*if (!_isLoaded)
         {
             return;

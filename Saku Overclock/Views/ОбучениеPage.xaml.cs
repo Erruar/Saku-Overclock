@@ -4,12 +4,10 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
-using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
-public sealed partial class ОбучениеPage : Page
+public sealed partial class ОбучениеPage
 {
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
     private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
@@ -45,15 +43,12 @@ public sealed partial class ОбучениеPage : Page
     {
         try
         {
-            AutoStartComboBox.SelectedIndex = AppSettings.AutostartType is > -1 and < 4 ? AppSettings.AutostartType : 0;
-            AppHideTypeComboBox.SelectedIndex =
-                AppHideTypeComboBox.SelectedIndex is > -1 and < 3 ? AppSettings.HidingType : 2;
+            AutoStartComboBox.SelectedIndex = AppSettings.AutostartType is > -1 and < 3 ? AppSettings.AutostartType : 0;
+            AppHideToTray.IsOn = AppSettings.HideToTray;
 
             ApplyStart.IsOn = AppSettings.ReapplyLatestSettingsOnAppLaunch;
             AutoCheckUpdates.IsOn = AppSettings.CheckForUpdates;
             AutoReapply.IsOn = AppSettings.ReapplyOverclock;
-            AutoReapplyNumberBox.Value = AppSettings.ReapplyOverclockTimer;
-            AutoReapplyNumberBoxPanel.Visibility = AutoReapply.IsOn ? Visibility.Visible : Visibility.Collapsed;
             InitializeThemeSettings();
         }
         catch (Exception ex)
@@ -101,9 +96,6 @@ public sealed partial class ОбучениеPage : Page
                 AppSettings.ThemeType = 0;
                 AppSettings.SaveSettings();
             }
-
-            // Загружаем параметры выбранной темы
-            var selectedTheme = ThemeSelectorService.Themes[AppSettings.ThemeType];
 
             // Устанавливаем выбранную тему
             ThemeComboBox.SelectedIndex = AppSettings.ThemeType;
@@ -182,7 +174,7 @@ public sealed partial class ОбучениеPage : Page
         }
 
         AppSettings.AutostartType = AutoStartComboBox.SelectedIndex;
-        if (AutoStartComboBox.SelectedIndex is 2 or 3)
+        if (AutoStartComboBox.SelectedIndex is 1 or 2)
         {
             AutoStartHelper.SetStartupTask();
         }
@@ -197,14 +189,14 @@ public sealed partial class ОбучениеPage : Page
     /// <summary>
     ///     Изменяет тип скрытия приложения в трей
     /// </summary>
-    private void AppHideType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void AppHideToTray_OnToggled(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded)
         {
             return;
         }
 
-        AppSettings.HidingType = AppHideTypeComboBox.SelectedIndex;
+        AppSettings.HideToTray = AppHideToTray.IsOn;
         AppSettings.SaveSettings();
     }
 
@@ -234,43 +226,10 @@ public sealed partial class ОбучениеPage : Page
             return;
         }
 
-        if (AutoReapply.IsOn)
-        {
-            AutoReapplyNumberBoxPanel.Visibility = Visibility.Visible;
-            AppSettings.ReapplyOverclock = true;
-            AppSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
-        }
-        else
-        {
-            AutoReapplyNumberBoxPanel.Visibility = Visibility.Collapsed;
-            AppSettings.ReapplyOverclock = false;
-            AppSettings.ReapplyOverclockTimer = 3;
-        }
+        AppSettings.ReapplyOverclock = AutoReapply.IsOn;
+        AppSettings.ReapplyOverclockTimer = 3;
 
         AppSettings.SaveSettings();
-    }
-
-    /// <summary>
-    ///     Изменяет состояние переприменение последних применённых параметров каждые несколько секунд (время переприменения)
-    /// </summary>
-    private void AutoReapplyOptionsEverySecondsNumberBox_ValueChanged(NumberBox sender,
-        NumberBoxValueChangedEventArgs args)
-    {
-        try
-        {
-            if (!_isLoaded)
-            {
-                return;
-            }
-
-            AppSettings.ReapplyOverclock = true;
-            AppSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
-            AppSettings.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
     }
 
     /// <summary>
@@ -287,44 +246,6 @@ public sealed partial class ОбучениеPage : Page
 
         AppSettings.SaveSettings();
     }
-
-    /// <summary>
-    ///     Центрует текст в AutoReapplyNumberBox
-    /// </summary>
-    private void AutoReapplyOptionsEverySecondsNumberBox_Loaded(object sender, RoutedEventArgs e)
-    {
-        var texts = VisualTreeHelper.FindVisualChildren<ScrollContentPresenter>(AutoReapplyNumberBox);
-        foreach (var text in texts)
-        {
-            text.Margin = new Thickness(12, 7, 0, 0);
-        }
-
-        var contents = VisualTreeHelper.FindVisualChildren<ContentControl>(AutoReapplyNumberBox);
-        foreach (var content in contents)
-        {
-            var presents = VisualTreeHelper.FindVisualChildren<ContentPresenter>(content);
-            foreach (var present in presents)
-            {
-                var texts1 = VisualTreeHelper.FindVisualChildren<TextBlock>(present);
-                foreach (var text in texts1)
-                {
-                    text.Margin = new Thickness(0, 2, 0, 0);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Изменяет состояние AutoReapplyNumberBox
-    /// </summary>
-    private void AutoReapplyOptionsEverySeconds_FocusEngaged(object sender, object args) =>
-        AutoReapplyNumberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
-
-    /// <summary>
-    ///     Изменяет состояние AutoReapplyNumberBox
-    /// </summary>
-    private void AutoReapplyOptionsEverySeconds_FocusDisengaged(object sender, object args) =>
-        AutoReapplyNumberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
 
     /// <summary>
     ///     Изменяет состояние привязанных ToggleSwitch
@@ -618,16 +539,15 @@ public sealed partial class ОбучениеPage : Page
     }
 
 
-    public async void AcceptButton_Click(object sender, RoutedEventArgs e)
+    private async void AcceptButton_Click(object sender, RoutedEventArgs e)
     {
-        if (LicenseAcceptButton.IsChecked == false)
-        {
-            AcceptErrTeachingTip.IsOpen = true;
-            return;
-        }
-
         try
         {
+            if (LicenseAcceptButton.IsChecked == false)
+            {
+                AcceptErrTeachingTip.IsOpen = true;
+                return;
+            }
             await ChangeSection(LicenseSection, QuickSettings);
         }
         catch (Exception ex) 
@@ -668,39 +588,6 @@ public sealed partial class ОбучениеPage : Page
         await Task.Delay(TimeSpan.FromSeconds(1.8));
 
         from.Visibility = Visibility.Collapsed;
-    }
-
-    private async void DisagreeTraining_Click(object sender, RoutedEventArgs e)
-    {
-        var skipDialog = new ContentDialog
-        {
-            Title = "Пропустить диагностику?",
-            Content = "Вы всегда сможете создать пресеты с OC Finder позже",
-            CloseButtonText = "CancelThis/Text".GetLocalized(),
-            PrimaryButtonText = "Да, пропустить",
-            DefaultButton = ContentDialogButton.Close
-        };
-        // Use this code to associate the dialog to the appropriate AppWindow by setting
-        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            skipDialog.XamlRoot = XamlRoot;
-        }
-        var result = await skipDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            ShowNavbarAndControls();
-            var navigationService = App.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-        }
-    }
-
-    private void AcceptTraining_Click(object sender, RoutedEventArgs e)
-    {
-        
-            ShowNavbarAndControls();
-            var navigationService = App.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
     }
 
     private async void QuickSettingsDone_Click(object sender, RoutedEventArgs e)

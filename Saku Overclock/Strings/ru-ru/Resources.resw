@@ -136,7 +136,10 @@
     <value>Персонализация</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Тема приложения</value>
+    <value>Тема оформления</value>
+  </data>
+  <data name="Settings_ThemeDesc.Text" xml:space="preserve">
+    <value>Настройка внешнего вида интерфейса</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
     <value>Светлая</value>
@@ -158,6 +161,33 @@
   </data>
   <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md</value>
+  </data>
+  <data name="Settings_Community.Text" xml:space="preserve">
+    <value>Сообщество</value>
+  </data>
+  <data name="Settings_Community_Discord.Text" xml:space="preserve">
+    <value>Присоединяйтесь к нашему сообществу, общайтесь вместе с другими пользователями Saku Overclock</value>
+  </data>
+  <data name="Settings_Community_Join.Content" xml:space="preserve">
+    <value>Присоединиться</value>
+  </data>
+  <data name="Settings_Licensing_View.Content" xml:space="preserve">
+    <value>Просмотр лицензии</value>
+  </data>
+  <data name="Settings_Licensing.Text" xml:space="preserve">
+    <value>Правовая информация</value>
+  </data>
+  <data name="Settings_Licensing_Eula.Text" xml:space="preserve">
+    <value>Лицензия на использование приложения</value>
+  </data>
+  <data name="Settings_Licensing_EulaDesc.Text" xml:space="preserve">
+    <value>Просмотреть лицензию на использование Saku Overclock</value>
+  </data>
+  <data name="Settings_Licensing_CodeLicense.Text" xml:space="preserve">
+    <value>Лицензия открытого кода</value>
+  </data>
+  <data name="Settings_Licensing_CodeLicenseDesc.Text" xml:space="preserve">
+    <value>Просмотреть лицензию открытого кода</value>
   </data>
   <data name="AppNotificationSamplePayload" xml:space="preserve">
     <value>&lt;toast launch="action=ToastClick"&gt;
@@ -245,19 +275,16 @@
     <value>Сохранённые пресеты:</value>
   </data>
   <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
-    <value>Автоматически переприменять последние применённые параметры разгона после открытия программы</value>
+    <value>Применять пресет при запуске</value>
   </data>
   <data name="Settings_Auto_Reapply.Text" xml:space="preserve">
-    <value>Переприменять последние применённые параметры каждые несколько секунд</value>
+    <value>Переприменять параметры</value>
   </data>
   <data name="Settings_Name.Text" xml:space="preserve">
     <value>Настройки</value>
   </data>
   <data name="Settings_Start_Boot.Content" xml:space="preserve">
     <value>Автозапуск с ОС</value>
-  </data>
-  <data name="Settings_Start_Mini.Content" xml:space="preserve">
-    <value>Скрывать в трей</value>
   </data>
   <data name="Main_Disc.Text" xml:space="preserve">
     <value>Дискорд</value>
@@ -1291,7 +1318,7 @@
     <value>Скорость</value>
   </data>
   <data name="ThemeAdvanced.Text" xml:space="preserve">
-    <value>Расширенные параметры темы</value>
+    <value>Параметры темы</value>
   </data>
   <data name="ThemeChangeBgText.Text" xml:space="preserve">
     <value>Изменить фон</value>
@@ -1300,13 +1327,25 @@
     <value>Использовать свой фон</value>
   </data>
   <data name="ThemeManager.Text" xml:space="preserve">
-    <value>Менеджер тем</value>
+    <value>Управление темами</value>
+  </data>
+  <data name="ThemeManagerDesc.Text" xml:space="preserve">
+    <value>Настройка, управление и создание тем приложения</value>
+  </data>
+  <data name="ThemeManagerButton.Content" xml:space="preserve">
+    <value>Управление</value>
   </data>
   <data name="ThemeMaskOpacity.Text" xml:space="preserve">
     <value>Интенсивность размытия фона</value>
   </data>
+  <data name="ThemeMaskOpacityDesc.Text" xml:space="preserve">
+    <value>Изменяет силу размытия фонового изображения</value>
+  </data>
   <data name="ThemeOpacity.Text" xml:space="preserve">
     <value>Интенсивность цвета</value>
+  </data>
+  <data name="ThemeOpacityDesc.Text" xml:space="preserve">
+    <value>Изменяет прозрачность фонового изображения</value>
   </data>
   <data name="Theme_Clouds" xml:space="preserve">
     <value>Облака</value>
@@ -1690,13 +1729,16 @@ Overclock будут проигнорированы,
 И НЕ ТРОГАТЬ ЭТОТ ПАРАМЕТР</value>
   </data>
   <data name="Settings_Auto_Updates.Text" xml:space="preserve">
-    <value>Проверять обновления при запуске</value>
+    <value>Проверять обновления</value>
   </data>
-  <data name="Settings_Reapply_Safe.Text" xml:space="preserve">
-    <value>Автоприменять только безопасные параметры</value>
+  <data name="Settings_Auto_UpdatesDesc.Text" xml:space="preserve">
+    <value>Уведомлять о выходе новых версий при запуске</value>
   </data>
   <data name="ThemeLight.Text" xml:space="preserve">
-    <value>Светлая тема</value>
+    <value>Тип темы</value>
+  </data>
+  <data name="ThemeLightDesc.Text" xml:space="preserve">
+    <value>Устанавливает тип темы: светлая или тёмная</value>
   </data>
   <data name="infoAFREQCPU.Text" xml:space="preserve">
     <value>Частота</value>
@@ -1941,17 +1983,14 @@ Overclock будут проигнорированы,
   <data name="Settings_RTSS_AdvancedCode_Enable.Text" xml:space="preserve">
     <value>Редактор кода наложения RTSS</value>
   </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable_TextDesc.Text" xml:space="preserve">
+    <value>Прямое редактирование кода оверлея</value>
+  </data>
   <data name="Settings_RTSS_AdvancedCode_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Редактор кода наложения RTSS
-Позволит  вам настроить отображение 
-оверлея по своему усмотрению, добавляя 
-больше метрик, изменяя порядок их отображения 
-или внося любые другие изменения, которые 
-недоступны через стандартный интерфейс. Вы 
-можете редактировать код вручную в удобном 
-текстовом поле с функцией автосохранения, 
-чтобы ваши изменения всегда оставались 
-актуальными и сохранялись автоматически</value>
+    <value>Продвинутый редактор для полной кастомизации оверлея.
+Позволяет вручную изменять состав метрик, их порядок
+и форматирование через текстовый код. Все правки
+в окне редактора сохраняются автоматически</value>
   </data>
   <data name="Settings_RTSS_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS оверлей в игре
@@ -2126,7 +2165,10 @@ Overclock будут проигнорированы,
     <value>Переключить состояние оверлея RTSS</value>
   </data>
   <data name="Settings_Keybinds_Enable.Text" xml:space="preserve">
-    <value>Использовать комбинации клавиш</value>
+    <value>Горячие клавиши</value>
+  </data>
+  <data name="Settings_Keybinds_Desc.Text" xml:space="preserve">
+    <value>Управление функциями приложения с помощью клавиатуры без переключения окон</value>
   </data>
   <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
     <value>Дополнительно:</value>
@@ -2573,13 +2615,13 @@ Asus. Может не поддерживаться на
     <value>Позже</value>
   </data>
   <data name="Settings_Pivot_About.Text" xml:space="preserve">
-    <value>О нас</value>
+    <value>О приложении</value>
   </data>
   <data name="Settings_Pivot_Behaviour.Text" xml:space="preserve">
-    <value>Поведение</value>
+    <value>Основные</value>
   </data>
-  <data name="Settings_Pivot_Keybinds.Text" xml:space="preserve">
-    <value>Клавиши</value>
+  <data name="Settings_Pivot_Monitoring.Text" xml:space="preserve">
+    <value>Мониторинг</value>
   </data>
   <data name="Settings_Pivot_Theme.Text" xml:space="preserve">
     <value>Темы</value>
@@ -2609,16 +2651,7 @@ Asus. Может не поддерживаться на
     <value>Не удалось найти релизы на GitHub.</value>
   </data>
   <data name="Settings_AppHide.Text" xml:space="preserve">
-    <value>Скрывать в трей при нажатии</value>
-  </data>
-  <data name="Settings_Hide_Close.Content" xml:space="preserve">
-    <value>Кнопки закрыть окно</value>
-  </data>
-  <data name="Settings_Hide_Minimize.Content" xml:space="preserve">
-    <value>Кнопки свернуть окно</value>
-  </data>
-  <data name="Settings_Hide_Nothing.Content" xml:space="preserve">
-    <value>Не скрывать в трей</value>
+    <value>Сворачивать в трей</value>
   </data>
   <data name="ThemeBgGifWarn" xml:space="preserve">
     <value>GIF анимированы но с высокой нагрузкой на GPU</value>
@@ -3039,6 +3072,9 @@ Asus. Может не поддерживаться на
   <data name="Preset_RtssOverlayDesc.Text" xml:space="preserve">
     <value>Мониторинг FPS, температуры, загрузки CPU в игре. Без сворачивания. Требует RTSS</value>
   </data>
+  <data name="Preset_TrayMonDesc.Text" xml:space="preserve">
+    <value>Отображение показателей в системном трее. Контроль без лишних окон</value>
+  </data>
   <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
     <value>Вкл</value>
   </data>
@@ -3182,22 +3218,22 @@ Asus. Может не поддерживаться на
 Настройте персональный уровень снижения напряжения, который будет автоматически применяться ко всем предустановленным пресетам. Значение "0" полностью отключает функцию андервольтинга. Рекомендуемое значение по умолчанию составляет "-10", однако вы можете экспериментировать с более агрессивными настройками (например, "-15", "-20"). В случае возникновения нестабильности системы используйте значения ближе к нулю (например, вместо "-20" установить "-10" или "-5")</value>
   </data>
   <data name="Preset_AppHideDesc.Text" xml:space="preserve">
-    <value>Скрывать программу в трей при закрытии или сворачивании или не скрывать программу вообще</value>
+    <value>Скрывать программу в системный трей при закрытии</value>
   </data>
   <data name="Preset_AppStartDesc.Text" xml:space="preserve">
-    <value>Запускать программу при входе в систему. Режим запуска можно выбрать: в трее, с окном или не запускаться</value>
+    <value>Настройка поведения программы при старте системы</value>
   </data>
   <data name="Preset_AutoApplyOptions.Text" xml:space="preserve">
     <value>Применение при запуске</value>
   </data>
   <data name="Preset_AutoApplyOptionsDesc.Text" xml:space="preserve">
-    <value>Автоматически переприменять последние применённые параметры разгона после открытия программы</value>
+    <value>Восстанавливать последние настройки при запуске приложения</value>
   </data>
   <data name="Preset_ReapplyOptions.Text" xml:space="preserve">
     <value>Переприменение разгона</value>
   </data>
   <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
-    <value>Переприменять последние применённые параметры для избежания перезаписи другими приложениями</value>
+    <value>Переодически применять параметры пресета для избежания перезаписи другими приложениями</value>
   </data>
   <data name="Preset_StreamStabilizerBaseLock.Content" xml:space="preserve">
     <value>Базовый</value>

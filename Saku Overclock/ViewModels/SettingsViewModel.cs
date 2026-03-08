@@ -51,7 +51,7 @@ public partial class SettingsViewModel : ObservableRecipient
         {
             version = Assembly.GetExecutingAssembly().GetName().Version!;
         }
-        return $"{"AppDisplayName".GetLocalized()} {version} {_versionString}";
+        return $"{_versionString} v{version.Major}.{version.Minor}";
     }
 
 }

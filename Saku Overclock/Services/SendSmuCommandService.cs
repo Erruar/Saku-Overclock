@@ -36,7 +36,6 @@ public class SendSmuCommandService : ISendSmuCommandService
     private string _checkAdjLine = string.Empty;
     private bool _dangerSettingsApplied;
     private bool? _isOlderGeneration;
-    private bool _safeReapply = true;
     private bool _lockCodenameGeneration;
 
     /// <summary>
@@ -79,7 +78,6 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     public SendSmuCommandService()
     {
-        _safeReapply = _appSettings.ReapplySafeOverclock;
         SetCodeNameGeneration();
         _smuSettings.LoadSettings();
     }
@@ -104,7 +102,7 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <summary>
     /// Применяет быстрые команды SMU в зависимости от режима запуска
     /// </summary>
-    /// <param name="startup">true - применяются команды при запуске (Startup или ApplyWith), false - только ApplyWith</param>
+    /// <param name="startup">True - применяются команды при запуске (Startup или ApplyWith), false - только ApplyWith</param>
     public void ApplyQuickSmuCommand(bool startup)
     {
         if (_smuSettings.QuickSmuCommands == null)
@@ -185,7 +183,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
-    public static uint[] MakeCmdArgs(uint[] args, uint maxArgs = 6u)
+    private static uint[] MakeCmdArgs(uint[] args, uint maxArgs = 6u)
     {
         var array = new uint[maxArgs];
         checked
@@ -236,7 +234,6 @@ public class SendSmuCommandService : ISendSmuCommandService
                             ryzenAdjString /* Если прошлое применение совпадает с текущим применением */
                             && _dangerSettingsApplied /* Если уже были применены опасные настройки */
                             && !save /* Если пользователь сам их не выставляет */
-                            && _safeReapply /* Если включено безопасное применение */
                             && _terminateCommands.Any(ryzenAdjCommand.Contains)) // Если есть совпадения в командах
                         {
                             //Ничего не делать 
@@ -380,7 +377,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                     catch (Exception ex)
                     {
                         await LogHelper.TraceIt_TraceError($"Error applying command {commandName}: {ex.Message}");
-                        // Продолжаем с следующей командой после задержки
+                        // Продолжаем со следующей командой после задержки
                         await Task.Delay(20);
                     }
                 }
@@ -451,7 +448,7 @@ public class SendSmuCommandService : ISendSmuCommandService
 
             if (!_saveInfo && commandName == "stopcpu-freqto-ramstate")
             {
-                return SmuStatus.Ok; // Пропускаем команду но возвращаем OK, для безопасности системы
+                return SmuStatus.Ok; // Пропускаем команду, но возвращаем OK, для безопасности системы
             }
             if (_cpu.IsRaven &&
                 (commandName == "min-gfxclk" || commandName == "max-gfxclk"
@@ -506,8 +503,8 @@ public class SendSmuCommandService : ISendSmuCommandService
             0 => setMax ? 0x32u : 0x21u,
             1 => setMax ? 0x33u : 0x12u,
             2 => setMax ? 0x34u : 0x28u,
-            3 => setMax ? 0x14u : 0x23u,
-            4 => setMax ? 0x30u : 0x31u,
+            3 => setMax ? 0x14u : 0x23u, 
+         // 4 => setMax ? 0x30u : 0x31u,
             _ => setMax ? 0x30u : 0x31u,
         };
 
@@ -544,18 +541,6 @@ public class SendSmuCommandService : ISendSmuCommandService
         var isFixZeroFourGhz = _appSettings.Preset >= 0 &&
            _appSettings.Preset < _presetManager.Presets.Length &&
            _presetManager.Presets[_appSettings.Preset].Gpu16;
-
-        static string L(string name) 
-        {
-            try
-            {
-                return name.GetLocalized();
-            }
-            catch
-            {
-                return "Unknown";
-            }
-        }
 
         return commandName switch
         {
@@ -610,6 +595,18 @@ public class SendSmuCommandService : ISendSmuCommandService
             "set-gpuclockoverdrive-byvid" => L("Param_ADV_a10/Text"),
             _ => "Unknown"
         };
+
+        static string L(string name) 
+        {
+            try
+            {
+                return name.GetLocalized();
+            }
+            catch
+            {
+                return "Unknown";
+            }
+        }
     }
 
     #endregion
@@ -791,14 +788,6 @@ public class SendSmuCommandService : ISendSmuCommandService
     #endregion
 
     #region Helpers
-
-    /// <summary>
-    ///  Возвращает значение безопасного применения команд или назначает его
-    /// </summary>
-    public bool SafeReapply
-    {
-        set => _safeReapply = value;
-    }
 
     /// <summary>
     ///  Возвращает команду Cpu Per Core Curve Optimizer при её наличии
@@ -1036,7 +1025,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         [
             // Store the commands
             // Those commands are 100% tested
-            // Tested on: A12-9720P, FX-9830P
+            // on: A12-9720P, FX-9830P
             // SMU command map for FP4 socket (last update: 2025-07-09)
 
 /*   Smu  */("enable-feature",                    true,  0x5F), // Use with caution!
@@ -1060,7 +1049,7 @@ public class SendSmuCommandService : ISendSmuCommandService
 /*Subsystm*/("max-lclk",                          true,  0x4f), // Danger! use with caution!
 /* Clocks */("min-lclk",                          true,  0x4e), // Danger! use with caution!
             
-/*  AcBtc */("setcpu-freqto-ramstate",            true,  0x77), // Start BTC ."Failed" status when apply
+/*  AcBtc */("setcpu-freqto-ramstate",            true,  0x77), // Start BTC. "Failed" status when apply
         ];
     }
 
@@ -1080,7 +1069,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             // true - Use MP1 address
             // false - Use RSMU address
             // Those commands are 100% tested
-            // Tested on: Ryzen 3 2200U, Ryzen 5 3200U, Ryzen 5 3500U
+            // on: Ryzen 3 2200U, Ryzen 5 3200U, Ryzen 5 3500U
             // SMU command map for FP5 socket (last update: 2025-07-05)
 
 /*   Smu  */("enable-feature",                    true,  0x05), 
@@ -1121,7 +1110,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("disable-oc",                        true,  0x3f), // Require 0x1 in args
             ("oc-clk",                            false, 0x7d), // Not sure, "Rejected" status when apply
             ("per-core-oc-clk",                   false, 0x7e), // Not sure, "Rejected" 
-            ("oc-clk",                            true,  0x59), // "Failed" status when apply, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
+            ("oc-clk",                            true,  0x59), // "Failed" status when applied, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
 /*   OC   */("per-core-oc-clk",                   true,  0x5a), // "Failed" status when apply
 /* Options*/("oc-clk",                            true,  0x41), // Old AMD CBS OC method, freq in MHz, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable OC Mode, arg 0x0 - enable OC Mode*/)
             ("oc-volt",                           true,  0x5b), // "Failed" status when apply
@@ -1186,7 +1175,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         [
             // Store the commands
             // Those commands are 100% tested
-            // Tested on: Ryzen 5 5600H
+            // on: Ryzen 5 5600H
             // SMU command map for FP6 socket (last update: 2025-07-05)
 
 /*  Smu   */("enable-feature",                    true,  0x05), 
@@ -1247,7 +1236,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("pbo-scalar",                        false, 0x3f),
             ("get-pbo-scalar",                    false, 0x0f),
 
-            ("set-cogfx",                         false, 0x53), // "Failed" status when apply, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
+            ("set-cogfx",                         false, 0x53), // "Failed" status when applied, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
             ("set-coper",                         true,  0x54), // "Failed" status when apply
 /*  Curve */("set-coper",                         false, 0x52), // "Failed" status when apply
 /*Optimizr*/("set-coall",                         true,  0x55), // "Failed" status when apply
@@ -1279,7 +1268,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         [
             // Store the commands
             // Those commands are 100% tested
-            // Tested on: AMD Custom APU 0405
+            // on: AMD Custom APU 0405
             // SMU command map for FF3 socket (last update: 2025-07-05)
 
 /*  Smu   */("enable-feature",                    true,  0x05), 
@@ -1346,7 +1335,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         [
             // Store the commands
             // Those commands are 100% tested
-            // Tested on: Ryzen 3 8440U, Ryzen Z1 Extreme
+            // on: Ryzen 3 8440U, Ryzen Z1 Extreme
             // SMU command map for FT6, FP7, FP8, FP11 socket (last update: 2025-07-05)
 
 /*  Smu   */("enable-feature",                    true,  0x05), 
@@ -1403,7 +1392,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("get-pbo-scalar",                    false, 0x0f),
 
             ("set-cogfx",                         false, 0xb7), // Not sure, "Rejected" status when apply
-            ("set-coper",                         true,  0x4b), // "Failed" status when apply, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
+            ("set-coper",                         true,  0x4b), // "Failed" status when applied, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
 /*  Curve */("set-coper",                         false, 0x53),
 /*Optimizr*/("set-coall",                         true,  0x4c), // "Failed" status when apply
             ("set-coall",                         false, 0x5d),
@@ -1435,7 +1424,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         [
             // Store the commands
             // Those commands are 100% tested
-            // Tested on: Ryzen 5 1600
+            // on: Ryzen 5 1600
             // SMU command map for early AM4 socket (last update: 2025-11-23)
             ("enable-feature",                    true,  0x09),
             ("fast-limit",                        false, 0x64), // PPT limit
@@ -1520,11 +1509,11 @@ public class SendSmuCommandService : ISendSmuCommandService
         [
             // Store the commands
             // Those commands are 100% tested
-            // Tested on: Ryzen 9 7900X3D
+            // on: Ryzen 9 7900X3D
             // SMU command map for AM5 socket (last update: 2025-07-05)
             ("enable-feature",                    true,  0x03),
             ("disable-feature",                   true,  0x04), // Can be locked
-            ("stapm-limit",                       true,  0x4f), // Set CPU Stapm value! Not affect on PPT. Works only if Stapm feature is enabled on platform BE CAREFUL! If you apply this command and then "fast-limit" - actual PPT limit will NOT be saved thats why I commented that command for safety
+            ("stapm-limit",                       true,  0x4f), // Set CPU Stapm value! This value isn't affect on PPT. Works only if Stapm feature is enabled on platform BE CAREFUL! If you apply this command and then "fast-limit" - actual PPT limit will NOT be saved that's why I commented that command for safety
             ("fast-limit",                        true,  0x3e),
             ("fast-limit",                        false, 0x56), // Set CPU PPT Limit
             ("slow-limit",                        true,  0x5f),

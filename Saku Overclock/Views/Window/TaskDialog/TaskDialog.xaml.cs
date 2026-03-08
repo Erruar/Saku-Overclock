@@ -4,9 +4,9 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Wrappers;
 using WinRT.Interop;
 
-namespace Saku_Overclock.Views.Windows.TaskDialog;
+namespace Saku_Overclock.Views.Window.TaskDialog;
 
-public sealed partial class TaskDialog : Window
+public sealed partial class TaskDialog : Microsoft.UI.Xaml.Window
 {
     private readonly IAppNotificationService _notificationService = App.GetService<IAppNotificationService>();
     public TaskDialog()
