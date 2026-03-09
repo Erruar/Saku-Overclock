@@ -12,7 +12,7 @@ public partial class ГлавнаяViewModel : ObservableRecipient
     private static readonly string Versioning = SettingsViewModel.VersionId == 0 
         // ReSharper disable once HeuristicUnreachableCode
         ? $"CC-{Assembly.GetExecutingAssembly().GetName().Version.Revision}"
-        : "v1.0";
+        : $"v{Assembly.GetExecutingAssembly().GetName().Version!.Major}.{Assembly.GetExecutingAssembly().GetName().Version!.Minor}";
 
     public string VersionDescription
     {

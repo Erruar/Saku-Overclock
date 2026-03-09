@@ -40,9 +40,9 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE7E8;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_AppStart" FontSize="14" Text="Параметры запуска" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_AppStartDesc"
                                                Text="Запускать программу при входе в систему" />
@@ -69,9 +69,9 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE92C;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_AppHide" FontSize="14" Text="Скрывать в трей" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_AppHideDesc" Text="Скрывать программу в трей при закрытии" />
                                 </Grid>
@@ -89,10 +89,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE777;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_Apply_Start_Desc" FontSize="14"
                                                Text="Применять пресет при запуске" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_AutoApplyOptionsDesc"
                                                Text="Восстанавливать последние настройки при запуске приложения" />
@@ -111,10 +111,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE81C;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_Auto_Reapply" FontSize="14"
                                                Text="Переприменять параметры" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_ReapplyOptionsDesc"
                                                Text="Периодически переприменять параметры разгона во избежание изменения двугими программами" />
@@ -133,9 +133,9 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE895;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_Auto_Updates" FontSize="14" Text="Проверять обновления" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Settings_Auto_UpdatesDesc"
                                                Text="Уведомлять о выходе новых версий при запуске" />
@@ -155,9 +155,9 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE790;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_Theme" FontSize="14" Text="Цветовая тема" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Settings_ThemeDesc" Text="Выберите цветовую тему для приложения" />
                                 </Grid>
@@ -185,9 +185,9 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE762;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="ThemeManager" FontSize="14" Text="Управление темами" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeManagerDesc" Text="Настройка, управление и создание тем" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeManagerDesc" Text="Настройка, управление и создание тем" />
                                 </Grid>
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,16,0"
                                         Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Width="190" x:Uid="ThemeManagerButton"
@@ -207,9 +207,9 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE92E;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_Keybinds_Enable" FontSize="14" Text="Использовать комбинации клавиш" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="Settings_Keybinds_Desc" Text="Управление функциями приложения с помощью клавиатуры без переключения окон" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="Settings_Keybinds_Desc" Text="Управление функциями приложения с помощью клавиатуры без переключения окон" />
                                 </Grid>
                                 <ToggleSwitch IsOn="True" VerticalAlignment="Center" HorizontalAlignment="Right"
                                               Margin="0,0,-97,0" OffContent="" OnContent=""
@@ -370,10 +370,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE735;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_ni_Traymon" FontSize="14"
                                                Text="Включить мониторинг в трее?" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_TrayMonDesc" Text="Мониторинг показателей в трее" />
                                 </Grid>
@@ -625,10 +625,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE71D;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_RTSS_Enable" FontSize="14"
                                                Text="Мониторинг в играх с RTSS" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_RtssOverlayDesc" Text="Мониторинг показателей в игре" />
                                 </Grid>
@@ -1255,10 +1255,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE90F;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="Settings_RTSS_AdvancedCode_Enable" FontSize="14"
                                                Text="Редактор кода наложения RTSS" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Settings_RTSS_AdvancedCode_Enable_TextDesc"
                                                Text="Расширенный редактор кода наложения" />
@@ -1312,10 +1312,10 @@
                                     </Grid.RowDefinitions>
                                     <BitmapIcon Grid.Row="0" UriSource="/Assets/discord.png" Height="25"
                                                 Margin="15,0,0,-18" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                FontSize="14"
                                                Text="Saku Overclock Community" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Settings_Community_Discord" Text="Присоединяйтесь к нашему сообществу" />
                                 </Grid>
@@ -1334,10 +1334,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE8A6;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                FontSize="14" x:Uid="Settings_Licensing_Eula"
                                                Text="Лицензионное соглашение приложения" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Settings_Licensing_EulaDesc" Text="Просмотреть лицензионное соглашение для Saku Overclock" />
                                 </Grid>
@@ -1353,10 +1353,10 @@
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE7C3;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                FontSize="14" x:Uid="Settings_Licensing_CodeLicense"
                                                Text="Лицензия открытого кода" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12"
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Settings_Licensing_CodeLicenseDesc" Text="Просмотреть лицензию открытого кода" />
                                 </Grid>

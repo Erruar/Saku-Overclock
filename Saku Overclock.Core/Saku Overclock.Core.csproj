@@ -4,7 +4,7 @@
     <RootNamespace>Saku_Overclock.Core</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
     <Platforms>x64;AnyCPU</Platforms>
-	<LangVersion>13.0</LangVersion>
+	<LangVersion>14.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>1.0.2.0</AssemblyVersion>
     <FileVersion>1.0.2.0</FileVersion>

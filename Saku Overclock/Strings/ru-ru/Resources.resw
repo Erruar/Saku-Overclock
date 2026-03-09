@@ -1321,10 +1321,16 @@
     <value>Параметры темы</value>
   </data>
   <data name="ThemeChangeBgText.Text" xml:space="preserve">
-    <value>Изменить фон</value>
+    <value>Фоновое изображение</value>
   </data>
-  <data name="ThemeCustomBg.Text" xml:space="preserve">
-    <value>Использовать свой фон</value>
+  <data name="ThemeChangeBgTextDesc.Text" xml:space="preserve">
+    <value>Использовать изображение для фона приложения</value>
+  </data>
+  <data name="ThemeChangeBgTextAction.Text" xml:space="preserve">
+    <value>Выбрать</value>
+  </data>
+  <data name="ThemeResizeWindow.Text" xml:space="preserve">
+    <value>Измените размер окна для корректного применения темы</value>
   </data>
   <data name="ThemeManager.Text" xml:space="preserve">
     <value>Управление темами</value>
@@ -1389,6 +1395,30 @@
   <data name="ThemeBgOr" xml:space="preserve">
     <value>или</value>
   </data>
+  <data name="ThemeBgSelectSource" xml:space="preserve">
+    <value>Источник фона:</value>
+  </data>
+  <data name="ThemeBgSourceBrowse" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="ThemeDelete" xml:space="preserve">
+    <value>Удалить тему </value>
+  </data>
+  <data name="ThemeReset.Text" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="ThemeResetDesc.Text" xml:space="preserve">
+    <value>Сбросить все параметры темы на стандартные</value>
+  </data>
+  <data name="ThemeResetAction.Text" xml:space="preserve">
+    <value>Сбросить</value>
+  </data>
+  <data name="ThemeResetAllAction.Text" xml:space="preserve">
+    <value>Сбросить все темы</value>
+  </data>
+  <data name="ThemeCreate.Text" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
   <data name="ThemeDone" xml:space="preserve">
     <value>Готово</value>
   </data>
@@ -1397,6 +1427,12 @@
   </data>
   <data name="ThemeManagerTitle" xml:space="preserve">
     <value>Менеджер тем</value>
+  </data>
+  <data name="ThemeStandard.Title" xml:space="preserve">
+    <value>Стандартная тема</value>
+  </data>
+  <data name="ThemeStandard.Message" xml:space="preserve">
+    <value>Эта тема встроенная и не может быть изменена</value>
   </data>
   <data name="ThemeNotFoundBg" xml:space="preserve">
     <value>Фон темы не найден. Проверьте путь фона или измените его на другой</value>
@@ -2146,9 +2182,6 @@ Overclock будут проигнорированы,
   <data name="Main_Actions.Text" xml:space="preserve">
     <value>Ещё</value>
   </data>
-  <data name="Main_Guide.Text" xml:space="preserve">
-    <value>Советы</value>
-  </data>
   <data name="Settings_Keybinds.Text" xml:space="preserve">
     <value>Сочетания клавиш</value>
   </data>
@@ -2169,84 +2202,6 @@ Overclock будут проигнорированы,
   </data>
   <data name="Settings_Keybinds_Desc.Text" xml:space="preserve">
     <value>Управление функциями приложения с помощью клавиатуры без переключения окон</value>
-  </data>
-  <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
-    <value>Дополнительно:</value>
-  </data>
-  <data name="Main_Guide_Apply04.Text" xml:space="preserve">
-    <value>Фикс 0.4 ГГц на отдельные ядра</value>
-  </data>
-  <data name="Main_Guide_CommonIssues_Title.Text" xml:space="preserve">
-    <value>Ошибки и исправления:</value>
-  </data>
-  <data name="Main_Guide_Contrib_Title.Text" xml:space="preserve">
-    <value>Помощь и улучшение:</value>
-  </data>
-  <data name="Main_Guide_CPUFamily.Text" xml:space="preserve">
-    <value>Таблица поддерживаемых процессоров</value>
-  </data>
-  <data name="Main_Guide_DMCA.Text" xml:space="preserve">
-    <value>DMCA/Copyright лицензии</value>
-  </data>
-  <data name="Main_Guide_Energy.Text" xml:space="preserve">
-    <value>Разбор режима энергоэффективности</value>
-  </data>
-  <data name="Main_Guide_Errors_Title.Text" xml:space="preserve">
-    <value>Ошибки:</value>
-  </data>
-  <data name="Main_Guide_Fan.Text" xml:space="preserve">
-    <value>Управление кулерами</value>
-  </data>
-  <data name="Main_Guide_FAQ.Text" xml:space="preserve">
-    <value>Как разобраться с полученной ошибкой</value>
-  </data>
-  <data name="Main_Guide_HelpDev.Text" xml:space="preserve">
-    <value>Помочь с разработкой</value>
-  </data>
-  <data name="Main_Guide_HowBoost.Text" xml:space="preserve">
-    <value>Исправление задержки турбо буста</value>
-  </data>
-  <data name="Main_Guide_HowTo04.Text" xml:space="preserve">
-    <value>Как применить фикс 0.4 ГГц</value>
-  </data>
-  <data name="Main_Guide_HowWork04.Text" xml:space="preserve">
-    <value>Как работает фикс 0.4 ГГц</value>
-  </data>
-  <data name="Main_Guide_MaxPerf.Text" xml:space="preserve">
-    <value>Разбор режима максимальной произв-ти</value>
-  </data>
-  <data name="Main_Guide_NewFunctions.Text" xml:space="preserve">
-    <value>Добавление функций процессоров</value>
-  </data>
-  <data name="Main_Guide_OCTips.Text" xml:space="preserve">
-    <value>Изменение напряжения процессора</value>
-  </data>
-  <data name="Main_Guide_Perf_Title.Text" xml:space="preserve">
-    <value>Режим производительности:</value>
-  </data>
-  <data name="Main_Guide_ProcContr.Text" xml:space="preserve">
-    <value>Процессоры моих тестировщиков</value>
-  </data>
-  <data name="Main_Guide_ProcSpec.Text" xml:space="preserve">
-    <value>Проблемы процессоров</value>
-  </data>
-  <data name="Main_Guide_ResetRest.Text" xml:space="preserve">
-    <value>Сброс настроек без перезагрузки</value>
-  </data>
-  <data name="Main_Guide_Support.Text" xml:space="preserve">
-    <value>Поддержать автора проекта</value>
-  </data>
-  <data name="Main_Guide_Supported_Title.Text" xml:space="preserve">
-    <value>Поддерживаемые процессоры:</value>
-  </data>
-  <data name="Main_Guide_TempErr.Text" xml:space="preserve">
-    <value>Лимиты мощности не работают</value>
-  </data>
-  <data name="Main_Guide_Title.Text" xml:space="preserve">
-    <value>Фиксы и объяснения:</value>
-  </data>
-  <data name="Main_Guide_WhyLose.Text" xml:space="preserve">
-    <value>Значения слетают от перезагрузки</value>
   </data>
   <data name="SMURichEdit.PlaceholderText" xml:space="preserve">
     <value>Здесь могут быть ваши заметки...</value>

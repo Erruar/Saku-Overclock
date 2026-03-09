@@ -33,7 +33,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <FontIcon Glyph="&#xE777;" FontSize="15"
                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                    <TextBlock Text="Сбросить все темы" FontSize="14"
+                    <TextBlock x:Uid="ThemeResetAllAction" Text="Сбросить все темы" FontSize="14"
                                VerticalAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </StackPanel>
@@ -67,31 +67,32 @@
                             Margin="2,10,2,10"
                             Click="AddTheme_Click">
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock Text="Добавить" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock x:Uid="ThemeCreate" Text="Добавить" FontSize="13" VerticalAlignment="Center"/>
                             <FontIcon Glyph="&#xE710;" FontSize="13"/>
                         </StackPanel>
                     </Button>
                 </Grid>
 
-                <!-- ═══ RIGHT: theme settings ═══ -->
+                <!-- Справа: настройки тем -->
                 <ScrollViewer Grid.Column="1"
                               VerticalScrollBarVisibility="Auto"
                               Margin="0,-2,-13,0">
                     <StackPanel Margin="18,0,31,10" Orientation="Vertical">
 
-                        <!-- InfoBar for built-in themes 0–2 -->
+                        <!-- InfoBar для неизменяемых тем -->
                         <InfoBar x:Name="BuiltInThemeInfoBar"
                                  IsOpen="False" CornerRadius="15"
                                  IsClosable="False"
                                  Severity="Informational"
+                                 x:Uid="ThemeStandard"
                                  Title="Стандартная тема"
-                                 Message="Эта тема встроенная и не может быть изменена."
+                                 Message="Эта тема встроенная и не может быть изменена"
                                  Margin="0,4,0,0"/>
 
-                        <!-- Edit panel for custom themes -->
+                        <!-- Панель настроек темы -->
                         <StackPanel x:Name="ThemeEditPanel" Visibility="Collapsed">
                             <TextBlock Margin="0,0,0,0" x:Uid="ThemeAdvanced" />
-                            <!-- Color intensity -->
+                            <!-- Интенсивность цвета -->
                             <Grid Visibility="{Binding ElementName=ThemeOpacitySlider, Path=Visibility}"
                                   Margin="0,18,0,0" Height="60" HorizontalAlignment="Stretch" CornerRadius="15,15,0,0"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -101,9 +102,9 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE890;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="ThemeOpacity" FontSize="14" Text="Интенсивность цвета" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeOpacityDesc" Text="Изменяет прозрачность фонового изображения" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeOpacityDesc" Text="Изменяет прозрачность фонового изображения" />
                                 </Grid>
                                 <Slider Margin="0,0,26,0" VerticalAlignment="Center" HorizontalAlignment="Right"
                                         x:Name="ThemeOpacitySlider" Width="131"
@@ -111,7 +112,7 @@
                                         ValueChanged="ThemeColorIntensity_ValueChanged"/>
                             </Grid>
 
-                            <!-- Mask opacity -->
+                            <!-- Интенсивность размытия фона -->
                             <Grid Visibility="{Binding ElementName=ThemeMaskOpacitySlider, Path=Visibility}"
                                   Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -121,9 +122,9 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE727;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="ThemeMaskOpacity" FontSize="14" Text="Интенсивность размытия фона" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeMaskOpacityDesc" Text="Изменяет силу размытия фонового изображения" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeMaskOpacityDesc" Text="Изменяет силу размытия фонового изображения" />
                                 </Grid>
                                 <Slider Margin="0,0,26,0" VerticalAlignment="Center" HorizontalAlignment="Right"
                                         x:Name="ThemeMaskOpacitySlider" Width="131"
@@ -131,7 +132,7 @@
                                         ValueChanged="ThemeBackgroundMaskOpacity_ValueChanged"/>
                             </Grid>
 
-                            <!-- Theme type light/dark -->
+                            <!-- Тип темы тёмная/светлая -->
                             <Grid Visibility="{Binding ElementName=ThemeTypeComboBox, Path=Visibility}"
                                   Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -141,15 +142,15 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE793;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,0,0,0"
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                                x:Uid="ThemeLight" FontSize="14" Text="Тип темы" />
-                                    <TextBlock Margin="50,2,0,0" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeLightDesc" Text="Устанавливает тип темы: светлая или тёмная" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeLightDesc" Text="Устанавливает тип темы: светлая или тёмная" />
                                 </Grid>
                                 <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,-6,17,0"
                                       Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
-                                    <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="120"
+                                    <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="148"
                                               Margin="{StaticResource XSmallTopMargin}" CornerRadius="15"
-                                              SelectedIndex="1" x:Name="ThemeTypeComboBox"
+                                              SelectedIndex="1" x:Name="ThemeTypeComboBox" Visibility="Collapsed"
                                               SelectionChanged="ThemeType_SelectionChanged">
                                         <ComboBoxItem x:Uid="Settings_Theme_Dark" Content="Тёмная" />
                                         <ComboBoxItem x:Uid="Settings_Theme_Light" Content="Светлая" />
@@ -157,44 +158,32 @@
                                 </Grid>
                             </Grid>
 
-                            <!-- Custom background toggle -->
-                            <Grid Visibility="{Binding ElementName=ThemeCustomBgSwitch, Path=Visibility}"
-                                  PointerPressed="ToggleThemeCustomBgSwitch_PointerPressed"
-                                  Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
-                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                    <FontIcon Glyph="&#xE8B9;"/>
-                                    <TextBlock VerticalAlignment="Center" Margin="16,0,0,0"
-                                               x:Uid="ThemeCustomBg">Использовать свой фон</TextBlock>
-                                </StackPanel>
-                                <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right"
-                                              Margin="0,0,-97,0" OffContent="" OnContent=""
-                                              x:Name="ThemeCustomBgSwitch" Visibility="Collapsed"
-                                              Toggled="ThemeCustomBackground_Toggled"/>
-                            </Grid>
-
-                            <!-- Change background button -->
+                            <!-- Кнопка выбора фона -->
                             <Grid Visibility="{Binding ElementName=ThemeBgBtn, Path=Visibility}"
                                   PointerPressed="OpenSelectThemeBackground_Click"
                                   Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                    <FontIcon Glyph="&#xE72A;"/>
-                                    <TextBlock VerticalAlignment="Center" Margin="16,0,0,0"
-                                               x:Uid="ThemeChangeBgText">Установите свой фон</TextBlock>
-                                </StackPanel>
+                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE8B9;" />
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                               x:Uid="ThemeChangeBgText" FontSize="14" Text="Интенсивность размытия фона" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="ThemeChangeBgTextDesc" Text="Изменяет силу размытия фонового изображения" />
+                                </Grid>
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Right"
-                                        Margin="0,0,16,0" Visibility="{Binding ElementName=ThemeCustomBgSwitch, Path=Visibility}"
+                                        Margin="0,0,16,0" Visibility="Collapsed"
                                         Shadow="{StaticResource SharedShadow}" Translation="0,0,20"
                                         Click="OpenSelectThemeBackground_Click"
-                                        x:Name="ThemeBgBtn" Width="151"
-                                        Style="{ThemeResource AccentButtonStyle}" CornerRadius="15">
-                                    <TextBlock x:Uid="ThemeChangeBgText" FontWeight="SemiBold"
+                                        x:Name="ThemeBgBtn" Width="148" CornerRadius="15">
+                                    <TextBlock x:Uid="ThemeChangeBgTextAction"
                                                Text="Change background"/>
                                 </Button>
                             </Grid>
 
-                            <!-- Reset to defaults (last row, rounded bottom) -->
+                            <!-- Сбросить выбранную тему -->
                             <Grid CornerRadius="0,0,15,15" Margin="0,2,0,0" Height="60"
                                   HorizontalAlignment="Stretch" PointerPressed="ResetCurrentTheme_Click"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -207,34 +196,38 @@
                                               Margin="17,0,0,-18" Glyph="&#xE7A6;"/>
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center"
                                                Margin="50,0,0,0" FontSize="14"
-                                               Text="По умолчанию"/>
-                                    <TextBlock Grid.Row="1" Margin="50,2,0,0" FontSize="12"
+                                               Text="По умолчанию" x:Uid="ThemeReset"/>
+                                    <TextBlock Grid.Row="1" Margin="50,2,0,-2" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
-                                               Text="Сбросить все параметры темы на стандартные"/>
+                                               Text="Сбросить все параметры темы на стандартные"
+                                               x:Uid="ThemeResetDesc"/>
                                 </Grid>
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Right"
                                         Margin="0,0,16,0"
                                         Shadow="{StaticResource SharedShadow}" Translation="0,0,20"
-                                        Width="120" Style="{ThemeResource AccentButtonStyle}"
+                                        Width="148"
                                         CornerRadius="15" Click="ResetCurrentTheme_Click">
-                                    <TextBlock FontWeight="SemiBold" Text="Сбросить"/>
+                                    <TextBlock x:Uid="ThemeResetAction" Text="Сбросить"/>
                                 </Button>
                             </Grid>
                         </StackPanel>
 
-                        <!-- Placeholder when nothing selected -->
+                        <!-- Если ничего не выбрано -->
                         <TextBlock x:Name="NoSelectionText"
                                    Visibility="Collapsed"
                                    Text="Выберите тему для редактирования"
                                    HorizontalAlignment="Center" Margin="0,48,0,0"
                                    FontSize="15"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        
+                        <TextBlock Text="Измените размер окна для корректного применения темы" Margin="0,10,0,0" FontSize="14" Foreground="{ThemeResource TextFillColorDisabledBrush}"
+                                   Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ThemeResizeWindow"/>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
         </Grid>
 
-        <!-- Top divider line -->
+        <!-- Разделитель настроек (сверху) -->
         <Border VerticalAlignment="Top" Margin="-1,-44,0,0"
                 Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                 Height="2" HorizontalAlignment="Stretch"/>

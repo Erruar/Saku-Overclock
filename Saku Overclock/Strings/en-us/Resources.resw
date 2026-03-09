@@ -1304,10 +1304,16 @@ that you can disable checkbox</value>
     <value>Theme settings</value>
   </data>
   <data name="ThemeChangeBgText.Text" xml:space="preserve">
-    <value>Change background</value>
+    <value>Custom background</value>
   </data>
-  <data name="ThemeCustomBg.Text" xml:space="preserve">
-    <value>Use custom background image</value>
+  <data name="ThemeChangeBgTextDesc.Text" xml:space="preserve">
+    <value>Use custom image for application background</value>
+  </data>
+  <data name="ThemeChangeBgTextAction.Text" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="ThemeResizeWindow.Text" xml:space="preserve">
+    <value>Resize window to apply theme correctly</value>
   </data>
   <data name="ThemeManager.Text" xml:space="preserve">
     <value>Theme management</value>
@@ -1371,6 +1377,36 @@ that you can disable checkbox</value>
   </data>
   <data name="ThemeBgOr" xml:space="preserve">
     <value>or</value>
+  </data>
+  <data name="ThemeBgSelectSource" xml:space="preserve">
+    <value>Select source:</value>
+  </data>
+  <data name="ThemeBgSourceBrowse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="ThemeDelete" xml:space="preserve">
+    <value>Delete theme </value>
+  </data>
+  <data name="ThemeReset.Text" xml:space="preserve">
+    <value>Theme defaults</value>
+  </data>
+  <data name="ThemeResetDesc.Text" xml:space="preserve">
+    <value>Discard all custom theme changes and colors</value>
+  </data>
+  <data name="ThemeResetAction.Text" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="ThemeResetAllAction.Text" xml:space="preserve">
+    <value>Reset all themes</value>
+  </data>
+  <data name="ThemeStandard.Title" xml:space="preserve">
+    <value>Standard theme</value>
+  </data>
+  <data name="ThemeStandard.Message" xml:space="preserve">
+    <value>This built-in theme cannot be modified</value>
+  </data>
+  <data name="ThemeCreate.Text" xml:space="preserve">
+    <value>Create</value>
   </data>
   <data name="ThemeDone" xml:space="preserve">
     <value>Done changing</value>
@@ -2110,9 +2146,6 @@ UPDATE</value>
   <data name="Main_Actions.Text" xml:space="preserve">
     <value>More</value>
   </data>
-  <data name="Main_Guide.Text" xml:space="preserve">
-    <value>Guide</value>
-  </data>
   <data name="Settings_Keybinds.Text" xml:space="preserve">
     <value>Hotkeys options</value>
   </data>
@@ -2133,84 +2166,6 @@ UPDATE</value>
   </data>
   <data name="Settings_Keybinds_Desc.Text" xml:space="preserve">
     <value>Quick access to features using keyboard shortcuts without switching windows</value>
-  </data>
-  <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
-    <value>Advanced Features:</value>
-  </data>
-  <data name="Main_Guide_Apply04.Text" xml:space="preserve">
-    <value>Applying fix 0.4 to certain cores</value>
-  </data>
-  <data name="Main_Guide_CommonIssues_Title.Text" xml:space="preserve">
-    <value>Common Issues &amp;amp; Solutions:</value>
-  </data>
-  <data name="Main_Guide_Contrib_Title.Text" xml:space="preserve">
-    <value>Contributing &amp; Development:</value>
-  </data>
-  <data name="Main_Guide_CPUFamily.Text" xml:space="preserve">
-    <value>CPU family support and functions table</value>
-  </data>
-  <data name="Main_Guide_DMCA.Text" xml:space="preserve">
-    <value>DMCA/Copyright policy</value>
-  </data>
-  <data name="Main_Guide_Energy.Text" xml:space="preserve">
-    <value>Energy efficiency mode explanation</value>
-  </data>
-  <data name="Main_Guide_Errors_Title.Text" xml:space="preserve">
-    <value>Error Handling:</value>
-  </data>
-  <data name="Main_Guide_Fan.Text" xml:space="preserve">
-    <value>Adding fan control functionality</value>
-  </data>
-  <data name="Main_Guide_FAQ.Text" xml:space="preserve">
-    <value>FAQs related to error messages</value>
-  </data>
-  <data name="Main_Guide_HelpDev.Text" xml:space="preserve">
-    <value>Help with development</value>
-  </data>
-  <data name="Main_Guide_HowBoost.Text" xml:space="preserve">
-    <value>How to fix boost delay issues</value>
-  </data>
-  <data name="Main_Guide_HowTo04.Text" xml:space="preserve">
-    <value>How to apply the 0.4 GHz fix</value>
-  </data>
-  <data name="Main_Guide_HowWork04.Text" xml:space="preserve">
-    <value>How actually works 0.4 GHz fix</value>
-  </data>
-  <data name="Main_Guide_MaxPerf.Text" xml:space="preserve">
-    <value>Max performance mode explanation</value>
-  </data>
-  <data name="Main_Guide_NewFunctions.Text" xml:space="preserve">
-    <value>Adding new functions for CPUs</value>
-  </data>
-  <data name="Main_Guide_OCTips.Text" xml:space="preserve">
-    <value>Overclocking/Undervolting tips</value>
-  </data>
-  <data name="Main_Guide_Perf_Title.Text" xml:space="preserve">
-    <value>Performance mode:</value>
-  </data>
-  <data name="Main_Guide_ProcContr.Text" xml:space="preserve">
-    <value>Processors of contributors</value>
-  </data>
-  <data name="Main_Guide_ProcSpec.Text" xml:space="preserve">
-    <value>Processor-specific details</value>
-  </data>
-  <data name="Main_Guide_ResetRest.Text" xml:space="preserve">
-    <value>Resetting values without restarting</value>
-  </data>
-  <data name="Main_Guide_Support.Text" xml:space="preserve">
-    <value>Support the project author</value>
-  </data>
-  <data name="Main_Guide_Supported_Title.Text" xml:space="preserve">
-    <value>Supported CPU Models:</value>
-  </data>
-  <data name="Main_Guide_TempErr.Text" xml:space="preserve">
-    <value>Temperature or power limit does not work</value>
-  </data>
-  <data name="Main_Guide_Title.Text" xml:space="preserve">
-    <value>Fixes &amp; Explanations:</value>
-  </data>
-  <data name="Main_Guide_WhyLose.Text" xml:space="preserve">
-    <value>Why I losing my values even without restart</value>
   </data>
   <data name="SMURichEdit.PlaceholderText" xml:space="preserve">
     <value>There's place for your beatuful notes...</value>
