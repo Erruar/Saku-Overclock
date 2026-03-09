@@ -690,6 +690,16 @@ public sealed partial class ShellPage
         ThemeBackground.ImageSource = themeApplyResult.BackgroundImageSource;
         ThemeOpacity.Opacity = themeApplyResult.ThemeOpacity;
         ThemeMaskOpacity.Opacity = themeApplyResult.ThemeMaskOpacity;
+        
+        // Фикс некорректного применения темы и остаточного изображения фона
+        ThemeMaskOpacity.Visibility = Visibility.Collapsed;
+        ThemeMaskOpacity.Visibility = Visibility.Visible;
+
+        var visual = Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.GetElementVisual(ThemeMaskOpacity);
+
+        var opacity = visual.Opacity;
+        visual.Opacity = 0.99f;
+        visual.Opacity = opacity;
     }
 
     #endregion

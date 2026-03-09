@@ -17,13 +17,21 @@
             <Border x:Name="ThemeOpacity"
                     MinHeight="325" Opacity="0.0"
                     CornerRadius="8" Margin="0,-180,0,0">
+                <Border.BackgroundTransition>
+                    <BrushTransition />
+                </Border.BackgroundTransition>
+                <Border.OpacityTransition>
+                    <ScalarTransition />
+                </Border.OpacityTransition>
                 <Border.Background>
                     <ImageBrush x:Name="ThemeBackground"
                                 ImageSource="https://i.imgur.com/fw41KXN.png"
                                 Stretch="UniformToFill"/>
                 </Border.Background>
             </Border>
-            <Grid x:Name="ThemeMaskOpacity" Opacity="0.0" Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"/>
+            <Grid x:Name="ThemeMaskOpacity" Opacity="0.0" Background="{ThemeResource BackgroundImageMaskAcrylicBrush}">
+               
+            </Grid>
         </Grid>
         <Grid Canvas.ZIndex="4">
             <NavigationView
