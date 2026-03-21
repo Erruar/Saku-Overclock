@@ -1,0 +1,159 @@
+<Page
+    x:Class="Saku_Overclock.Views.ПрименениеPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ThemeShadow x:Name="SharedShadow" />
+    </Page.Resources>
+
+    <Grid Margin="-48,0,-48,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
+
+            <!-- Навигация -->
+            <BreadcrumbBar x:Name="PageBreadcrumb"
+                           Margin="-1,-95,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Top"
+                           ItemClicked="PageBreadcrumb_ItemClicked">
+                <BreadcrumbBar.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{x:Bind}" FontSize="24"/>
+                    </DataTemplate>
+                </BreadcrumbBar.ItemTemplate>
+            </BreadcrumbBar>
+
+            <!-- Сбросить все темы (справа сверху) -->
+            <Button HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,-87,4,0"
+                    Background="Transparent" BorderThickness="0"
+                    Click="ResetAllOptions_Click">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xE777;" FontSize="15"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock x:Uid="Settings_ResetOptionsAction" Text="Сбросить параметры" FontSize="14"
+                               VerticalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Основной контент -->
+            <Grid Margin="-1,-30,-6,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              Margin="0,-2,-13,0">
+                    <StackPanel Margin="18,0,31,10" Orientation="Vertical">
+                        <TextBlock Margin="0,0,0,0" x:Uid="Settings_RestoreOptions" />
+                        <Grid PointerPressed="ToggleTheSwitchByTag" Tag="ApplyStart" Margin="0,20,0,0" Height="60"
+                              HorizontalAlignment="Stretch" CornerRadius="15,15,0,0"
+                              Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xE777;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           x:Uid="Settings_Apply_Start_Desc" FontSize="14"
+                                           Text="Применять пресет при запуске" />
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Preset_AutoApplyOptionsDesc"
+                                           Text="Восстанавливать последние настройки при запуске приложения" />
+                            </Grid>
+                            <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
+                                          OffContent="" OnContent="" x:Name="ApplyStart"
+                                          Toggled="ApplyOptionsOnStart_Click" />
+                        </Grid>
+                        <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AutoReapply" Margin="0,2,0,0" Height="60"
+                              HorizontalAlignment="Stretch" CornerRadius="0,0,15,15"
+                              Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xE81C;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           x:Uid="Settings_Auto_Reapply" FontSize="14"
+                                           Text="Пере-применять параметры" />
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Preset_ReapplyOptionsDesc"
+                                           Text="Периодически пере-применять параметры разгона во избежание изменения двугими программами" />
+                            </Grid>
+                            <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
+                                          OffContent="" OnContent="" x:Name="AutoReapply"
+                                          Toggled="AutoReapplyOptionsEverySeconds_Click" />
+                        </Grid>
+                        <StackPanel Orientation="Vertical" Margin="0,18,0,0" x:Name="AutomationOptions">
+                            <TextBlock x:Uid="Settings_ChangedBatteryState" />
+                            <Grid Margin="0,18,0,0" Height="60" HorizontalAlignment="Stretch" CornerRadius="15,15,0,0"
+                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                              Glyph="&#xEC0A;" />
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                               x:Uid="Settings_ApplyBattery" FontSize="14" Text="От батареи" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondary}"
+                                               x:Uid="Settings_ApplyBatteryDesc"
+                                               Text="Пресет применяемый когда устройство работает от батареи" />
+                                </Grid>
+                                <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
+                                      Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
+                                    <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190"
+                                              SelectedIndex="0"
+                                              x:Name="BatteryComboBox"
+                                              SelectionChanged="BatteryComboBox_OnSelectionChanged"
+                                              CornerRadius="15">
+                                        <ComboBoxItem x:Uid="Settings_Apply_None" Content="None" />
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+                            <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch" CornerRadius="0,0,15,15"
+                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                              Glyph="&#xEC4A;" />
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                               x:Uid="Settings_Apply_Ac" FontSize="14" Text="От сети" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondary}"
+                                               x:Uid="Settings_Apply_AcDesc"
+                                               Text="Пресет применяемый когда устройство работает от сети" />
+                                </Grid>
+                                <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
+                                      Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
+                                    <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190"
+                                              SelectedIndex="0"
+                                              x:Name="ChargerComboBox"
+                                              SelectionChanged="ChargerComboBox_OnSelectionChanged"
+                                              CornerRadius="15">
+                                        <ComboBoxItem x:Uid="Settings_Apply_None" Content="None" />
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!-- Разделитель настроек (сверху) -->
+        <Border VerticalAlignment="Top" Margin="-1,-44,0,0"
+                Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                Height="2" HorizontalAlignment="Stretch"/>
+    </Grid>
+</Page>
