@@ -1,11 +1,17 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Text;
 using Windows.UI.ViewManagement;
+using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
@@ -81,6 +87,7 @@ public sealed partial class ShellPage
         AppTitleBar.Loaded += AppTitleBar_Loaded;
 
         NotificationsService.NotificationAdded += NotificationsService_NotificationAdded;
+        InitializeBlurManager();
         UpdateThemes();
         SetHdrThemeFix();
         AutoStartHelper.AutoStartCheckAndFix();
@@ -274,187 +281,167 @@ public sealed partial class ShellPage
                             {
                                 {
                                     "Param_SMU_Func_Text/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].SmuFunctionsEnabl = false
+                                    () => presets[AppSettings.Preset].SmuFeaturesSettings.SmuFeaturesOverride = false
                                 },
                                 {
                                     "Param_CPU_c2/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu2 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.CpuSustainedPowerLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v2/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm2 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmCpuTdcCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v1/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm1 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmCpuEdcCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_CPU_c1/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu1 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.CpuMaximumTemperature.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a15/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd15 = false
+                                    () => presets[AppSettings.Preset].CpuModesSettings.PboScalar.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a11/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd11 = false
+                                    () => presets[AppSettings.Preset].FrequenciesSettings.CpuFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a12/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd12 = false
+                                    () => presets[AppSettings.Preset].FrequenciesSettings.CpuVoltage.IsEnabled = false
                                 },
                                 {
                                     "Param_CO_O1/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Coall = false
+                                    () => presets[AppSettings.Preset].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled = false
                                 },
                                 {
                                     "Param_CO_O2/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cogfx = false
+                                    () => presets[AppSettings.Preset].CurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel.IsEnabled = false
                                 },
                                 {
                                     "Param_CCD1_CO_Section/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Coprefmode = 0
+                                    () => presets[AppSettings.Preset].CurveOptimizerAdvancedOptions.CurveOptimizerPreferredMode.Value = 0
                                 },
                                 {
                                     "Param_ADV_a14_E/Content".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd14 = false
+                                    () => presets[AppSettings.Preset].CpuModesSettings.OverclockMode.IsEnabled = false
                                 },
                                 {
                                     "Param_CPU_c5/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu5 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.CpuBoostTimeSlow.IsEnabled = false
                                 },
                                 {
                                     "Param_CPU_c3/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu3 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.CpuActualPowerLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_CPU_c4/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu4 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.CpuAveragePowerLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_CPU_c6/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu6 = false
-                                },
-                                {
-                                    "Param_CPU_c7/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Cpu7 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.CpuBoostTimeFast.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a6/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd6 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.IntegratedGpuMaximumTemperature.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v4/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm4 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmSocTdcCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v3/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm3 = false
-                                },
-                                {
-                                    "Param_ADV_a1/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd1 = false
-                                },
-                                {
-                                    "Param_ADV_a3/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd3 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmSocEdcCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v7/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm7 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmCpuFrequencyRestoreTime.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a4/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd4 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmPowerSaveCpuCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a5/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd5 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmPowerSaveGpuCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a10/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd10 = false
+                                    () => presets[AppSettings.Preset].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a13_E/Content".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd13 = false
+                                    () => presets[AppSettings.Preset].CpuModesSettings.PreferredMode.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a13_U/Content".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd13 = false
+                                    () => presets[AppSettings.Preset].CpuModesSettings.PreferredMode.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a8/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd8 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.IntegratedGpuPowerLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a7/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd7 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.DiscreteGpuMaximumTemperature.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v5/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm5 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmPowerSaveVddCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_VRM_v6/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Vrm6 = false
+                                    () => presets[AppSettings.Preset].VrmSettings.VrmPowerSaveSocCurrentLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_ADV_a9/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Advncd9 = false
-                                },
-                                {
-                                    "Param_GPU_g12/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu12 = false
-                                },
-                                {
-                                    "Param_GPU_g11/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu11 = false
+                                    () => presets[AppSettings.Preset].CpuSettings.LaptopPowerLimit.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g10/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu10 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g9/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu9 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g2/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu2 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MaximumSocFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g1/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu1 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MinimumSocFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g4/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu4 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MaximumFabricFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g3/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu3 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MinimumFabricFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g6/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu6 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MaximumVideoCodecFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g5/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu5 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MinimumVideoCodecFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g8/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu8 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MaximumDataLatchFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g7/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu7 = false
+                                    () => presets[AppSettings.Preset].SubsystemsSettings.MinimumDataLatchFrequency.IsEnabled = false
                                 },
                                 {
                                     "Param_GPU_g16/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].Gpu16 = false
+                                    () => presets[AppSettings.Preset].CpuModesSettings.CpuFrequency04Fix.IsEnabled = false
                                 }
                             };
                             var loggingList = string.Empty;
@@ -679,27 +666,41 @@ public sealed partial class ShellPage
     {
         App.MainWindow.DispatcherQueue.TryEnqueue(UpdateThemes);
     }
+    private BlurredBackgroundManager? _blurManager;
+    private void InitializeBlurManager()
+    {
+        // BlurredImageHost — Grid из XAML выше
+        _blurManager = new BlurredBackgroundManager(BlurredImageHost);
+    }
 
     /// <summary>
     ///     Инициализирует активную тему приложения
     /// </summary>
     private void UpdateThemes()
     {
-        var themeApplyResult = _themeSelectorService.UpdateAppliedTheme(AppSettings.ThemeType);
+        var result = _themeSelectorService.UpdateAppliedTheme(AppSettings.ThemeType);
 
-        ThemeBackground.ImageSource = themeApplyResult.BackgroundImageSource;
-        ThemeOpacity.Opacity = themeApplyResult.ThemeOpacity;
-        ThemeMaskOpacity.Opacity = themeApplyResult.ThemeMaskOpacity;
+        // Фоновая картинка → URI для Composition surface
+        var bgUri = result.BackgroundImageSource switch
+        {
+            BitmapImage { UriSource: not null } bmp => bmp.UriSource,
+            _                                               => null
+        };
+        _blurManager!.SetImage(bgUri);
+
+        // Прозрачность бордера (анимируется через OpacityTransition в XAML)
+        ThemeOpacity.Opacity = result.ThemeOpacity;
+
+        // Блюр: бывший ThemeMaskOpacity. Opacity → сила размытия
+        _blurManager.SetBlurAmount(result.ThemeMaskOpacity);
         
-        // Фикс некорректного применения темы и остаточного изображения фона
-        ThemeMaskOpacity.Visibility = Visibility.Collapsed;
-        ThemeMaskOpacity.Visibility = Visibility.Visible;
+        
+        var hdrFixValue = result.ApplyHdrFix ? Visibility.Visible : Visibility.Collapsed;
+        if (ThemeMaskOpacity.Visibility != hdrFixValue)
+        {
+            ThemeMaskOpacity.Visibility = hdrFixValue;
+        }
 
-        var visual = Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.GetElementVisual(ThemeMaskOpacity);
-
-        var opacity = visual.Opacity;
-        visual.Opacity = 0.99f;
-        visual.Opacity = opacity;
     }
 
     #endregion
@@ -1037,4 +1038,133 @@ SOFTWARE.
     }
 
     #endregion
+}
+
+public sealed class BlurredBackgroundManager : IDisposable
+{
+    private const float MaxBlurSigma   = 28f;   // при Opacity = 1.0
+    private const float BlurTransition = 250f;  // мс, плавная смена блюр эффекта
+
+    private readonly Compositor            _compositor;
+    private readonly FrameworkElement      _host;
+    private readonly SpriteVisual          _sprite;
+    private readonly CompositionEffectBrush _effectBrush;
+    private readonly CompositionSurfaceBrush _surfaceBrush;
+
+    private LoadedImageSurface? _surface;
+    private bool _disposed;
+
+    public BlurredBackgroundManager(FrameworkElement host)
+    {
+        _host       = host;
+        _compositor = ElementCompositionPreview.GetElementVisual(host).Compositor;
+
+        // GaussianBlur effect с анимируемым параметром
+        var blurEffect = new GaussianBlurEffect
+        {
+            Name         = "Blur",
+            BlurAmount   = 0f,
+            BorderMode   = EffectBorderMode.Hard,
+            Optimization = EffectOptimization.Speed,
+            Source       = new CompositionEffectSourceParameter("Image")
+        };
+
+        var factory = _compositor.CreateEffectFactory(
+            blurEffect,
+            ["Blur.BlurAmount"]);
+
+        _effectBrush = factory.CreateBrush();
+
+        // Surface brush — сюда пишем изображение
+        _surfaceBrush = _compositor.CreateSurfaceBrush();
+        _surfaceBrush.Stretch = CompositionStretch.UniformToFill;
+        _surfaceBrush.HorizontalAlignmentRatio = 0.5f;
+        _surfaceBrush.VerticalAlignmentRatio   = 0.5f;
+        _effectBrush.SetSourceParameter("Image", _surfaceBrush);
+
+        // SpriteVisual поверх хоста
+        _sprite       = _compositor.CreateSpriteVisual();
+        _sprite.Brush = _effectBrush;
+        SyncSize();
+
+        ElementCompositionPreview.SetElementChildVisual(_host, _sprite);
+        _host.SizeChanged += OnSizeChanged;
+    }
+
+
+    /// <summary>Загружает новое изображение по URI (ms-appx:///, http/https, ms-appdata:///)</summary>
+    public void SetImage(Uri? imageUri)
+    {
+        ThrowIfDisposed();
+
+        var old = _surface;
+
+        if (imageUri is not null)
+        {
+            _surface               = LoadedImageSurface.StartLoadFromUri(imageUri);
+            _surfaceBrush.Surface  = _surface;
+        }
+        else
+        {
+            _surface              = null;
+            _surfaceBrush.Surface = null;
+        }
+
+        old?.Dispose();
+    }
+
+    /// <summary>
+    ///     Устанавливает силу блюр эффекта
+    ///     <paramref name="opacity"/> соответствует бывшему ThemeMaskOpacity Opacity:
+    ///     0.0 = нет блюр эффекта, 1.0 = максимальный блюр.
+    ///     Переход плавный.
+    /// </summary>
+    public void SetBlurAmount(double opacity)
+    {
+        ThrowIfDisposed();
+
+        var target = (float)(Math.Clamp(opacity, 0.0, 1.0) * MaxBlurSigma);
+
+        var anim = _compositor.CreateScalarKeyFrameAnimation();
+        anim.InsertKeyFrame(1f, target);
+        anim.Duration = TimeSpan.FromMilliseconds(BlurTransition);
+        _effectBrush.Properties.StartAnimation("Blur.BlurAmount", anim);
+    }
+
+    /// <summary>Немедленно (без анимации) сбросить блюр — например при скрытии фона.</summary>
+    public void ResetBlur()
+    {
+        _effectBrush.Properties.InsertScalar("Blur.BlurAmount", 0f);
+    }
+
+
+    private void SyncSize()
+    {
+        _sprite.Size = new Vector2(
+            (float)_host.ActualWidth,
+            (float)_host.ActualHeight);
+    }
+
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        => _sprite.Size = new Vector2((float)e.NewSize.Width, (float)e.NewSize.Height);
+
+    private void ThrowIfDisposed()
+    {
+        if (!_disposed) return;
+        throw new ObjectDisposedException(nameof(BlurredBackgroundManager));
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+
+        _host.SizeChanged -= OnSizeChanged;
+        ElementCompositionPreview.SetElementChildVisual(_host, null);
+
+        _surface?.Dispose();
+        _effectBrush.Dispose();
+        _surfaceBrush.Dispose();
+        _sprite.Brush = null;
+    }
 }

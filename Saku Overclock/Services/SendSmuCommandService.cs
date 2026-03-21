@@ -110,7 +110,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             return;
         }
 
-        if (_appSettings.Preset != -1 && _presetManager.Presets[_appSettings.Preset].SmuEnabled == false)
+        if (_appSettings.Preset != -1 && _presetManager.Presets[_appSettings.Preset].DebugSmuCommandsSend == false)
         {
             return;
         }
@@ -540,7 +540,7 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         var isFixZeroFourGhz = _appSettings.Preset >= 0 &&
            _appSettings.Preset < _presetManager.Presets.Length &&
-           _presetManager.Presets[_appSettings.Preset].Gpu16;
+           _presetManager.Presets[_appSettings.Preset].CpuModesSettings.CpuFrequency04Fix.IsEnabled;
 
         return commandName switch
         {
@@ -578,8 +578,6 @@ public class SendSmuCommandService : ISendSmuCommandService
             "psi0-current" => L("Param_VRM_v5/Text"),
             "psi0soc-current" => L("Param_VRM_v6/Text"),
             "skin-temp-limit" => L("Param_ADV_a9/Text"),
-            "max-cpuclk" => L("Param_GPU_g12/Text"),
-            "min-cpuclk" => L("Param_GPU_g11/Text"),
             "max-gfxclk" => L("Param_GPU_g10/Text"),
             "min-gfxclk" => L("Param_GPU_g9/Text"),
             "max-socclk-frequency" => L("Param_GPU_g2/Text"),

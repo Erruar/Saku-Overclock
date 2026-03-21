@@ -68,9 +68,7 @@ public sealed partial class SettingsPage
         {
             AutoStartComboBox.SelectedIndex = _appSettings.AutostartType is > -1 and < 3 ? _appSettings.AutostartType : 0;
             AppHideToTray.IsOn = _appSettings.HideToTray;
-            ApplyStart.IsOn = _appSettings.ReapplyLatestSettingsOnAppLaunch;
             AutoCheckUpdates.IsOn = _appSettings.CheckForUpdates;
-            AutoReapply.IsOn = _appSettings.ReapplyOverclock;
             RtssSettingsEnable.IsOn = _appSettings.RtssMetricsEnabled;
             RtssAdvancedCodeEditor.IsOn = _rtssSettings.IsAdvancedCodeEditorEnabled;
             EnableKeybindingsSetting.IsOn = _appSettings.HotkeysEnabled;
@@ -383,38 +381,14 @@ public sealed partial class SettingsPage
         _appSettings.HideToTray = AppHideToTray.IsOn;
         _appSettings.SaveSettings();
     }
-
+    
+    
     /// <summary>
-    ///     Изменяет состояние переприменения последних применённых параметров разгона при запуске программы (включены,
-    ///     выключены)
+    ///     Открывает страницу параметров пере-применения
     /// </summary>
-    private void ApplyOptionsOnStart_Click(object sender, RoutedEventArgs e)
+    private void OpenReapplyOptions_Click(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        _appSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
-
-        _appSettings.SaveSettings();
-    }
-
-    /// <summary>
-    ///     Изменяет состояние переприменение последних применённых параметров каждые несколько секунд (включено, выключено)
-    /// </summary>
-    private void AutoReapplyOptionsEverySeconds_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        _appSettings.ReapplyOverclock = AutoReapply.IsOn;
-
-        _appSettings.ReapplyOverclockTimer = 3;
-
-        _appSettings.SaveSettings();
+        App.GetService<INavigationService>().NavigateTo(typeof(ПрименениеViewModel).FullName!);
     }
 
     /// <summary>
@@ -479,238 +453,9 @@ public sealed partial class SettingsPage
     }
     
     /// <summary>
-    ///     Открывает диалог выбора фона для темы
+    ///     Открывает страницу менеджера тем
     /// </summary>
-    private async void OpenSelectThemeBackgroundDialog_Click()
-    {
-        try
-        {
-            var endStringPath = "";
-            var fromFileWhy = new TextBlock
-            {
-                MaxWidth = 300,
-                Text = "ThemeBgFromFileWhy".GetLocalized(),
-                TextWrapping = TextWrapping.WrapWholeWords,
-                FontWeight = new FontWeight(300)
-            };
-            var fromFilePickedFile = new TextBlock
-            {
-                MaxWidth = 300,
-                Visibility = Visibility.Collapsed,
-                Text = "ThemeUnknownNewFile".GetLocalized(),
-                TextWrapping = TextWrapping.WrapWholeWords,
-                FontWeight = new FontWeight(300)
-            };
-            var fromFile = new Button
-            {
-                Height = 90,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                CornerRadius = new CornerRadius(16),
-                Translation = new Vector3(0, 0, 12),
-                Shadow = SharedShadow,
-                Content = new Grid
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Children =
-                    {
-                        new Image
-                        {
-                            Margin = new Thickness(0, 0, 0, 0),
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Center,
-                            Source = new BitmapImage(new Uri("ms-appx:///Assets/ThemeBg/folder.png"))
-                        },
-                        new StackPanel
-                        {
-                            MinWidth = 300,
-                            Orientation = Orientation.Vertical,
-                            Margin = new Thickness(108, 0, 0, 0),
-                            HorizontalAlignment = HorizontalAlignment.Stretch,
-                            VerticalAlignment = VerticalAlignment.Top,
-                            Children =
-                            {
-                                new TextBlock
-                                {
-                                    Text = "ThemeBgFromFile".GetLocalized(),
-                                    FontWeight = new FontWeight(600)
-                                },
-                                fromFileWhy,
-                                fromFilePickedFile
-                            }
-                        }
-                    }
-                }
-            };
-            var orText = new TextBlock
-            {
-                Margin = new Thickness(0, 5, 0, 0),
-                Text = "ThemeBgOr".GetLocalized(),
-                VerticalAlignment = VerticalAlignment.Top,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            var gifText = new TextBlock
-            {
-                Margin = new Thickness(0, 5, 0, 0),
-                Foreground = (Brush)Application.Current.Resources["AccentTextFillColorPrimaryBrush"],
-                Text = "ThemeBgGifWarn".GetLocalized(),
-                VerticalAlignment = VerticalAlignment.Top,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            var fromLinkWhy = new TextBlock
-            {
-                MaxWidth = 300,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Text = "ThemeBgFromURLWhy".GetLocalized(),
-                TextWrapping = TextWrapping.WrapWholeWords,
-                FontWeight = new FontWeight(300)
-            };
-            var fromLinkTextBox = new TextBox
-            {
-                MaxWidth = 300,
-                Visibility = Visibility.Collapsed,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                PlaceholderText = "https://...."
-            };
-            var fromLink = new Button
-            {
-                Margin = new Thickness(0, 5, 0, 0),
-                Height = 90,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                CornerRadius = new CornerRadius(16),
-                Translation = new Vector3(0, 0, 12),
-                Shadow = SharedShadow,
-                Content = new Grid
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Children =
-                    {
-                        new Image
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Center,
-                            Source = new BitmapImage(new Uri("ms-appx:///Assets/ThemeBg/link.png"))
-                        },
-                        new StackPanel
-                        {
-                            MinWidth = 300,
-                            Orientation = Orientation.Vertical,
-                            Margin = new Thickness(108, 0, 0, 0),
-                            HorizontalAlignment = HorizontalAlignment.Stretch,
-                            VerticalAlignment = VerticalAlignment.Top,
-                            Children =
-                            {
-                                new TextBlock
-                                {
-                                    Text = "ThemeBgFromURL".GetLocalized(),
-                                    FontWeight = new FontWeight(600)
-                                },
-                                fromLinkWhy,
-                                fromLinkTextBox
-                            }
-                        }
-                    }
-                }
-            };
-            // Открыть диалог с изменением 
-            var bgDialog = new ContentDialog
-            {
-                Title = "ThemeBgDialog".GetLocalized(),
-                Content = new StackPanel
-                {
-                    Orientation = Orientation.Vertical,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Children =
-                    {
-                        fromFile,
-                        orText,
-                        fromLink,
-                        gifText
-                    }
-                },
-                CloseButtonText = "CancelThis/Text".GetLocalized(),
-                PrimaryButtonText = "ThemeSelect".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
-            };
-            fromFile.Click += (_, _) =>
-            {
-                // Сброс отображаемого текста (если используется для уведомлений)
-                fromFilePickedFile.Text = "";
-
-                var ofn = new OpenFileName();
-
-                ofn.structSize = Marshal.SizeOf(ofn);
-
-                ofn.filter = ".png\0*.png\0.jpeg\0*.jpeg\0.jpg\0*.jpg\0.gif\0*.gif\0";
-
-                ofn.file = new string(new char[256]);
-                ofn.maxFile = ofn.file.Length;
-
-                ofn.fileTitle = new string(new char[64]);
-                ofn.maxFileTitle = ofn.fileTitle.Length;
-
-                ofn.initialDir = Path.GetFullPath(nameof(SpecialFolder.MyPictures));
-                ofn.title = "Saku Overclock: Open image for theme background...";
-                ofn.defExt = "png";
-
-                // Вызываем диалог выбора файла
-                if (OpenFileDialog.GetOpenFileNameApi(ofn))
-                {
-                    // Удаляем завершающие нулевые символы и получаем путь к выбранному файлу
-                    var selectedFile = ofn.file.TrimEnd('\0');
-                    fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + selectedFile;
-                    endStringPath = selectedFile;
-                }
-                else
-                {
-                    // Если диалог не открылся, можно получить код ошибки для диагностики:
-                    var error = Marshal.GetLastWin32Error();
-                    fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized() + " (Error: " + error + ")";
-                }
-            };
-
-            fromLink.Click += (_, _) =>
-            {
-                if (fromLinkTextBox.Visibility == Visibility.Collapsed)
-                {
-                    fromLinkWhy.Visibility = Visibility.Collapsed;
-                    fromLinkTextBox.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    fromLinkWhy.Visibility = Visibility.Visible;
-                    fromLinkTextBox.Visibility = Visibility.Collapsed;
-                }
-            };
-            fromLinkTextBox.TextChanged += (_, _) =>
-            {
-                endStringPath = fromLinkTextBox.Text;
-            };
-            // Use this code to associate the dialog to the appropriate AppWindow by setting
-            // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                bgDialog.XamlRoot = XamlRoot;
-            }
-
-            var result = await bgDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary && endStringPath != "")
-            {
-                var backupIndex = ThemeComboBox.SelectedIndex;
-                _themeSelectorService.Themes[backupIndex].ThemeBackground = endStringPath;
-                _themeSelectorService.SaveThemeInSettings();
-                UpdateTheme();
-            }
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    /// <summary>
-    ///     Открывает диалог менеджера тем
-    /// </summary>
-    private void OpenThemeManagerDialog_Click(object sender, RoutedEventArgs e)
+    private void OpenThemeManager_Click(object sender, RoutedEventArgs e)
     {
         App.GetService<INavigationService>().NavigateTo(typeof(УправлениеТемамиViewModel).FullName!);
     }

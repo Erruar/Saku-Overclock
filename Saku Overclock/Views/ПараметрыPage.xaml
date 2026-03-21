@@ -7,7 +7,6 @@
     mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
-        <SolidColorBrush x:Name="AccentBrush" Color="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
         <Flyout x:Name="SymbolFlyout" Placement="Bottom">
             <!-- flyout content -->
             <GridView ItemClick="SymbolList_ItemClick" IsItemClickEnabled="True">
@@ -210,7 +209,7 @@
                         Shadow="{StaticResource SharedShadow}" Translation="0,0,20"/>
                 <ComboBox CornerRadius="16" HorizontalAlignment="Right" Style="{ThemeResource AcrylicComboBoxStyle}"
                           Height="40" Width="200" x:Name="PresetCom" SelectionChanged="PresetCOM_SelectionChanged">
-                    <ComboBox x:Uid="Param_PremadedCombo" IsEnabled="False"/>
+                    <ComboBoxItem x:Uid="Param_PremadeCombo" IsEnabled="False"/>
                 </ComboBox>
             </Grid>
 
@@ -977,76 +976,6 @@
                                                     <TextBlock Margin="8,4,8,0"
                                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                                Text="80C"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </StackPanel>
-                                    </Grid>
-
-                                    <StackPanel Padding="0,0,0,13" Grid.Row="10" Grid.Column="0"
-                                                x:Name="LaptopsHtcTemp" HorizontalAlignment="Left">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAADD8E6" Offset="0.0"/>
-                                                        <GradientStop Color="#AAFFC0CB" Offset="0.10"/>
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c7"
-                                                       Text="Максимальная температура cHTC" FontSize="15"/>
-                                            <FontIcon x:Uid="Param_c1_Help" HorizontalAlignment="Left"
-                                                      Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal"
-                                                    HorizontalAlignment="Left">
-                                            <Grid>
-                                                <CheckBox x:Name="C7" Checked="C7_Checked" Unchecked="C7_Checked"/>
-                                                <Slider Style="{ThemeResource FatSliderStyle}" x:Name="C7V"
-                                                        ValueChanged="C7_ValueChanged" Margin="40,0,0,0"
-                                                        VerticalAlignment="Top" Width="250" Value="80"
-                                                        HorizontalAlignment="Left" Minimum="50" Maximum="100"/>
-                                            </Grid>
-                                            <Grid Margin="23,0,0,0" HorizontalAlignment="Left" CornerRadius="10"
-                                                  Shadow="{ThemeResource SharedShadow}" Translation="0,0,10">
-                                                <NumberBox Foreground="{ThemeResource TextFillColorTertiary}"
-                                                           CornerRadius="10" Minimum="50" Height="33" Width="120"
-                                                           SpinButtonPlacementMode="Inline" SmallChange="1"
-                                                           LargeChange="10" Tag="C7V"
-                                                           ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
-                                                           Value="{Binding ElementName=C7V, Path=Value, Mode=TwoWay}"/>
-                                            </Grid>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <Grid Grid.Row="10" x:Name="LaptopsHtcTempDesc" Grid.Column="1"
-                                          HorizontalAlignment="Center" VerticalAlignment="Top">
-                                        <StackPanel Margin="0,31,0,0" Height="28" Orientation="Horizontal"
-                                                    VerticalAlignment="Top">
-                                            <Grid Margin="83,1,0,1" Width="89">
-                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                                                            CornerRadius="10" Translation="0,0,12"
-                                                            Background="{ThemeResource ControlStrokeColorOnAccentDefaultBrush}"
-                                                            Shadow="{ThemeResource SharedShadow}">
-                                                    <TextBlock Margin="8,4,8,0"
-                                                               Foreground="{ThemeResource TextFillColorSecondary}"
-                                                               Text="80C"/>
-                                                </StackPanel>
-                                            </Grid>
-                                            <Grid Margin="10,1,15,1" Width="117">
-                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Stretch"
-                                                            CornerRadius="10" Translation="0,0,12"
-                                                            Background="{ThemeResource ControlStrokeColorOnAccentDefaultBrush}"
-                                                            Shadow="{ThemeResource SharedShadow}">
-                                                    <TextBlock Margin="8,4,8,0"
-                                                               Foreground="{ThemeResource TextFillColorSecondary}"
-                                                               Text="90C"/>
                                                 </StackPanel>
                                             </Grid>
                                         </StackPanel>
@@ -4613,7 +4542,7 @@
                                         <Grid HorizontalAlignment="Stretch">
                                             <Button CornerRadius="13" Shadow="{ThemeResource SharedShadow}"
                                                     Translation="0,0,12" Height="50"
-                                                    HorizontalContentAlignment="Stretch" Click="SMUEnabl_Click"
+                                                    HorizontalContentAlignment="Stretch" Click="Save_DebugSmuCommandsSend"
                                                     HorizontalAlignment="Stretch">
                                                 <Grid Height="50">
                                                     <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4628,7 +4557,7 @@
                                             </Button>
                                             <Grid HorizontalAlignment="Right">
                                                 <ToggleSwitch OffContent="" OnContent="" Margin="0,0,-100,0"
-                                                              x:Name="EnableSmu" Toggled="EnableSMU_Toggled"
+                                                              x:Name="EnableSmu" Toggled="Save_DebugSmuCommandsSend"
                                                               VerticalAlignment="Center" IsOn="False"/>
                                             </Grid>
                                         </Grid>
@@ -4766,7 +4695,7 @@
                                                                Text="Применить диапазон команд SMU"/>
                                                     <TextBlock x:Uid="Param_SMURangeDesc" Margin="35,17.5,0,0"
                                                                FontWeight="Light" VerticalAlignment="Top"
-                                                               Text="Применяет диапазон значений в определённыый адрес SMU"/>
+                                                               Text="Применяет диапазон значений в определённый адрес SMU"/>
                                                 </Grid>
                                             </Button>
                                             <Grid HorizontalAlignment="Right">
@@ -4818,7 +4747,7 @@
                                     <Grid HorizontalAlignment="Stretch" Margin="0,10,2,0">
                                         <Button CornerRadius="13" Shadow="{ThemeResource SharedShadow}"
                                                 Translation="0,0,12" Height="50" x:Uid="Param_SMU_Func_All_Help"
-                                                Click="SMU_Func_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeaturesOverride" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4832,7 +4761,7 @@
                                             </Grid>
                                         </Button>
                                         <Grid HorizontalAlignment="Right">
-                                            <ToggleSwitch x:Name="SmuFuncEnableToggle" Toggled="SMU_Func_Enabl_Toggled"
+                                            <ToggleSwitch x:Name="SmuFuncEnableToggle" Toggled="Save_SmuFeaturesOverride"
                                                           OffContent="" OnContent="" Margin="0,0,-100,0"
                                                           VerticalAlignment="Center" IsOn="False"/>
                                         </Grid>
@@ -4841,7 +4770,7 @@
                                         <Button CornerRadius="13" Shadow="{ThemeResource SharedShadow}"
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Uid="Param_SMU_Func_CCLK_Help" Click="FEATURE_CCLK_CONTROLLER_Click"
+                                                x:Uid="Param_SMU_Func_CCLK_Help" Click="Save_SmuFeatureCpuFrequencyScaling"
                                                 HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4858,7 +4787,7 @@
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Name="Bit0FeatureCclkController"
-                                                Toggled="Bit_0_FEATURE_CCLK_CONTROLLER_Toggled" OffContent=""
+                                                Toggled="Save_SmuFeatureCpuFrequencyScaling" OffContent=""
                                                 OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
                                     </Grid>
@@ -4867,7 +4796,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_DATA_Help"
-                                                Click="FEATURE_DATA_CALCULATION_Click"
+                                                Click="Save_SmuFeatureDataCalculation"
                                                 HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4884,7 +4813,7 @@
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Name="Bit2FeatureDataCalculation"
-                                                Toggled="Bit_2_FEATURE_DATA_CALCULATION_Toggled" OffContent=""
+                                                Toggled="Save_SmuFeatureDataCalculation" OffContent=""
                                                 OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
                                     </Grid>
@@ -4893,7 +4822,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_PPT_Help"
-                                                Click="FEATURE_PPT_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeaturePowerLimits" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4909,7 +4838,7 @@
                                         <Grid HorizontalAlignment="Right">
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Name="Bit3FeaturePpt" Toggled="Bit_3_FEATURE_PPT_Toggled"
+                                                x:Name="Bit3FeaturePpt" Toggled="Save_SmuFeaturePowerLimits"
                                                 OffContent="" OnContent="" Margin="0,0,-100,0"
                                                 VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
@@ -4919,7 +4848,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_TDC_Help"
-                                                Click="FEATURE_TDC_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeatureSustainVrmTdcCurrent" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4935,7 +4864,7 @@
                                         <Grid HorizontalAlignment="Right">
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Name="Bit4FeatureTdc" Toggled="Bit_4_FEATURE_TDC_Toggled"
+                                                x:Name="Bit4FeatureTdc" Toggled="Save_SmuFeatureSustainVrmTdcCurrent"
                                                 OffContent="" OnContent="" Margin="0,0,-100,0"
                                                 VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
@@ -4945,7 +4874,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_Thermal_Help"
-                                                Click="FEATURE_THERMAL_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeatureTemperatureControl" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4961,7 +4890,7 @@
                                         <Grid HorizontalAlignment="Right">
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Name="Bit5FeatureThermal" Toggled="Bit_5_FEATURE_THERMAL_Toggled"
+                                                x:Name="Bit5FeatureThermal" Toggled="Save_SmuFeatureTemperatureControl"
                                                 OffContent="" OnContent="" Margin="0,0,-100,0"
                                                 VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
@@ -4971,7 +4900,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_PLL_Help"
-                                                Click="FEATURE_PLL_POWER_DOWN_Click"
+                                                Click="Save_SmuFeatureDpmFrequencyPowerDown"
                                                 HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -4988,7 +4917,7 @@
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Name="Bit8FeaturePllPowerDown"
-                                                Toggled="Bit_8_FEATURE_PLL_POWER_DOWN_Toggled" OffContent=""
+                                                Toggled="Save_SmuFeatureDpmFrequencyPowerDown" OffContent=""
                                                 OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
                                     </Grid>
@@ -4997,7 +4926,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_Prochot_Help"
-                                                Click="FEATURE_PROCHOT_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeatureProchotSignal" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -5013,7 +4942,7 @@
                                         <Grid HorizontalAlignment="Right">
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Name="Bit37FeatureProchot" Toggled="Bit_37_FEATURE_PROCHOT_Toggled"
+                                                x:Name="Bit37FeatureProchot" Toggled="Save_SmuFeatureProchotSignal"
                                                 OffContent="" OnContent="" Margin="0,0,-100,0"
                                                 VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
@@ -5023,7 +4952,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_STAPM_Help"
-                                                Click="FEATURE_STAPM_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeatureSustainedPowerLimit" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -5039,7 +4968,7 @@
                                         <Grid HorizontalAlignment="Right">
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Name="Bit39FeatureStapm" Toggled="Bit_39_FEATURE_STAPM_Toggled"
+                                                x:Name="Bit39FeatureStapm" Toggled="Save_SmuFeatureSustainedPowerLimit"
                                                 OffContent="" OnContent="" Margin="0,0,-100,0"
                                                 VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
@@ -5049,7 +4978,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_CStates_Help"
-                                                Click="FEATURE_CORE_CSTATES_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeatureCStatesBoost" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -5066,7 +4995,7 @@
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Name="Bit40FeatureCoreCstates"
-                                                Toggled="Bit_40_FEATURE_CORE_CSTATES_Toggled" OffContent=""
+                                                Toggled="Save_SmuFeatureCStatesBoost" OffContent=""
                                                 OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
                                     </Grid>
@@ -5075,7 +5004,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_GFXDuty_Help"
-                                                Click="FEATURE_GFX_DUTY_CYCLE_Click"
+                                                Click="Save_SmuFeatureGraphicsDutyCycle"
                                                 HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -5092,7 +5021,7 @@
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Name="Bit41FeatureGfxDutyCycle"
-                                                Toggled="Bit_41_FEATURE_GFX_DUTY_CYCLE_Toggled" OffContent=""
+                                                Toggled="Save_SmuFeatureGraphicsDutyCycle" OffContent=""
                                                 OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
                                     </Grid>
@@ -5101,7 +5030,7 @@
                                                 Translation="0,0,12" Height="50"
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
                                                 x:Uid="Param_SMU_Func_AAMode_Help"
-                                                Click="FEATURE_AA_MODE_Click" HorizontalContentAlignment="Stretch"
+                                                Click="Save_SmuFeatureAplusAPowerMode" HorizontalContentAlignment="Stretch"
                                                 HorizontalAlignment="Stretch">
                                             <Grid Height="50">
                                                 <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0"
@@ -5117,7 +5046,7 @@
                                         <Grid HorizontalAlignment="Right">
                                             <ToggleSwitch
                                                 IsEnabled="{Binding ElementName=SmuFuncEnableToggle, Path=IsOn}"
-                                                x:Name="Bit42FeatureAaMode" Toggled="Bit_42_FEATURE_AA_MODE_Toggled"
+                                                x:Name="Bit42FeatureAaMode" Toggled="Save_SmuFeatureAplusAPowerMode"
                                                 OffContent="" OnContent="" Margin="0,0,-100,0"
                                                 VerticalAlignment="Center" IsOn="True"/>
                                         </Grid>
@@ -5241,7 +5170,6 @@
             <Button CornerRadius="9" Shadow="{StaticResource SharedShadow}" Translation="0,0,20"
                     x:Name="EditPresetButton" x:Uid="Param_Edit_Preset" Grid.Row="1" HorizontalAlignment="Right"
                     Height="40" Width="40" Margin="0,0,139,0" ToolTipService.ToolTip="Изменить">
-                <!-- eccd	eb7e -->
                 <FontIcon HorizontalAlignment="Left" Margin="-3,0,-5,0" Glyph="&#xef15;"/>
                 <Button.Flyout>
                     <Flyout>

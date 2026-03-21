@@ -274,6 +274,36 @@
   <data name="Param_Preset.Text" xml:space="preserve">
     <value>Saved presets:</value>
   </data>
+  <data name="Settings_ApplyPage.Text" xml:space="preserve">
+    <value>Reapply options</value>
+  </data>
+  <data name="Settings_ApplyPageDesc.Text" xml:space="preserve">
+    <value>Manage apply and restore preset options</value>
+  </data>
+  <data name="Settings_ResetOptionsAction.Text" xml:space="preserve">
+    <value>Reset options</value>
+  </data>
+  <data name="Settings_ApplyBattery.Text" xml:space="preserve">
+    <value>On battery</value>
+  </data>
+  <data name="Settings_ApplyBatteryDesc.Text" xml:space="preserve">
+    <value>Preset to apply when battery is discharging</value>
+  </data>
+  <data name="Settings_Apply_Ac.Text" xml:space="preserve">
+    <value>Plugged in</value>
+  </data>
+  <data name="Settings_Apply_AcDesc.Text" xml:space="preserve">
+    <value>Preset to apply when battery is charging</value>
+  </data>
+  <data name="Settings_Apply_None.Content" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Settings_RestoreOptions.Text" xml:space="preserve">
+    <value>Restore preset options</value>
+  </data>
+  <data name="Settings_ChangedBatteryState.Text" xml:space="preserve">
+    <value>Power automations</value>
+  </data>
   <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
     <value>Apply latest preset when opening</value>
   </data>
@@ -1228,12 +1258,6 @@ this we can't adjust this freq more than 2400 MHz.
 To disable this option select Auto then apply. After
 that you can disable checkbox</value>
   </data>
-  <data name="Param_GPU_g11.Text" xml:space="preserve">
-    <value>Min CPU frequency</value>
-  </data>
-  <data name="Param_GPU_g12.Text" xml:space="preserve">
-    <value>Max CPU frequency</value>
-  </data>
   <data name="Param_GPU_g16.Text" xml:space="preserve">
     <value>Fix 0,4 GHz frequency </value>
   </data>
@@ -1882,10 +1906,7 @@ to be installed and running</value>
   <data name="Param_IncompatiblePreset.Title" xml:space="preserve">
     <value>Oops... it looks like you're doing something wrong!</value>
   </data>
-  <data name="Param_Premaded" xml:space="preserve">
-    <value>Preset list</value>
-  </data>
-  <data name="Param_PremadedCombo.Text" xml:space="preserve">
+  <data name="Param_PremadeCombo.Content" xml:space="preserve">
     <value>Preset list</value>
   </data>
   <data name="Param_IncompatibleCPU_Desc.Text" xml:space="preserve">

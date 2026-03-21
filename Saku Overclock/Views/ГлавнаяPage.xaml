@@ -344,100 +344,7 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                     <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" 
                                                     HorizontalAlignment="Stretch" IsHitTestVisible="True"
-                                                    x:Name="PresetCustom">
-                                            <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                    <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
-                                                    <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                        <TextBlock FontWeight="Bold" Text="11"/>
-                                                        <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </ToggleButton>
-                                        </StackPanel>
-                                        <HyperlinkButton x:Uid="Main_CantFindPreset" Margin="-8,0,0,0" Click="ExpandButton_Click" Foreground="{ThemeResource TextFillColorSecondary}">Не видите здесь свой пресет?</HyperlinkButton>
-                                        <Grid x:Name="ExpandGrid" Visibility="Collapsed" Margin="0,2,0,0" HorizontalAlignment="Stretch">
-                                            <Grid.Resources>
-                                                <Storyboard x:Name="CollapseStoryboard">
-                                                    <DoubleAnimation Storyboard.TargetName="ExpandGrid"
-                                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                                                     To="0" Duration="0:0:0.1" />
-                                                </Storyboard>
-
-                                                <Storyboard x:Name="ExpandStoryboard">
-                                                    <DoubleAnimation Storyboard.TargetName="ExpandGrid"
-                                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                                                     To="1" Duration="0:0:0.1" />
-                                                </Storyboard>
-                                            </Grid.Resources>
-                                            <Grid.RenderTransform>
-                                                <ScaleTransform ScaleY="0"/>
-                                            </Grid.RenderTransform>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Button CornerRadius="14" VerticalAlignment="Stretch" Click="PresetsPage_Click" HorizontalAlignment="Stretch" Margin="0,0,4,0" Grid.Column="0" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
-                                                <TextBlock x:Uid="Main_PresetPage" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Управление пресетами"/>
-                                            </Button>
-                                            <Button CornerRadius="14" VerticalAlignment="Stretch" Tag="FromHelpButtons" Click="SwitchPivot_Click" HorizontalAlignment="Stretch" Margin="4,0,0,0" Grid.Column="1" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
-                                                <TextBlock x:Uid="Main_PremadePresets" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
-                                            </Button>
-                                        </Grid>
-                                    </StackPanel>
-                                </ScrollViewer>
-                            </PivotItem>
-                            <PivotItem Margin="0,11,0,7">
-                                <PivotItem.Header>
-                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadePresets" Text="Готовые"/>
-                                </PivotItem.Header>
-                                <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0" VerticalScrollBarVisibility="Visible">
-                                    <StackPanel Margin="20,-3,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetMax" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xEcad;"/>
-                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                    <TextBlock FontWeight="Bold" Text="Maximum" x:Uid="Preset_Max_Name"/>
-                                                    <TextBlock TextWrapping="Wrap" Text="Maximum" x:Uid="Preset_Max_Desc"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetSpeed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xe945;"/>
-                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                    <TextBlock FontWeight="Bold" Text="Speed" x:Uid="Preset_Speed_Name"/>
-                                                    <TextBlock TextWrapping="Wrap" Text="Speed" x:Uid="Preset_Speed_Desc"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetBalance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec49;"/>
-                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                    <TextBlock FontWeight="Bold" Text="Balance" x:Uid="Preset_Balance_Name"/>
-                                                    <TextBlock TextWrapping="Wrap" Text="Balance" x:Uid="Preset_Balance_Desc"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetEco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec0a;"/>
-                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                    <TextBlock FontWeight="Bold" Text="Eco" x:Uid="Preset_Eco_Name"/>
-                                                    <TextBlock TextWrapping="Wrap" Text="Eco" x:Uid="Preset_Eco_Desc"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetMin" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                <FontIcon HorizontalAlignment="Left" Margin="6,0,0,0" Glyph="&#xebc0;"/>
-                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                    <TextBlock FontWeight="Bold" Text="Minimum" x:Uid="Preset_Min_Name"/>
-                                                    <TextBlock TextWrapping="Wrap" Text="Minimum" x:Uid="Preset_Min_Desc"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ToggleButton>
+                                                    x:Name="PresetCustom"/>
                                     </StackPanel>
                                 </ScrollViewer>
                             </PivotItem>
@@ -520,7 +427,7 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
 
                     </Grid>
 
-                    <Button Click="SwitchPivot_Click" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
+                    <Button Click="PresetsPage_Click" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
                         <Button.RenderTransform>
                             <ScaleTransform ScaleX="0.9" ScaleY="0.9" CenterX="16" CenterY="16"/>
                         </Button.RenderTransform>

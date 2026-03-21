@@ -53,14 +53,13 @@ public sealed partial class ГлавнаяPage
 
     private string
         _lastAppliedPresetName =
-            string.Empty; // Защита от переприменения пресета при многократном нажатии на кнопку применить
+            string.Empty; // Защита от пере-применения пресета при многократном нажатии на кнопку применить
 
     private double
         _maxCpuFreq =
             1d; // Кешируемая максимальная частота процессора, используется в индикаторах, чтобы показать процент от максимальной частоты
 
     private bool _isWindowVisible = true; // Показатель видимости окна
-    private bool _isHelpButtonsExpanded; // Показатели отображения кнопок помощи возле блока "Не видите свой пресет?"
 
     private readonly string
         _batteryUnavailable = "Main_BatteryUnavailable".GetLocalized(); // Кешированные строки перевода
@@ -77,10 +76,7 @@ public sealed partial class ГлавнаяPage
         InitializeComponent();
 
         PresetManager.LoadSettings();
-        if (_dataUpdater != null)
-        {
-            _dataUpdater.DataUpdated += OnDataUpdated;
-        }
+        _dataUpdater.DataUpdated += OnDataUpdated;
 
         _hotkeysService.PresetChanged += PresetChanged;
 
@@ -155,10 +151,7 @@ public sealed partial class ГлавнаяPage
     private void ГлавнаяPage_Unloaded(object sender, RoutedEventArgs e)
     {
         // Отписка от всех событий для предотвращения утечек памяти
-        if (_dataUpdater != null)
-        {
-            _dataUpdater.DataUpdated -= OnDataUpdated;
-        }
+        _dataUpdater.DataUpdated -= OnDataUpdated;
 
         _hotkeysService.PresetChanged -= PresetChanged;
 
@@ -182,9 +175,9 @@ public sealed partial class ГлавнаяPage
         {
             var preset = PresetManager.Presets[i];
             var isChecked = AppSettings.Preset != -1 && AppSettings.Preset == i &&
-                            PresetManager.Presets[AppSettings.Preset].Presetname == preset.Presetname &&
-                            PresetManager.Presets[AppSettings.Preset].Presetdesc == preset.Presetdesc &&
-                            PresetManager.Presets[AppSettings.Preset].Preseticon == preset.Preseticon;
+                            PresetManager.Presets[AppSettings.Preset].PresetName == preset.PresetName &&
+                            PresetManager.Presets[AppSettings.Preset].PresetDesc == preset.PresetDesc &&
+                            PresetManager.Presets[AppSettings.Preset].PresetIcon == preset.PresetIcon;
 
             var toggleButton = new ToggleButton
             {
@@ -206,7 +199,7 @@ public sealed partial class ГлавнаяPage
                         {
                             HorizontalAlignment = HorizontalAlignment.Left,
                             Margin = new Thickness(7, 0, 0, 0),
-                            Glyph = preset.Preseticon == string.Empty ? "\uE718" : preset.Preseticon
+                            Glyph = preset.PresetIcon == string.Empty ? "\uE718" : preset.PresetIcon
                         },
                         new StackPanel
                         {
@@ -218,13 +211,13 @@ public sealed partial class ГлавнаяPage
                                 new TextBlock
                                 {
                                     FontWeight = new FontWeight(700),
-                                    Text = preset.Presetname
+                                    Text = preset.PresetName
                                 },
                                 new TextBlock
                                 {
                                     TextWrapping = TextWrapping.Wrap,
-                                    Text = preset.Presetdesc,
-                                    Visibility = preset.Presetdesc == string.Empty
+                                    Text = preset.PresetDesc,
+                                    Visibility = preset.PresetDesc == string.Empty
                                         ? Visibility.Collapsed
                                         : Visibility.Visible
                                 }
@@ -243,7 +236,8 @@ public sealed partial class ГлавнаяPage
             PresetCustom.Children.Add(toggleButton);
         }
 
-        if (AppSettings.Preset == -1 || PresetManager.Presets.Length == 0)
+        // TODO: FIX PREMADE PRESETS
+        /*if (AppSettings.Preset == -1 || PresetManager.Presets.Length == 0)
         {
             PresetPivot.SelectedIndex = 1;
             PresetMin.IsChecked = AppSettings.PremadeMinActivated;
@@ -251,7 +245,7 @@ public sealed partial class ГлавнаяPage
             PresetBalance.IsChecked = AppSettings.PremadeBalanceActivated;
             PresetSpeed.IsChecked = AppSettings.PremadeSpeedActivated;
             PresetMax.IsChecked = AppSettings.PremadeMaxActivated;
-        }
+        }*/
     }
 
     #endregion
@@ -519,7 +513,7 @@ public sealed partial class ГлавнаяPage
         plot.Axes.SetLimitsY(0, 100);
     }
 
-    public void UpdateTemperatureChartPointPosition(int temperature)
+    private void UpdateTemperatureChartPointPosition(int temperature)
     {
         // Не создаем замыканий и лишних объектов здесь
         double val = Math.Clamp(temperature, 0, 100);
@@ -589,10 +583,7 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void PresetsPage_Click(object sender, RoutedEventArgs e)
     {
-        if (_isHelpButtonsExpanded || sender is FrameworkElement { Tag: "S" })
-        {
-            _navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
-        }
+        _navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
     }
 
     /// <summary>
@@ -727,153 +718,110 @@ public sealed partial class ГлавнаяPage
             var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot);
             foreach (var button in toggleButtons)
             {
-                if (button.IsChecked == true)
+                if (button is { IsChecked: true, Tag: int })
                 {
-                    if (button.Tag is string premadeTag)
+                    var name = string.Empty;
+                    var desc = string.Empty;
+                    var icon = string.Empty;
+                    var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(button);
+                    foreach (var block in textBlocks)
                     {
-                        var presetValue = -1;
-                        var presetType = PresetType.Balance;
-                        switch (button.Tag)
+                        if (block.FontWeight == new FontWeight(700))
                         {
-                            case "Preset_Min":
-                                presetType = PresetType.Min;
-                                break;
-                            case "Preset_Eco":
-                                presetType = PresetType.Eco;
-                                break;
-                            case "Preset_Balance":
-                                presetType = PresetType.Balance;
-                                break;
-                            case "Preset_Speed":
-                                presetType = PresetType.Speed;
-                                break;
-                            case "Preset_Max":
-                                presetType = PresetType.Max;
-                                break;
-                        }
-
-                        // Проверяем, изменился ли пресет
-                        if (_lastAppliedPreset != presetValue || _lastAppliedPresetName != presetType.ToString())
-                        {
-                            _lastAppliedPreset = presetValue;
-                            _lastAppliedPresetName = presetType.ToString();
-
-                            await Applyer.ApplyPremadePreset(presetType);
-
-                            ApplyTeach.Target = ApplyButton;
-                            ApplyTeach.Title = "Apply_Success".GetLocalized();
-                            ApplyTeach.Subtitle = "";
-                            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                            ApplyTeach.IsOpen = true;
-                            await Task.Delay(3000);
-                            ApplyTeach.IsOpen = false;
-                        }
-                    }
-                    else if (button.Tag is int customTag)
-                    {
-                        var name = string.Empty;
-                        var desc = string.Empty;
-                        var icon = string.Empty;
-                        var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(button);
-                        foreach (var block in textBlocks)
-                        {
-                            if (block.FontWeight == new FontWeight(700))
-                            {
-                                name = block.Text;
-                            }
-                            else
-                            {
-                                if (block.TextWrapping == TextWrapping.Wrap)
-                                {
-                                    desc = block.Text;
-                                }
-                            }
-                        }
-
-                        var glyphs = VisualTreeHelper.FindVisualChildren<FontIcon>(button);
-                        foreach (var glyph in glyphs)
-                        {
-                            icon = glyph.Glyph;
-                        }
-
-                        Preset? requiredPreset = null;
-                        if (_selectedIndex > -1 && _selectedIndex < PresetManager.Presets.Length &&
-                            name == PresetManager.Presets[_selectedIndex].Presetname)
-                        {
-                            requiredPreset = PresetManager.Presets[_selectedIndex];
-                            AppSettings.Preset = _selectedIndex;
+                            name = block.Text;
                         }
                         else
                         {
-                            for (var i = 0; i < PresetManager.Presets.Length; i++)
+                            if (block.TextWrapping == TextWrapping.Wrap)
                             {
-                                var preset = PresetManager.Presets[i];
-                                if (preset.Presetname == name &&
-                                    preset.Presetdesc == desc &&
-                                    (preset.Preseticon == icon ||
-                                     preset.Preseticon == "\uE718"))
-                                {
-                                    // Проверяем, изменился ли пресет
-                                    if (_lastAppliedPreset != i || _lastAppliedPresetName != name)
-                                    {
-                                        _lastAppliedPreset = i;
-                                        _lastAppliedPresetName = name;
-
-                                        AppSettings.Preset = i;
-                                        AppSettings.SaveSettings();
-
-                                        requiredPreset = preset;
-                                    }
-
-                                    break;
-                                }
+                                desc = block.Text;
                             }
                         }
-
-                        if (requiredPreset == null)
-                        {
-                            return;
-                        }
-
-                        ПараметрыPage.ApplyInfo = string.Empty;
-                        await Applyer.ApplyCustomPreset(requiredPreset, true);
-
-                        await Task.Delay(1000);
-                        var timer = 1000;
-                        var applyInfo = ПараметрыPage.ApplyInfo;
-                        if (applyInfo != string.Empty)
-                        {
-                            timer *= applyInfo.Split('\n').Length + 1;
-                        }
-
-                        ApplyTeach.Target = ApplyButton;
-                        ApplyTeach.Title = "Apply_Success".GetLocalized();
-                        ApplyTeach.Subtitle = "";
-                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                        ApplyTeach.IsOpen = true;
-                        var infoSet = InfoBarSeverity.Success;
-                        if (applyInfo != string.Empty)
-                        {
-                            await LogHelper.Log(applyInfo);
-                            ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                            ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
-                            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                            await Task.Delay(timer);
-                            ApplyTeach.IsOpen = false;
-                            infoSet = InfoBarSeverity.Warning;
-                        }
-                        else
-                        {
-                            await Task.Delay(3000);
-                            ApplyTeach.IsOpen = false;
-                        }
-
-                        NotificationsService.ShowNotification(ApplyTeach.Title,
-                            ApplyTeach.Subtitle +
-                                  (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                            infoSet,
-                            true);
                     }
+
+                    var glyphs = VisualTreeHelper.FindVisualChildren<FontIcon>(button);
+                    foreach (var glyph in glyphs)
+                    {
+                        icon = glyph.Glyph;
+                    }
+
+                    Preset? requiredPreset = null;
+                    if (_selectedIndex > -1 && _selectedIndex < PresetManager.Presets.Length &&
+                        name == PresetManager.Presets[_selectedIndex].PresetName)
+                    {
+                        requiredPreset = PresetManager.Presets[_selectedIndex];
+                        AppSettings.Preset = _selectedIndex;
+                    }
+                    else
+                    {
+                        for (var i = 0; i < PresetManager.Presets.Length; i++)
+                        {
+                            var preset = PresetManager.Presets[i];
+                            if (preset.PresetName == name &&
+                                preset.PresetDesc == desc &&
+                                (preset.PresetIcon == icon ||
+                                 preset.PresetIcon == "\uE718"))
+                            {
+                                // Проверяем, изменился ли пресет
+                                if (_lastAppliedPreset != i || _lastAppliedPresetName != name)
+                                {
+                                    _lastAppliedPreset = i;
+                                    _lastAppliedPresetName = name;
+
+                                    AppSettings.Preset = i;
+                                    AppSettings.SaveSettings();
+
+                                    requiredPreset = preset;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if (requiredPreset == null)
+                    {
+                        return;
+                    }
+
+                    ПараметрыPage.ApplyInfo = string.Empty;
+                    await Applyer.ApplyCustomPreset(requiredPreset, true);
+
+                    await Task.Delay(1000);
+                    var timer = 1000;
+                    var applyInfo = ПараметрыPage.ApplyInfo;
+                    if (applyInfo != string.Empty)
+                    {
+                        timer *= applyInfo.Split('\n').Length + 1;
+                    }
+
+                    ApplyTeach.Target = ApplyButton;
+                    ApplyTeach.Title = "Apply_Success".GetLocalized();
+                    ApplyTeach.Subtitle = "";
+                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                    ApplyTeach.IsOpen = true;
+                    var infoSet = InfoBarSeverity.Success;
+                    if (applyInfo != string.Empty)
+                    {
+                        await LogHelper.Log(applyInfo);
+                        ApplyTeach.Title = "Apply_Warn".GetLocalized();
+                        ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
+                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                        await Task.Delay(timer);
+                        ApplyTeach.IsOpen = false;
+                        infoSet = InfoBarSeverity.Warning;
+                    }
+                    else
+                    {
+                        await Task.Delay(3000);
+                        ApplyTeach.IsOpen = false;
+                    }
+
+                    NotificationsService.ShowNotification(ApplyTeach.Title,
+                        ApplyTeach.Subtitle +
+                        (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                        infoSet,
+                        true);
                 }
             }
         }
@@ -881,19 +829,6 @@ public sealed partial class ГлавнаяPage
         {
             await LogHelper.LogError(ex);
         }
-    }
-
-    /// <summary>
-    ///     Переключает режим отображения Pivot (готовые и свои пресеты)
-    /// </summary>
-    private void SwitchPivot_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isHelpButtonsExpanded && (sender as Button)?.Tag?.ToString() == "FromHelpButtons")
-        {
-            return;
-        }
-
-        PresetPivot.SelectedIndex = PresetPivot.SelectedIndex == 1 ? 0 : 1;
     }
 
     /// <summary>
@@ -1075,34 +1010,6 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void TooltipPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
         SetPlacerTipAsync(int.Parse((string)((FrameworkElement)sender).Tag));
-
-    /// <summary>
-    ///     Сворачивает/разворачивает кнопки помощи возле блока "Не видите свой пресет?"
-    /// </summary>
-    private async void ExpandButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (_isHelpButtonsExpanded)
-            {
-                CollapseStoryboard.Begin();
-                await Task.Delay(500);
-                ExpandGrid.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                ExpandGrid.Visibility = Visibility.Visible;
-                ExpandStoryboard.Begin();
-            }
-
-            _isHelpButtonsExpanded = !_isHelpButtonsExpanded;
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-
-    }
 
     #endregion
 

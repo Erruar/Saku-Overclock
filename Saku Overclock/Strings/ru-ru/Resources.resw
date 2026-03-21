@@ -274,6 +274,36 @@
   <data name="Param_Preset.Text" xml:space="preserve">
     <value>Сохранённые пресеты:</value>
   </data>
+  <data name="Settings_ApplyPage.Text" xml:space="preserve">
+    <value>Параметры применения</value>
+  </data>
+  <data name="Settings_ApplyPageDesc.Text" xml:space="preserve">
+    <value>Настройка применения и восстановления параметров пресета</value>
+  </data>
+  <data name="Settings_ResetOptionsAction.Text" xml:space="preserve">
+    <value>Сбросить параметры</value>
+  </data>
+  <data name="Settings_ApplyBattery.Text" xml:space="preserve">
+    <value>От батареи</value>
+  </data>
+  <data name="Settings_ApplyBatteryDesc.Text" xml:space="preserve">
+    <value>Пресет применяемый когда устройство работает от батареи</value>
+  </data>
+  <data name="Settings_Apply_Ac.Text" xml:space="preserve">
+    <value>От сети</value>
+  </data>
+  <data name="Settings_Apply_AcDesc.Text" xml:space="preserve">
+    <value>Пресет применяемый когда устройство работает от сети</value>
+  </data>
+  <data name="Settings_Apply_None.Content" xml:space="preserve">
+    <value>Не выбрано</value>
+  </data>
+  <data name="Settings_RestoreOptions.Text" xml:space="preserve">
+    <value>Восстановление параметров пресета</value>
+  </data>
+  <data name="Settings_ChangedBatteryState.Text" xml:space="preserve">
+    <value>Изменение состояния питания</value>
+  </data>
   <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
     <value>Применять пресет при запуске</value>
   </data>
@@ -1920,10 +1950,7 @@ Overclock будут проигнорированы,
   <data name="Param_IncompatiblePreset.Title" xml:space="preserve">
     <value>Упс... кажется вы делаете что-то не так!</value>
   </data>
-  <data name="Param_Premaded" xml:space="preserve">
-    <value>Свои пресеты</value>
-  </data>
-  <data name="Param_PremadedCombo.Text" xml:space="preserve">
+  <data name="Param_PremadeCombo.Content" xml:space="preserve">
     <value>Свои пресеты</value>
   </data>
   <data name="Param_IncompatibleCPU_Desc.Text" xml:space="preserve">

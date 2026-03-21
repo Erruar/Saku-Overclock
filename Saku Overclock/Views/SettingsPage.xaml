@@ -59,6 +59,24 @@
                                     </ComboBox>
                                 </Grid>
                             </Grid>
+                            <Grid PointerPressed="OpenReapplyOptions_Click"
+                                  Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18" Glyph="&#xE768;" />
+                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                               x:Uid="Settings_ApplyPage" FontSize="14" Text="Параметры применения" />
+                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="Settings_ApplyPageDesc" Text="Настройка применения параметров с запуском программы" />
+                                </Grid>
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,16,0"
+                                        Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Width="190" x:Uid="ThemeManagerButton"
+                                        Click="OpenReapplyOptions_Click"
+                                        CornerRadius="15" Content="Перейти"/>
+                            </Grid>
                             <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AppHideToTray" Margin="0,2,0,0"
                                   Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -78,50 +96,6 @@
                                 <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
                                               OffContent="" OnContent="" x:Name="AppHideToTray"
                                               Toggled="AppHideToTray_OnToggled" />
-                            </Grid>
-                            <Grid PointerPressed="ToggleTheSwitchByTag" Tag="ApplyStart" Margin="0,2,0,0" Height="60"
-                                  HorizontalAlignment="Stretch"
-                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
-                                              Glyph="&#xE777;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
-                                               x:Uid="Settings_Apply_Start_Desc" FontSize="14"
-                                               Text="Применять пресет при запуске" />
-                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
-                                               Foreground="{ThemeResource TextFillColorSecondary}"
-                                               x:Uid="Preset_AutoApplyOptionsDesc"
-                                               Text="Восстанавливать последние настройки при запуске приложения" />
-                                </Grid>
-                                <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
-                                              OffContent="" OnContent="" x:Name="ApplyStart"
-                                              Toggled="ApplyOptionsOnStart_Click" />
-                            </Grid>
-                            <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AutoReapply" Margin="0,2,0,0" Height="60"
-                                  HorizontalAlignment="Stretch"
-                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
-                                              Glyph="&#xE81C;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
-                                               x:Uid="Settings_Auto_Reapply" FontSize="14"
-                                               Text="Переприменять параметры" />
-                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
-                                               Foreground="{ThemeResource TextFillColorSecondary}"
-                                               x:Uid="Preset_ReapplyOptionsDesc"
-                                               Text="Периодически переприменять параметры разгона во избежание изменения двугими программами" />
-                                </Grid>
-                                <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
-                                              OffContent="" OnContent="" x:Name="AutoReapply"
-                                              Toggled="AutoReapplyOptionsEverySeconds_Click" />
                             </Grid>
                             <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AutoCheckUpdates" CornerRadius="0,0,15,15"
                                   Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
@@ -176,7 +150,7 @@
                                     </ComboBox>
                                 </Grid>
                             </Grid>
-                            <Grid CornerRadius="0,0,15,15" PointerPressed="OpenThemeManagerDialog_Click"
+                            <Grid CornerRadius="0,0,15,15" PointerPressed="OpenThemeManager_Click"
                                   Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                                 <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
@@ -191,7 +165,7 @@
                                 </Grid>
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,16,0"
                                         Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Width="190" x:Uid="ThemeManagerButton"
-                                        Click="OpenThemeManagerDialog_Click"
+                                        Click="OpenThemeManager_Click"
                                         CornerRadius="15" Content="Перейти"/>
                             </Grid>
 

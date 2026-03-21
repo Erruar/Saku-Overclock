@@ -139,8 +139,8 @@ public class WindowStateManagerService(
         // Отписаться от события, чтобы не вызвать его повторно
         App.MainWindow.Activated -= MainWindow_Activated;
 
-        // TODO: Перенести пользователя на страницу первоначальной настройки приложения
-        // при первом запуске программы (в работе)
+        // Перенести пользователя на страницу первоначальной настройки приложения
+        // при первом запуске программы
         if (settingsService.AppFirstRun)
         {
             var navigationService = App.GetService<INavigationService>();

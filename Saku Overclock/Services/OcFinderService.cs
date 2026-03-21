@@ -688,7 +688,9 @@ public class OcFinderService : IOcFinderService
         sb.Append($"--prochot-deassertion-ramp={prochotRamp} ");
 
         // Для глубокой оптимизации добавляем андервольтинг если доступен
-        if (level == OptimizationLevel.Deep && _isUndervoltingAvailable)
+        
+        // TODO: FIX PREMADE PRESETS
+        /*if (level == OptimizationLevel.Deep && _isUndervoltingAvailable)
         {
             if (AppSettings.PremadeCurveOptimizerOverrideLevel is <= -51 or >= 1)
             {
@@ -698,7 +700,7 @@ public class OcFinderService : IOcFinderService
 
             sb.Append(CurveOptimizerGenerateStringHelper(AppSettings
                 .PremadeCurveOptimizerOverrideLevel)); // Андервольтинг
-        }
+        }*/
 
         return sb.ToString().Trim();
     }

@@ -57,6 +57,10 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
         {
             get; init;
         }
+        public bool ApplyHdrFix
+        {
+            get; init;
+        }
     }
 
     public ThemeApplyResult UpdateAppliedTheme(int themeType)
@@ -66,6 +70,7 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
         ImageSource? imageSource = null;
         double themeOpacity = 1;
         double themeMaskOpacity = 1;
+        bool applyHdrFix = false;
 
         if (themeType < Themes.Count && themeType > -1)
         {
@@ -105,10 +110,9 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
                     ? background != Microsoft.UI.Colors.White ? 1 : themeType == 0 ? 0 : null 
                     : 0;
 
-                if (target.HasValue && (int)Themes[themeType].ThemeMaskOpacity != target)
+                if (target.HasValue)
                 {
-                    themeMaskOpacity = Themes[themeType].ThemeMaskOpacity = target.Value;
-                    SaveThemeInSettings();
+                    applyHdrFix = target.Value == 1;
                 }
             }
         }
@@ -121,7 +125,8 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
         {
             BackgroundImageSource = imageSource,
             ThemeOpacity = themeOpacity,
-            ThemeMaskOpacity = themeMaskOpacity
+            ThemeMaskOpacity = themeMaskOpacity,
+            ApplyHdrFix = applyHdrFix
         };
     }
 

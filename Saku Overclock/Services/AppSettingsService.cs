@@ -97,32 +97,7 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = -1;
 
-    public bool StreamStabilizerEnabled
-    {
-        get;
-        set;
-    } = false;
-
-    public int StreamStabilizerType
-    {
-        get;
-        set;
-    } =
-        0;
-
-    public int StreamStabilizerMaxMHz
-    {
-        get;
-        set;
-    } = 3000;
-
-    public int StreamStabilizerMaxPercentMHz
-    {
-        get;
-        set;
-    } = 80;
-
-    public bool PresetspageViewModeBeginner
+    public bool PresetsPageViewModeBeginner
     {
         get;
         set;
@@ -133,6 +108,18 @@ public class AppSettingsService : IAppSettingsService
         get;
         set;
     } = 0;
+    
+    public string AcPreset
+    {
+        get;
+        set;
+    } = string.Empty;
+    
+    public string BatteryPreset
+    {
+        get;
+        set;
+    } = string.Empty;
 
     public string RyzenAdjLine
     {
@@ -140,59 +127,11 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = string.Empty;
 
-    public bool PremadeMinActivated
-    {
-        get;
-        set;
-    } = false;
-
-    public bool PremadeEcoActivated
-    {
-        get;
-        set;
-    } = false;
-
-    public bool PremadeBalanceActivated
-    {
-        get;
-        set;
-    } = false;
-
-    public bool PremadeSpeedActivated
-    {
-        get;
-        set;
-    } = false;
-
-    public bool PremadeMaxActivated
-    {
-        get;
-        set;
-    } = true;
-
-    public int PremadeOptimizationLevel
-    {
-        get;
-        set;
-    } = 0;
-
-    public int PremadeCurveOptimizerOverrideLevel
-    {
-        get;
-        set;
-    } = -10;
-
     public bool AppFirstRun
     {
         get;
         set;
     } = true;
-
-    public int AppFirstRunType
-    {
-        get;
-        set;
-    } = 0;
 
     // Настройки управления кулером
     public bool IsNbfcModeEnabled

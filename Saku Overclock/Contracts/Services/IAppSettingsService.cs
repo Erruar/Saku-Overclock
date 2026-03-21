@@ -124,48 +124,9 @@ public interface IAppSettingsService
     }
 
     /// <summary>
-    ///     Включен ли оптимизатор стрима
-    /// </summary>
-    bool StreamStabilizerEnabled
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Тип оптимизатора стрима:
-    ///     0 - базовая блокировка частоты,
-    ///     1 - до максимальной частоты,
-    ///     2 - до процента максимальной частоты
-    /// </summary>
-    int StreamStabilizerType
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Максимальная частота процессора при использовании оптимизатора стрима
-    /// </summary>
-    int StreamStabilizerMaxMHz
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Максимальный процент частоты процессора при использовании оптимизатора стрима
-    /// </summary>
-    int StreamStabilizerMaxPercentMHz
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
     ///     Текущий режим отображения настроек на странице управления пресетами - Новичок, если false - Про
     /// </summary>
-    bool PresetspageViewModeBeginner
+    bool PresetsPageViewModeBeginner
     {
         get;
         set;
@@ -181,6 +142,24 @@ public interface IAppSettingsService
         get;
         set;
     }
+    
+    /// <summary>
+    ///     Выбранный пресет для применения от сети
+    /// </summary>
+    public string AcPreset
+    {
+        get;
+        set;
+    }
+    
+    /// <summary>
+    ///     Выбранный пресет для применения от батареи
+    /// </summary>
+    public string BatteryPreset
+    {
+        get;
+        set;
+    }
 
     /// <summary>
     ///     RyzenAdjLine для применения параметров
@@ -191,87 +170,10 @@ public interface IAppSettingsService
         set;
     }
 
-    // Готовые пресеты
-
-    /// <summary>
-    ///     Флаг активированного готового пресета "Минимум"
-    /// </summary>
-    bool PremadeMinActivated
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Флаг активированного готового пресета "Эко"
-    /// </summary>
-    bool PremadeEcoActivated
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Флаг активированного готового пресета "Баланс"
-    /// </summary>
-    bool PremadeBalanceActivated
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Флаг активированного готового пресета "Скорость"
-    /// </summary>
-    bool PremadeSpeedActivated
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Флаг активированного готового пресета "Максимум"
-    /// </summary>
-    bool PremadeMaxActivated
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Уровень оптимизации пресета:
-    ///     0 - Базовый,
-    ///     1 - Стандартный,
-    ///     2 - Расширенный
-    /// </summary>
-    int PremadeOptimizationLevel
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Уровень андервольтинга для Расширенного режима оптимизации всех готовых пресетов
-    /// </summary>
-    int PremadeCurveOptimizerOverrideLevel
-    {
-        get;
-        set;
-    }
-
     /// <summary>
     ///     Флаг активации первого запуска приложения
     /// </summary>
     bool AppFirstRun
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    ///     Страница первого запуска (Поможет при закрытии приложения после первого запуска без настройки)
-    /// </summary>
-    int AppFirstRunType
     {
         get;
         set;

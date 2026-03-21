@@ -22,6 +22,7 @@ public class PageService : IPageService
         Configure<ОбновлениеViewModel, ОбновлениеPage>();
         Configure<ОбучениеViewModel, ОбучениеPage>();
         Configure<УправлениеТемамиViewModel, УправлениеТемамиPage>();
+        Configure<ПрименениеViewModel, ПрименениеPage>();
     }
 
     public Type GetPageType(string key)

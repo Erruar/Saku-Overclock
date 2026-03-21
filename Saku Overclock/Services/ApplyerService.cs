@@ -31,7 +31,7 @@ public partial class ApplyerService(
     {
         try
         {
-            _selectedPreset = preset.Presetname;
+            _selectedPreset = preset.PresetName;
             var adjline = ParseOverclockPreset(preset, onlyDebugFunctions);
             settingsService.RyzenAdjLine = adjline;
             settingsService.SaveSettings();
@@ -47,8 +47,10 @@ public partial class ApplyerService(
     {
         try
         {
-            var preset = ocFinder.CreatePreset(presetType,
-                (OptimizationLevel)settingsService.PremadeOptimizationLevel);
+            
+            // TODO: FIX PREMADE PRESETS
+            var preset = ocFinder.CreatePreset(presetType, OptimizationLevel.Basic);
+                //(OptimizationLevel)settingsService.PremadeOptimizationLevel);
             settingsService.RyzenAdjLine = preset.CommandString;
             await ApplySettings(false);
         }
@@ -91,11 +93,6 @@ public partial class ApplyerService(
                     if (settingsService.Preset < presetManager.Presets.Length)
                     {
                         await ApplyCustomPreset(presetManager.Presets[settingsService.Preset]);
-                        if (presetManager.Presets[settingsService.Preset].AutoPstate &&
-                            presetManager.Presets[settingsService.Preset].EnablePstateEditor)
-                        {
-                            //ПараметрыPage.WritePstates();
-                        }
                     }
                 }
                 else
@@ -201,7 +198,7 @@ public partial class ApplyerService(
                                     settingsService.Preset = customIndex;
                                     await ApplyCustomPreset(presetManager.Presets[customIndex]);
 
-                                    _selectedPreset = presetManager.Presets[customIndex].Presetname;
+                                    _selectedPreset = presetManager.Presets[customIndex].PresetName;
                                 }
                             }
                             else
@@ -233,10 +230,12 @@ public partial class ApplyerService(
     {
         return settingsService switch
         {
-            { PremadeMaxActivated: true } => PresetType.Max,
+            
+            // TODO: FIX PREMADE PRESETS
+            /*{ PremadeMaxActivated: true } => PresetType.Max,
             { PremadeSpeedActivated: true } => PresetType.Speed,
             { PremadeEcoActivated: true } => PresetType.Eco,
-            { PremadeMinActivated: true } => PresetType.Min,
+            { PremadeMinActivated: true } => PresetType.Min,*/
             _ => PresetType.Balance
         };
     }
@@ -331,256 +330,253 @@ public partial class ApplyerService(
         if (!onlyDebugFunctions)
         {
             // CPU settings
-            if (preset.Cpu1)
+            if (preset.CpuSettings.CpuMaximumTemperature.IsEnabled)
             {
-                adjline += " --tctl-temp=" + preset.Cpu1Value + (isBristol ? "000" : string.Empty);
+                adjline += " --tctl-temp=" + preset.CpuSettings.CpuMaximumTemperature.Value + (isBristol ? "000" : string.Empty);
             }
 
-            if (preset.Cpu2)
+            if (preset.CpuSettings.CpuSustainedPowerLimit.IsEnabled)
             {
-                var stapmBoostMillisecondsBristol = preset.Cpu5Value * 1000 < 180000 ? preset.Cpu5Value * 1000 : 180000;
-                adjline += " --stapm-limit=" + preset.Cpu2Value + "000" +
+                var stapmBoostMillisecondsBristol = preset.CpuSettings.CpuBoostTimeSlow.Value * 1000 < 180000 ? preset.CpuSettings.CpuBoostTimeSlow.Value * 1000 : 180000;
+                adjline += " --stapm-limit=" + preset.CpuSettings.CpuSustainedPowerLimit.Value + "000" +
                            (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
             }
 
-            if (preset.Cpu3)
+            if (preset.CpuSettings.CpuActualPowerLimit.IsEnabled)
             {
-                adjline += " --fast-limit=" + preset.Cpu3Value + "000";
+                adjline += " --fast-limit=" + preset.CpuSettings.CpuActualPowerLimit.Value + "000";
             }
 
-            if (preset.Cpu4)
+            if (preset.CpuSettings.CpuAveragePowerLimit.IsEnabled)
             {
-                adjline += " --slow-limit=" + preset.Cpu4Value + "000" +
-                           (isBristol ? "," + preset.Cpu4Value + "000,0" : string.Empty);
+                adjline += " --slow-limit=" + preset.CpuSettings.CpuAveragePowerLimit.Value + "000" +
+                           (isBristol ? "," + preset.CpuSettings.CpuAveragePowerLimit.Value + "000,0" : string.Empty);
             }
 
-            if (preset.Cpu5)
+            if (preset.CpuSettings.CpuBoostTimeSlow.IsEnabled)
             {
-                adjline += " --stapm-time=" + preset.Cpu5Value;
+                adjline += " --stapm-time=" + preset.CpuSettings.CpuBoostTimeSlow.Value;
             }
 
-            if (preset.Cpu6)
+            if (preset.CpuSettings.CpuBoostTimeFast.IsEnabled)
             {
-                adjline += " --slow-time=" + preset.Cpu6Value;
-            }
-
-            if (preset.Cpu7)
-            {
-                adjline += " --cHTC-temp=" + preset.Cpu7Value;
+                adjline += " --slow-time=" + preset.CpuSettings.CpuBoostTimeFast.Value;
             }
 
             // VRM settings
-            if (preset.Vrm1)
+            if (preset.VrmSettings.VrmCpuEdcCurrentLimit.IsEnabled)
             {
-                adjline += " --vrmmax-current=" + preset.Vrm1Value + "000" +
-                           (isBristol ? "," + preset.Vrm3Value + "000," + preset.Vrm3Value + "000" : string.Empty);
+                adjline += " --vrmmax-current=" + preset.VrmSettings.VrmCpuEdcCurrentLimit.Value + "000" +
+                           (isBristol ? "," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000" : string.Empty);
             }
 
-            if (preset.Vrm2)
+            if (preset.VrmSettings.VrmCpuTdcCurrentLimit.IsEnabled)
             {
-                adjline += " --vrm-current=" + preset.Vrm2Value + "000" +
-                           (isBristol ? "," + preset.Vrm4Value + "000," + preset.Vrm4Value + "000" : string.Empty);
+                adjline += " --vrm-current=" + preset.VrmSettings.VrmCpuTdcCurrentLimit.Value + "000" +
+                           (isBristol ? "," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000" : string.Empty);
             }
 
-            if (preset.Vrm3 && !isBristol)
+            if (preset.VrmSettings.VrmSocEdcCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --vrmsocmax-current=" + preset.Vrm3Value + "000";
+                adjline += " --vrmsocmax-current=" + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000";
             }
 
-            if (preset.Vrm4 && !isBristol)
+            if (preset.VrmSettings.VrmSocTdcCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --vrmsoc-current=" + preset.Vrm4Value + "000";
+                adjline += " --vrmsoc-current=" + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000";
             }
 
-            if (preset.Vrm5)
+            if (preset.VrmSettings.VrmPowerSaveVddCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --psi0-current=" + preset.Vrm5Value + "000" +
-                           (isBristol ? "," + preset.Vrm6Value + "000," + preset.Vrm6Value + "000" : string.Empty);
+                adjline += " --psi0-current=" + preset.VrmSettings.VrmPowerSaveVddCurrentLimit.Value + "000" +
+                           (isBristol ? "," + preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value + "000," + preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value + "000" : string.Empty);
             }
 
-            if (preset.Vrm6 && !isBristol)
+            if (preset.VrmSettings.VrmPowerSaveSocCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --psi0soc-current=" + preset.Vrm6Value + "000";
+                adjline += " --psi0soc-current=" + preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value + "000";
+            }
+            
+            
+            if (preset.VrmSettings.VrmPowerSaveCpuCurrentLimit.IsEnabled)
+            {
+                adjline += " --psi3cpu_current=" + preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.Value + "000";
             }
 
-            if (preset.Vrm7)
+            if (preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.IsEnabled)
             {
-                var prochotDeassertionTimeMillisecondsBristol = preset.Vrm7Value < 100 ? preset.Vrm7Value : 100;
+                adjline += " --psi3gfx_current=" + preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.Value + "000";
+            }
+
+            if (preset.VrmSettings.VrmCpuFrequencyRestoreTime.IsEnabled)
+            {
+                var prochotDeassertionTimeMillisecondsBristol = preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value < 100 ? preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value : 100;
                 adjline += " --prochot-deassertion-ramp=" +
-                           (isBristol ? prochotDeassertionTimeMillisecondsBristol : preset.Vrm7Value);
+                           (isBristol ? prochotDeassertionTimeMillisecondsBristol : preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value);
             }
 
             // GPU settings
-            if (preset.Gpu1)
+            if (preset.SubsystemsSettings.MinimumSocFrequency.IsEnabled)
             {
-                adjline += " --min-socclk-frequency=" + preset.Gpu1Value;
+                adjline += " --min-socclk-frequency=" + preset.SubsystemsSettings.MinimumSocFrequency.Value;
             }
 
-            if (preset.Gpu2)
+            if (preset.SubsystemsSettings.MaximumSocFrequency.IsEnabled)
             {
-                adjline += " --max-socclk-frequency=" + preset.Gpu2Value;
+                adjline += " --max-socclk-frequency=" + preset.SubsystemsSettings.MaximumSocFrequency.Value;
             }
 
-            if (preset.Gpu3)
+            if (preset.SubsystemsSettings.MinimumFabricFrequency.IsEnabled)
             {
-                adjline += " --min-fclk-frequency=" + preset.Gpu3Value;
+                adjline += " --min-fclk-frequency=" + preset.SubsystemsSettings.MinimumFabricFrequency.Value;
             }
 
-            if (preset.Gpu4)
+            if (preset.SubsystemsSettings.MaximumFabricFrequency.IsEnabled)
             {
-                adjline += " --max-fclk-frequency=" + preset.Gpu4Value;
+                adjline += " --max-fclk-frequency=" + preset.SubsystemsSettings.MaximumFabricFrequency.Value;
             }
 
-            if (preset.Gpu5)
+            if (preset.SubsystemsSettings.MinimumVideoCodecFrequency.IsEnabled)
             {
-                adjline += " --min-vcn=" + preset.Gpu5Value;
+                adjline += " --min-vcn=" + preset.SubsystemsSettings.MinimumVideoCodecFrequency.Value;
             }
 
-            if (preset.Gpu6)
+            if (preset.SubsystemsSettings.MaximumVideoCodecFrequency.IsEnabled)
             {
-                adjline += " --max-vcn=" + preset.Gpu6Value;
+                adjline += " --max-vcn=" + preset.SubsystemsSettings.MaximumVideoCodecFrequency.Value;
             }
 
-            if (preset.Gpu7)
+            if (preset.SubsystemsSettings.MinimumDataLatchFrequency.IsEnabled)
             {
-                adjline += " --min-lclk=" + preset.Gpu7Value;
+                adjline += " --min-lclk=" + preset.SubsystemsSettings.MinimumDataLatchFrequency.Value;
             }
 
-            if (preset.Gpu8)
+            if (preset.SubsystemsSettings.MaximumDataLatchFrequency.IsEnabled)
             {
-                adjline += " --max-lclk=" + preset.Gpu8Value;
+                adjline += " --max-lclk=" + preset.SubsystemsSettings.MaximumDataLatchFrequency.Value;
             }
 
-            if (preset.Gpu9)
+            if (preset.SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled)
             {
-                adjline += " --min-gfxclk=" + preset.Gpu9Value;
+                adjline += " --min-gfxclk=" + preset.SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value;
             }
 
-            if (preset.Gpu10)
+            if (preset.SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled)
             {
-                adjline += " --max-gfxclk=" + preset.Gpu10Value;
+                adjline += " --max-gfxclk=" + preset.SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value;
             }
 
-            if (preset.Gpu16)
+            if (preset.CpuModesSettings.CpuFrequency04Fix.IsEnabled)
             {
-                var fp6FeaturesSet = preset.Gpu16Value != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32";
-                var ryzen3000LineFix = preset.Gpu16Value != 0
+                var fp6FeaturesSet = preset.CpuModesSettings.CpuFrequency04Fix.Value != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32";
+                var ryzen3000LineFix = preset.CpuModesSettings.CpuFrequency04Fix.Value != 0
                     ? " --setcpu-freqto-ramstate=0"
                     : " --stopcpu-freqto-ramstate=0";
                 adjline += codenameGen switch
                 {
                     CodenameGeneration.Fp6 or CodenameGeneration.Ff3 => fp6FeaturesSet,
-                    CodenameGeneration.Fp7 or CodenameGeneration.Fp8 => preset.Gpu16Value != 0
+                    CodenameGeneration.Fp7 or CodenameGeneration.Fp8 => preset.CpuModesSettings.CpuFrequency04Fix.Value != 0
                         ? " --disable-feature=0,16"
                         : " --enable-feature=0,16",
-                    CodenameGeneration.Am5 => preset.Gpu16Value != 0
+                    CodenameGeneration.Am5 => preset.CpuModesSettings.CpuFrequency04Fix.Value != 0
                         ? " --disable-feature=128"
                         : " --enable-feature=128",
                     _ => cpuService.IsRaven ? fp6FeaturesSet : ryzen3000LineFix,
                 };
             }
 
-            // Advanced settings
-
-            if (preset.Advncd4)
+            // Advanced CPU modes
+            if (preset.CpuSettings.IntegratedGpuMaximumTemperature.IsEnabled)
             {
-                adjline += " --psi3cpu_current=" + preset.Advncd4Value + "000";
+                adjline += " --apu-skin-temp=" + preset.CpuSettings.IntegratedGpuMaximumTemperature.Value * 256;
             }
 
-            if (preset.Advncd5)
+            if (preset.CpuSettings.DiscreteGpuMaximumTemperature.IsEnabled)
             {
-                adjline += " --psi3gfx_current=" + preset.Advncd5Value + "000";
+                adjline += " --dgpu-skin-temp=" + preset.CpuSettings.DiscreteGpuMaximumTemperature.Value * 256;
             }
 
-            if (preset.Advncd6)
+            if (preset.CpuSettings.IntegratedGpuPowerLimit.IsEnabled)
             {
-                adjline += " --apu-skin-temp=" + preset.Advncd6Value * 256;
+                adjline += " --apu-slow-limit=" + preset.CpuSettings.IntegratedGpuPowerLimit.Value + "000";
             }
 
-            if (preset.Advncd7)
+            if (preset.CpuSettings.LaptopPowerLimit.IsEnabled)
             {
-                adjline += " --dgpu-skin-temp=" + preset.Advncd7Value * 256;
-            }
-
-            if (preset.Advncd8)
-            {
-                adjline += " --apu-slow-limit=" + preset.Advncd8Value + "000";
-            }
-
-            if (preset.Advncd9)
-            {
-                adjline += " --skin-temp-limit=" + preset.Advncd9Value + "000";
+                var adjustPower = preset.CpuSettings.LaptopPowerLimit.Value + "000";
+                adjline += " --skin-temp-limit=" + adjustPower;
 
                 if (isStapmTuneRequired)
                 {
-                    adjline += " --stapm-limit=" + preset.Advncd9Value + "000";
+                    adjline += " --stapm-limit=" + adjustPower;
                 }
             }
 
-            if (preset.Advncd10)
+            if (preset.FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled)
             {
-                var val = 0x480000 | (int)preset.Advncd10Value; // Всегда на 1.1V
+                var val = 0x480000 | (int)preset.FrequenciesSettings.IntegratedGraphicsFrequency.Value; // Всегда на 1.1V
                 adjline += codenameGen switch
                 {
                     CodenameGeneration.Fp5 => " --set-gpuclockoverdrive-byvid=" + val,
-                    _ => " --gfx-clk=" + preset.Advncd10Value,
+                    _ => " --gfx-clk=" + preset.FrequenciesSettings.IntegratedGraphicsFrequency.Value,
                 };
             }
 
-            if (preset.Advncd11)
+            if (preset.FrequenciesSettings.CpuFrequency.IsEnabled)
             {
-                adjline += " --oc-clk=" + preset.Advncd11Value;
+                adjline += " --oc-clk=" + preset.FrequenciesSettings.CpuFrequency.Value;
             }
 
-            if (preset.Advncd12)
+            if (preset.FrequenciesSettings.CpuVoltage.IsEnabled)
             {
-                adjline += " --oc-volt=" + Math.Round((1.55 - preset.Advncd12Value / 1000) / 0.00625);
+                adjline += " --oc-volt=" + Math.Round((1.55 - preset.FrequenciesSettings.CpuVoltage.Value / 1000) / 0.00625);
             }
 
-            if (preset.Advncd13)
+            if (preset.CpuModesSettings.PreferredMode.IsEnabled)
             {
-                adjline += preset.Advncd13Value switch
+                adjline += preset.CpuModesSettings.PreferredMode.Value switch
                 {
                     2 => " --power-saving=1",
                     _ => " --max-performance=1",
                 };
             }
 
-            if (preset.Advncd14)
+            if (preset.CpuModesSettings.OverclockMode.IsEnabled)
             {
-                adjline += preset.Advncd14Value switch
+                adjline += preset.CpuModesSettings.OverclockMode.Value switch
                 {
                     1 => " --enable-oc=0 --enable-oc=16777216",
                     _ => " --disable-oc=0",
                 };
             }
 
-            if (preset.Advncd15)
+            if (preset.CpuModesSettings.PboScalar.IsEnabled)
             {
-                adjline += " --pbo-scalar=" + preset.Advncd15Value * 100;
+                adjline += " --pbo-scalar=" + preset.CpuModesSettings.PboScalar.Value * 100;
             }
 
             // CO All
-            if (preset.Coall)
+            if (preset.CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled)
             {
-                adjline += ProcessCoallSettings(preset.Coallvalue);
+                adjline += ProcessCoallSettings(preset.CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.Value);
             }
 
             // CO GFX
-            if (preset.Cogfx)
+            if (preset.CurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel.IsEnabled)
             {
-                adjline += ProcessCoallSettings(preset.Cogfxvalue, true);
+                adjline += ProcessCoallSettings(preset.CurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel.Value, true);
             }
 
             // CO Per Core
-            if (preset.Comode && preset.Coprefmode != 0)
+            if (preset.CurveOptimizerAdvancedOptions.CurveOptimizerPreferredMode.IsEnabled 
+                && preset.CurveOptimizerAdvancedOptions.CurveOptimizerPreferredMode.Value != 0)
             {
-                adjline += ProcessCoperSettings(preset, cpuService.IsDragonRange);
+                adjline += ProcessPerCoreCurveOptimizerSettings(preset, cpuService.IsDragonRange);
             }
         }
 
         // SMU Features
-        if (preset.SmuFunctionsEnabl)
+        if (preset.SmuFeaturesSettings.SmuFeaturesOverride)
         {
             adjline += ProcessSmuFeatures(preset);
         }
@@ -598,20 +594,20 @@ public partial class ApplyerService(
         return adjline;
     }
 
-    private string ProcessCoperSettings(Preset preset, bool isDragonRange)
+    private string ProcessPerCoreCurveOptimizerSettings(Preset preset, bool isDragonRange)
     {
         var adjline = "";
 
-        switch (preset.Coprefmode)
+        switch (preset.CurveOptimizerAdvancedOptions.CurveOptimizerPreferredMode.Value)
         {
             case 1 when isDragonRange:
-                adjline += ProcessDragonRangeCoper(preset);
+                adjline += ProcessDragonRangePerCoreCurveOptimizer(preset);
                 break;
             case 1:
-                adjline += ProcessLaptopCoper(preset, cpuService.PhysicalCores);
+                adjline += ProcessLaptopPerCoreCurveOptimizer(preset, cpuService.PhysicalCores);
                 break;
             case 2:
-                adjline += ProcessDesktopCoper(preset);
+                adjline += ProcessDesktopPerCoreCurveOptimizer(preset);
                 break;
             case 3:
                 ProcessIrusanovMethod(preset);
@@ -621,192 +617,199 @@ public partial class ApplyerService(
         return adjline;
     }
 
-    private static string ProcessDragonRangeCoper(Preset preset)
+    private static string ProcessDragonRangePerCoreCurveOptimizer(Preset preset)
     {
         var adjline = "";
 
-        if (preset.Coper0)
+        if (CheckCurveOptimizerLenghtAvailability(preset))
         {
-            adjline += $" --set-coper={0 | ((int)preset.Coper0Value & 0xFFFF)} ";
+            adjline += $" --set-coper={0 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[0] & 0xFFFF)} ";
         }
 
-        if (preset.Coper1)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 1))
         {
-            adjline += $" --set-coper={1048576 | ((int)preset.Coper1Value & 0xFFFF)} ";
+            adjline += $" --set-coper={1048576 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[1] & 0xFFFF)} ";
         }
 
-        if (preset.Coper2)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 2))
         {
-            adjline += $" --set-coper={2097152 | ((int)preset.Coper2Value & 0xFFFF)} ";
+            adjline += $" --set-coper={2097152 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[2] & 0xFFFF)} ";
         }
 
-        if (preset.Coper3)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 3))
         {
-            adjline += $" --set-coper={3145728 | ((int)preset.Coper3Value & 0xFFFF)} ";
+            adjline += $" --set-coper={3145728 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[3] & 0xFFFF)} ";
         }
 
-        if (preset.Coper4)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 4))
         {
-            adjline += $" --set-coper={4194304 | ((int)preset.Coper4Value & 0xFFFF)} ";
+            adjline += $" --set-coper={4194304 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[4] & 0xFFFF)} ";
         }
 
-        if (preset.Coper5)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 5))
         {
-            adjline += $" --set-coper={5242880 | ((int)preset.Coper5Value & 0xFFFF)} ";
+            adjline += $" --set-coper={5242880 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[5] & 0xFFFF)} ";
         }
 
-        if (preset.Coper6)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 6))
         {
-            adjline += $" --set-coper={6291456 | ((int)preset.Coper6Value & 0xFFFF)} ";
+            adjline += $" --set-coper={6291456 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[6] & 0xFFFF)} ";
         }
 
-        if (preset.Coper7)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 7))
         {
-            adjline += $" --set-coper={7340032 | ((int)preset.Coper7Value & 0xFFFF)} ";
+            adjline += $" --set-coper={7340032 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[7] & 0xFFFF)} ";
         }
 
-        if (preset.Coper8)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 8))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)preset.Coper8Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[8] & 0xFFFF)} ";
         }
 
-        if (preset.Coper9)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 9))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)preset.Coper9Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[9] & 0xFFFF)} ";
         }
 
-        if (preset.Coper10)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 10))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)preset.Coper10Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[10] & 0xFFFF)} ";
         }
 
-        if (preset.Coper11)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 11))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)preset.Coper11Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[11] & 0xFFFF)} ";
         }
 
-        if (preset.Coper12)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 12))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)preset.Coper12Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[12] & 0xFFFF)} ";
         }
 
-        if (preset.Coper13)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 13))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)preset.Coper13Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[13] & 0xFFFF)} ";
         }
 
-        if (preset.Coper14)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 14))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)preset.Coper14Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[14] & 0xFFFF)} ";
         }
 
-        if (preset.Coper15)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 15))
         {
             adjline +=
-                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)preset.Coper15Value & 0xFFFF)} ";
+                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[15] & 0xFFFF)} ";
         }
 
         return adjline;
     }
 
-    private static string ProcessLaptopCoper(Preset preset, uint cores)
+    private string ProcessLaptopPerCoreCurveOptimizer(Preset preset, uint cores)
     {
         var adjline = "";
 
-        if (preset.Coper0)
+        if (CheckCurveOptimizerLenghtAvailability(preset))
         {
-            adjline += $" --set-coper={0 | ((int)preset.Coper0Value & 0xFFFF)} ";
+            adjline += $" --set-coper={0 | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[0] & 0xFFFF)} ";
         }
 
-        if (preset.Coper1)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 1))
         {
-            adjline += $" --set-coper={(1 << 20) | ((int)preset.Coper1Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(1 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[1] & 0xFFFF)} ";
         }
 
-        if (preset.Coper2)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 2))
         {
-            adjline += $" --set-coper={(2 << 20) | ((int)preset.Coper2Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(2 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[2] & 0xFFFF)} ";
         }
 
-        if (preset.Coper3)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 3))
         {
-            adjline += $" --set-coper={(3 << 20) | ((int)preset.Coper3Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(3 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[3] & 0xFFFF)} ";
         }
 
-        if (preset.Coper4)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 4))
         {
-            adjline += $" --set-coper={(4 << 20) | ((int)preset.Coper4Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(4 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[4] & 0xFFFF)} ";
         }
 
-        if (preset.Coper5)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 5))
         {
-            adjline += $" --set-coper={(5 << 20) | ((int)preset.Coper5Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(5 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[5] & 0xFFFF)} ";
         }
 
-        if (preset.Coper6)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 6))
         {
-            adjline += $" --set-coper={(6 << 20) | ((int)preset.Coper6Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(6 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[6] & 0xFFFF)} ";
         }
 
-        if (preset.Coper7)
+        if (CheckCurveOptimizerLenghtAvailability(preset, 7))
         {
-            adjline += $" --set-coper={(7 << 20) | ((int)preset.Coper7Value & 0xFFFF)} ";
+            adjline += $" --set-coper={(7 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[7] & 0xFFFF)} ";
         }
 
         if (cores > 8)
         {
-            if (preset.Coper8)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 8))
             {
-                adjline += $" --set-coper={(0x100 << 20) | ((int)preset.Coper8Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x100 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[8] & 0xFFFF)} ";
             }
 
-            if (preset.Coper9)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 9))
             {
-                adjline += $" --set-coper={(0x101 << 20) | ((int)preset.Coper9Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x101 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[9] & 0xFFFF)} ";
             }
 
-            if (preset.Coper10)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 10))
             {
-                adjline += $" --set-coper={(0x102 << 20) | ((int)preset.Coper10Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x102 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[10] & 0xFFFF)} ";
             }
 
-            if (preset.Coper11)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 11))
             {
-                adjline += $" --set-coper={(0x103 << 20) | ((int)preset.Coper11Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x103 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[11] & 0xFFFF)} ";
             }
 
-            if (preset.Coper12)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 12))
             {
-                adjline += $" --set-coper={(0x104 << 20) | ((int)preset.Coper12Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x104 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[12] & 0xFFFF)} ";
             }
 
-            if (preset.Coper13)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 13))
             {
-                adjline += $" --set-coper={(0x105 << 20) | ((int)preset.Coper13Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x105 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[13] & 0xFFFF)} ";
             }
 
-            if (preset.Coper14)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 14))
             {
-                adjline += $" --set-coper={(0x106 << 20) | ((int)preset.Coper14Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x106 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[14] & 0xFFFF)} ";
             }
 
-            if (preset.Coper15)
+            if (CheckCurveOptimizerLenghtAvailability(preset, 15))
             {
-                adjline += $" --set-coper={(0x107 << 20) | ((int)preset.Coper15Value & 0xFFFF)} ";
+                adjline += $" --set-coper={(0x107 << 20) | ((int)preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[15] & 0xFFFF)} ";
             }
         }
 
         return adjline;
     }
 
-    private static string ProcessDesktopCoper(Preset preset) => ProcessDragonRangeCoper(preset);
+    private static bool CheckCurveOptimizerLenghtAvailability(Preset preset, int index = 0)
+    {
+        return preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled.Length > index &&
+               preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value.Length > index &&
+               preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[index];
+    }
+
+    private static string ProcessDesktopPerCoreCurveOptimizer(Preset preset) => ProcessDragonRangePerCoreCurveOptimizer(preset);
 
     private void ProcessIrusanovMethod(Preset preset)
     {
@@ -820,30 +823,14 @@ public partial class ApplyerService(
             cpuService.SmuCoperCommandMp1 = sendSmuCommand.ReturnCoPer();
         }
 
-        var options = new Dictionary<int, double>
-        {
-            { 0, preset.Coper0Value }, { 1, preset.Coper1Value }, { 2, preset.Coper2Value }, { 3, preset.Coper3Value },
-            { 4, preset.Coper4Value }, { 5, preset.Coper5Value }, { 6, preset.Coper6Value }, { 7, preset.Coper7Value },
-            { 8, preset.Coper8Value }, { 9, preset.Coper9Value }, { 10, preset.Coper10Value },
-            { 11, preset.Coper11Value },
-            { 12, preset.Coper12Value }, { 13, preset.Coper13Value }, { 14, preset.Coper14Value },
-            { 15, preset.Coper15Value }
-        };
-
-        var checks = new Dictionary<int, bool>
-        {
-            { 0, preset.Coper0 }, { 1, preset.Coper1 }, { 2, preset.Coper2 }, { 3, preset.Coper3 },
-            { 4, preset.Coper4 }, { 5, preset.Coper5 }, { 6, preset.Coper6 }, { 7, preset.Coper7 },
-            { 8, preset.Coper8 }, { 9, preset.Coper9 }, { 10, preset.Coper10 }, { 11, preset.Coper11 },
-            { 12, preset.Coper12 }, { 13, preset.Coper13 }, { 14, preset.Coper14 }, { 15, preset.Coper15 }
-        };
-
         for (var i = 0; i < cpuService.PhysicalCores; i++)
         {
-            var checkbox = i < 16 && checks[i];
-            if (checkbox)
+            var checkbox = i < 16 && 
+                           i < preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled.Length && 
+                           preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[i];
+            if (checkbox && i < preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value.Length)
             {
-                var setVal = options[i];
+                var setVal = preset.CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[i];
                 var mapIndex = i < 8 ? 0 : 1;
                 if (((~cpuService.CoreDisableMap[mapIndex] >> i) & 1) == 1)
                 {
@@ -860,7 +847,7 @@ public partial class ApplyerService(
     {
         var adjline = "";
 
-        if (preset.SmuFeatureCclk)
+        if (preset.SmuFeaturesSettings.CpuFrequencyScaling)
         {
             adjline += " --enable-feature=1";
         }
@@ -869,7 +856,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=1";
         }
 
-        if (preset.SmuFeatureData)
+        if (preset.SmuFeaturesSettings.SensorsDataCalculation)
         {
             adjline += " --enable-feature=4";
         }
@@ -878,7 +865,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=4";
         }
 
-        if (preset.SmuFeaturePpt)
+        if (preset.SmuFeaturesSettings.PowerLimits)
         {
             adjline += " --enable-feature=8";
         }
@@ -887,7 +874,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=8";
         }
 
-        if (preset.SmuFeatureTdc)
+        if (preset.SmuFeaturesSettings.SustainVrmTdcCurrent)
         {
             adjline += " --enable-feature=16";
         }
@@ -896,7 +883,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=16";
         }
 
-        if (preset.SmuFeatureThermal)
+        if (preset.SmuFeaturesSettings.TemperatureControl)
         {
             adjline += " --enable-feature=32";
         }
@@ -905,7 +892,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=32";
         }
 
-        if (preset.SmuFeaturePowerDown)
+        if (preset.SmuFeaturesSettings.DpmFrequencyPowerDown)
         {
             adjline += " --enable-feature=256";
         }
@@ -914,7 +901,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=256";
         }
 
-        if (preset.SmuFeatureProchot)
+        if (preset.SmuFeaturesSettings.ProchotSignal)
         {
             adjline += " --enable-feature=0,32";
         }
@@ -923,7 +910,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=0,32";
         }
 
-        if (preset.SmuFeatureStapm)
+        if (preset.SmuFeaturesSettings.SustainedPowerLimit)
         {
             adjline += " --enable-feature=0,128";
         }
@@ -932,7 +919,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=0,128";
         }
 
-        if (preset.SmuFeatureCStates)
+        if (preset.SmuFeaturesSettings.CStatesBoost)
         {
             adjline += " --enable-feature=0,256";
         }
@@ -941,7 +928,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=0,256";
         }
 
-        if (preset.SmuFeatureGfxDutyCycle)
+        if (preset.SmuFeaturesSettings.GraphicsDutyCycle)
         {
             adjline += " --enable-feature=0,512";
         }
@@ -950,7 +937,7 @@ public partial class ApplyerService(
             adjline += " --disable-feature=0,512";
         }
 
-        if (preset.SmuFeatureAplusA)
+        if (preset.SmuFeaturesSettings.AplusAPowerMode)
         {
             adjline += " --enable-feature=0,1024";
         }

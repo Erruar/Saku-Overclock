@@ -443,7 +443,7 @@
                     <Grid Grid.Row="0">
                         <Grid Margin="23,17,23,10" VerticalAlignment="Top">
                             <Grid.RowDefinitions>
-                                <RowDefinition x:Name="PresetSettingsInfoRow" Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" VerticalAlignment="Top" Orientation="Vertical">
@@ -1214,110 +1214,6 @@
                                                         ValueChanged="CurveOptimizerLevelCustom_Slider_ValueChanged"
                                                         HorizontalAlignment="Stretch" Minimum="-50" Maximum="30"
                                                         Value="0" VerticalAlignment="Center" />
-                                                </Grid>
-                                                <!--<Border Margin="2,5,2,0" Visibility="{Binding ElementName=CurveOptimizerCustomGrid, Path=Visibility}"
-                                                        Background="{ThemeResource CircleElevationBorderBrush}"
-                                                        Height="1" HorizontalAlignment="Stretch" />-->
-                                                <Grid Visibility="Collapsed" Margin="0,3,0,0" HorizontalAlignment="Stretch">
-                                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                                        <TextBlock Text="Stream Stabilizer v4.0"
-                                                                   x:Uid="Preset_StreamStabilizer"
-                                                                   VerticalAlignment="Center" />
-                                                        <FontIcon Margin="3,3.5,0,0" Glyph="&#xE9CE;"
-                                                                  x:Uid="Preset_StreamStabilizerTooltip">
-                                                            <FontIcon.RenderTransform>
-                                                                <ScaleTransform CenterX="15" CenterY="15" ScaleX="0.7"
-                                                                    ScaleY="0.7" />
-                                                            </FontIcon.RenderTransform>
-                                                        </FontIcon>
-                                                    </StackPanel>
-                                                    <Border Height="32" HorizontalAlignment="Right"
-                                                            Background="{ThemeResource ControlElevationBorderBrush}"
-                                                            BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                                            BorderThickness="1"
-                                                            CornerRadius="10" Margin="0,5,0,4"
-                                                            Shadow="{ThemeResource SharedShadow}"
-                                                            Translation="0,0,10">
-                                                        <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal"
-                                                                    HorizontalAlignment="Center">
-                                                            <ToggleButton Click="StreamStabilizerSwitch_Toggled"
-                                                                          x:Name="StreamStabilizerDisabled"
-                                                                          Background="Transparent"
-                                                                          BorderBrush="Transparent" CornerRadius="10"
-                                                                          IsChecked="True">
-                                                                <TextBlock Margin="0,-2,0,-2" Text="Выкл"
-                                                                           x:Uid="Preset_CurveOptions_Disabled"
-                                                                           FontWeight="SemiBold" />
-                                                            </ToggleButton>
-                                                            <ToggleButton Click="StreamStabilizerSwitch_Toggled"
-                                                                          x:Name="StreamStabilizerSmart"
-                                                                          Background="Transparent"
-                                                                          BorderBrush="Transparent" CornerRadius="10"
-                                                                          Margin="4,0,0,0">
-                                                                <TextBlock Margin="0,-2,0,-2" Text="Умный"
-                                                                           x:Uid="Preset_StreamStabilizer_Smart"
-                                                                           FontWeight="SemiBold" />
-                                                            </ToggleButton>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </Grid>
-                                                <Grid
-                                                    Visibility="{Binding ElementName=StreamStabilizerSmart, Path=IsChecked}"
-                                                    Margin="0,3,0,0" HorizontalAlignment="Stretch">
-                                                    <TextBlock HorizontalAlignment="Left" Text="Preferred mode"
-                                                               x:Uid="Preset_StreamStabilizerMode"
-                                                               VerticalAlignment="Center" />
-                                                    <ComboBox x:Name="StreamStabilizerModeCombo"
-                                                              SelectionChanged="StreamStabilizerModeCombo_SelectionChanged"
-                                                              MinWidth="138"
-                                                              HorizontalAlignment="Right" Margin="0,0,-13,0"
-                                                              CornerRadius="0" SelectedIndex="0"
-                                                              Background="Transparent" BorderBrush="Transparent">
-                                                        <ComboBoxItem x:Uid="Preset_StreamStabilizerBaseLock"
-                                                                      Content="Base Lock" />
-                                                        <ComboBoxItem x:Uid="Preset_StreamStabilizerTargetMHz"
-                                                                      Content="Target MHz" />
-                                                        <ComboBoxItem x:Uid="Preset_StreamStabilizerTargetPercentMHz"
-                                                                      Content="Target % of Max" />
-                                                    </ComboBox>
-                                                </Grid>
-                                                <Grid x:Name="StreamStabilizerTargetMHzGrid" Visibility="Collapsed"
-                                                      Margin="0,3,0,0" HorizontalAlignment="Stretch">
-                                                    <TextBlock HorizontalAlignment="Left"
-                                                               x:Uid="Preset_StreamStabilizerTargetFreq"
-                                                               Text="Target frequency" VerticalAlignment="Center" />
-                                                    <Grid Shadow="{ThemeResource SharedShadow}"
-                                                          Translation="0,0,10" HorizontalAlignment="Right"
-                                                          Margin="0,1,0,0">
-                                                        <NumberBox x:Name="StreamStabilizerTargetMhz"
-                                                                   ValueChanged="StreamStabilizerTargetMhz_ValueChanged"
-                                                                   Minimum="400" Maximum="7000" Value="3000"
-                                                                   SmallChange="100" LargeChange="500"
-                                                                   Background="{ThemeResource ControlElevationBorderBrush}"
-                                                                   BorderThickness="1"
-                                                                   BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                                                   CornerRadius="10" SpinButtonPlacementMode="Inline" />
-                                                    </Grid>
-                                                </Grid>
-                                                <Grid x:Name="StreamStabilizerTargetPercentOfMHzGrid"
-                                                      Visibility="Collapsed" Margin="0,3,0,0"
-                                                      HorizontalAlignment="Stretch">
-                                                    <TextBlock HorizontalAlignment="Left"
-                                                               x:Uid="Preset_StreamStabilizerTargetFreqPercent"
-                                                               Text="Target % of max frequency"
-                                                               VerticalAlignment="Center" />
-                                                    <Grid Shadow="{ThemeResource SharedShadow}"
-                                                          Translation="0,0,10" HorizontalAlignment="Right"
-                                                          Margin="0,1,0,0">
-                                                        <NumberBox x:Name="StreamStabilizerTargetPercent"
-                                                                   ValueChanged="StreamStabilizerTargetPercent_ValueChanged"
-                                                                   Minimum="5" Maximum="100" Value="80" SmallChange="5"
-                                                                   LargeChange="10"
-                                                                   Background="{ThemeResource ControlElevationBorderBrush}"
-                                                                   BorderThickness="1"
-                                                                   BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                                                   CornerRadius="10" SpinButtonPlacementMode="Inline" />
-                                                    </Grid>
                                                 </Grid>
                                                 <TextBlock HorizontalAlignment="Center"
                                                            Foreground="{ThemeResource TextFillColorSecondary}"

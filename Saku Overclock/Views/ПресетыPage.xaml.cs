@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -25,8 +24,8 @@ public sealed partial class ПресетыPage
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
-    private bool _waitforload = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
-    private int _indexpreset; // Выбранный пресет
+    private bool _presetChanging = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
+    private int _presetIndex; // Выбранный пресет
     private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>();
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>();
 
@@ -62,7 +61,7 @@ public sealed partial class ПресетыPage
 
     private void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
     {
-        _waitforload = false;
+        _presetChanging = false;
         SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
         try
@@ -92,21 +91,10 @@ public sealed partial class ПресетыPage
             : AutoApplyOptionsDisabled);
         TrayMonSetOnly(AppSettings.NiIconsEnabled ? TrayMonFeatEnabled : TrayMonFeatDisabled);
         RtssOverlaySetOnly(AppSettings.RtssMetricsEnabled ? RtssOverlayEnabled : RtssOverlayDisabled);
-        StreamStabilizerSetOnly(
-            AppSettings.StreamStabilizerEnabled ? StreamStabilizerSmart : StreamStabilizerDisabled);
 
-        PremadeOptimizationLevel.SelectedIndex = AppSettings.PremadeOptimizationLevel;
-
-        if (AppSettings.StreamStabilizerEnabled)
-        {
-            StreamStabilizerModeCombo.SelectedIndex = AppSettings.StreamStabilizerType;
-            StreamStabilizerTargetMhz.Value = AppSettings.StreamStabilizerMaxMHz;
-            StreamStabilizerTargetPercent.Value = AppSettings.StreamStabilizerMaxPercentMHz;
-
-            _isLoaded = true;
-            StreamStabilizerModeCombo_SelectionChanged(null, null);
-            _isLoaded = false;
-        }
+        
+        // TODO: FIX PREMADE PRESETS
+        /*PremadeOptimizationLevel.SelectedIndex = AppSettings.PremadeOptimizationLevel;
 
         if (OcFinder.IsUndervoltingAvailable() && AppSettings.PremadeOptimizationLevel == 2)
         {
@@ -125,7 +113,7 @@ public sealed partial class ПресетыPage
             1 => "Preset_OptimizationLevel_Average_Desc".GetLocalized(),
             2 => "Preset_OptimizationLevel_Strong_Desc".GetLocalized(),
             _ => "Preset_OptimizationLevel_Base_Desc".GetLocalized()
-        };
+        };*/
 
         CurveOptimizerCustomGrid.Visibility =
             OcFinder.IsUndervoltingAvailable() ? Visibility.Visible : Visibility.Collapsed;
@@ -134,7 +122,7 @@ public sealed partial class ПресетыPage
             CurveOptimizerCustom.IsOn = false;
         }
 
-        if (AppSettings.PresetspageViewModeBeginner)
+        if (AppSettings.PresetsPageViewModeBeginner)
         {
             BeginnerOptionsButton.IsChecked = true;
             AdvancedOptionsButton.IsChecked = false;
@@ -179,9 +167,9 @@ public sealed partial class ПресетыPage
         {
             var preset = PresetManager.Presets[i];
             var isChecked = AppSettings.Preset != -1 && AppSettings.Preset == i &&
-                            PresetManager.Presets[AppSettings.Preset].Presetname == preset.Presetname &&
-                            PresetManager.Presets[AppSettings.Preset].Presetdesc == preset.Presetdesc &&
-                            PresetManager.Presets[AppSettings.Preset].Preseticon == preset.Preseticon;
+                            PresetManager.Presets[AppSettings.Preset].PresetName == preset.PresetName &&
+                            PresetManager.Presets[AppSettings.Preset].PresetDesc == preset.PresetDesc &&
+                            PresetManager.Presets[AppSettings.Preset].PresetIcon == preset.PresetIcon;
 
             if (isChecked)
             {
@@ -191,9 +179,9 @@ public sealed partial class ПресетыPage
             var toggleButton = new PresetItem
             {
                 IsSelected = isChecked,
-                IconGlyph = preset.Preseticon == string.Empty ? "\uE718" : preset.Preseticon,
-                Text = preset.Presetname,
-                Description = preset.Presetdesc != string.Empty ? preset.Presetdesc : preset.Presetname
+                IconGlyph = preset.PresetIcon == string.Empty ? "\uE718" : preset.PresetIcon,
+                Text = preset.PresetName,
+                Description = preset.PresetDesc != string.Empty ? preset.PresetDesc : preset.PresetName
             };
             PresetsControl.Items.Add(toggleButton);
         }
@@ -204,9 +192,10 @@ public sealed partial class ПресетыPage
             AppSettings.SaveSettings();
         }
 
-
+        
+        // TODO: FIX PREMADE PRESETS
         // Готовые Пресеты
-        PresetsControl.Items.Add(new PresetItem
+        /*PresetsControl.Items.Add(new PresetItem
         {
             IsSelected = AppSettings is { Preset: -1, PremadeMaxActivated: true },
             IconGlyph = "\uEcad",
@@ -240,7 +229,7 @@ public sealed partial class ПресетыPage
             IconGlyph = "\uebc0",
             Text = "Preset_Min_Name/Text".GetLocalized(), // Minimum
             Description = "Preset_Min_Desc/Text".GetLocalized()
-        });
+        });*/
 
         // Workaround чтобы все элементы корректно загрузились в PresetsControl
         PresetsControl.UpdateView();
@@ -351,7 +340,7 @@ public sealed partial class ПресетыPage
                 {
                     PresetSettingsBeginnerViewSettingsStackPanel.Visibility = Visibility.Visible;
                     PresetSettingsBeginnerView.Margin = new Thickness(0, 0, 0, 0);
-                    if (AppSettings.PresetspageViewModeBeginner)
+                    if (AppSettings.PresetsPageViewModeBeginner)
                     {
                         BeginnerOptionsButton.IsChecked = true;
                         AdvancedOptionsButton.IsChecked = false;
@@ -431,79 +420,29 @@ public sealed partial class ПресетыPage
 
     private void InitializeCustomPresetSettings(int index)
     {
-        _waitforload = true;
+        _presetChanging = true;
         if (index > PresetManager.Presets.Length || index < 0)
         {
-            _waitforload = false;
+            _presetChanging = false;
             return;
         }
 
         try
         {
-            if (PresetManager.Presets[index].Cpu1Value > C1V.Maximum)
-            {
-                C1V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu1Value);
-            }
+            TrySetMaximum(PresetManager.Presets[index].CpuSettings.CpuMaximumTemperature.Value, C1V);
+            TrySetMaximum(PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value, C2V);
+            TrySetMaximum(PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value, C3V);
+            TrySetMaximum(PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.Value, C4V);
+            TrySetMaximum(PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value, C5V);
+            TrySetMaximum(PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value, C6V);
 
-            if (PresetManager.Presets[index].Cpu2Value > BaseTdpSlider.Maximum)
-            {
-                BaseTdpSlider.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu2Value);
-            }
+            TrySetMaximum(PresetManager.Presets[index].VrmSettings.VrmCpuEdcCurrentLimit.Value, V1V);
+            TrySetMaximum(PresetManager.Presets[index].VrmSettings.VrmCpuTdcCurrentLimit.Value, V2V);
+            TrySetMaximum(PresetManager.Presets[index].VrmSettings.VrmSocEdcCurrentLimit.Value, V3V);
+            TrySetMaximum(PresetManager.Presets[index].VrmSettings.VrmSocTdcCurrentLimit.Value, V4V);
 
-            if (PresetManager.Presets[index].Cpu2Value > C2V.Maximum)
-            {
-                C2V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu2Value);
-            }
-
-            if (PresetManager.Presets[index].Cpu3Value > C3V.Maximum)
-            {
-                C3V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu3Value);
-            }
-
-            if (PresetManager.Presets[index].Cpu4Value > C4V.Maximum)
-            {
-                C4V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu4Value);
-            }
-
-            if (PresetManager.Presets[index].Cpu5Value > C5V.Maximum)
-            {
-                C5V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu5Value);
-            }
-
-            if (PresetManager.Presets[index].Cpu6Value > C6V.Maximum)
-            {
-                C6V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Cpu6Value);
-            }
-
-            if (PresetManager.Presets[index].Vrm1Value > V1V.Maximum)
-            {
-                V1V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Vrm1Value);
-            }
-
-            if (PresetManager.Presets[index].Vrm2Value > V2V.Maximum)
-            {
-                V2V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Vrm2Value);
-            }
-
-            if (PresetManager.Presets[index].Vrm3Value > V3V.Maximum)
-            {
-                V3V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Vrm3Value);
-            }
-
-            if (PresetManager.Presets[index].Vrm4Value > V4V.Maximum)
-            {
-                V4V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Vrm4Value);
-            }
-
-            if (PresetManager.Presets[index].Gpu9Value > G9V.Maximum)
-            {
-                G9V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Gpu9Value);
-            }
-
-            if (PresetManager.Presets[index].Gpu10Value > G10V.Maximum)
-            {
-                G10V.Maximum = ПараметрыPage.FromValueToUpperFive(PresetManager.Presets[index].Gpu10Value);
-            }
+            TrySetMaximum(PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value, G9V);
+            TrySetMaximum(PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value, G10V);
         }
         catch (Exception ex)
         {
@@ -513,15 +452,17 @@ public sealed partial class ПресетыPage
         try
         {
             // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
-            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * PresetManager.Presets[index].Cpu2Value + 0.21631949);
+            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value + 0.21631949);
 
-            C2.IsChecked = PresetManager.Presets[index].Cpu2;
-            C2V.Value = PresetManager.Presets[index].Cpu2Value;
+            LoadUiOption(PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit, C2, C2V);
 
-            BaseTdpSlider.Value = PresetManager.Presets[index].Cpu2Value;
-            if (PresetManager.Presets[index].Cpu2 && PresetManager.Presets[index].Cpu3 && PresetManager.Presets[index].Cpu4 &&
-                (int)PresetManager.Presets[index].Cpu2Value == (int)PresetManager.Presets[index].Cpu4Value &&
-                (int)PresetManager.Presets[index].Cpu3Value == fineTunedTdp)
+            BaseTdpSlider.Value = PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value;
+            if (PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled && 
+                PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.IsEnabled && 
+                PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled &&
+                (int)PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value == 
+                (int)PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.Value &&
+                (int)PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value == fineTunedTdp)
             {
                 SmartTdp.IsOn = true;
             }
@@ -530,8 +471,9 @@ public sealed partial class ПресетыPage
                 if (_isPlatformPc != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
                 {
                     // Так как на компьютерах невозможно выставить другие Power лимиты
-                    if (!PresetManager.Presets[index].Cpu2 && !PresetManager.Presets[index].Cpu4 &&
-                        (int)PresetManager.Presets[index].Cpu3Value == fineTunedTdp)
+                    if (!PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled && 
+                        !PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled &&
+                        (int)PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value == fineTunedTdp)
                     {
                         SmartTdp.IsOn = true;
                     }
@@ -541,29 +483,26 @@ public sealed partial class ПресетыPage
                     SmartTdp.IsOn = false;
                 }
             }
-
-            C1.IsChecked = PresetManager.Presets[index].Cpu1;
-            C1V.Value = PresetManager.Presets[index].Cpu1Value;
-            C3.IsChecked = PresetManager.Presets[index].Cpu3;
-            C3V.Value = PresetManager.Presets[index].Cpu3Value;
-            C4.IsChecked = PresetManager.Presets[index].Cpu4;
-            C4V.Value = PresetManager.Presets[index].Cpu4Value;
-            C5.IsChecked = PresetManager.Presets[index].Cpu5;
-            C5V.Value = PresetManager.Presets[index].Cpu5Value;
-            C6.IsChecked = PresetManager.Presets[index].Cpu6;
-            C6V.Value = PresetManager.Presets[index].Cpu6Value;
+            
+            LoadUiOption(PresetManager.Presets[index].CpuSettings.CpuMaximumTemperature, C1, C1V);
+            LoadUiOption(PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit, C3, C3V);
+            LoadUiOption(PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit, C4, C4V);
+            LoadUiOption(PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow, C5, C5V);
+            LoadUiOption(PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast, C6, C6V);
 
 
             if (IsRavenFamily())
             {
-                if (PresetManager.Presets[index].Gpu10 && PresetManager.Presets[index].Gpu9 && (int)PresetManager.Presets[index].Gpu10Value == 1200)
+                if (PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled && 
+                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled && 
+                    (int)PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value == 1200)
                 {
-                    if ((int)PresetManager.Presets[index].Gpu9Value == 800)
+                    if ((int)PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value == 800)
                     {
                         IntegratedGpuEnchantmentCombo.SelectedIndex = 1;
                     }
 
-                    if ((int)PresetManager.Presets[index].Gpu9Value == 1000)
+                    if ((int)PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value == 1000)
                     {
                         IntegratedGpuEnchantmentCombo.SelectedIndex = 2;
                     }
@@ -575,14 +514,14 @@ public sealed partial class ПресетыPage
             }
             else
             {
-                if (PresetManager.Presets[index].Advncd10)
+                if (PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled)
                 {
-                    if ((int)PresetManager.Presets[index].Advncd10Value == 1750)
+                    if ((int)PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value == 1750)
                     {
                         IntegratedGpuEnchantmentCombo.SelectedIndex = 1;
                     }
 
-                    if ((int)PresetManager.Presets[index].Advncd10Value == 2200)
+                    if ((int)PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value == 2200)
                     {
                         IntegratedGpuEnchantmentCombo.SelectedIndex = 2;
                     }
@@ -593,24 +532,31 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            if (!PresetManager.Presets[index].Cpu5 && !PresetManager.Presets[index].Cpu6)
+            if (!PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled && 
+                !PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled)
             {
                 TurboSetOnly(TurboLightModeToggle);
             }
             else
             {
-                if ((PresetManager.Presets[index].Cpu5 && !PresetManager.Presets[index].Cpu6) || (!PresetManager.Presets[index].Cpu5 && PresetManager.Presets[index].Cpu6))
+                if ((PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled && 
+                     !PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled) || 
+                    (!PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled && 
+                     PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled))
                 {
                     TurboSetOnly(TurboLightModeToggle);
                 }
 
-                if (PresetManager.Presets[index].Cpu5 && PresetManager.Presets[index].Cpu6)
+                if (PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled &&
+                    PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled)
                 {
-                    if ((int)PresetManager.Presets[index].Cpu5Value == 400 && (int)PresetManager.Presets[index].Cpu6Value == 3)
+                    if ((int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value == 400 && 
+                        (int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value == 3)
                     {
                         TurboSetOnly(TurboBalanceModeToggle);
                     }
-                    else if ((int)PresetManager.Presets[index].Cpu5Value == 5000 && (int)PresetManager.Presets[index].Cpu6Value == 1)
+                    else if ((int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value == 5000 && 
+                             (int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value == 1)
                     {
                         TurboSetOnly(TurboHeavyModeToggle);
                     }
@@ -625,28 +571,24 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            if (PresetManager.Presets[index].Coall)
+            if (PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled)
             {
                 CurveOptimizerCustom.IsOn = true;
-                CurveOptimizerLevelCustomSlider.Value = PresetManager.Presets[index].Coallvalue;
+                CurveOptimizerLevelCustomSlider.Value = PresetManager.Presets[index].CurveOptimizerOptions
+                    .CpuCurveOptimizerUndervoltingLevel.Value;
             }
             else
             {
                 CurveOptimizerCustom.IsOn = false;
             }
 
-            V1.IsChecked = PresetManager.Presets[index].Vrm1;
-            V1V.Value = PresetManager.Presets[index].Vrm1Value;
-            V2.IsChecked = PresetManager.Presets[index].Vrm2;
-            V2V.Value = PresetManager.Presets[index].Vrm2Value;
-            V3.IsChecked = PresetManager.Presets[index].Vrm3;
-            V3V.Value = PresetManager.Presets[index].Vrm3Value;
-            V4.IsChecked = PresetManager.Presets[index].Vrm4;
-            V4V.Value = PresetManager.Presets[index].Vrm4Value;
-            G9V.Value = PresetManager.Presets[index].Gpu9Value;
-            G9.IsChecked = PresetManager.Presets[index].Gpu9;
-            G10V.Value = PresetManager.Presets[index].Gpu10Value;
-            G10.IsChecked = PresetManager.Presets[index].Gpu10;
+            
+            LoadUiOption(PresetManager.Presets[index].VrmSettings.VrmCpuEdcCurrentLimit, V1, V1V);
+            LoadUiOption(PresetManager.Presets[index].VrmSettings.VrmCpuTdcCurrentLimit, V2, V2V);
+            LoadUiOption(PresetManager.Presets[index].VrmSettings.VrmSocEdcCurrentLimit, V3, V3V);
+            LoadUiOption(PresetManager.Presets[index].VrmSettings.VrmSocTdcCurrentLimit, V4, V4V);
+            LoadUiOption(PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency, G9, G9V);
+            LoadUiOption(PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency, G10, G10V);
         }
         catch
         {
@@ -657,7 +599,21 @@ public sealed partial class ПресетыPage
             PresetManager.SaveSettings();
         }
 
-        _waitforload = false;
+        _presetChanging = false;
+    }
+    
+    private static void TrySetMaximum(double maximum, Slider slider)
+    {
+        if (maximum > slider.Maximum)
+        {
+            slider.Maximum = ПараметрыPage.FromValueToUpperFive(maximum);
+        }
+    }
+    
+    private static void LoadUiOption(PresetOption<double> option, CheckBox check, Slider slider)
+    {
+        check.IsChecked = option.IsEnabled;
+        slider.Value = option.Value;
     }
 
     private void TurboSetOnly(ToggleButton button)
@@ -666,14 +622,6 @@ public sealed partial class ПресетыPage
         TurboBalanceModeToggle.IsChecked = false;
         TurboHeavyModeToggle.IsChecked = false;
        
-        button.IsChecked = true;
-    }
-
-    private void StreamStabilizerSetOnly(ToggleButton button)
-    {
-        StreamStabilizerDisabled.IsChecked = false;
-        StreamStabilizerSmart.IsChecked = false;
-
         button.IsChecked = true;
     }
 
@@ -764,7 +712,7 @@ public sealed partial class ПресетыPage
 
     private void ReapplyOptions_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -799,7 +747,7 @@ public sealed partial class ПресетыPage
 
     private void RtssOverlaySwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -829,7 +777,7 @@ public sealed partial class ПресетыPage
 
     private void TrayMonFeatSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -859,7 +807,7 @@ public sealed partial class ПресетыPage
 
     private void AutoApplyOptions_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -881,47 +829,6 @@ public sealed partial class ПресетыPage
             {
                 AutoApplyOptionsSetOnly(AutoApplyOptionsEnabled);
                 AppSettings.ReapplyLatestSettingsOnAppLaunch = true;
-            }
-        }
-
-        AppSettings.SaveSettings();
-    }
-
-    private void StreamStabilizerSwitch_Toggled(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded || _waitforload)
-        {
-            return;
-        }
-
-        var toggle = sender as ToggleButton;
-        if (StreamStabilizerDisabled.IsChecked == false
-            && StreamStabilizerSmart.IsChecked == false)
-        {
-            toggle!.IsChecked = true;
-        }
-        else
-        {
-            if (toggle!.Name == "StreamStabilizerDisabled")
-            {
-                StreamStabilizerSetOnly(StreamStabilizerDisabled);
-                AppSettings.StreamStabilizerEnabled = false;
-
-                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
-                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
-
-                SetPowerConfig("PROCTHROTTLEMIN 100");
-                SetPowerConfig("PROCTHROTTLEMAX 100");
-                SetPowerConfig("PROCFREQMAX 0");
-                SavePowerConfig();
-                SavePowerConfig();
-            }
-            else if (toggle.Name == "StreamStabilizerSmart")
-            {
-                StreamStabilizerSetOnly(StreamStabilizerSmart);
-                AppSettings.StreamStabilizerEnabled = true;
-
-                StreamStabilizerModeCombo_SelectionChanged(null, null);
             }
         }
 
@@ -950,21 +857,21 @@ public sealed partial class ПресетыPage
 
     private void AnimatedToggleButton_Click(object sender, RoutedEventArgs e)
     {
-        if (AppSettings.PresetspageViewModeBeginner && BeginnerOptionsButton.IsChecked == false)
+        if (AppSettings.PresetsPageViewModeBeginner && BeginnerOptionsButton.IsChecked == false)
         {
             BeginnerOptionsButton.IsChecked = true;
             return;
         }
         
-        if (!AppSettings.PresetspageViewModeBeginner && AdvancedOptionsButton.IsChecked == false)
+        if (!AppSettings.PresetsPageViewModeBeginner && AdvancedOptionsButton.IsChecked == false)
         {
             AdvancedOptionsButton.IsChecked = true;
             return;
         }
         
-        AppSettings.PresetspageViewModeBeginner = !AppSettings.PresetspageViewModeBeginner;
+        AppSettings.PresetsPageViewModeBeginner = !AppSettings.PresetsPageViewModeBeginner;
         AppSettings.SaveSettings();
-        if (AppSettings.PresetspageViewModeBeginner)
+        if (AppSettings.PresetsPageViewModeBeginner)
         {
             BeginnerOptionsButton.IsChecked = true;
             AdvancedOptionsButton.IsChecked = false;
@@ -988,7 +895,7 @@ public sealed partial class ПресетыPage
 
     private void BaseTdp_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -1000,22 +907,22 @@ public sealed partial class ПресетыPage
 
     private void ChangedBaseTdp_Value()
     {
-        if (_waitforload)
+        if (_presetChanging)
         {
             return;
         }
 
-        var index = _indexpreset == -1 ? 0 : _indexpreset;
+        var index = _presetIndex == -1 ? 0 : _presetIndex;
 
         // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
         var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdpSlider.Value + 0.21631949);
 
         C2.IsChecked = true;
-        PresetManager.Presets[index].Cpu2 = true;
+        PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled = true;
         C3.IsChecked = true;
-        PresetManager.Presets[index].Cpu3 = true;
+        PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.IsEnabled = true;
         C4.IsChecked = true;
-        PresetManager.Presets[index].Cpu4 = true;
+        PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled = true;
 
         if (fineTunedTdp > C3V.Maximum || BaseTdpSlider.Value > C2V.Maximum || BaseTdpSlider.Value > C4V.Maximum)
         {
@@ -1025,29 +932,29 @@ public sealed partial class ПресетыPage
         }
 
         C2V.Value = BaseTdpSlider.Value;
-        PresetManager.Presets[index].Cpu2Value = BaseTdpSlider.Value;
+        PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value = BaseTdpSlider.Value;
 
         C4V.Value = BaseTdpSlider.Value;
-        PresetManager.Presets[index].Cpu4Value = BaseTdpSlider.Value;
+        PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.Value = BaseTdpSlider.Value;
 
         if (SmartTdp.IsOn)
         {
             C3V.Value = fineTunedTdp;
-            PresetManager.Presets[index].Cpu3Value = fineTunedTdp;
+            PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value = fineTunedTdp;
         }
         else
         {
             C3V.Value = BaseTdpSlider.Value;
-            PresetManager.Presets[index].Cpu3Value = BaseTdpSlider.Value;
+            PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value = BaseTdpSlider.Value;
         }
 
         if (_isPlatformPc != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
             C2.IsChecked = false; // Отключить STAPM
-            PresetManager.Presets[index].Cpu2 = false;
+            PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled = false;
             C4.IsChecked = false; // Отключить Slow лимит
-            PresetManager.Presets[index].Cpu4 = false;
+            PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled = false;
         }
 
         PresetManager.SaveSettings();
@@ -1056,10 +963,10 @@ public sealed partial class ПресетыPage
     // Grid-помощник, который активирует переключатель когда пользователь нажал на область возле него
     private void SmartTdp_PointerPressed(object sender, object e) => SmartTdp.IsOn = !SmartTdp.IsOn;
 
-    // Выбора режима усиления Турбобуста процессора: Авто, Умный, Сильный. Устанавливает параметры времени разгона процессора в зависимости от выбранной настройки
+    // Выбора режима усиления Турбо-буста процессора: Авто, Умный, Сильный. Устанавливает параметры времени разгона процессора в зависимости от выбранной настройки
     private void Turbo_OtherModeToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -1073,31 +980,30 @@ public sealed partial class ПресетыPage
         }
         else
         {
-            int index;
             if (AppSettings.Preset == -1)
             {
                 return;
             }
 
-            index = AppSettings.Preset;
+            var index = AppSettings.Preset;
 
             
 
             if (toggle!.Name == "TurboLightModeToggle")
             {
                 TurboSetOnly(TurboLightModeToggle);
-                PresetManager.Presets[index].Cpu5 = false;
-                PresetManager.Presets[index].Cpu6 = false;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled = false;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled = false;
                 C5.IsChecked = false;
                 C6.IsChecked = false;
             }
             else if (toggle.Name == "TurboBalanceModeToggle")
             {
                 TurboSetOnly(TurboBalanceModeToggle);
-                PresetManager.Presets[index].Cpu5 = true;
-                PresetManager.Presets[index].Cpu6 = true;
-                PresetManager.Presets[index].Cpu5Value = 400;
-                PresetManager.Presets[index].Cpu6Value = 3;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled = true;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled = true;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value = 400;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value = 3;
                 C5.IsChecked = true;
                 C6.IsChecked = true;
                 C5V.Value = 400;
@@ -1106,10 +1012,10 @@ public sealed partial class ПресетыPage
             else if (toggle.Name == "TurboHeavyModeToggle")
             {
                 TurboSetOnly(TurboHeavyModeToggle);
-                PresetManager.Presets[index].Cpu5 = true;
-                PresetManager.Presets[index].Cpu6 = true;
-                PresetManager.Presets[index].Cpu5Value = 5000;
-                PresetManager.Presets[index].Cpu6Value = 1;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled = true;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled = true;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value = 5000;
+                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value = 1;
                 C5.IsChecked = true;
                 C6.IsChecked = true;
                 C5V.Maximum = 5000;
@@ -1123,7 +1029,7 @@ public sealed partial class ПресетыPage
 
     private void IntegratedGpuEnchantmentCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!_isLoaded || _waitforload)
+        if (!_isLoaded || _presetChanging)
         {
             return;
         }
@@ -1140,42 +1046,42 @@ public sealed partial class ПресетыPage
             case 0:
                 if (IsRavenFamily())
                 {
-                    PresetManager.Presets[index].Gpu10 = false;
-                    PresetManager.Presets[index].Gpu9 = false;
+                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = false;
+                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = false;
                 }
                 else
                 {
-                    PresetManager.Presets[index].Advncd10 = false;
+                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = false;
                 }
 
                 break;
             case 1:
                 if (IsRavenFamily())
                 {
-                    PresetManager.Presets[index].Gpu10 = true;
-                    PresetManager.Presets[index].Gpu10Value = 1200;
-                    PresetManager.Presets[index].Gpu9 = true;
-                    PresetManager.Presets[index].Gpu9Value = 800;
+                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = true;
+                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = 1200;
+                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
+                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = 800;
                 }
                 else
                 {
-                    PresetManager.Presets[index].Advncd10 = true;
-                    PresetManager.Presets[index].Advncd10Value = 1750;
+                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = true;
+                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value = 1750;
                 }
 
                 break;
             case 2:
                 if (IsRavenFamily())
                 {
-                    PresetManager.Presets[index].Gpu10 = true;
-                    PresetManager.Presets[index].Gpu10Value = 1200;
-                    PresetManager.Presets[index].Gpu9 = true;
-                    PresetManager.Presets[index].Gpu9Value = 1000;
+                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = true;
+                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = 1200;
+                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
+                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = 1000;
                 }
                 else
                 {
-                    PresetManager.Presets[index].Advncd10 = true;
-                    PresetManager.Presets[index].Advncd10Value = 2200;
+                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = true;
+                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value = 2200;
                 }
 
                 break;
@@ -1322,15 +1228,15 @@ public sealed partial class ПресетыPage
                 if (PresetManager.Presets.Length != 0)
                 {
                     AppSettings.Preset += 1;
-                    _indexpreset += 1;
+                    _presetIndex += 1;
                 }
 
-                _waitforload = true;
+                _presetChanging = true;
                 if (PresetManager.Presets.Length == 0)
                 {
                     PresetManager.Presets = new Preset[1];
                     PresetManager.Presets[0] = new Preset
-                        { Presetname = presetName, Presetdesc = presetDesc, Preseticon = glyph };
+                        { PresetName = presetName, PresetDesc = presetDesc, PresetIcon = glyph };
                 }
                 else
                 {
@@ -1338,15 +1244,15 @@ public sealed partial class ПресетыPage
                     {
                         new()
                         {
-                            Presetname = presetName,
-                            Presetdesc = presetDesc,
-                            Preseticon = glyph
+                            PresetName = presetName,
+                            PresetDesc = presetDesc,
+                            PresetIcon = glyph
                         }
                     };
                     PresetManager.Presets = [.. presetList];
                 }
 
-                _waitforload = false;
+                _presetChanging = false;
                 NotificationsService.ShowNotification("SaveSuccessTitle".GetLocalized(),
                     "SaveSuccessDesc".GetLocalized() + " " + presetName,
                     InfoBarSeverity.Success);
@@ -1373,17 +1279,17 @@ public sealed partial class ПресетыPage
         try
         {
             LogHelper.Log(
-                $"Editing preset name: From \"{PresetManager.Presets[_indexpreset].Presetname}\" To \"{presetName}\"");
+                $"Editing preset name: From \"{PresetManager.Presets[_presetIndex].PresetName}\" To \"{presetName}\"");
             if (presetName != "")
             {
                 
-                PresetManager.Presets[_indexpreset].Presetname = presetName;
-                PresetManager.Presets[_indexpreset].Presetdesc = presetDesc;
-                PresetManager.Presets[_indexpreset].Preseticon = glyph;
+                PresetManager.Presets[_presetIndex].PresetName = presetName;
+                PresetManager.Presets[_presetIndex].PresetDesc = presetDesc;
+                PresetManager.Presets[_presetIndex].PresetIcon = glyph;
                 PresetManager.SaveSettings();
-                _waitforload = true;
+                _presetChanging = true;
                 LoadPresets();
-                _waitforload = false;
+                _presetChanging = false;
                 NotificationsService.ShowNotification("Edit_Target/Title".GetLocalized(),
                     "Edit_Target/Subtitle".GetLocalized() + " " + presetName,
                     InfoBarSeverity.Success);
@@ -1427,20 +1333,20 @@ public sealed partial class ПресетыPage
                 var indexpreset = AppSettings.Preset > -1 ? AppSettings.Preset : 0;
 
                 await LogHelper.Log(
-                    $"Showing delete preset dialog: deleting preset \"{PresetManager.Presets[indexpreset].Presetname}\"");
+                    $"Showing delete preset dialog: deleting preset \"{PresetManager.Presets[indexpreset].PresetName}\"");
 
                 
 
-                _waitforload = true;
+                _presetChanging = true;
 
                 var presetList = new List<Preset>(PresetManager.Presets);
                 presetList.RemoveAt(indexpreset);
                 PresetManager.Presets = [.. presetList];
 
-                _waitforload = false;
+                _presetChanging = false;
 
                 AppSettings.Preset = PresetManager.Presets.Length > 0 ? 0 : -1;
-                _indexpreset = AppSettings.Preset;
+                _presetIndex = AppSettings.Preset;
 
                 NotificationsService.ShowNotification("DeleteSuccessTitle".GetLocalized(),
                     "DeleteSuccessDesc".GetLocalized(),
@@ -1460,8 +1366,8 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            await OpenEditPresetDialog_Click(PresetManager.Presets[_indexpreset].Presetname, PresetManager.Presets[_indexpreset].Presetdesc,
-                PresetManager.Presets[_indexpreset].Preseticon);
+            await OpenEditPresetDialog_Click(PresetManager.Presets[_presetIndex].PresetName, PresetManager.Presets[_presetIndex].PresetDesc,
+                PresetManager.Presets[_presetIndex].PresetIcon);
         }
         catch (Exception ex)
         {
@@ -1706,7 +1612,7 @@ public sealed partial class ПресетыPage
                 PresetSettingsBeginnerViewSettingsStackPanel.Visibility = Visibility.Visible;
                 PresetSettingsBeginnerView.Margin = new Thickness(0, 0, 0, 0);
 
-                if (AppSettings.PresetspageViewModeBeginner)
+                if (AppSettings.PresetsPageViewModeBeginner)
                 {
                     BeginnerOptionsButton.IsChecked = true;
                     AdvancedOptionsButton.IsChecked = false;
@@ -1727,7 +1633,7 @@ public sealed partial class ПресетыPage
 
                 var selectedIndex = PresetsControl.SelectedIndex;
                 if (selectedIndex > -1 && selectedIndex < PresetManager.Presets.Length &&
-                    selectedItem.Text == PresetManager.Presets[selectedIndex].Presetname)
+                    selectedItem.Text == PresetManager.Presets[selectedIndex].PresetName)
                 {
                     AppSettings.Preset = selectedIndex;
                 }
@@ -1736,10 +1642,10 @@ public sealed partial class ПресетыPage
                     for (var presetIndex = 0; presetIndex < PresetManager.Presets.Length; presetIndex++)
                     {
                         var preset = PresetManager.Presets[presetIndex];
-                        if (preset.Presetname == selectedItem.Text &&
-                           (preset.Presetdesc == selectedItem.Description || preset.Presetname == selectedItem.Description) &&
-                           (preset.Preseticon == selectedItem.IconGlyph ||
-                            preset.Preseticon == "\uE718"))
+                        if (preset.PresetName == selectedItem.Text &&
+                           (preset.PresetDesc == selectedItem.Description || preset.PresetName == selectedItem.Description) &&
+                           (preset.PresetIcon == selectedItem.IconGlyph ||
+                            preset.PresetIcon == "\uE718"))
                         {
                             AppSettings.Preset = presetIndex;
                             break;
@@ -1747,9 +1653,9 @@ public sealed partial class ПресетыPage
                     }
                 }
 
-                _indexpreset = AppSettings.Preset;
+                _presetIndex = AppSettings.Preset;
                 AppSettings.SaveSettings();
-                InitializeCustomPresetSettings(_indexpreset);
+                InitializeCustomPresetSettings(_presetIndex);
             }
         }
         catch (Exception ex)
@@ -1765,11 +1671,6 @@ public sealed partial class ПресетыPage
             PresetType endMode;
             var selectedItem = PresetsControl.SelectedItem;
             var selectedIndex = PresetsControl.SelectedIndex;
-
-            if (selectedItem == null)
-            {
-                return;
-            }
 
             if (selectedItem.Text == "Preset_Max_Name/Text".GetLocalized() &&
                 selectedItem.Description == "Preset_Max_Desc/Text".GetLocalized())
@@ -1803,7 +1704,7 @@ public sealed partial class ПресетыPage
                 var icon = selectedItem.IconGlyph;
                 Preset? requiredPreset = null;
                 if (selectedIndex > -1 && selectedIndex < PresetManager.Presets.Length && 
-                    selectedItem.Text == PresetManager.Presets[selectedIndex].Presetname)
+                    selectedItem.Text == PresetManager.Presets[selectedIndex].PresetName)
                 {
                     requiredPreset = PresetManager.Presets[selectedIndex];
                     AppSettings.Preset = selectedIndex;
@@ -1813,10 +1714,10 @@ public sealed partial class ПресетыPage
                     for (var presetIndex = 0; presetIndex < PresetManager.Presets.Length; presetIndex++)
                     {
                         var preset = PresetManager.Presets[presetIndex];
-                        if (preset.Presetname == name &&
-                           (preset.Presetdesc == desc || preset.Presetname == desc) &&
-                           (preset.Preseticon == icon ||
-                            preset.Preseticon == "\uE718"))
+                        if (preset.PresetName == name &&
+                           (preset.PresetDesc == desc || preset.PresetName == desc) &&
+                           (preset.PresetIcon == icon ||
+                            preset.PresetIcon == "\uE718"))
                         {
                             AppSettings.Preset = presetIndex;
                             requiredPreset = preset;
@@ -1902,7 +1803,9 @@ public sealed partial class ПресетыPage
             return;
         }
 
-        AppSettings.PremadeOptimizationLevel = PremadeOptimizationLevel.SelectedIndex;
+        
+        // TODO: FIX PREMADE PRESETS
+        //AppSettings.PremadeOptimizationLevel = PremadeOptimizationLevel.SelectedIndex;
         AppSettings.SaveSettings();
 
         PremadeOptimizationLevelDesc.Text = PremadeOptimizationLevel.SelectedIndex switch
@@ -1932,155 +1835,38 @@ public sealed partial class ПресетыPage
             return;
         }
 
-        AppSettings.PremadeCurveOptimizerOverrideLevel = (int)CurveOptimizerLevelSlider.Value;
+        // TODO: FIX PREMADE PRESETS
+        //AppSettings.PremadeCurveOptimizerOverrideLevel = (int)CurveOptimizerLevelSlider.Value;
         AppSettings.SaveSettings();
     }
 
     private void CurveOptimizerLevelCustom_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_waitforload)
+        if (_presetChanging)
         {
             return;
         }
 
         
-        var index = _indexpreset == -1 ? 0 : _indexpreset;
+        var index = _presetIndex == -1 ? 0 : _presetIndex;
 
-        PresetManager.Presets[index].Coallvalue = CurveOptimizerLevelCustomSlider.Value;
+        PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.Value = CurveOptimizerLevelCustomSlider.Value;
         PresetManager.SaveSettings();
     }
 
     private void CurveOptimizerCustom_Toggled(object sender, RoutedEventArgs e)
     {
-        if (_waitforload)
+        if (_presetChanging)
         {
             return;
         }
 
         
-        var index = _indexpreset == -1 ? 0 : _indexpreset;
+        var index = _presetIndex == -1 ? 0 : _presetIndex;
 
-        PresetManager.Presets[index].Coall = CurveOptimizerCustom.IsOn;
+        PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled = CurveOptimizerCustom.IsOn;
         PresetManager.SaveSettings();
     }
-
-    private void StreamStabilizerModeCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
-    {
-        // TODO: Fix Stream Stabilizer in v1.1
-        /*if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.StreamStabilizerType = StreamStabilizerModeCombo.SelectedIndex;
-
-        switch (StreamStabilizerModeCombo.SelectedIndex)
-        {
-            case 1:
-                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Visible;
-                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
-
-                SetPowerConfig("PROCTHROTTLEMIN 100");
-                SetPowerConfig("PROCTHROTTLEMAX 100");
-                SetPowerConfig($"PROCFREQMAX {(int)StreamStabilizerTargetMhz.Value}");
-                SavePowerConfig();
-
-                AppSettings.StreamStabilizerMaxMHz = (int)StreamStabilizerTargetMhz.Value;
-
-                break; // Target MHz
-            case 2:
-                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
-                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Visible;
-
-                SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
-                SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
-                SetPowerConfig("PROCFREQMAX 0");
-                SavePowerConfig();
-
-                AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
-
-                break; // Target % of MHz
-            default:
-                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
-                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
-
-                SetPowerConfig("PROCTHROTTLEMIN 99");
-                SetPowerConfig("PROCTHROTTLEMAX 99");
-                SetPowerConfig("PROCFREQMAX 0");
-                SavePowerConfig();
-
-                break; // Base lock
-        }
-
-        AppSettings.SaveSettings();*/
-    }
-
-
-    private void StreamStabilizerTargetMhz_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        /*SetPowerConfig("PROCTHROTTLEMIN 100");
-        SetPowerConfig("PROCTHROTTLEMAX 100");
-        SetPowerConfig($"PROCFREQMAX {(int)StreamStabilizerTargetMhz.Value}");
-        SavePowerConfig();*/
-
-        AppSettings.StreamStabilizerMaxMHz = (int)StreamStabilizerTargetMhz.Value;
-        AppSettings.SaveSettings();
-    }
-
-    private void StreamStabilizerTargetPercent_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        /*SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
-        SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
-        SetPowerConfig("PROCFREQMAX 0");
-        SavePowerConfig();*/
-
-        AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
-        AppSettings.SaveSettings();
-    }
-
-    #region PowerConfig Helpers
-
-    private static void SetPowerConfig(string arguments)
-    {
-        _ = Task.Run(() =>
-        {
-            using var process = new Process();
-            process.StartInfo.FileName = "powercfg";
-            process.StartInfo.Arguments = $"/SETACVALUEINDEX SCHEME_CURRENT SUB_PROCESSOR {arguments}";
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.Verb = "runas";
-            process.Start();
-            process.WaitForExit();
-        });
-    }
-
-    private static void SavePowerConfig()
-    {
-        _ = Task.Run(() =>
-        {
-            using var process = new Process();
-            process.StartInfo.FileName = "powercfg";
-            process.StartInfo.Arguments = "-S SCHEME_CURRENT";
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.Verb = "runas";
-            process.Start();
-            process.WaitForExit();
-        });
-    }
-
-    #endregion
 
     private void CurveOptimizerCustom_PointerPressed(object sender, PointerRoutedEventArgs e) =>
         CurveOptimizerCustom.IsOn = !CurveOptimizerCustom.IsOn;
@@ -2093,15 +1879,15 @@ public sealed partial class ПресетыPage
     //Максимальная температура CPU (C)
     private void C1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu1Value = C1V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuMaximumTemperature.Value = C1V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2109,15 +1895,15 @@ public sealed partial class ПресетыPage
     //Лимит CPU (W)
     private void C2_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu2Value = C2V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuSustainedPowerLimit.Value = C2V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2125,15 +1911,15 @@ public sealed partial class ПресетыPage
     //Реальный CPU (W)
     private void C3_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu3Value = C3V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.Value = C3V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2141,15 +1927,15 @@ public sealed partial class ПресетыPage
     //Средний CPU(W)
     private void C4_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu4Value = C4V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.Value = C4V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2157,15 +1943,15 @@ public sealed partial class ПресетыPage
     //Тик быстрого разгона (S)
     private void C5_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu5Value = C5V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.Value = C5V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2173,15 +1959,15 @@ public sealed partial class ПресетыPage
     //Тик медленного разгона (S)
     private void C6_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu6Value = C6V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.Value = C6V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2189,90 +1975,90 @@ public sealed partial class ПресетыPage
     //Параметры VRM
     private void V1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm1Value = V1V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmCpuEdcCurrentLimit.Value = V1V.Value;
             PresetManager.SaveSettings();
         }
     }
 
     private void V2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm2Value = V2V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmCpuTdcCurrentLimit.Value = V2V.Value;
             PresetManager.SaveSettings();
         }
     }
 
     private void V3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm3Value = V3V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmSocEdcCurrentLimit.Value = V3V.Value;
             PresetManager.SaveSettings();
         }
     }
 
     private void V4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm4Value = V4V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmSocTdcCurrentLimit.Value = V4V.Value;
             PresetManager.SaveSettings();
         }
     }
 
     private void G9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Gpu9Value = G9V.Value;
+            PresetManager.Presets[_presetIndex].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = G9V.Value;
             PresetManager.SaveSettings();
         }
     }
 
     private void G10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Gpu10Value = G10V.Value;
+            PresetManager.Presets[_presetIndex].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = G10V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2285,17 +2071,17 @@ public sealed partial class ПресетыPage
     //Максимальная температура CPU (C)
     private void C1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = C1.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu1 = check;
-            PresetManager.Presets[_indexpreset].Cpu1Value = C1V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuMaximumTemperature.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuMaximumTemperature.Value = C1V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2303,17 +2089,17 @@ public sealed partial class ПресетыPage
     //Лимит CPU (W)
     private void C2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = C2.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu2 = check;
-            PresetManager.Presets[_indexpreset].Cpu2Value = C2V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuSustainedPowerLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuSustainedPowerLimit.Value = C2V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2321,17 +2107,17 @@ public sealed partial class ПресетыPage
     //Реальный CPU (W)
     private void C3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = C3.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu3 = check;
-            PresetManager.Presets[_indexpreset].Cpu3Value = C3V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.Value = C3V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2339,17 +2125,17 @@ public sealed partial class ПресетыPage
     //Средний CPU (W)
     private void C4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = C4.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu4 = check;
-            PresetManager.Presets[_indexpreset].Cpu4Value = C4V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.Value = C4V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2357,17 +2143,17 @@ public sealed partial class ПресетыPage
     //Тик быстрого разгона (S)
     private void C5_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = C5.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu5 = check;
-            PresetManager.Presets[_indexpreset].Cpu5Value = C5V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.Value = C5V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2375,17 +2161,17 @@ public sealed partial class ПресетыPage
     //Тик медленного разгона (S)
     private void C6_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = C6.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Cpu6 = check;
-            PresetManager.Presets[_indexpreset].Cpu6Value = C6V.Value;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.Value = C6V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2394,17 +2180,17 @@ public sealed partial class ПресетыPage
     //Максимальный ток VRM A
     private void V1_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = V1.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm1 = check;
-            PresetManager.Presets[_indexpreset].Vrm1Value = V1V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmCpuEdcCurrentLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmCpuEdcCurrentLimit.Value = V1V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2412,17 +2198,17 @@ public sealed partial class ПресетыPage
     //Лимит по току VRM A
     private void V2_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = V2.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm2 = check;
-            PresetManager.Presets[_indexpreset].Vrm2Value = V2V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmCpuTdcCurrentLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmCpuTdcCurrentLimit.Value = V2V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2430,17 +2216,17 @@ public sealed partial class ПресетыPage
     //Максимальный ток SOC A
     private void V3_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = V3.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm3 = check;
-            PresetManager.Presets[_indexpreset].Vrm3Value = V3V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmSocEdcCurrentLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmSocEdcCurrentLimit.Value = V3V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2448,17 +2234,17 @@ public sealed partial class ПресетыPage
     //Лимит по току SOC A
     private void V4_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = V4.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Vrm4 = check;
-            PresetManager.Presets[_indexpreset].Vrm4Value = V4V.Value;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmSocTdcCurrentLimit.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].VrmSettings.VrmSocTdcCurrentLimit.Value = V4V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2466,17 +2252,17 @@ public sealed partial class ПресетыPage
     //Минимальная частота iGpu
     private void G9_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = G9.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Gpu9 = check;
-            PresetManager.Presets[_indexpreset].Gpu9Value = G9V.Value;
+            PresetManager.Presets[_presetIndex].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = G9V.Value;
             PresetManager.SaveSettings();
         }
     }
@@ -2484,17 +2270,17 @@ public sealed partial class ПресетыPage
     //Максимальная частота iGpu
     private void G10_Checked(object sender, RoutedEventArgs e)
     {
-        if (_isLoaded == false || _waitforload)
+        if (_isLoaded == false || _presetChanging)
         {
             return;
         }
 
         
         var check = G10.IsChecked == true;
-        if (_indexpreset != -1)
+        if (_presetIndex != -1)
         {
-            PresetManager.Presets[_indexpreset].Gpu10 = check;
-            PresetManager.Presets[_indexpreset].Gpu10Value = G10V.Value;
+            PresetManager.Presets[_presetIndex].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = check;
+            PresetManager.Presets[_presetIndex].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = G10V.Value;
             PresetManager.SaveSettings();
         }
     }

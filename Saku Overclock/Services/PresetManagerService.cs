@@ -253,8 +253,6 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
     /// </summary>
     public PresetId GetNextPremadePreset()
     {
-        var presets = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
-
         string currentPreset;
 
         // Определяем текущую позицию
@@ -266,9 +264,7 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
         {
             // Определяем реальную текущую позицию
             // Активен готовый пресет - ищем какой именно
-            currentPreset = presets.FirstOrDefault(p =>
-                (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
-                    ?.GetValue(appSettings)!) ?? "Balance";
+            currentPreset = "Balance";
 
             _virtualPremadePreset = currentPreset;
             _isVirtualStateActive = true;
@@ -346,14 +342,14 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
 
             // Проверяем корректность индекса и данных пресета
             if (nextPresetIndex >= 0 && nextPresetIndex < Presets.Length &&
-                !string.IsNullOrEmpty(Presets[nextPresetIndex].Presetname))
+                !string.IsNullOrEmpty(Presets[nextPresetIndex].PresetName))
             {
                 var preset = Presets[nextPresetIndex];
                 return new PresetId
                 {
-                    PresetName = preset.Presetname,
-                    PresetDesc = preset.Presetdesc,
-                    PresetIcon = preset.Preseticon,
+                    PresetName = preset.PresetName,
+                    PresetDesc = preset.PresetDesc,
+                    PresetIcon = preset.PresetIcon,
                     PresetKey = "Custom",
                     PresetIndex = nextPresetIndex
                 };
