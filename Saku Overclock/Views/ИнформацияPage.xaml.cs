@@ -609,7 +609,7 @@ public sealed partial class ИнформацияPage
                 var chargeRate = Math.Abs(_sensorsInformation.BatteryChargeRate);
                 SetBarMaxValueHelper(BatteryChargeRateBar, chargeRate);
 
-                BatteryPercent.Text = _sensorsInformation.BatteryPercent;
+                BatteryPercent.Text = $"{_sensorsInformation.BatteryPercent}%";
                 var batteryPercent = (double)GetSystemInfo.GetBatteryPercent();
                 BatteryPercentBar.Value = batteryPercent;
                 if (batteryPercent > 80 && BatteryHighChargeLevel.Text != HighChargeLevel)
@@ -1173,16 +1173,8 @@ public sealed partial class ИнформацияPage
             RamUsageBigBannerPolygonText.Text = RamUsageBannerPolygonText.Text;
             RamUsageBigBanner.Text = RamUsage.Text;
             //InfoARAMBanner График
-            try
-            {
-                _busyRam = Convert.ToDouble(_sensorsInformation?.RamBusy?.Replace("GB", string.Empty));
-                _totalRam = Convert.ToDouble(_sensorsInformation?.RamTotal?.Replace("GB", string.Empty));
-            }
-            catch
-            {
-                _busyRam = 0;
-                _totalRam = 0;
-            }
+            _busyRam = _sensorsInformation.RamBusy;
+            _totalRam = _sensorsInformation.RamTotal;
         }
         catch (Exception ex)
         {

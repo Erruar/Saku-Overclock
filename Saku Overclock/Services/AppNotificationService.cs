@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppNotifications;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.ViewModels;
 
@@ -92,8 +93,17 @@ public class AppNotificationService : IAppNotificationService
 
     private void Unregister() => AppNotificationManager.Default.Unregister();
 
-    private void LoadNotificationsSettings() =>
-        Notifies = _fileService.Read<List<Notify>>(_applicationDataFolder, FileName);
+    private void LoadNotificationsSettings()
+    {
+        try
+        {
+            Notifies = _fileService.Read<List<Notify>>(_applicationDataFolder, FileName);
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
+    }
 
     public void SaveNotificationsSettings() => _fileService.Save(_applicationDataFolder, FileName, Notifies);
 

@@ -11,11 +11,12 @@
         <ThemeShadow x:Name="SharedShadow" />
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Style TargetType="ToggleButton" BasedOn="{StaticResource ActiveButton}"/>
+        <SolidColorBrush x:Name="SecondText" Color="{ThemeResource TextFillColorSecondary}"/>
     </Page.Resources>
     <Grid Margin="-48,-65,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <TeachingTip x:Name="MainTeach" IsOpen="False">
             <StackPanel Orientation="Vertical">
-                <TextBlock FontWeight="Bold" FontSize="16" TextWrapping="Wrap" x:Name="MainAdditionalInfoDesc" Text="Информация об устройстве"/>
+                <TextBlock TextWrapping="Wrap" x:Name="MainAdditionalInfoDesc" Text="Информация об устройстве"/>
                 <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
                     <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="MainAdditionalInfo1Desc" Text="Модель:"/>
                     <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="MainAdditionalInfo1Name"/>
@@ -31,26 +32,10 @@
             </StackPanel>
         </TeachingTip>
         <TeachingTip x:Name="ApplyTeach" IsOpen="False"/>
-        <StackPanel Orientation="Horizontal" Margin="0,-14,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
-                <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                <StackPanel HorizontalAlignment="Right" Margin="0,0,14,0" VerticalAlignment="Top" Background="{ThemeResource AccentColor}" CornerRadius="3">
-                    <TextBlock FontSize="10" Padding="3,0,3,0"
-FontWeight="Bold"
-Foreground="{ThemeResource DefaultFGColorAccentBrush}">
-                        <TextBlock.Text>
-                            <Binding Path="Version" />
-                        </TextBlock.Text>
-                        <TextBlock.DataContext>
-                            <viewmodels:ГлавнаяViewModel/>
-                        </TextBlock.DataContext>
-                    </TextBlock>
-                </StackPanel>
-            </StackPanel>
-            <TextBlock FontSize="27" Text="—"/>
-            <TextBlock Margin="10,5,0,0" x:Uid="Main_Welcome_1" FontSize="20" FontWeight="SemiBold" Text="Для тех, кто желает максимум!" Padding="0,2,0,0"/>
+        <StackPanel Orientation="Horizontal" Margin="0,-30,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock FontSize="24" Text="Saku Overclock" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         </StackPanel>
-        <Grid HorizontalAlignment="Stretch" Margin="0,40,0,1">
+        <Grid HorizontalAlignment="Stretch" Margin="0,20,0,1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MinWidth="525"/>
                 <ColumnDefinition/>
@@ -59,7 +44,7 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                 <RowDefinition MaxHeight="545"/>
                 <RowDefinition Height="0.12"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Column="0" SizeChanged="Grid_SizeChanged" Margin="0,0,7,5" CornerRadius="16" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+            <Grid Grid.Column="0" Margin="0,0,7,5" CornerRadius="16" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                 <Grid.Transitions>
                     <TransitionCollection>
                         <RepositionThemeTransition/>
@@ -70,8 +55,8 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                         <RepositionThemeTransition/>
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
-                <TextBlock x:Name="DeviceInfoSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
-                <Grid x:Name="MainGrid" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Margin="14,16,0,0" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
+                <Grid Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*" MaxHeight="270"/>
                         <RowDefinition/>
@@ -95,8 +80,13 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                    <TextBlock FontWeight="SemiBold" Text="Ryzen 9 8945HS \w Radeon 890M" x:Name="InfoCpuName" TextWrapping="Wrap"/>
-                                    <TextBlock FontWeight="Bold" FontSize="20" Text="8С/16T" x:Name="InfoCpuCores"/>
+                                    <TextBlock Text="Ryzen 9 8945HS \w Radeon 890M" x:Name="InfoCpuName" TextWrapping="Wrap"/>
+                                    <TextBlock>
+                                        <Run FontWeight="SemiBold" FontSize="24" Text="8" x:Name="InfoCpuCores"/>
+                                        <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">C</Run>
+                                        <Run FontWeight="SemiBold" FontSize="24" Text="16" x:Name="InfoCpuThreads"/>
+                                        <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">T</Run>
+                                    </TextBlock>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -107,8 +97,11 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuTemp" Text="Температура процессора" TextWrapping="Wrap"/>
-                                <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsTemp" Text="43С"/>
+                                <TextBlock x:Uid="Main_CpuTemp" Text="Температура процессора" TextWrapping="Wrap"/>
+                                <TextBlock>
+                                    <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsTemp" Text="43"/>
+                                    <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">C</Run>
+                                </TextBlock>
                             </StackPanel>
                             <Grid Grid.Row="1">
                                 <scott:WinUIPlot x:Name="TemperaturePlot" 
@@ -129,11 +122,13 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                         <ColumnDefinition Width="70"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                        <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuLoad" Text="Загрузка процессора" TextWrapping="Wrap"/>
-                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsBusy" Text="70%"/>
+                                        <TextBlock x:Uid="Main_CpuLoad" Text="Загрузка процессора" TextWrapping="Wrap"/>
+                                        <TextBlock>
+                                            <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsBusy" Text="70"/>
+                                            <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">%</Run>
+                                        </TextBlock>
                                     </StackPanel>
                                     <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                        <ProgressRing x:Name="IndicatorsBusyRing" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                         <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE94C;"/>
                                     </Grid>
                                 </Grid>
@@ -143,12 +138,14 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                        <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuFreq" Text="Частота процессора" TextWrapping="Wrap"/>
-                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsFreq" Text="5.7 ГГц"/>
+                                    <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                        <TextBlock x:Uid="Main_CpuFreq" Text="Частота процессора" TextWrapping="Wrap"/>
+                                        <TextBlock>
+                                            <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsFreq" Text="5.0"/>
+                                            <Run FontWeight="Medium" x:Uid="infoAGHZRun" Foreground="{ThemeResource TextFillColorSecondary}">GHz</Run>
+                                        </TextBlock>
                                     </StackPanel>
-                                    <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                        <ProgressRing Value="70" Maximum="100" Minimum="0" x:Name="IndicatorsFreqRing" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                    <Grid Grid.Column="1">
                                         <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xECAD;"/>
                                     </Grid>
                                 </Grid>
@@ -159,9 +156,9 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                         <ScrollViewer Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition MaxHeight="75"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition MaxHeight="75"/>
+                                    <RowDefinition Height="75"/>
+                                    <RowDefinition Height="47"/>
+                                    <RowDefinition Height="75"/>
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" VerticalAlignment="Stretch" Margin="-10,8,0,0">
                                     <Grid.RowDefinitions>
@@ -180,12 +177,13 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_RamUsage" Text="RAM Usage" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsRam" Text="7.8Gb"/>
+                                            <TextBlock x:Uid="Main_RamUsage" Text="RAM Usage" TextWrapping="Wrap"/>
                                         </StackPanel>
-                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="IndicatorsRamRing" Value="20" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
-                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE81E;"/>
+                                        <Grid Grid.Column="1">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsRam" Text="7.6"/>
+                                                <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">GB</Run>
+                                            </TextBlock>
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
@@ -195,12 +193,13 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_RealPower" Text="Real power" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsFast" Text="0"/>
+                                            <TextBlock x:Uid="Main_RealPower" Text="Real power" TextWrapping="Wrap"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="IndicatorsFastRing" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
-                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xEC4A;"/>
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsFast" Text="70"/>
+                                                <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">W</Run>
+                                            </TextBlock>
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
@@ -210,12 +209,13 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_Battery" x:Name="BatteryText" Text="Battery" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsBatteryPercent" Text="N/A"/>
+                                            <TextBlock x:Uid="Main_Battery" x:Name="BatteryText" Text="Battery" TextWrapping="Wrap"/>
                                         </StackPanel>
-                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="IndicatorsBatteryPercentRing" Value="0" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
-                                            <FontIcon x:Name="IndicatorsBatteryPercentIcon" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE83F;"/>
+                                        <Grid Grid.Column="1">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsBatteryPercent" Text="70"/>
+                                                <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">%</Run>
+                                            </TextBlock>
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
@@ -225,17 +225,19 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_MaxVrmCurrent" Text="VRM EDC" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsVrmEdc" Text="0"/>
+                                            <TextBlock x:Uid="Main_MaxVrmCurrent" Text="VRM EDC" TextWrapping="Wrap"/>
                                         </StackPanel>
-                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="IndicatorsVrmEdcRing" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
-                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xF7B0;"/>
+                                        <Grid Grid.Column="1">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsVrmEdc" Text="30"/>
+                                                <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">A</Run>
+                                            </TextBlock>
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="4,1,0,0" FontWeight="SemiBold" FontSize="17" x:Name="FrequentlyUsedSign" x:Uid="Main_FrequentlyUsed" Text="Часто используемое"/>
-                                <Grid Grid.Row="2" VerticalAlignment="Stretch" x:Name="FriquentlyUsedGrid" Margin="-10,5,0,0">
+                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="4,12,0,0" FontSize="17"
+                                           x:Uid="Main_FrequentlyUsed" Text="Часто используемое"/>
+                                <Grid Grid.Row="2" VerticalAlignment="Stretch" Margin="-10,0,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition MaxHeight="75"/>
                                     </Grid.RowDefinitions>
@@ -254,10 +256,10 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_Preset" Text="Пресеты" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" x:Uid="Main_Preset" Text="Пресеты" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
-                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xeadf;"/>
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xeadf;"/>
                                             </Grid>
                                         </Grid>
                                     </Button>
@@ -270,10 +272,10 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_OverclockPage" Text="Разгон" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" x:Uid="Main_OverclockPage" Text="Разгон" TextWrapping="Wrap"/>
                                             </StackPanel>
-                                            <Grid Grid.Column="1" Margin="20,0,0,0">
-                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE945;"/>
+                                            <Grid Grid.Column="1" Margin="16,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xE945;"/>
                                             </Grid>
                                         </Grid>
                                     </Button>
@@ -286,10 +288,10 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-25,0" FontWeight="SemiBold" x:Uid="Main_Settings" Text="Настройки" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-25,0" x:Uid="Main_Settings" Text="Настройки" TextWrapping="Wrap"/>
                                             </StackPanel>
-                                            <Grid Grid.Column="1" Margin="20,0,0,0">
-                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE713;"/>
+                                            <Grid Grid.Column="1" Margin="16,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xE713;"/>
                                             </Grid>
                                         </Grid>
                                     </Button>
@@ -302,10 +304,10 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_FaqPage" Text="Страница FAQ" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" x:Uid="Main_FaqPage" Text="Страница FAQ" TextWrapping="Wrap"/>
                                             </StackPanel>
-                                            <Grid Grid.Column="1" Margin="20,0,0,0">
-                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE736;"/>
+                                            <Grid Grid.Column="1" Margin="16,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xE736;"/>
                                             </Grid>
                                         </Grid>
                                     </Button>
@@ -327,28 +329,17 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                             <RepositionThemeTransition/>
                         </TransitionCollection>
                     </Grid.ChildrenTransitions>
-                    <TextBlock x:Uid="Main_PremadePresets" x:Name="PresetsSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Пресеты"/>
-                    <Grid Margin="0,0,0,10">
+                    <TextBlock x:Uid="Main_OwnPresets" FontSize="17" Margin="14,16,0,0" Text="Пресеты"/>
+                    <Grid Margin="0,42,0,10">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="55"/>
                         </Grid.RowDefinitions>
-                        <Pivot Grid.Row="0" Loaded="PivotPresets_Loaded" Margin="-10,0,-10,15" 
-                               HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
-                               x:Name="PresetPivot" SelectionChanged="Preset_Pivot_SelectionChanged">
-                            <PivotItem Margin="0,4,0,7">
-                                <PivotItem.Header>
-                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnPresets" Text="Свои"/>
-                                </PivotItem.Header>
-                                <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0">
-                                    <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch">
-                                        <StackPanel Orientation="Vertical" 
-                                                    HorizontalAlignment="Stretch" IsHitTestVisible="True"
-                                                    x:Name="PresetCustom"/>
-                                    </StackPanel>
-                                </ScrollViewer>
-                            </PivotItem>
-                        </Pivot>
+                        <ScrollViewer HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="0" x:Name="PresetPivot" Margin="-10,4,-1,22">
+                            <StackPanel Orientation="Vertical" Margin="20,0,11,0"
+                                        HorizontalAlignment="Stretch" IsHitTestVisible="True"
+                                        x:Name="PresetCustom"/>
+                        </ScrollViewer>
                         <Button Click="Apply_Click" x:Name="ApplyButton" Grid.Row="1" Margin="10,-22,10,10" 
                                 CornerRadius="26" MinHeight="20" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
                                 HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" 
@@ -357,29 +348,7 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                             <Button.RenderTransform>
                                 <ScaleTransform x:Name="ButtonScaleTransform" ScaleX="1" ScaleY="1"/>
                             </Button.RenderTransform>
-
                             <Button.Resources>
-                                <!-- ReSharper disable once Xaml.RedundantResource -->
-                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver">
-                                    <SolidColorBrush.Color>
-                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                                        <Binding Path="Color" Source="{ThemeResource AccentTextFillColorTertiaryBrush}" />
-                                    </SolidColorBrush.Color>
-                                </SolidColorBrush>
-                                <!-- ReSharper disable once Xaml.RedundantResource -->
-                                <SolidColorBrush x:Key="ButtonBackgroundPressed">
-                                    <SolidColorBrush.Color>
-                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                                        <Binding Path="Color" Source="{ThemeResource AccentTextFillColorTertiaryBrush}" />
-                                    </SolidColorBrush.Color>
-                                </SolidColorBrush>
-                                <!-- ReSharper disable once Xaml.RedundantResource -->
-                                <SolidColorBrush x:Key="ButtonBackgroundDisabled">
-                                    <SolidColorBrush.Color>
-                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                                        <Binding Path="Color" Source="{ThemeResource AccentTextFillColorTertiaryBrush}" />
-                                    </SolidColorBrush.Color>
-                                </SolidColorBrush>
                                 <Storyboard x:Name="ButtonAnimationStoryboard">
                                     <!-- Анимация CornerRadius -->
                                     <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ApplyButton" 
@@ -406,16 +375,13 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                         <DiscreteObjectKeyFrame KeyTime="0:0:0.285" Value="25"/>
                                         <DiscreteObjectKeyFrame KeyTime="0:0:0.30" Value="26"/>
                                     </ObjectAnimationUsingKeyFrames>
-
                                     <!-- Анимация Scale X -->
                                     <DoubleAnimation Storyboard.TargetName="ButtonScaleTransform"
                    Storyboard.TargetProperty="ScaleX"
                    From="1.0" To="1.02" Duration="0:0:0.15"
                    AutoReverse="True"/>
-
                                 </Storyboard>
                             </Button.Resources>
-
                             <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                 <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" x:Uid="Main_ApplyButton" 
@@ -423,16 +389,7 @@ Foreground="{ThemeResource DefaultFGColorAccentBrush}">
                                 <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             </Grid>
                         </Button>
-
-
                     </Grid>
-
-                    <Button Click="PresetsPage_Click" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
-                        <Button.RenderTransform>
-                            <ScaleTransform ScaleX="0.9" ScaleY="0.9" CenterX="16" CenterY="16"/>
-                        </Button.RenderTransform>
-                        <FontIcon Margin="-5,0,-5,0" Glyph="&#xE76C;"/>
-                    </Button>
                 </Grid>
             </Grid>
         </Grid>

@@ -9,7 +9,6 @@ namespace Saku_Overclock.Services;
 public partial class ApplyerService(
     IAppSettingsService settingsService,
     ISendSmuCommandService sendSmuCommand,
-    IOcFinderService ocFinder,
     IPresetManagerService presetManager,
     ICpuService cpuService)
     : IApplyerService
@@ -22,12 +21,11 @@ public partial class ApplyerService(
 
     private readonly Lock _applyDebounceLock = new(); // lock-объект для применения пресета при помощи горячих клавиш
     private string _pendingPresetToApply = string.Empty; // Пресет, который нужно применить
-    private bool _isCustomPreset; // Флаг типа пресета для применения
     private int _pendingCustomPresetIndex = -1; // Индекс кастомного пресета для применения
 
     private string _selectedPreset = "Unknown"; // Применённый пресет
 
-    public async Task ApplyCustomPreset(Preset preset, bool saveInfo = false, bool onlyDebugFunctions = false)
+    public async Task ApplyPreset(Preset preset, bool saveInfo = false, bool onlyDebugFunctions = false)
     {
         try
         {
@@ -43,38 +41,9 @@ public partial class ApplyerService(
         }
     }
 
-    public async Task ApplyPremadePreset(PresetType presetType, bool presetSelected = true)
-    {
-        try
-        {
-            
-            // TODO: FIX PREMADE PRESETS
-            var preset = ocFinder.CreatePreset(presetType, OptimizationLevel.Basic);
-                //(OptimizationLevel)settingsService.PremadeOptimizationLevel);
-            settingsService.RyzenAdjLine = preset.CommandString;
-            await ApplySettings(false);
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError("[Applyer]::ApplyPreset_FAIL - " + ex);
-        }
-
-        if (presetSelected)
-        {
-            var presetTypeString = presetType.ToString();
-            presetManager.SelectPremadePreset(presetTypeString);
-            _selectedPreset = ("Shell_Preset_" + presetTypeString).GetLocalized();
-        }
-    }
-
     public async Task
-        AutoApplySettingsWithAppStart() // Запустить все команды после запуска приложения если включен Авто-применять Разгон
+        RestoreAppliedSettings() // Запустить все команды после запуска приложения если включен Авто-применять Разгон
     {
-        settingsService.LoadSettings();
-        presetManager.LoadSettings();
-
-        ocFinder.LazyInitTdp();
-
         if (settingsService.ReapplyLatestSettingsOnAppLaunch)
         {
             try
@@ -92,12 +61,8 @@ public partial class ApplyerService(
                 {
                     if (settingsService.Preset < presetManager.Presets.Length)
                     {
-                        await ApplyCustomPreset(presetManager.Presets[settingsService.Preset]);
+                        await ApplyPreset(presetManager.Presets[settingsService.Preset]);
                     }
-                }
-                else
-                {
-                    await ApplyPremadePreset(GetActivePresetType());
                 }
             }
             catch (Exception ex)
@@ -107,14 +72,9 @@ public partial class ApplyerService(
         }
     }
 
-    public PresetId SwitchCustomPreset()
+    public PresetId SwitchNextPreset()
     {
-        if (presetManager.Presets.Length == 0)
-        {
-            return SwitchPremadePreset();
-        }
-
-        var presetId = presetManager.GetNextCustomPreset();
+        var presetId = presetManager.GetNextPreset();
 
         if (!string.IsNullOrEmpty(presetId.PresetName))
         {
@@ -122,27 +82,7 @@ public partial class ApplyerService(
             lock (_applyDebounceLock)
             {
                 _pendingPresetToApply = presetId.PresetName;
-                _isCustomPreset = true;
                 _pendingCustomPresetIndex = presetId.PresetIndex;
-            }
-
-            ScheduleApplyPreset();
-        }
-
-        return presetId;
-    }
-
-    public PresetId SwitchPremadePreset()
-    {
-        var presetId = presetManager.GetNextPremadePreset();
-
-        if (!string.IsNullOrEmpty(presetId.PresetName))
-        {
-            // Сохраняем информацию о пресете для отложенного применения 
-            lock (_applyDebounceLock)
-            {
-                _pendingPresetToApply = presetId.PresetKey;
-                _isCustomPreset = false;
             }
 
             ScheduleApplyPreset();
@@ -172,13 +112,11 @@ public partial class ApplyerService(
                     {
                         // ТОЛЬКО ЗДЕСЬ обновляем настройки и применяем пресет
                         string presetToApply;
-                        bool isCustom;
                         int customIndex;
 
                         lock (_applyDebounceLock)
                         {
                             presetToApply = _pendingPresetToApply;
-                            isCustom = _isCustomPreset;
                             customIndex = _pendingCustomPresetIndex;
 
                             // Сбрасываем виртуальное состояние после применения
@@ -187,26 +125,17 @@ public partial class ApplyerService(
 
                         if (!string.IsNullOrEmpty(presetToApply))
                         {
-                            if (isCustom)
+                            if (customIndex < 0 || customIndex >= presetManager.Presets.Length)
                             {
-                                if (customIndex < 0 || customIndex >= presetManager.Presets.Length)
-                                {
-                                    await LogHelper.TraceIt_TraceError($"Invalid custom preset index: {customIndex}");
-                                }
-                                else
-                                {
-                                    settingsService.Preset = customIndex;
-                                    await ApplyCustomPreset(presetManager.Presets[customIndex]);
-
-                                    _selectedPreset = presetManager.Presets[customIndex].PresetName;
-                                }
+                                await LogHelper.TraceIt_TraceError($"Invalid custom preset index: {customIndex}");
                             }
                             else
                             {
-                                var presetType = GetActivePresetType();
-                                _selectedPreset = ("Shell_Preset_" + _pendingPresetToApply).GetLocalized();
-                                await ApplyPremadePreset(presetType);
-                            }
+                                settingsService.Preset = customIndex;
+                                await ApplyPreset(presetManager.Presets[customIndex]);
+
+                                _selectedPreset = presetManager.Presets[customIndex].PresetName;
+                            } 
                         }
                     }
                     catch (Exception ex)
@@ -224,20 +153,6 @@ public partial class ApplyerService(
                 }
             }, token);
         }
-    }
-
-    private PresetType GetActivePresetType()
-    {
-        return settingsService switch
-        {
-            
-            // TODO: FIX PREMADE PRESETS
-            /*{ PremadeMaxActivated: true } => PresetType.Max,
-            { PremadeSpeedActivated: true } => PresetType.Speed,
-            { PremadeEcoActivated: true } => PresetType.Eco,
-            { PremadeMinActivated: true } => PresetType.Min,*/
-            _ => PresetType.Balance
-        };
     }
 
     private async Task ApplySettings(bool saveinfo)
@@ -332,138 +247,166 @@ public partial class ApplyerService(
             // CPU settings
             if (preset.CpuSettings.CpuMaximumTemperature.IsEnabled)
             {
-                adjline += " --tctl-temp=" + preset.CpuSettings.CpuMaximumTemperature.Value + (isBristol ? "000" : string.Empty);
+                
+                if (isBristol)
+                {
+                    adjline += " --tctl-temp=" + ConvertToThousandString(preset.CpuSettings.CpuMaximumTemperature.Value);
+                }
+                else
+                {
+                    adjline += " --tctl-temp=" + (uint)preset.CpuSettings.CpuMaximumTemperature.Value;
+                }
             }
 
             if (preset.CpuSettings.CpuSustainedPowerLimit.IsEnabled)
             {
-                var stapmBoostMillisecondsBristol = preset.CpuSettings.CpuBoostTimeSlow.Value * 1000 < 180000 ? preset.CpuSettings.CpuBoostTimeSlow.Value * 1000 : 180000;
-                adjline += " --stapm-limit=" + preset.CpuSettings.CpuSustainedPowerLimit.Value + "000" +
+                var stapmBoostMillisecondsBristol = preset.CpuSettings.CpuBoostTimeSlow.Value * 1000 < 180000 
+                    ? preset.CpuSettings.CpuBoostTimeSlow.Value * 1000 
+                    : 180000;
+    
+                adjline += " --stapm-limit=" + ConvertToThousandString(preset.CpuSettings.CpuSustainedPowerLimit.Value) +
                            (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
             }
 
             if (preset.CpuSettings.CpuActualPowerLimit.IsEnabled)
             {
-                adjline += " --fast-limit=" + preset.CpuSettings.CpuActualPowerLimit.Value + "000";
+                adjline += " --fast-limit=" + ConvertToThousandString(preset.CpuSettings.CpuActualPowerLimit.Value);
             }
 
             if (preset.CpuSettings.CpuAveragePowerLimit.IsEnabled)
             {
-                adjline += " --slow-limit=" + preset.CpuSettings.CpuAveragePowerLimit.Value + "000" +
-                           (isBristol ? "," + preset.CpuSettings.CpuAveragePowerLimit.Value + "000,0" : string.Empty);
+                var slowLimit = ConvertToThousandString(preset.CpuSettings.CpuAveragePowerLimit.Value);
+                adjline += " --slow-limit=" + slowLimit +
+                           (isBristol ? "," + slowLimit : string.Empty);
             }
 
             if (preset.CpuSettings.CpuBoostTimeSlow.IsEnabled)
             {
-                adjline += " --stapm-time=" + preset.CpuSettings.CpuBoostTimeSlow.Value;
+                adjline += " --stapm-time=" + (uint)preset.CpuSettings.CpuBoostTimeSlow.Value;
             }
 
             if (preset.CpuSettings.CpuBoostTimeFast.IsEnabled)
             {
-                adjline += " --slow-time=" + preset.CpuSettings.CpuBoostTimeFast.Value;
+                adjline += " --slow-time=" + (uint)preset.CpuSettings.CpuBoostTimeFast.Value;
             }
 
             // VRM settings
             if (preset.VrmSettings.VrmCpuEdcCurrentLimit.IsEnabled)
             {
-                adjline += " --vrmmax-current=" + preset.VrmSettings.VrmCpuEdcCurrentLimit.Value + "000" +
-                           (isBristol ? "," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000" : string.Empty);
+                adjline += " --vrmmax-current=" + ConvertToThousandString(preset.VrmSettings.VrmCpuEdcCurrentLimit.Value) +
+                           (isBristol ? 
+                               "," + ConvertToThousandString(preset.VrmSettings.VrmSocEdcCurrentLimit.Value) + 
+                               "," + ConvertToThousandString(preset.VrmSettings.VrmSocEdcCurrentLimit.Value) :
+                               string.Empty);
             }
 
             if (preset.VrmSettings.VrmCpuTdcCurrentLimit.IsEnabled)
             {
-                adjline += " --vrm-current=" + preset.VrmSettings.VrmCpuTdcCurrentLimit.Value + "000" +
-                           (isBristol ? "," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000," + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000" : string.Empty);
+                adjline += " --vrm-current=" + ConvertToThousandString(preset.VrmSettings.VrmCpuTdcCurrentLimit.Value) +
+                           (isBristol ? 
+                               "," + ConvertToThousandString(preset.VrmSettings.VrmSocEdcCurrentLimit.Value) + 
+                               "," + ConvertToThousandString(preset.VrmSettings.VrmSocEdcCurrentLimit.Value) : 
+                               string.Empty);
             }
 
             if (preset.VrmSettings.VrmSocEdcCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --vrmsocmax-current=" + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000";
+                adjline += " --vrmsocmax-current=" + ConvertToThousandString(preset.VrmSettings.VrmSocEdcCurrentLimit.Value);
             }
 
             if (preset.VrmSettings.VrmSocTdcCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --vrmsoc-current=" + preset.VrmSettings.VrmSocEdcCurrentLimit.Value + "000";
+                adjline += " --vrmsoc-current=" + ConvertToThousandString(preset.VrmSettings.VrmSocEdcCurrentLimit.Value);
             }
 
             if (preset.VrmSettings.VrmPowerSaveVddCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --psi0-current=" + preset.VrmSettings.VrmPowerSaveVddCurrentLimit.Value + "000" +
-                           (isBristol ? "," + preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value + "000," + preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value + "000" : string.Empty);
+                adjline += " --psi0-current=" + ConvertToThousandString(preset.VrmSettings.VrmPowerSaveVddCurrentLimit.Value) +
+                           (isBristol ? 
+                               "," + ConvertToThousandString(preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value) + 
+                               "," + ConvertToThousandString(preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value) : 
+                               string.Empty);
             }
 
             if (preset.VrmSettings.VrmPowerSaveSocCurrentLimit.IsEnabled && !isBristol)
             {
-                adjline += " --psi0soc-current=" + preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value + "000";
+                adjline += " --psi0soc-current=" + ConvertToThousandString(preset.VrmSettings.VrmPowerSaveSocCurrentLimit.Value);
             }
             
             
             if (preset.VrmSettings.VrmPowerSaveCpuCurrentLimit.IsEnabled)
             {
-                adjline += " --psi3cpu_current=" + preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.Value + "000";
+                adjline += " --psi3cpu_current=" + ConvertToThousandString(preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.Value);
             }
 
             if (preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.IsEnabled)
             {
-                adjline += " --psi3gfx_current=" + preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.Value + "000";
+                adjline += " --psi3gfx_current=" + ConvertToThousandString(preset.VrmSettings.VrmPowerSaveGpuCurrentLimit.Value);
             }
 
             if (preset.VrmSettings.VrmCpuFrequencyRestoreTime.IsEnabled)
             {
-                var prochotDeassertionTimeMillisecondsBristol = preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value < 100 ? preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value : 100;
+                var prochotDeassertionTimeMillisecondsBristol = preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value < 100 
+                    ? preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value 
+                    : 100;
+                
+                var prochotDeassertionRamp = isBristol
+                    ? prochotDeassertionTimeMillisecondsBristol
+                    : preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value;
+                
                 adjline += " --prochot-deassertion-ramp=" +
-                           (isBristol ? prochotDeassertionTimeMillisecondsBristol : preset.VrmSettings.VrmCpuFrequencyRestoreTime.Value);
+                           (uint)prochotDeassertionRamp;
             }
 
             // GPU settings
             if (preset.SubsystemsSettings.MinimumSocFrequency.IsEnabled)
             {
-                adjline += " --min-socclk-frequency=" + preset.SubsystemsSettings.MinimumSocFrequency.Value;
+                adjline += " --min-socclk-frequency=" + (uint)preset.SubsystemsSettings.MinimumSocFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MaximumSocFrequency.IsEnabled)
             {
-                adjline += " --max-socclk-frequency=" + preset.SubsystemsSettings.MaximumSocFrequency.Value;
+                adjline += " --max-socclk-frequency=" + (uint)preset.SubsystemsSettings.MaximumSocFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MinimumFabricFrequency.IsEnabled)
             {
-                adjline += " --min-fclk-frequency=" + preset.SubsystemsSettings.MinimumFabricFrequency.Value;
+                adjline += " --min-fclk-frequency=" + (uint)preset.SubsystemsSettings.MinimumFabricFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MaximumFabricFrequency.IsEnabled)
             {
-                adjline += " --max-fclk-frequency=" + preset.SubsystemsSettings.MaximumFabricFrequency.Value;
+                adjline += " --max-fclk-frequency=" + (uint)preset.SubsystemsSettings.MaximumFabricFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MinimumVideoCodecFrequency.IsEnabled)
             {
-                adjline += " --min-vcn=" + preset.SubsystemsSettings.MinimumVideoCodecFrequency.Value;
+                adjline += " --min-vcn=" + (uint)preset.SubsystemsSettings.MinimumVideoCodecFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MaximumVideoCodecFrequency.IsEnabled)
             {
-                adjline += " --max-vcn=" + preset.SubsystemsSettings.MaximumVideoCodecFrequency.Value;
+                adjline += " --max-vcn=" + (uint)preset.SubsystemsSettings.MaximumVideoCodecFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MinimumDataLatchFrequency.IsEnabled)
             {
-                adjline += " --min-lclk=" + preset.SubsystemsSettings.MinimumDataLatchFrequency.Value;
+                adjline += " --min-lclk=" + (uint)preset.SubsystemsSettings.MinimumDataLatchFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MaximumDataLatchFrequency.IsEnabled)
             {
-                adjline += " --max-lclk=" + preset.SubsystemsSettings.MaximumDataLatchFrequency.Value;
+                adjline += " --max-lclk=" + (uint)preset.SubsystemsSettings.MaximumDataLatchFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled)
             {
-                adjline += " --min-gfxclk=" + preset.SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value;
+                adjline += " --min-gfxclk=" + (uint)preset.SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value;
             }
 
             if (preset.SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled)
             {
-                adjline += " --max-gfxclk=" + preset.SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value;
+                adjline += " --max-gfxclk=" + (uint)preset.SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value;
             }
 
             if (preset.CpuModesSettings.CpuFrequency04Fix.IsEnabled)
@@ -488,22 +431,22 @@ public partial class ApplyerService(
             // Advanced CPU modes
             if (preset.CpuSettings.IntegratedGpuMaximumTemperature.IsEnabled)
             {
-                adjline += " --apu-skin-temp=" + preset.CpuSettings.IntegratedGpuMaximumTemperature.Value * 256;
+                adjline += " --apu-skin-temp=" + (uint)(preset.CpuSettings.IntegratedGpuMaximumTemperature.Value * 256);
             }
 
             if (preset.CpuSettings.DiscreteGpuMaximumTemperature.IsEnabled)
             {
-                adjline += " --dgpu-skin-temp=" + preset.CpuSettings.DiscreteGpuMaximumTemperature.Value * 256;
+                adjline += " --dgpu-skin-temp=" + (uint)(preset.CpuSettings.DiscreteGpuMaximumTemperature.Value * 256);
             }
 
             if (preset.CpuSettings.IntegratedGpuPowerLimit.IsEnabled)
             {
-                adjline += " --apu-slow-limit=" + preset.CpuSettings.IntegratedGpuPowerLimit.Value + "000";
+                adjline += " --apu-slow-limit=" + ConvertToThousandString(preset.CpuSettings.IntegratedGpuPowerLimit.Value);
             }
 
             if (preset.CpuSettings.LaptopPowerLimit.IsEnabled)
             {
-                var adjustPower = preset.CpuSettings.LaptopPowerLimit.Value + "000";
+                var adjustPower = ConvertToThousandString(preset.CpuSettings.LaptopPowerLimit.Value);
                 adjline += " --skin-temp-limit=" + adjustPower;
 
                 if (isStapmTuneRequired)
@@ -518,18 +461,18 @@ public partial class ApplyerService(
                 adjline += codenameGen switch
                 {
                     CodenameGeneration.Fp5 => " --set-gpuclockoverdrive-byvid=" + val,
-                    _ => " --gfx-clk=" + preset.FrequenciesSettings.IntegratedGraphicsFrequency.Value,
+                    _ => " --gfx-clk=" + (uint)preset.FrequenciesSettings.IntegratedGraphicsFrequency.Value,
                 };
             }
 
             if (preset.FrequenciesSettings.CpuFrequency.IsEnabled)
             {
-                adjline += " --oc-clk=" + preset.FrequenciesSettings.CpuFrequency.Value;
+                adjline += " --oc-clk=" + (uint)preset.FrequenciesSettings.CpuFrequency.Value;
             }
 
             if (preset.FrequenciesSettings.CpuVoltage.IsEnabled)
             {
-                adjline += " --oc-volt=" + Math.Round((1.55 - preset.FrequenciesSettings.CpuVoltage.Value / 1000) / 0.00625);
+                adjline += " --oc-volt=" + (uint)Math.Round((1.55 - preset.FrequenciesSettings.CpuVoltage.Value / 1000) / 0.00625);
             }
 
             if (preset.CpuModesSettings.PreferredMode.IsEnabled)
@@ -584,6 +527,11 @@ public partial class ApplyerService(
         return adjline + " ";
     }
 
+    private string ConvertToThousandString(double value)
+    {
+        return $"{(uint)(value * 1000)}";
+    }
+    
     private static string ProcessCoallSettings(double value, bool cogfx = false)
     {
         var adjline = "";

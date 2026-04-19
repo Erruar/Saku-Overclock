@@ -67,12 +67,12 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe950;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Кулер"
+                    <!--<NavigationViewItem CornerRadius="9" x:Uid="Shell_Кулер"
                                         helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
-                    </NavigationViewItem>
+                    </NavigationViewItem>-->
                 </NavigationView.MenuItems>
                 <NavigationView.HeaderTemplate>
                     <DataTemplate>

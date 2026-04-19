@@ -1275,12 +1275,6 @@
 функцию - поставьте на авто и примените, затем 
 отключайте</value>
   </data>
-  <data name="Param_GPU_g11.Text" xml:space="preserve">
-    <value>Минимальная частота CPU</value>
-  </data>
-  <data name="Param_GPU_g12.Text" xml:space="preserve">
-    <value>Максимальная частота CPU</value>
-  </data>
   <data name="Param_GPU_g16.Text" xml:space="preserve">
     <value>Исправление 0,4 ГГц CPU</value>
   </data>
@@ -1812,6 +1806,9 @@ Overclock будут проигнорированы,
   <data name="infoAGHZ" xml:space="preserve">
     <value>ГГц</value>
   </data>
+  <data name="infoAGHZRun.Text" xml:space="preserve">
+    <value>ГГц</value>
+  </data>
   <data name="infoAVOLTCPU.Text" xml:space="preserve">
     <value>Напряжение</value>
   </data>
@@ -1961,6 +1958,18 @@ Overclock будут проигнорированы,
   </data>
   <data name="Param_UnsignedPreset" xml:space="preserve">
     <value>Мой пресет</value>
+  </data>
+  <data name="Preset_SmartPreset" xml:space="preserve">
+    <value>Умный режим</value>
+  </data>
+  <data name="Preset_PowerfulPreset" xml:space="preserve">
+    <value>Производительный</value>
+  </data>
+  <data name="Preset_SmartPresetDesc" xml:space="preserve">
+    <value>Оптимизация под текущую нагрузку. Тихая работа системы в повседневных задачах</value>
+  </data>
+  <data name="Preset_PowerfulPresetDesc" xml:space="preserve">
+    <value>Максимальная мощность процессора. Высокая скорость для ресурсоёмких задач</value>
   </data>
   <data name="Settings_ni_Add_Element.Text" xml:space="preserve">
     <value>Добавить элемент</value>
@@ -2129,6 +2138,18 @@ Overclock будут проигнорированы,
   </data>
   <data name="Settings_ni_Values_MinValue" xml:space="preserve">
     <value>Минимум: </value>
+  </data>
+  <data name="Settings_Apply_Reset_All_Title" xml:space="preserve">
+    <value>Сбросить параметры?</value>
+  </data>
+  <data name="Settings_Apply_Reset_All_Desc" xml:space="preserve">
+    <value>Все параметры применения будут восстановлены на значения по умолчанию</value>
+  </data>
+  <data name="Settings_Themes_Reset_All_Title" xml:space="preserve">
+    <value>Сбросить все темы?</value>
+  </data>
+  <data name="Settings_Themes_Reset_All_Desc" xml:space="preserve">
+    <value>Все пользовательские темы будут удалены, стандартные восстановлены.</value>
   </data>
   <data name="InfoANiIcons.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon 
@@ -2651,7 +2672,7 @@ Asus. Может не поддерживаться на
     <value>Разгон</value>
   </data>
   <data name="Main_OwnPresets.Text" xml:space="preserve">
-    <value>Свои пресеты</value>
+    <value>Пресеты</value>
   </data>
   <data name="Main_PremadePresets.Text" xml:space="preserve">
     <value>Готовые пресеты</value>
@@ -2681,13 +2702,13 @@ Asus. Может не поддерживаться на
     <value>Показатели мощности</value>
   </data>
   <data name="Main_MaxVrmCurrent.Text" xml:space="preserve">
-    <value>VRM EDC</value>
+    <value>Ток VRM</value>
   </data>
   <data name="Main_RamUsage.Text" xml:space="preserve">
     <value>Исп. ОЗУ</value>
   </data>
   <data name="Main_RealPower.Text" xml:space="preserve">
-    <value>Реальн. мощн</value>
+    <value>Мощность</value>
   </data>
   <data name="Main_CpuFreq.Text" xml:space="preserve">
     <value>Частота процессора</value>
@@ -2750,7 +2771,7 @@ Asus. Может не поддерживаться на
     <value>Процент загрузки:</value>
   </data>
   <data name="Main_SystemPowers" xml:space="preserve">
-    <value>Мощности системы</value>
+    <value>Мощность системы</value>
   </data>
   <data name="Main_TemperatureSensors" xml:space="preserve">
     <value>Температурные показатели</value>

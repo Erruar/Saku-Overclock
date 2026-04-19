@@ -2,6 +2,7 @@
 using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
+using Saku_Overclock.Views;
 
 namespace Saku_Overclock.Services;
 
@@ -15,7 +16,6 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
     
     // Состояние для отслеживания позиции при быстром переключении
     private int _virtualCustomPresetIndex = -1; // Виртуальная позиция в кастомных пресетах
-    private string _virtualPremadePreset = string.Empty; // Виртуальная позиция в готовых пресетах
     private bool _isVirtualStateActive; // Флаг активности виртуального состояния
 
 
@@ -183,118 +183,18 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
         }
     }
 
-    /// <summary>
-    ///     Делает активным готовый пресет по короткому имени, но не применяет его
-    /// </summary>
-    public void SelectPremadePreset(string nextPreset)
-    {
-        var presets = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
-        foreach (var preset in presets)
-        {
-            typeof(IAppSettingsService).GetProperty($"Premade{preset}Activated")
-                ?.SetValue(appSettings, preset == nextPreset);
-        }
-
-        appSettings.Preset = -1;
-        appSettings.SaveSettings();
-    }
-
-    /// <summary>
-    ///     Вспомогательный словарь, показывающий какой готовый пресет следующий, на основе предыдущего
-    /// </summary>
-    private static Dictionary<string, string> NextPremadePreset => new()
-    {
-        { "Min", "Eco" },
-        { "Eco", "Balance" },
-        { "Balance", "Speed" },
-        { "Speed", "Max" },
-        { "Max", "Min" }
-    };
-
-    /// <summary>
-    ///     Вспомогательный словарь, выдающий данные о готовом пресете по его короткому имени
-    /// </summary>
-    private static Dictionary<string, (string name, string desc, string icon)>
-        PremadedPresets => new()
-    {
-        {
-            "Min",
-            ("Shell_Preset_Min", "Preset_Min_OverlayDesc", "\uEBC0")
-        },
-        {
-            "Eco",
-            ("Shell_Preset_Eco", "Preset_Eco_OverlayDesc", "\uEC0A")
-        },
-        {
-            "Balance",
-            ("Shell_Preset_Balance", "Preset_Balance_OverlayDesc", "\uEC49")
-        },
-        {
-            "Speed",
-            ("Shell_Preset_Speed", "Preset_Speed_OverlayDesc", "\uE945")
-        },
-        {
-            "Max",
-            ("Shell_Preset_Max", "Preset_Max_OverlayDesc", "\uECAD")
-        }
-    };
-
     public struct PresetId
     {
         public string PresetName;
         public string? PresetDesc;
         public string PresetIcon;
-        public string PresetKey;
         public int PresetIndex;
-    }
-
-    /// <summary>
-    ///     Метод для получения следующего готового пресета, без применения настроек
-    /// </summary>
-    public PresetId GetNextPremadePreset()
-    {
-        string currentPreset;
-
-        // Определяем текущую позицию
-        if (_isVirtualStateActive && !string.IsNullOrEmpty(_virtualPremadePreset))
-        {
-            currentPreset = _virtualPremadePreset;
-        }
-        else
-        {
-            // Определяем реальную текущую позицию
-            // Активен готовый пресет - ищем какой именно
-            currentPreset = "Balance";
-
-            _virtualPremadePreset = currentPreset;
-            _isVirtualStateActive = true;
-        }
-
-        // Получаем следующий пресет
-        var nextPreset = NextPremadePreset[currentPreset];
-
-        // Обновляем виртуальную позицию
-        _virtualPremadePreset = nextPreset;
-
-        // Получаем данные пресета для отображения
-        var (name, description, iconStr) = PremadedPresets[nextPreset];
-
-        SelectPremadePreset(nextPreset);
-
-        return new PresetId
-        {
-            PresetName = name.GetLocalized(),
-            PresetDesc = description.GetLocalized(),
-            PresetIcon = iconStr,
-            PresetKey = nextPreset,
-            PresetIndex = -1
-        };
     }
 
     /// <summary>
     ///     Метод для получения следующего кастомного пресета, без применения настроек
     /// </summary>
-    public PresetId GetNextCustomPreset()
+    public PresetId GetNextPreset()
     {
         try
         {
@@ -307,7 +207,6 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
                     PresetName = "Balance",
                     PresetDesc = string.Empty,
                     PresetIcon = "\uE783",
-                    PresetKey = "Balance",
                     PresetIndex = -1
                 };
             }
@@ -345,12 +244,15 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
                 !string.IsNullOrEmpty(Presets[nextPresetIndex].PresetName))
             {
                 var preset = Presets[nextPresetIndex];
+                var presetName = preset.PresetName; 
+                var presetDesc = preset.PresetDesc;
+                if (presetName.Contains("Preset_")){ presetName = ГлавнаяPage.TryLocalize(presetName); }
+                if (presetDesc.Contains("Preset_")){ presetDesc = ГлавнаяPage.TryLocalize(presetDesc); }
                 return new PresetId
                 {
-                    PresetName = preset.PresetName,
-                    PresetDesc = preset.PresetDesc,
+                    PresetName = presetName,
+                    PresetDesc = presetDesc,
                     PresetIcon = preset.PresetIcon,
-                    PresetKey = "Custom",
                     PresetIndex = nextPresetIndex
                 };
             }
@@ -367,7 +269,6 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
             PresetName = "Balance",
             PresetDesc = string.Empty,
             PresetIcon = "\uE783",
-            PresetKey = "Balance",
             PresetIndex = -1
         };
     }
@@ -376,6 +277,5 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
     {
         _isVirtualStateActive = false;
         _virtualCustomPresetIndex = -1;
-        _virtualPremadePreset = string.Empty;
     }
 }

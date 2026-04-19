@@ -106,6 +106,7 @@ public partial class App
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
                 services.AddSingleton<IOcFinderService, OcFinderService>();
+                services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
                 services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
                 services.AddSingleton<ISensorReader, SensorReader>();
                 services.AddSingleton<CoreMetricsCalculator>();
@@ -156,7 +157,7 @@ public partial class App
 
     #region JSON and Initialization
 
-    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         try
         {

@@ -61,7 +61,7 @@
         </Flyout>
     </Page.Resources>
     <Grid Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
-        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-95,0,0" />
+        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="24" Margin="-1,-95,0,0" />
         <Grid HorizontalAlignment="Stretch" Margin="0,-44,0,0" CornerRadius="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -456,11 +456,11 @@
                                                 VerticalAlignment="Top" Orientation="Vertical">
                                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top"
                                                    TextWrapping="Wrap" x:Name="SelectedPresetName" Text="Имя пресета"
-                                                   FontWeight="SemiBold" FontSize="16" />
+                                                   FontWeight="Medium"/>
                                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top"
                                                    TextWrapping="Wrap" x:Name="SelectedPresetDescription"
                                                    Text="Обычный кастомный пресет. Ничего нового. Кстати, вы можете изменить ему описание!"
-                                                   FontWeight="Normal" FontSize="15" />
+                                                   FontSize="14" Foreground="{ThemeResource TextFillColorSecondary}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Margin="0,17,-13,-10"
                                                 x:Name="EditCurrentButtonsStackPanel" HorizontalAlignment="Right"
@@ -571,8 +571,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="C1V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=C1V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -610,8 +608,6 @@
                                                   Translation="0,0,20">
                                                 <NumberBox CornerRadius="10" Height="33" Width="120" Minimum="1"
                                                            Tag="C2V" ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10"
                                                            Value="{Binding ElementName=C2V, Path=Value, Mode=TwoWay}" />
@@ -652,8 +648,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="C3V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=C3V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -692,8 +686,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="C4V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=C4V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -732,8 +724,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="C5V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=C5V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -772,8 +762,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="C6V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=C6V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -812,8 +800,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="V1V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=V1V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -852,8 +838,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="V2V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=V2V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -892,8 +876,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="V3V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=V3V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -932,8 +914,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="V4V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=V4V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -971,8 +951,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="G9V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=G9V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
 
@@ -1010,8 +988,6 @@
                                                            SpinButtonPlacementMode="Inline" SmallChange="1"
                                                            LargeChange="10" Tag="G10V"
                                                            ValueChanged="TargetNumberBox_ValueChanged"
-                                                           GotFocus="TargetNumberBox_FocusEngaged"
-                                                           LostFocus="TargetNumberBox_FocusDisengaged"
                                                            Value="{Binding ElementName=G10V, Path=Value, Mode=TwoWay}" />
                                             </Grid>
                                         </Grid>

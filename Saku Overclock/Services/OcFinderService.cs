@@ -1,5 +1,5 @@
-﻿using System.Text;
-using Saku_Overclock.Contracts.Services;
+﻿using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Models;
 using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.Services;
@@ -41,35 +41,27 @@ public class PresetMetrics
     } // -50 - +50
 }
 
-public class PresetOptions
+public class SettingsOptions
 {
-    public string ThermalOptions
-    {
-        get;
-        init;
-    } = string.Empty;
+    public PresetType Type { get; init; }
+    
+    public OptimizationLevel Level { get; init; }
+    
+    public ArchitecturePreset? Architecture { get; set; }
+    
+    public PresetCpuSettings CpuSettings { get; init; } = new();
 
-    public string PowerOptions
-    {
-        get;
-        init;
-    } = string.Empty;
-
-    public string CurrentOptions
-    {
-        get;
-        init;
-    } = string.Empty;
+    public PresetVrmSettings VrmSettings { get; init; } = new();
+    
+    public PresetCurveOptimizerOptions CurveOptimizerOptions { get; init; } = new();
+    
+    public PresetCurveOptimizerAdvancedOptions CurveOptimizerAdvancedOptions { get; init; } = new();
+    
+    public PresetAdvancedCpuModesSettings AdvancedCpuModesSettings { get; init; } = new();
 }
 
 public class PresetConfiguration
 {
-    // ReSharper disable once PropertyCanBeMadeInitOnly.Global
-    public string CommandString
-    {
-        get;
-        set;
-    } = "";
 
     public PresetMetrics Metrics
     {
@@ -77,7 +69,7 @@ public class PresetConfiguration
         init;
     } = new();
 
-    public PresetOptions Options
+    public SettingsOptions SettingsOptions
     {
         get;
         init;
@@ -288,10 +280,8 @@ public class OcFinderService : IOcFinderService
 {
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static readonly ICpuService Cpu = App.GetService<ICpuService>();
 
-    private const bool ForceTraining = false;
     private bool _isInitialized;
     private bool _isTdpInitialized;
     private bool _isUndervoltingAvailable;
@@ -307,7 +297,6 @@ public class OcFinderService : IOcFinderService
 
     // Кэш для метрик
     private readonly Dictionary<string, PresetMetrics> _metricsCache = [];
-    private readonly Dictionary<string, PresetOptions> _optionsCache = [];
 
     public OcFinderService()
     {
@@ -376,7 +365,7 @@ public class OcFinderService : IOcFinderService
         var codenameGeneration = Cpu.GetCodenameGeneration();
         var isCpuHighPower = codenameGeneration == CodenameGeneration.Fp8 
             || codenameGeneration == CodenameGeneration.Am5;
-        // Позволяет использовать реальную базовую мощность а не ограниченную на 45, на Strix Halo и Dragon Range
+        // Позволяет использовать реальную базовую мощность, а не ограниченную на 45, на Strix Halo и Dragon Range
 
         // Ограничение для мобильных платформ
         if (_validatedCpuPower > 45 && !_isPlatformPc && !isCpuHighPower)
@@ -448,7 +437,7 @@ public class OcFinderService : IOcFinderService
             DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 0.9,
             ThermalMultiplier = 0.95,
-            StapmBonus = 2.0, // Завышаеи мощность для старой архитектуры
+            StapmBonus = 2.0, // Завышаем мощность для старой архитектуры
             FastBonus = 1.0
         };
 
@@ -549,7 +538,8 @@ public class OcFinderService : IOcFinderService
     /// <summary>
     ///     Создание пресета с использованием специфичных кривых для каждого типа
     /// </summary>
-    public PresetConfiguration CreatePreset(PresetType type, OptimizationLevel level)
+    public PresetConfiguration 
+        CreatePreset(PresetType type, OptimizationLevel level)
     {
         LazyInitTdp();
 
@@ -587,6 +577,7 @@ public class OcFinderService : IOcFinderService
             ? stapmValue + preset.FastBonus
             : FromValueToUpper(curves.FastMultipliers[0] * stapmValue + curves.FastMultipliers[1] + preset.FastBonus,
                 3);
+        var slowValue = (fastValue - stapmValue) / 2.3 + stapmValue;
 
         // Температурные лимиты
         var tempLimit = level switch
@@ -597,20 +588,49 @@ public class OcFinderService : IOcFinderService
             _ => GetBaseTempForPreset(type)
         };
 
+        // Предопределение
+        if (_codenameGeneration is CodenameGeneration.Fp6 or CodenameGeneration.Fp7 or CodenameGeneration.Fp8
+            && type == PresetType.Max)
+        {
+            stapmValue = 54;
+            fastValue = 65;
+            slowValue = 58;
+        }
+
         // Временные параметры
         var (stapmTime, slowTime, prochotRamp) = GetTimingParameters(type, level);
-
-        var commandString =
-            BuildCommandString(stapmValue, fastValue, tempLimit, stapmTime, slowTime, prochotRamp, level);
-
+        var stapmSetting = new PresetOption<double>(stapmValue != 0, stapmValue);
+        var slowSetting = new PresetOption<double>(slowValue != 0 || stapmValue != 0, slowValue != 0 ? slowValue : stapmValue);
+        var settings = new SettingsOptions
+        {
+            Type = type,
+            Level = level,
+            Architecture = preset,
+            CpuSettings = new PresetCpuSettings
+            {
+                LaptopPowerLimit = stapmSetting,
+                CpuSustainedPowerLimit = stapmSetting,
+                CpuActualPowerLimit = new PresetOption<double>(fastValue != 0, fastValue),
+                CpuAveragePowerLimit = slowSetting,
+                CpuMaximumTemperature = new PresetOption<double>(tempLimit != 0, tempLimit),
+                CpuBoostTimeSlow = new PresetOption<double>(true, stapmTime),
+                CpuBoostTimeFast = new PresetOption<double>(true, slowTime),
+            },
+            VrmSettings = new PresetVrmSettings
+            {
+                VrmCpuFrequencyRestoreTime =  new PresetOption<double>(true, prochotRamp),
+                VrmCpuEdcCurrentLimit =  new PresetOption<double>(true, 110),
+                VrmCpuTdcCurrentLimit =  new PresetOption<double>(true, 100),
+                VrmSocEdcCurrentLimit =  new PresetOption<double>(true, 60),
+            }
+        };
         return new PresetConfiguration
         {
             Type = type,
             Level = level,
             IsUndervoltingEnabled = level == OptimizationLevel.Deep && _isUndervoltingAvailable,
-            CommandString = commandString,
-            Metrics = CalculateMetrics(type, level, stapmValue, tempLimit, preset),
-            Options = GetPresetOptions(commandString)
+            Metrics = CalculateMetrics(settings),
+            SettingsOptions = settings
         };
     }
 
@@ -646,74 +666,9 @@ public class OcFinderService : IOcFinderService
         return baseTiming;
     }
 
-    private string BuildCommandString(double stapm, double fast, int tempLimit, int stapmTime, int slowTime,
-        int prochotRamp, OptimizationLevel level)
+    private PresetMetrics CalculateMetrics(SettingsOptions options)
     {
-        var sb = new StringBuilder();
-
-        sb.Append($"--fast-limit={(int)(fast * 1000)} ");
-
-        if (_codenameGeneration != CodenameGeneration.Fp4)
-        {
-            sb.Append($"--tctl-temp={tempLimit} ");
-
-            // DragonRange is laptop CPU but with Desktop silicon and has Stapm limit
-            if ((_codenameGeneration == CodenameGeneration.Am5 && Cpu.IsDragonRange) || _codenameGeneration != CodenameGeneration.Am5)
-            {
-                sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
-            }
-
-            sb.Append($"--slow-limit={(int)(stapm * 1000)} ");
-            sb.Append($"--stapm-time={stapmTime} ");
-            sb.Append($"--slow-time={slowTime} ");
-            sb.Append("--vrm-current=120000 ");
-            sb.Append("--vrmmax-current=140000 ");
-            sb.Append("--vrmsoc-current=100000 ");
-            sb.Append("--vrmsocmax-current=110000 ");
-        }
-        else
-        {
-            var tempLimitBr = tempLimit > 85 ? 84000 : tempLimit * 1000;
-            sb.Append($"--tctl-temp={tempLimitBr} ");
-            sb.Append($"--stapm-limit={(int)(stapm * 1000)},2,{stapmTime * 1000} ");
-            sb.Append("--max-performance=0 "); // Включит Max Speed режим
-            sb.Append("--disable-feature=10 "); // Выключит Pkg-Pwr лимит
-
-            if (level == OptimizationLevel.Deep)
-            {
-                sb.Append("--disable-feature=8 "); // Выключит TDC лимит
-            }
-        }
-
-        sb.Append($"--prochot-deassertion-ramp={prochotRamp} ");
-
-        // Для глубокой оптимизации добавляем андервольтинг если доступен
-        
-        // TODO: FIX PREMADE PRESETS
-        /*if (level == OptimizationLevel.Deep && _isUndervoltingAvailable)
-        {
-            if (AppSettings.PremadeCurveOptimizerOverrideLevel is <= -51 or >= 1)
-            {
-                AppSettings.PremadeCurveOptimizerOverrideLevel = -10;
-                AppSettings.SaveSettings();
-            }
-
-            sb.Append(CurveOptimizerGenerateStringHelper(AppSettings
-                .PremadeCurveOptimizerOverrideLevel)); // Андервольтинг
-        }*/
-
-        return sb.ToString().Trim();
-    }
-
-    private static string CurveOptimizerGenerateStringHelper(int value) =>
-        value >= 0
-            ? $" --set-coall={value} "
-            : $" --set-coall={0x100000U - (uint)-value} ";
-
-    private PresetMetrics CalculateMetrics(PresetType type, OptimizationLevel level, double stapm, int tempLimit,
-        ArchitecturePreset preset)
-    {
-        var cacheKey = $"{type}_{level}_{stapm:F1}_{tempLimit}";
+        var cacheKey = $"{options.Type}_{options.Level}_{options.CpuSettings.CpuSustainedPowerLimit.Value:F1}";
         if (_metricsCache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
@@ -726,7 +681,7 @@ public class OcFinderService : IOcFinderService
         const double efficiencySweetSpot = 0.8; // Точка максимальной энергоэффективности (75% от базовой мощности)
 
         // Нормализованная мощность (0 = минимум, 1 = база, >1 = буст)
-        var powerRatio = stapm / _validatedCpuPower;
+        var powerRatio = options.CpuSettings.CpuSustainedPowerLimit.Value / _validatedCpuPower;
 
         // === ПРОИЗВОДИТЕЛЬНОСТЬ ===
         // Используем корневую зависимость с убывающей отдачей
@@ -748,7 +703,7 @@ public class OcFinderService : IOcFinderService
 
         // === ТЕМПЕРАТУРЫ ===
         // Чем ниже лимит температуры, тем лучше для системы
-        var tempRatio = tempLimit / baseTemp;
+        var tempRatio = options.CpuSettings.CpuMaximumTemperature.Value / baseTemp;
         double thermalScore;
 
         if (tempRatio <= 0.85) // Агрессивное охлаждение (≤72°C)
@@ -764,31 +719,33 @@ public class OcFinderService : IOcFinderService
             thermalScore = (tempRatio - 1.0) * 200; // Температура сильно больше 
         }
 
+        options.Architecture ??= GetArchitecturePreset();
+        
         // Применяем термальный множитель пресета
-        thermalScore *= preset.ThermalMultiplier;
+        thermalScore *= options.Architecture.ThermalMultiplier;
 
         // === ЭНЕРГОЭФФЕКТИВНОСТЬ ===
 
         // Расстояние от оптимальной точки
         var distanceFromSweet = Math.Abs(powerRatio - efficiencySweetSpot);
 
-        // Базовая эффективность - колоколообразная кривая с центром в efficiencySweetSpot
+        // Базовая эффективность - колоколо-образная кривая с центром в efficiencySweetSpot
         var efficiencyBase = 50 * Math.Exp(-Math.Pow(distanceFromSweet * 2, 2));
 
         // Корректировка на основе EfficiencyMultiplier
         // Высокий multiplier (1.25) = процессор эффективен на низких мощностях
         // Низкий multiplier (0.8) = процессор менее эффективен, но лучше масштабируется
-        if (preset.EfficiencyMultiplier > 1.0)
+        if (options.Architecture.EfficiencyMultiplier > 1.0)
         {
             // Эффективный процессор: лучше работает на низких мощностях
             if (powerRatio < 1.0)
             {
-                efficiencyBase *= preset.EfficiencyMultiplier;
+                efficiencyBase *= options.Architecture.EfficiencyMultiplier;
             }
             else
             {
                 // Меньше выигрыша от повышения мощности
-                efficiencyBase *= 2.0 - preset.EfficiencyMultiplier;
+                efficiencyBase *= 2.0 - options.Architecture.EfficiencyMultiplier;
             }
         }
         else
@@ -797,11 +754,11 @@ public class OcFinderService : IOcFinderService
             if (powerRatio > 1.0)
             {
                 // Больше выигрыша от повышения мощности
-                efficiencyBase *= 1.0 + (1.0 - preset.EfficiencyMultiplier);
+                efficiencyBase *= 1.0 + (1.0 - options.Architecture.EfficiencyMultiplier);
             }
             else
             {
-                efficiencyBase *= preset.EfficiencyMultiplier;
+                efficiencyBase *= options.Architecture.EfficiencyMultiplier;
             }
         }
 
@@ -809,13 +766,13 @@ public class OcFinderService : IOcFinderService
         efficiencyBase -= Math.Max(0, -thermalScore) * 0.3; // Штраф за высокие температуры
 
         // === БОНУСЫ ЗА УРОВЕНЬ ОПТИМИЗАЦИИ ===
-        var isEcoPreset = type == PresetType.Eco || type == PresetType.Min;
+        var isEcoPreset = options.Type is PresetType.Eco or PresetType.Min;
 
         var performanceLevelBonus = 0;
         var efficiencyLevelBonus = 0;
         var thermalLevelBonus = 0;
 
-        switch (level)
+        switch (options.Level)
         {
             case OptimizationLevel.Basic:
                 if (isEcoPreset)
@@ -879,70 +836,14 @@ public class OcFinderService : IOcFinderService
         return preset.Metrics;
     }
 
-    public PresetOptions GetPresetOptions(string preset)
-    {
-        var cacheKey = $"{preset}";
-        if (_optionsCache.TryGetValue(cacheKey, out var cached))
-        {
-            return cached;
-        }
-
-
-        var parts = preset.Split(' ');
-        var values = new Dictionary<string, int>();
-
-        foreach (var part in parts)
-        {
-            if (part.Contains('='))
-            {
-                var keyValue = part.Split('=');
-                if (keyValue.Length >= 2 && int.TryParse(keyValue[1], out var value))
-                {
-                    values[keyValue[0]] = value;
-                }
-            }
-        }
-
-        var options = new PresetOptions
-        {
-            ThermalOptions = values.GetValueOrDefault("--tctl-temp", 80) + "C",
-            PowerOptions = new[]
-                {
-                    values.GetValueOrDefault("--stapm-limit", 0),
-                    values.GetValueOrDefault("--fast-limit", 0),
-                    values.GetValueOrDefault("--slow-limit", 0)
-                }.Select(v => (v / 1000) + "W")
-                .Where(s => s != "0W").Distinct()
-                .Aggregate("", (a, b) => string.IsNullOrEmpty(a) ? b : a + ", " + b),
-            CurrentOptions = (values.GetValueOrDefault("--vrmmax-current", 0) / 1000) + "A, " +
-                             (values.GetValueOrDefault("--vrm-current", 0) / 1000) + "A, " +
-                             (values.GetValueOrDefault("--vrmsocmax-current", 0) / 1000) + "A"
-        };
-
-        _optionsCache[cacheKey] = options;
-
-        return options;
-    }
-
     private static int FromValueToUpper(double value, int upper) => (int)Math.Ceiling(value / upper) * upper;
-
-    // Legacy методы для совместимости
-    private void GeneratePremadePresets()
-    {
-        if (_isInitialized && !ForceTraining)
-        {
-            return;
-        }
-
-        LazyInitTdp();
-        _isInitialized = true;
-    }
 
     public PresetRecommendations GetPerformanceRecommendationData()
     {
         if (!_isInitialized)
         {
-            GeneratePremadePresets();
+            LazyInitTdp();
+            _isInitialized = true;
         }
 
         // Генерируем данные на основе Balance и Speed пресетов
@@ -950,8 +851,8 @@ public class OcFinderService : IOcFinderService
         var performancePreset = CreatePreset(PresetType.Speed, OptimizationLevel.Standard);
 
         // Извлекаем значения из строк команд
-        var balanceValues = ParseCommandString(balancePreset.CommandString);
-        var performanceValues = ParseCommandString(performancePreset.CommandString);
+        var balanceValues = ParseRecommendations(balancePreset.SettingsOptions);
+        var performanceValues = ParseRecommendations(performancePreset.SettingsOptions);
 
         return new PresetRecommendations
         {
@@ -965,98 +866,66 @@ public class OcFinderService : IOcFinderService
         };
     }
     
-    private static PresetRecommendations ParseCommandString(string commandString)
+    private static PresetRecommendations ParseRecommendations(SettingsOptions options)
     {
         var result = new PresetRecommendations();
-
-        var parts = commandString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        var map = new Dictionary<string, string>();
-
-        foreach (var part in parts)
-        {
-            if (!part.StartsWith("--") || !part.Contains('='))
-            {
-                continue;
-            }
-
-            var split = part.Split('=', 2);
-            map[split[0]] = split[1];
-        }
         
         // Температуры
-        if (map.TryGetValue("--tctl-temp", out var temp))
+        if (options.CpuSettings.CpuMaximumTemperature.IsEnabled)
         {
-            temp = CutComposite(temp);
-            if (temp.Length >= 4)
-            {
-                temp = CutLast3(temp);
-            }
-
-            Fill(result.TemperatureLimits, temp, "C");
+            Fill(result.TemperatureLimits, L(options.CpuSettings.CpuMaximumTemperature.Value), "C");
         }
 
         // Лимиты мощности
-        if (map.TryGetValue("--fast-limit", out var fast))
+        if (options.CpuSettings.CpuActualPowerLimit.IsEnabled) // fast
         {
-            fast = CutLast3(CutComposite(fast));
+            var fast = L(options.CpuSettings.CpuActualPowerLimit.Value);
             Fill(result.FastLimits, fast, "W");
-            if (!commandString.Contains("--slow-limit"))
+            
+            if (!options.CpuSettings.CpuAveragePowerLimit.IsEnabled) // ! slow
             {
                 Fill(result.SlowLimits, fast, "W"); // slow = fast
             }
             
-            if (!commandString.Contains("--stapm-limit"))
+            if (!options.CpuSettings.CpuSustainedPowerLimit.IsEnabled) // ! stapm
             {
                 Fill(result.StapmLimits, fast, "W"); // stapm = fast
             }
         }
     
-        if (map.TryGetValue("--stapm-limit", out var stapm))
+        if (options.CpuSettings.CpuSustainedPowerLimit.IsEnabled)
         {
-            stapm = CutLast3(CutComposite(stapm));
-            Fill(result.StapmLimits, stapm, "W");
+            Fill(result.StapmLimits, L(options.CpuSettings.CpuSustainedPowerLimit.Value), "W");
         }
 
-        if (map.TryGetValue("--slow-limit", out var slow))
+        if (options.CpuSettings.CpuAveragePowerLimit.IsEnabled)
         {
-            slow = CutLast3(CutComposite(slow));
-            Fill(result.SlowLimits, slow, "W");
+            Fill(result.SlowLimits,  L(options.CpuSettings.CpuAveragePowerLimit.Value), "W");
         }
 
         // Тайминги Vrm
-        if (map.TryGetValue("--slow-time", out var slowTime))
+        if (options.CpuSettings.CpuBoostTimeFast.IsEnabled)
         {
-            Fill(result.SlowTime, slowTime, "s");
+            Fill(result.SlowTime, L(options.CpuSettings.CpuBoostTimeFast.Value), "s");
         }
 
-        if (map.TryGetValue("--stapm-time", out var stapmTime))
+        if (options.CpuSettings.CpuBoostTimeSlow.IsEnabled)
         {
-            Fill(result.StapmTime, stapmTime, "s");
+            Fill(result.StapmTime, L(options.CpuSettings.CpuBoostTimeSlow.Value), "s");
         }
 
-        if (map.TryGetValue("--prochot-deassertion-ramp", out var prochot))
+        if (options.VrmSettings.VrmCpuFrequencyRestoreTime.IsEnabled)
         {
-            Fill(result.ProchotRampTime, prochot, "ms");
+            Fill(result.ProchotRampTime, L(options.VrmSettings.VrmCpuFrequencyRestoreTime.Value), "ms");
         }
+
+        string L(double v) => ((int)v).ToString();
 
         return result;
-    }
-    
-    private static string CutComposite(string value)
-    {
-        var commaIndex = value.IndexOf(',');
-        return commaIndex >= 0 ? value[..commaIndex] : value;
-    }
-
-    private static string CutLast3(string value)
-    {
-        return value.Length > 3 ? value[..^3] : value;
     }
 
     private static void Fill(string[] target, string value, string suffix)
     {
         target[0] = value + suffix;
-        target[1] = value + suffix;
     }
 }

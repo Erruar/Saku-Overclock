@@ -67,20 +67,12 @@ public interface IPresetManagerService
     /// <param name="append">Если true - добавляет к существующим, если false - заменяет</param>
     void ImportPresets(string importFolder, string importFile, bool append = false);
 
-    void SelectPremadePreset(string nextPreset);
-
     /// <summary>
     ///     Выдаст информацию о следующем кастомном пресете (используется в горячих клавишах)
     /// </summary>
     /// <returns>Конфигурация следующего кастомного пресета</returns>
-    PresetId GetNextCustomPreset();
-
-    /// <summary>
-    ///     Выдаст информацию о следующем готовом пресете (используется в горячих клавишах)
-    /// </summary>
-    /// <returns>Конфигурация следующего готового пресета</returns>
-    PresetId GetNextPremadePreset();
-
+    PresetId GetNextPreset();
+    
     /// <summary>
     ///     Удалить виртуальное состояние применённого пресета после применения горячими клавишами
     /// </summary>

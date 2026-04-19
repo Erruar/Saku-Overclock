@@ -109,6 +109,12 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = 0;
     
+    public bool PremadePresetsAdded
+    {
+        get;
+        set;
+    } = false;
+    
     public string AcPreset
     {
         get;

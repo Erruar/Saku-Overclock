@@ -16,7 +16,10 @@ public class ActivationService(
     IWindowStateManagerService windowStateManager,
     ITrayMenuService trayMenuService,
     IPstateService pstateService,
-    IBackgroundDataUpdater backgroundDataUpdater)
+    IBackgroundDataUpdater backgroundDataUpdater,
+    IPresetManagerService presetManagerService,
+    IOcFinderService ocFinderService,
+    IPremadePresetManagementService premadePresetManagementService)
     : IActivationService
 {
     private UIElement? _shell;
@@ -28,7 +31,7 @@ public class ActivationService(
         // Выполняется перед активацией
         Initialize();
 
-        // Установаить контент для MainWindow
+        // Установить контент для MainWindow
         if (App.MainWindow.Content == null)
         {
             _shell = App.GetService<ShellPage>();
@@ -71,15 +74,24 @@ public class ActivationService(
     {
         // 1. Загрузка настроек приложения
         appSettingsService.LoadSettings();
+        
+        // 2. Загрузка пресетов пользователя
+        presetManagerService.LoadSettings();
 
-        // 2. Обновление данных
+        // 3. Обновление данных
         backgroundDataUpdater.StartAsync(_globalCts.Token);
 
-        // 3. Инициализация тем
+        // 4. Инициализация тем
         themeSelectorService.Initialize();
 
-        // 4. Состояние окна и его скрытие в трей
+        // 5. Состояние окна и его скрытие в трей
         windowStateManager.Initialize();
+        
+        // 6. Инициализация TDP процессора
+        ocFinderService.LazyInitTdp();
+        
+        // 7. Инициализация готовых пресетов
+        premadePresetManagementService.Initialize();
     }
 
     /// <summary>
@@ -90,8 +102,8 @@ public class ActivationService(
         // 1. Установка выбранной темы приложения
         themeSelectorService.SetRequestedThemeAsync();
 
-        // 2. Авто-применение настроек разгона
-        await applyerService.AutoApplySettingsWithAppStart();
+        // 2. Восстановление предыдущих настроек разгона
+        await applyerService.RestoreAppliedSettings();
 
         // 3. Установка стратегии работы с P-States
         pstateService.Initialize();

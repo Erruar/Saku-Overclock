@@ -175,7 +175,7 @@ public class SensorsInformation
     {
         get; set;
     }
-    public string? BatteryPercent
+    public int BatteryPercent
     {
         get; set;
     }
@@ -206,11 +206,11 @@ public class SensorsInformation
     #endregion
 
     #region RAM Information
-    public string? RamTotal
+    public double RamTotal
     {
         get; set;
     }
-    public string? RamBusy
+    public double RamBusy
     {
         get; set;
     }

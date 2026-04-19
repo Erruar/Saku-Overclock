@@ -1,5 +1,6 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
+using Saku_Overclock.Helpers;
 
 namespace Saku_Overclock.Services;
 
@@ -114,23 +115,30 @@ public class RtssSettingsService : IRtssSettingsService
     // Загрузка настроек
     public void LoadSettings()
     {
-        var settings = _fileService.Read<RtssSettingsService>(_applicationDataFolder, FileName);
-
-        if (settings == null)
+        try
         {
-            return;
-        }
+            var settings = _fileService.Read<RtssSettingsService>(_applicationDataFolder, FileName);
 
-        foreach (var prop in typeof(RtssSettingsService).GetProperties())
-        {
-            if (prop.CanRead && prop.CanWrite)
+            if (settings == null)
             {
-                var value = prop.GetValue(settings);
-                if (value != null)
+                return;
+            }
+
+            foreach (var prop in typeof(RtssSettingsService).GetProperties())
+            {
+                if (prop.CanRead && prop.CanWrite)
                 {
-                    prop.SetValue(this, value);
+                    var value = prop.GetValue(settings);
+                    if (value != null)
+                    {
+                        prop.SetValue(this, value);
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
         }
     }
 

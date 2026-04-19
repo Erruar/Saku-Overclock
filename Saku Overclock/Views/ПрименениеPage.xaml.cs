@@ -107,10 +107,10 @@ public sealed partial class ПрименениеPage
         {
             var confirm = new ContentDialog
             {
-                Title = "Сбросить параметры?",
-                Content = "Все параметры применения будут восстановлены на значения по умолчанию",
-                PrimaryButtonText = "Сбросить",
-                CloseButtonText = "Отмена",
+                Title = "Settings_Apply_Reset_All_Title".GetLocalized(),
+                Content = "Settings_Apply_Reset_All_Desc".GetLocalized(),
+                PrimaryButtonText = "ThemeResetAction/Text".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
             if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,6 +15,7 @@ using Saku_Overclock.ViewModels;
 using ScottPlot.TickGenerators;
 using Windows.UI.Text;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
+#pragma warning disable CS0162 // Unreachable code detected
 
 namespace Saku_Overclock.Views;
 
@@ -71,6 +73,8 @@ public sealed partial class ГлавнаяPage
     private readonly string _powerSumDisabled = "Info_PowerSumInfo_Disabled".GetLocalized();
     private readonly string _fromWall = "InfoBatteryAC".GetLocalized();
 
+    private const bool DeveloperMockupMode = false;
+
     public ГлавнаяPage()
     {
         InitializeComponent();
@@ -98,10 +102,7 @@ public sealed partial class ГлавнаяPage
 
         foreach (var button in buttons)
         {
-            PresetPivot.SelectedIndex = e.PresetKey == "Custom" ? 0 : 1;
-            var isChecked = e.PresetKey == "Custom"
-                ? button.Tag is int index && index == e.PresetIndex
-                : button.Tag is string tag && tag == $"Preset_{e.PresetKey}";
+            var isChecked = button.Tag is int index && index == e.PresetIndex;
 
             button.IsChecked = isChecked;
             button.BorderThickness = isChecked ? checkedThickness : uncheckedThickness;
@@ -130,8 +131,13 @@ public sealed partial class ГлавнаяPage
             LoadPresetsToPivot();
 
             InfoCpuName.Text = _cpu.CpuName;
-            InfoCpuCores.Text = _cpu.Cores + "C/" +
-                                 Environment.ProcessorCount + "T";
+            InfoCpuCores.Text = _cpu.Cores.ToString();
+            InfoCpuThreads.Text = Environment.ProcessorCount.ToString();
+
+            if (DeveloperMockupMode)
+            {
+                InfoCpuName.Text = "AMD Ryzen Eng Sample 104";
+            }
         }
         catch (Exception ex)
         {
@@ -179,6 +185,11 @@ public sealed partial class ГлавнаяPage
                             PresetManager.Presets[AppSettings.Preset].PresetDesc == preset.PresetDesc &&
                             PresetManager.Presets[AppSettings.Preset].PresetIcon == preset.PresetIcon;
 
+            var presetName = preset.PresetName;
+            var presetDesc = preset.PresetDesc;
+            if (presetName.Contains("Preset_")) { presetName = TryLocalize(presetName); }
+            if (presetDesc.Contains("Preset_")) { presetDesc = TryLocalize(presetDesc); }
+            
             var toggleButton = new ToggleButton
             {
                 Tag = i,
@@ -192,7 +203,7 @@ public sealed partial class ГлавнаяPage
                 Content = new Grid
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Margin = new Thickness(-5, -5, -5, -5),
+                    Margin = new Thickness(-5, -5, -4, -5),
                     Children =
                     {
                         new FontIcon
@@ -210,14 +221,16 @@ public sealed partial class ГлавнаяPage
                             {
                                 new TextBlock
                                 {
-                                    FontWeight = new FontWeight(700),
-                                    Text = preset.PresetName
+                                    FontWeight = new FontWeight(500),
+                                    Text = presetName
                                 },
                                 new TextBlock
                                 {
+                                    FontSize = 12,
+                                    Foreground = SecondText,
                                     TextWrapping = TextWrapping.Wrap,
-                                    Text = preset.PresetDesc,
-                                    Visibility = preset.PresetDesc == string.Empty
+                                    Text = presetDesc,
+                                    Visibility = presetDesc == string.Empty
                                         ? Visibility.Collapsed
                                         : Visibility.Visible
                                 }
@@ -235,17 +248,19 @@ public sealed partial class ГлавнаяPage
             };
             PresetCustom.Children.Add(toggleButton);
         }
+    }
 
-        // TODO: FIX PREMADE PRESETS
-        /*if (AppSettings.Preset == -1 || PresetManager.Presets.Length == 0)
+    public static string TryLocalize(string input)
+    {
+        try
         {
-            PresetPivot.SelectedIndex = 1;
-            PresetMin.IsChecked = AppSettings.PremadeMinActivated;
-            PresetEco.IsChecked = AppSettings.PremadeEcoActivated;
-            PresetBalance.IsChecked = AppSettings.PremadeBalanceActivated;
-            PresetSpeed.IsChecked = AppSettings.PremadeSpeedActivated;
-            PresetMax.IsChecked = AppSettings.PremadeMaxActivated;
-        }*/
+            input = input.GetLocalized();
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
+        return input;
     }
 
     #endregion
@@ -259,6 +274,15 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void OnDataUpdated(object? sender, SensorsInformation info)
     {
+        if (DeveloperMockupMode)
+        {
+            var rand = new Random();
+            info.CpuTempValue = rand.Next(34,40);
+            info.CpuFrequency = rand.Next(47,51) * 0.1;
+            info.CpuFastValue = rand.Next(17,25);
+            info.VrmEdcValue = rand.Next(30,45);
+        }
+        
         // Кэшируем максимальную частоту
         if (_maxCpuFreq < info.CpuFrequency)
         {
@@ -294,31 +318,16 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void UpdateMainIndicators(SensorsInformation info)
     {
-        IndicatorsTemp.Text = $"{Math.Round(info.CpuTempValue, 1):F1}C";
-        IndicatorsBusy.Text = $"{Math.Round(info.CpuUsage, 0):F0}%";
-        IndicatorsFreq.Text = $"{Math.Round(info.CpuFrequency, 1):F1} {_ghzInfo}";
-
-        IndicatorsBusyRing.Value = info.CpuUsage;
-        IndicatorsFreqRing.Value = info.CpuFrequency / _maxCpuFreq * 100;
+        IndicatorsTemp.Text = Math.Round(info.CpuTempValue, 1).ToString(CultureInfo.InvariantCulture);
+        IndicatorsBusy.Text = Math.Round(info.CpuUsage, 0).ToString(CultureInfo.InvariantCulture);
+        IndicatorsFreq.Text = Math.Round(info.CpuFrequency, 1).ToString(CultureInfo.InvariantCulture);
 
         UpdateTemperatureChartPointPosition((int)info.CpuTempValue);
 
-        IndicatorsFast.Text = info.CpuFastValue == 0
-            ? _powerSumDisabled
-            : $"{Math.Round(info.CpuFastValue, 1):F1}W";
+        IndicatorsFast.Text = Math.Round(info.CpuFastValue, 1).ToString(CultureInfo.InvariantCulture);
 
-        IndicatorsVrmEdc.Text = $"{Math.Round(info.VrmEdcValue, 1):F1}A";
-
-        // Защита от деления на ноль
-        IndicatorsFastRing.Value = info.CpuFastLimit > 0
-            ? info.CpuFastValue / info.CpuFastLimit * 100
-            : 0;
-        IndicatorsVrmEdcRing.Value = info.VrmEdcLimit > 0
-            ? info.VrmEdcValue / info.VrmEdcLimit * 100
-            : 0;
-
-        IndicatorsRam.Text = info.RamBusy;
-        IndicatorsRamRing.Value = info.RamUsagePercent;
+        IndicatorsVrmEdc.Text = $"{Math.Round(info.VrmEdcValue, 1):F1}";
+        IndicatorsRam.Text = $"{info.RamBusy:F1}";
 
         UpdateBatteryInfo(info);
     }
@@ -333,14 +342,9 @@ public sealed partial class ГлавнаяPage
             if (info.IsNvidiaGpuAvailable)
             {
                 IndicatorsBatteryPercent.Text = info.NvidiaGpuUsage + "%";
-                IndicatorsBatteryPercentRing.Value = info.NvidiaGpuUsage;
                 if (BatteryText.Text != _graphics)
                 {
                     BatteryText.Text = _graphics;
-                }
-                if (IndicatorsBatteryPercentIcon.Glyph != "\uF211")
-                {
-                    IndicatorsBatteryPercentIcon.Glyph = "\uF211";
                 }
             }
             else
@@ -348,32 +352,12 @@ public sealed partial class ГлавнаяPage
                 if (IndicatorsBatteryPercent.Text != "N/A")
                 {
                     IndicatorsBatteryPercent.Text = "N/A";
-                    IndicatorsBatteryPercentRing.Value = 0;
                 }
             }
         }
         else
         {
-            IndicatorsBatteryPercent.Text = info.BatteryPercent;
-            if (info.BatteryState is > 5 and < 10 or 11 or > 1 and < 4)
-            {
-                if (IndicatorsBatteryPercentIcon.Glyph != "\uE83E")
-                {
-                    IndicatorsBatteryPercentIcon.Glyph = "\uE83E";
-                }
-            }
-            else
-            {
-                if (IndicatorsBatteryPercentIcon.Glyph != "\uE83F")
-                {
-                    IndicatorsBatteryPercentIcon.Glyph = "\uE83F";
-                }
-            }
-            // Безопасный парсинг процентов
-            if (int.TryParse(info.BatteryPercent?.Replace("%", string.Empty), out var percent))
-            {
-                IndicatorsBatteryPercentRing.Value = percent;
-            }
+            IndicatorsBatteryPercent.Text = info.BatteryPercent.ToString();
         }
     }
 
@@ -406,8 +390,8 @@ public sealed partial class ГлавнаяPage
 
             case 5:
                 MainAdditionalInfo1Name.Text = $"{info.RamUsagePercent}%";
-                MainAdditionalInfo2Name.Text = IndicatorsRam.Text;
-                MainAdditionalInfo3Name.Text = info.RamTotal;
+                MainAdditionalInfo2Name.Text = IndicatorsRam.Text + "GB";
+                MainAdditionalInfo3Name.Text = $"{info.RamTotal:F1}GB";
                 break;
 
             case 6:
@@ -544,41 +528,6 @@ public sealed partial class ГлавнаяPage
     #region Event Handlers
 
     /// <summary>
-    ///     Изменяет отображение контента при небольшом размере окна
-    /// </summary>
-    private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        var isCompact = e.NewSize.Height < 400;
-        var (main, frequent) = isCompact ? CompactGridMargins : NormalGridMargins;
-
-
-        if (MainGrid.Margin != main)
-        {
-            MainGrid.Margin = main;
-        }
-
-        if (FriquentlyUsedGrid.Margin != frequent)
-        {
-            FriquentlyUsedGrid.Margin = frequent;
-        }
-
-        DeviceInfoSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
-        FrequentlyUsedSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
-    }
-
-    private static readonly (Thickness Main, Thickness Frequent) CompactGridMargins =
-    (
-        new Thickness(00, -20, 0, 0),
-        new Thickness(-10, 8, 0, 3)
-    );
-
-    private static readonly (Thickness Main, Thickness Frequent) NormalGridMargins =
-    (
-        new Thickness(00, 20, 0, 0),
-        new Thickness(-10, 05, 0, 3)
-    );
-
-    /// <summary>
     ///     Открывает страницу управления пресетами
     /// </summary>
     private void PresetsPage_Click(object sender, RoutedEventArgs e)
@@ -607,30 +556,6 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void FaqLink_Click(object sender, RoutedEventArgs e) => Process.Start(
         new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ") { UseShellExecute = true });
-
-    /// <summary>
-    ///     Скрывает панель навигации Pivot и смещает её вверх
-    /// </summary>
-    private void PivotPresets_Loaded(object sender, RoutedEventArgs e)
-    {
-        var pivot = sender as Pivot;
-        var headers = VisualTreeHelper.FindVisualChildren<ContentPresenter>(pivot!);
-        foreach (var header in headers)
-        {
-            var contentPresenters = VisualTreeHelper.FindVisualChildren<PivotHeaderPanel>(header);
-            foreach (var content in contentPresenters)
-            {
-                var headerItems = VisualTreeHelper.FindVisualChildren<PivotHeaderItem>(header);
-                foreach (var item in headerItems)
-                {
-                    item.Visibility = Visibility.Collapsed;
-                }
-
-                content.Visibility = Visibility.Collapsed;
-                content.Margin = new Thickness(0, -20, 0, 0);
-            }
-        }
-    }
 
     /// <summary>
     ///     Запрещает отмену выделения ToggleButton пресета
@@ -757,8 +682,12 @@ public sealed partial class ГлавнаяPage
                         for (var i = 0; i < PresetManager.Presets.Length; i++)
                         {
                             var preset = PresetManager.Presets[i];
-                            if (preset.PresetName == name &&
-                                preset.PresetDesc == desc &&
+                            var presetName = preset.PresetName;
+                            var presetDesc = preset.PresetDesc;
+                            if (presetName.Contains("Preset_")) { presetName = TryLocalize(presetName); }
+                            if (presetDesc.Contains("Preset_")) { presetDesc = TryLocalize(presetDesc); }
+                            if (presetName == name &&
+                                presetDesc == desc &&
                                 (preset.PresetIcon == icon ||
                                  preset.PresetIcon == "\uE718"))
                             {
@@ -785,7 +714,7 @@ public sealed partial class ГлавнаяPage
                     }
 
                     ПараметрыPage.ApplyInfo = string.Empty;
-                    await Applyer.ApplyCustomPreset(requiredPreset, true);
+                    await Applyer.ApplyPreset(requiredPreset, true);
 
                     await Task.Delay(1000);
                     var timer = 1000;
@@ -830,14 +759,6 @@ public sealed partial class ГлавнаяPage
             await LogHelper.LogError(ex);
         }
     }
-
-    /// <summary>
-    ///     Переключает название возле Pivot (готовые и свои пресеты)
-    /// </summary>
-    private void Preset_Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
-        PresetsSign.Text = PresetPivot.SelectedIndex == 0
-            ? "Main_OwnPresets/Text".GetLocalized()
-            : "Main_PremadePresets/Text".GetLocalized();
 
     #region Mouse Events & Blocks behavior
 

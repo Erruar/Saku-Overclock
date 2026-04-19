@@ -1768,6 +1768,9 @@ AND DO NOT TOUCH IT!</value>
   <data name="infoAGHZ" xml:space="preserve">
     <value>GHz</value>
   </data>
+  <data name="infoAGHZRun.Text" xml:space="preserve">
+    <value>GHz</value>
+  </data>
   <data name="infoAVOLTCPU.Text" xml:space="preserve">
     <value>Voltage</value>
   </data>
@@ -1917,6 +1920,18 @@ to be installed and running</value>
   </data>
   <data name="Param_UnsignedPreset" xml:space="preserve">
     <value>My Preset</value>
+  </data>
+  <data name="Preset_SmartPreset" xml:space="preserve">
+    <value>Smart mode</value>
+  </data>
+  <data name="Preset_PowerfulPreset" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="Preset_SmartPresetDesc" xml:space="preserve">
+    <value>Optimization for current workloads. Quiet operation during daily tasks</value>
+  </data>
+  <data name="Preset_PowerfulPresetDesc" xml:space="preserve">
+    <value>Maximum processor power. High speed for demanding tasks</value>
   </data>
   <data name="Settings_ni_Add_Element.Text" xml:space="preserve">
     <value>Add new element</value>
@@ -2086,6 +2101,18 @@ Maximum: </value>
   </data>
   <data name="Settings_ni_Values_MinValue" xml:space="preserve">
     <value>Minimum: </value>
+  </data>
+  <data name="Settings_Apply_Reset_All_Title" xml:space="preserve">
+    <value>Reset options?</value>
+  </data>
+  <data name="Settings_Apply_Reset_All_Desc" xml:space="preserve">
+    <value>All settings will be restored to default values</value>
+  </data>
+  <data name="Settings_Themes_Reset_All_Title" xml:space="preserve">
+    <value>Reset themes?</value>
+  </data>
+  <data name="Settings_Themes_Reset_All_Desc" xml:space="preserve">
+    <value>All theme settings will be restored to default values with removing custom themes</value>
   </data>
   <data name="InfoANiIcons.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon
@@ -2647,7 +2674,7 @@ Use of the Saku Software implies intervention in the standard operating modes of
     <value>Overclock page</value>
   </data>
   <data name="Main_OwnPresets.Text" xml:space="preserve">
-    <value>Own presets</value>
+    <value>Presets</value>
   </data>
   <data name="Main_PremadePresets.Text" xml:space="preserve">
     <value>Premade presets</value>
@@ -2677,13 +2704,13 @@ Use of the Saku Software implies intervention in the standard operating modes of
     <value>Power sensors</value>
   </data>
   <data name="Main_MaxVrmCurrent.Text" xml:space="preserve">
-    <value>VRM EDC</value>
+    <value>VRM Current</value>
   </data>
   <data name="Main_RamUsage.Text" xml:space="preserve">
     <value>RAM Usage</value>
   </data>
   <data name="Main_RealPower.Text" xml:space="preserve">
-    <value>Real power</value>
+    <value>Power</value>
   </data>
   <data name="Main_CpuFreq.Text" xml:space="preserve">
     <value>CPU Frequency</value>

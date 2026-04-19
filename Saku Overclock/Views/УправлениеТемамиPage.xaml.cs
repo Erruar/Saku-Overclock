@@ -669,10 +669,10 @@ public sealed partial class УправлениеТемамиPage
         {
             var confirm = new ContentDialog
             {
-                Title = "Сбросить все темы?",
-                Content = "Все пользовательские темы будут удалены, стандартные восстановлены.",
-                PrimaryButtonText = "Сбросить",
-                CloseButtonText = "Отмена",
+                Title = "Settings_Themes_Reset_All_Title".GetLocalized(),
+                Content = "Settings_Themes_Reset_All_Desc".GetLocalized(),
+                PrimaryButtonText = "ThemeResetAction/Text".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
             if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))

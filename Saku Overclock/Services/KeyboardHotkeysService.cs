@@ -88,18 +88,12 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
 
         switch (e.Message.WParam)
         {
+            case HkPremade:
             case HkCustom:
-                var customPreset = applyerService.SwitchCustomPreset();
+                var customPreset = applyerService.SwitchNextPreset();
                 HandlePreset(customPreset);
                 PresetChanged?.Invoke(this, customPreset);
                 break;
-
-            case HkPremade:
-                var premadePreset = applyerService.SwitchPremadePreset();
-                HandlePreset(premadePreset);
-                PresetChanged?.Invoke(this, premadePreset);
-                break;
-
             case HkRtss:
                 ToggleRtss();
                 break;

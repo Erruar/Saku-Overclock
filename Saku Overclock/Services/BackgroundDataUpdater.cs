@@ -60,7 +60,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private bool _cachedNvidiaGpuUnavailable;
 
     public event EventHandler<SensorsInformation>? DataUpdated;
-    private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
+    private NiIconsSettings _niIcons = new(); // Конфиг с настройками Ni-Icons
 
     // Кеш для иконок чтобы не создавать заново каждый раз
     private readonly Dictionary<string, (Icon icon, IntPtr handle)> _iconCache = [];
@@ -74,19 +74,19 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private readonly string _stapmText = "Settings_ni_Values_STAPM".GetLocalized();
     private readonly string _fastText = "Settings_ni_Values_Fast".GetLocalized();
     private readonly string _slowText = "Settings_ni_Values_Slow".GetLocalized();
-    private readonly string _vrmedcText = "Settings_ni_Values_VRMEDC".GetLocalized();
-    private readonly string _cputempText = "Settings_ni_Values_CPUTEMP".GetLocalized();
-    private readonly string _cpuusageText = "Settings_ni_Values_CPUUsage".GetLocalized();
-    private readonly string _cpufreqText = "Settings_ni_Values_AVGCPUCLK".GetLocalized();
-    private readonly string _cpuvoltText = "Settings_ni_Values_AVGCPUVOLT".GetLocalized();
-    private readonly string _gfxfreqText = "Settings_ni_Values_GFXCLK".GetLocalized();
-    private readonly string _gfxtempText = "Settings_ni_Values_GFXTEMP".GetLocalized();
-    private readonly string _gfxvoltText = "Settings_ni_Values_GFXVOLT".GetLocalized();
-    private readonly string _dgpufreqText = "Settings_ni_Values_DgpuFreq".GetLocalized();
-    private readonly string _dgputempText = "Settings_ni_Values_DgpuTemp".GetLocalized();
-    private readonly string _ramusageText = "Settings_ni_Values_RamUsage".GetLocalized();
+    private readonly string _vrmEdcText = "Settings_ni_Values_VRMEDC".GetLocalized();
+    private readonly string _cpuTempText = "Settings_ni_Values_CPUTEMP".GetLocalized();
+    private readonly string _cpuUsageText = "Settings_ni_Values_CPUUsage".GetLocalized();
+    private readonly string _cpuFreqText = "Settings_ni_Values_AVGCPUCLK".GetLocalized();
+    private readonly string _cpuVoltText = "Settings_ni_Values_AVGCPUVOLT".GetLocalized();
+    private readonly string _gfxFreqText = "Settings_ni_Values_GFXCLK".GetLocalized();
+    private readonly string _gfxTempText = "Settings_ni_Values_GFXTEMP".GetLocalized();
+    private readonly string _gfxVoltText = "Settings_ni_Values_GFXVOLT".GetLocalized();
+    private readonly string _dGpuFreqText = "Settings_ni_Values_DgpuFreq".GetLocalized();
+    private readonly string _dGpuTempText = "Settings_ni_Values_DgpuTemp".GetLocalized();
+    private readonly string _ramUsageText = "Settings_ni_Values_RamUsage".GetLocalized();
 
-    private readonly string _niCurrentvalueText = "Settings_ni_Values_CurrentValue".GetLocalized();
+    private readonly string _niCurrentValueText = "Settings_ni_Values_CurrentValue".GetLocalized();
     private readonly string _niMinvalueText = "Settings_ni_Values_MinValue".GetLocalized();
     private readonly string _niMaxvalueText = "Settings_ni_Values_MaxValue".GetLocalized();
 
@@ -278,7 +278,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     }
 
     private async Task<(
-        string BatteryPercent,
+        int BatteryPercent,
         int BatteryState,
         double BatteryChargeRate,
         int BatteryLifeTime
@@ -287,7 +287,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         // Если данные о батарее помечены как недоступные, сразу возвращаем пустые значения
         if (_cachedBatteryUnavailable)
         {
-            return (string.Empty, 10, 0, 0);
+            return (0, 10, 0, 0);
         }
 
         try
@@ -295,12 +295,12 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
             var batteryInfo = await Task.Run(() =>
             {
                 // Получаем только часто меняющиеся параметры
-                var batteryPercent = GetSystemInfo.GetBatteryPercent() + "%";
+                var batteryPercent = GetSystemInfo.GetBatteryPercent();
                 var batteryState = (int)GetSystemInfo.GetBatteryStatus();
                 var chargeRate = (double)(GetSystemInfo.GetBatteryRate() / 1000);
                 var batteryLifeTime = GetSystemInfo.GetBatteryLifeTime();
 
-                return (batteryPercent, batteryState, chargeRate, batteryLifeTime);
+                return ((int)batteryPercent, batteryState, chargeRate, batteryLifeTime);
             });
 
             return batteryInfo;
@@ -308,7 +308,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         catch
         {
             // Батарея недоступна
-            return (string.Empty, 10, 0, 0);
+            return (0, 10, 0, 0);
         }
     }
 
@@ -316,7 +316,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
     #region Update RAM information voids
 
-    private static string GetRamTotal()
+    private static double GetRamTotal()
     {
         try
         {
@@ -327,22 +327,22 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
             if (!GlobalMemoryStatusEx(ref memStatus))
             {
-                return "Error";
+                return 0;
             }
 
             // Преобразуем из байтов в гигабайты
             var totalRamGb = memStatus.ullTotalPhys / (1024.0 * 1024 * 1024);
 
-            return $"{totalRamGb:F1}GB";
+            return totalRamGb;
         }
         catch
         {
-            return "Error";
+            return 0;
         }
     }
 
     private static (
-        string RamBusy,
+        double RamBusy,
         int RamUsagePercent,
         string RamUsage
         ) GetRamInfoDynamic()
@@ -356,7 +356,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
             if (!GlobalMemoryStatusEx(ref memStatus))
             {
-                return ("Error", 0, "Error");
+                return (0, 0, "Error");
             }
 
             // Преобразуем из байтов в гигабайты
@@ -365,14 +365,14 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
             var busyRamGb = totalRamGb - availRamGb;
 
             return (
-                $"{busyRamGb:F1}GB",
+                busyRamGb,
                 (int)memStatus.dwMemoryLoad,
                 $"{(int)memStatus.dwMemoryLoad}%\n{busyRamGb:F1}GB/{totalRamGb:F1}GB"
             );
         }
         catch
         {
-            return ("Error", 0, "Error");
+            return (0, 0, "Error");
         }
     }
 
@@ -502,7 +502,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
             File.WriteAllText(Environment.GetFolderPath(
                                   Environment.SpecialFolder.Personal) +
                               @"\SakuOverclock\niicons.json",
-                JsonConvert.SerializeObject(_niicons,
+                JsonConvert.SerializeObject(_niIcons,
                     Formatting.Indented));
         }
         catch
@@ -515,12 +515,12 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     {
         try
         {
-            _niicons = JsonConvert.DeserializeObject<NiIconsSettings>(File.ReadAllText(
+            _niIcons = JsonConvert.DeserializeObject<NiIconsSettings>(File.ReadAllText(
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\niicons.json"))!;
         }
         catch
         {
-            _niicons = new NiIconsSettings();
+            _niIcons = new NiIconsSettings();
             NiSave();
         }
     }
@@ -1031,27 +1031,27 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                 ("Settings_ni_Values_Fast", sensorsInformation.CpuFastValue, "W", _niiconsMinMaxValues[1], _fastText),
                 ("Settings_ni_Values_Slow", sensorsInformation.CpuSlowValue, "W", _niiconsMinMaxValues[2], _slowText),
                 ("Settings_ni_Values_VRMEDC", sensorsInformation.VrmEdcValue, "A", _niiconsMinMaxValues[3],
-                    _vrmedcText),
+                    _vrmEdcText),
                 ("Settings_ni_Values_CPUTEMP", sensorsInformation.CpuTempValue, "C", _niiconsMinMaxValues[4],
-                    _cputempText),
+                    _cpuTempText),
                 ("Settings_ni_Values_CPUUsage", sensorsInformation.CpuUsage, "%", _niiconsMinMaxValues[5],
-                    _cpuusageText),
+                    _cpuUsageText),
                 ("Settings_ni_Values_AVGCPUCLK", sensorsInformation.CpuFrequency, "GHz", _niiconsMinMaxValues[6],
-                    _cpufreqText),
+                    _cpuFreqText),
                 ("Settings_ni_Values_AVGCPUVOLT", sensorsInformation.CpuVoltage, "V", _niiconsMinMaxValues[7],
-                    _cpuvoltText),
+                    _cpuVoltText),
                 ("Settings_ni_Values_GFXCLK", sensorsInformation.ApuFrequency, "MHz", _niiconsMinMaxValues[8],
-                    _gfxfreqText),
+                    _gfxFreqText),
                 ("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTempValue, "C", _niiconsMinMaxValues[9],
-                    _gfxtempText),
+                    _gfxTempText),
                 ("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V", _niiconsMinMaxValues[10],
-                    _gfxvoltText),
+                    _gfxVoltText),
                 ("Settings_ni_Values_DgpuFreq", sensorsInformation.NvidiaGpuFrequency, "GHz", _niiconsMinMaxValues[11],
-                    _dgpufreqText),
+                    _dGpuFreqText),
                 ("Settings_ni_Values_DgpuTemp", sensorsInformation.NvidiaGpuTemperature, "C", _niiconsMinMaxValues[12],
-                    _dgputempText),
+                    _dGpuTempText),
                 ("Settings_ni_Values_RamUsage", sensorsInformation.RamUsagePercent, "%", _niiconsMinMaxValues[13],
-                    _ramusageText)
+                    _ramUsageText)
             };
 
             foreach (var (key, value, unit, minMax, textControl) in iconUpdates)
@@ -1101,7 +1101,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
 
         var tooltip = $"{description}" +
-                      _niCurrentvalueText + currentValueText + unit; // Сам тултип
+                      _niCurrentValueText + currentValueText + unit; // Сам тултип
 
 
         var extendedTooltip = _niMinvalueText + minValueText + unit +
@@ -1163,7 +1163,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         NiLoad(); // Сначала загрузить конфиг со всеми настройками
 
         // Если нет элементов, не создаём иконки
-        if (_niicons.Elements.Count == 0 || AppSettings.NiIconsEnabled == false)
+        if (_niIcons.Elements.Count == 0 || AppSettings.NiIconsEnabled == false)
         {
             return;
         }
@@ -1172,7 +1172,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         {
             try
             {
-                foreach (var element in _niicons.Elements.Where(element => element.IsEnabled))
+                foreach (var element in _niIcons.Elements.Where(element => element.IsEnabled))
                 {
                     if (!Guid.TryParse(element.Guid, out var parsedGuid) || parsedGuid == Guid.Empty)
                     {
@@ -1359,7 +1359,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
             if (notifyIcon != null)
             {
-                var element = _niicons.Elements.FirstOrDefault(e => e.Name == iconName);
+                var element = _niIcons.Elements.FirstOrDefault(e => e.Name == iconName);
                 if (element != null)
                 {
                     // Сохраняем ссылку на старую иконку для правильного освобождения

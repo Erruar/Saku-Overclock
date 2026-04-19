@@ -10,7 +10,7 @@
         Description="Saku Overclock© - An awesome Ryzen Laptop overclocking app"
         >
         <XamlUICommand.IconSource>
-            <BitmapIconSource ShowAsMonochrome="False" UriSource="WindowIcon.ico"/>
+            <BitmapIconSource ShowAsMonochrome="False" UriSource="ms-appx:///WindowIcon.ico"/>
         </XamlUICommand.IconSource>
     </XamlUICommand>
     <XamlUICommand
@@ -63,7 +63,7 @@
             <FontIconSource Glyph="&#xe950;" />
         </XamlUICommand.IconSource>
     </XamlUICommand>
-    <XamlUICommand
+    <!--<XamlUICommand
         x:Key="Command7"
         x:Uid="Tray_Cooler"
         Label="Cooler tune"
@@ -82,7 +82,7 @@
         <XamlUICommand.IconSource>
             <FontIconSource Glyph="&#xec0a;" />
         </XamlUICommand.IconSource>
-    </XamlUICommand>
+    </XamlUICommand>-->
     <XamlUICommand
         x:Key="ShowHideWindowCommand"
         x:Uid="Tray_ShowHide"
@@ -141,9 +141,9 @@
                 <MenuFlyoutItem Command="{StaticResource Command4}" />
                 <MenuFlyoutItem Command="{StaticResource Command5}" />
                 <MenuFlyoutItem Command="{StaticResource Command6}" />
-                <MenuFlyoutItem Command="{StaticResource Command7}" />
+                <!--<MenuFlyoutItem Command="{StaticResource Command7}" />
                 <MenuFlyoutSeparator />
-                <MenuFlyoutItem Command="{StaticResource Command8}" />
+                <MenuFlyoutItem Command="{StaticResource Command8}" />-->
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem Command="{StaticResource ShowHideWindowCommand}" />
                 <MenuFlyoutSeparator />

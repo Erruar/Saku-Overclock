@@ -156,13 +156,7 @@ public sealed partial class ПараметрыPage
             IsEnabled = false
         });
 
-        foreach (var currPreset in _presetManager.Presets)
-        {
-            if (currPreset.PresetName != string.Empty)
-            {
-                PresetCom.Items.Add(currPreset.PresetName);
-            }
-        }
+        LoadPresetsToComboBox();
 
         if (_appSettings.Preset > _presetManager.Presets.Length)
         {
@@ -198,6 +192,19 @@ public sealed partial class ПараметрыPage
         MainInit(PresetCom.SelectedIndex - 1);
 
         _presetChanging = false;
+    }
+
+    private void LoadPresetsToComboBox()
+    {
+        foreach (var currPreset in _presetManager.Presets)
+        {
+            var presetName = currPreset.PresetName;
+            if (currPreset.PresetName.Contains("Preset_"))
+            {
+                presetName = ГлавнаяPage.TryLocalize(presetName); 
+            }
+            PresetCom.Items.Add(presetName);
+        }
     }
 
     //Убрать параметры для ноутбуков
@@ -397,7 +404,7 @@ public sealed partial class ПараметрыPage
                 }
 
 
-                if (codenameGen == CodenameGeneration.Unknown)
+                if (codenameGen == CodenameGeneration.Unknown && false)
                 {
                     MainScroll.Visibility = Visibility.Collapsed;
                     ActionButtonApply.Visibility = Visibility.Collapsed;
@@ -418,6 +425,10 @@ public sealed partial class ПараметрыPage
                 for (var i = 0; i < _cpu.PhysicalCores; i++)
                 {
                     var mapIndex = i < 8 ? 0 : 1;
+                    if (_cpu.CoreDisableMap.Length <= mapIndex)
+                    {
+                        break;
+                    }
                     if ((~_cpu.CoreDisableMap[mapIndex] >> i % 8 & 1) == 0)
                     {
                         try
@@ -2209,17 +2220,14 @@ public sealed partial class ПараметрыPage
 
     private void PresetChanged(object? sender, PresetManagerService.PresetId e)
     {
-        if (e.PresetKey == "Custom")
-        {
-            _presetChanging = true;
-            var index = e.PresetIndex;
-            _appSettings.Preset = index;
+        _presetChanging = true;
+        var index = e.PresetIndex;
+        _appSettings.Preset = index;
 
-            _presetIndex = index;
-            PresetCom.SelectedIndex = index + 1;
-            _presetChanging = false;
-            MainInit(index);
-        }
+        _presetIndex = index;
+        PresetCom.SelectedIndex = index + 1;
+        _presetChanging = false;
+        MainInit(index);
     }
 
     private void PresetCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -3986,7 +3994,7 @@ public sealed partial class ПараметрыPage
 
             ApplyInfo = "";
             _appSettings.SaveSettings();
-            await _applyer.ApplyCustomPreset(_presetManager.Presets[_presetIndex], 
+            await _applyer.ApplyPreset(_presetManager.Presets[_presetIndex], 
                 true, DeveloperSettingsMode.Visibility == Visibility.Visible);
 
             if (TextBoxArg0 != null &&
@@ -4124,14 +4132,7 @@ public sealed partial class ПараметрыPage
                         },
                         IsEnabled = false
                     });
-                    foreach (var currPreset in _presetManager.Presets)
-                    {
-                        if (!string.IsNullOrWhiteSpace(currPreset.PresetName) || 
-                            currPreset.PresetName.Contains("Unsigned preset"))
-                        {
-                            PresetCom.Items.Add(currPreset.PresetName);
-                        }
-                    }
+                    LoadPresetsToComboBox();
 
                     PresetCom.SelectedIndex = 0;
                     _presetChanging = false;
@@ -4487,23 +4488,6 @@ public sealed partial class ПараметрыPage
         catch (Exception ex)
         {
             LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    //NumberBoxes
-    private void TargetNumberBox_FocusEngaged(object sender, object args)
-    {
-        if (sender is NumberBox numberBox)
-        {
-            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
-        }
-    }
-
-    private void TargetNumberBox_FocusDisengaged(object sender, object args)
-    {
-        if (sender is NumberBox numberBox)
-        {
-            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
         }
     }
 

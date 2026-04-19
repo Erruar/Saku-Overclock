@@ -12,7 +12,7 @@
     </Page.Resources>
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200" Margin="0,0,-12,0">
-        <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-95,0,0" />
+        <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="24" Margin="-49,-95,0,0" />
         <TeachingTip x:Name="RtssTeacherTip" Target="{x:Bind RtssButton}" Title="You have enabled Rtss metrics!"
                      Subtitle="Now you can easily minimize Saku Overclock to tray menu and all information will be updated automatically. Saku Overclock will switch to the mode of reduced consumption of laptop resources">
             <TeachingTip.IconSource>
@@ -626,7 +626,7 @@
                     </Grid.RowDefinitions>
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock HorizontalAlignment="Left" x:Name="CpuSectionName" FontWeight="Bold"
+                            <TextBlock HorizontalAlignment="Left" x:Name="CpuSectionName" FontWeight="Bold" Margin="0,0,0,-7"
                                        FontSize="24" x:Uid="InfoCPU" Text="ЦП" />
                             <Grid Margin="10,1,0,-5" CornerRadius="10" Translation="0,0,28"
                                   Shadow="{StaticResource SharedShadow}"

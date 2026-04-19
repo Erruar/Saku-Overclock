@@ -609,6 +609,7 @@
                 <ResourceDictionary>
                     <Style TargetType="Slider" BasedOn="{StaticResource FatSliderStyle}"/>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource AcrylicComboBoxStyle}"/>
+                    <Style TargetType="NumberBox" BasedOn="{StaticResource NumberBoxClose}"/>
                 </ResourceDictionary>
                 <ResourceDictionary Source="/Styles/FontSizes.xaml"/> 
                 <ResourceDictionary Source="/Styles/Thickness.xaml"/>
@@ -622,6 +623,7 @@
                 <!-- Toggle button style-->
                 <ResourceDictionary Source="/Styles/ToggleButtonCollapseLauncher.xaml"/>
                 <!-- Button style-->
+                <ResourceDictionary Source="/Styles/NumberBoxClose.xaml"/>
                 <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml"/>
                 <ResourceDictionary Source="/Styles/TrayIconResources.xaml"/>
                 <ResourceDictionary Source="/Styles/ActiveButton.xaml"/>

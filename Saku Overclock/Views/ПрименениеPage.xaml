@@ -40,10 +40,10 @@
             </Button>
 
             <!-- Основной контент -->
-            <Grid Margin="-1,-30,-6,0">
+            <Grid Margin="-1,-15,-6,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                               Margin="0,-2,-13,0">
-                    <StackPanel Margin="18,0,31,10" Orientation="Vertical">
+                    <StackPanel Margin="3,0,26,10" Orientation="Vertical">
                         <TextBlock Margin="0,0,0,0" x:Uid="Settings_RestoreOptions" />
                         <Grid PointerPressed="ToggleTheSwitchByTag" Tag="ApplyStart" Margin="0,20,0,0" Height="60"
                               HorizontalAlignment="Stretch" CornerRadius="15,15,0,0"

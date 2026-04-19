@@ -1078,15 +1078,14 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("stapm-time",                        true,  0x1e),
             ("stapm-time",                        false, 0x32),
             ("fast-limit",                        true,  0x1b),
-            ("fast-limit",                        false, 0x30),
+            ("fast-limit",                        false, 0x2f),
             ("slow-limit",                        true,  0x1c),
-            ("slow-limit",                        false, 0x2f),
+            ("slow-limit",                        false, 0x30),
             ("slow-time",                         true,  0x1d),
             ("slow-time",                         false, 0x31),
             ("tctl-temp",                         true,  0x1f),
             ("tctl-temp",                         false, 0x33),
-/*  DPTC  */("cHTC-temp",                         false, 0x56), // Not sure, rejected
-            ("vrm-current",                       true,  0x20),
+/*  DPTC  */("vrm-current",                       true,  0x20),
             ("vrm-current",                       false, 0x34),
             ("vrmmax-current",                    true,  0x22),
             ("vrmmax-current",                    false, 0x36),
@@ -1101,23 +1100,23 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("prochot-deassertion-ramp",          true,  0x26),
             ("prochot-deassertion-ramp",          false, 0x3a),
 
-/* Power  */("power-saving",                      true,  0x19),
+/* Power  */("power-saving",                      true,  0x19), // Using Smu features & CPU power management array structure
 /* Saving */("max-performance",                   true,  0x18),
 
             ("enable-oc",                         true,  0x58),
-            ("disable-oc",                        true,  0x3f), // Require 0x1 in args
+            ("disable-oc",                        true,  0x3f), // Require 0x1 in args, actually works how enable-oc
             ("oc-clk",                            false, 0x7d), // Not sure, "Rejected" status when apply
             ("per-core-oc-clk",                   false, 0x7e), // Not sure, "Rejected" 
             ("oc-clk",                            true,  0x59), // "Failed" status when applied, maybe blocked by condition, maybe need to enable OC Mode (can't do it in usual way)
 /*   OC   */("per-core-oc-clk",                   true,  0x5a), // "Failed" status when apply
-/* Options*/("oc-clk",                            true,  0x41), // Old AMD CBS OC method, freq in MHz, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable OC Mode, arg 0x0 - enable OC Mode*/)
+/* Options*/("oc-clk",                            true,  0x41), // Old AMD CBS OC method, freq in MHz, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable OC Mode, arg 0x0 - enable OC Mode + get more info directly from me@hehe*/)
             ("oc-volt",                           true,  0x5b), // "Failed" status when apply
             ("oc-volt",                           false, 0x7c), // Not sure, "Rejected"
             ("oc-volt",                           true,  0x40), // Old AMD CBS OC method, set max VID, required MP1 entertain OC Mode
-            ("set-gpuclockoverdrive-byvid",       true,  0x3d), // Old AMD CBS OC method, required MP1 entertain OC Mode, this command set overclocked iGPU freq and voltage
+            ("set-gpuclockoverdrive-byvid",       true,  0x3d), // AMD CBS OC method, required Gpu entertain OC Mode, this command set overclocked iGPU freq and voltage
             ("set-gpuclockoverdrive-byvid",       false, 0x61),
             ("pbo-scalar",                        true,  0x57), // "Failed" status when apply
-            ("pbo-scalar",                        false, 0x63), // Not sure, need to retest
+            ("pbo-scalar",                        false, 0x3B),
             ("get-pbo-scalar",                    false, 0x62),
 
             ("max-cpuclk",                        true,  0x44),
@@ -1141,11 +1140,11 @@ public class SendSmuCommandService : ISendSmuCommandService
 /*Optimizr*/("set-coall",                         false, 0x59),
             ("set-cogfx",                         false, 0x59), // Cuz Raven, Dali and Picasso have gfx voltage control in this command too but in different registers
             
-            ("setcpu-freqto-ramstate",            true,  0x2f),
-/*  AcBtc */("stopcpu-freqto-ramstate",           true,  0x30),
-            ("stopcpu-freqto-ramstate",           true,  0x31),
+            ("setcpu-freqto-ramstate",            true,  0x2f), // Start CPU calibration & VF-reconfigure
+/*  AcBtc */("stopcpu-freqto-ramstate",           true,  0x30), // Stop
+            ("stopcpu-freqto-ramstate",           true,  0x31), // End, we can change some SoC freq, nice
 
-            ("set-ulv-vid",                       true,  0x35), // Experimental. Set ULV voltage for CPU sleep state. Can be high, there are no limits. Higher values can cause degradation!
+            ("set-ulv-vid",                       true,  0x35), // Experimental. Set ULV voltage for CPU sleep state
             ("set-vddoff-vid",                    true,  0x3a), // System voltage offset when CPUOFF or GFXOFF state is triggered
             ("set-vmin-freq",                     true,  0x3b), // GFX minimum Curve Optimizer range 
             ("get-sustained-power-and-thm-limit", true,  0x43),

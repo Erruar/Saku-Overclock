@@ -144,6 +144,15 @@ public interface IAppSettingsService
     }
     
     /// <summary>
+    ///     Флаг создания готовых пресетов, при их отсутствии
+    /// </summary>
+    public bool PremadePresetsAdded
+    {
+        get;
+        set;
+    }
+    
+    /// <summary>
     ///     Выбранный пресет для применения от сети
     /// </summary>
     public string AcPreset
