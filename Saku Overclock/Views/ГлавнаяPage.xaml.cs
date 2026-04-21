@@ -341,7 +341,7 @@ public sealed partial class ГлавнаяPage
         {
             if (info.IsNvidiaGpuAvailable)
             {
-                IndicatorsBatteryPercent.Text = info.NvidiaGpuUsage + "%";
+                IndicatorsBatteryPercent.Text = info.NvidiaGpuUsage.ToString(CultureInfo.InvariantCulture);
                 if (BatteryText.Text != _graphics)
                 {
                     BatteryText.Text = _graphics;
