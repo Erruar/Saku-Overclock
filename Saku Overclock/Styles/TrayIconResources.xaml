@@ -40,16 +40,6 @@
         Description="Presets"
         >
         <XamlUICommand.IconSource>
-            <FontIconSource Glyph="&#xeadf;" />
-        </XamlUICommand.IconSource>
-    </XamlUICommand>
-    <XamlUICommand
-        x:Key="Command5"
-        x:Uid="Tray_Overclock"
-        Label="Overclock"
-        Description="Overclock"
-        >
-        <XamlUICommand.IconSource>
             <FontIconSource Glyph="&#xe945;" />
         </XamlUICommand.IconSource>
     </XamlUICommand>
@@ -60,29 +50,9 @@
         Description="Information"
         >
         <XamlUICommand.IconSource>
-            <FontIconSource Glyph="&#xe950;" />
+            <FontIconSource Glyph="&#xF42F;" />
         </XamlUICommand.IconSource>
     </XamlUICommand>
-    <!--<XamlUICommand
-        x:Key="Command7"
-        x:Uid="Tray_Cooler"
-        Label="Cooler tune"
-        Description="Cooler tune"
-        >
-        <XamlUICommand.IconSource>
-            <FontIconSource Glyph="&#xe9ca;" />
-        </XamlUICommand.IconSource>
-    </XamlUICommand>
-    <XamlUICommand
-        x:Key="Command8"
-        x:Uid="Tray_EcoMode"
-        Label="Eco mode"
-        Description="Eco mode"
-        >
-        <XamlUICommand.IconSource>
-            <FontIconSource Glyph="&#xec0a;" />
-        </XamlUICommand.IconSource>
-    </XamlUICommand>-->
     <XamlUICommand
         x:Key="ShowHideWindowCommand"
         x:Uid="Tray_ShowHide"
@@ -124,29 +94,17 @@
         NoLeftClickDelay="True"
         IconSource="ms-appx:///WindowIcon.ico"
         >
-        <!--<tb:TaskbarIcon.GeneratedIcon>
-            <tb:GeneratedIcon
-                Text="❤️"
-                Foreground="Red"
-                />
-        </tb:TaskbarIcon.GeneratedIcon>-->
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
                 <MenuFlyoutItem MinWidth="250" Command="{StaticResource Command1}" />
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem Command="{StaticResource Command2}" />
                 <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource Command4}" />
+                <MenuFlyoutItem Command="{StaticResource Command6}" />
                 <MenuFlyoutItem Command="{StaticResource Command3}" />
                 <MenuFlyoutSeparator />
-                <MenuFlyoutItem Command="{StaticResource Command4}" />
-                <MenuFlyoutItem Command="{StaticResource Command5}" />
-                <MenuFlyoutItem Command="{StaticResource Command6}" />
-                <!--<MenuFlyoutItem Command="{StaticResource Command7}" />
-                <MenuFlyoutSeparator />
-                <MenuFlyoutItem Command="{StaticResource Command8}" />-->
-                <MenuFlyoutSeparator />
                 <MenuFlyoutItem Command="{StaticResource ShowHideWindowCommand}" />
-                <MenuFlyoutSeparator />
                 <MenuFlyoutItem Command="{StaticResource ExitApplicationCommand}" />
             </MenuFlyout>
         </tb:TaskbarIcon.ContextFlyout>

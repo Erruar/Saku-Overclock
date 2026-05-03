@@ -1099,6 +1099,8 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("psi0soc-current",                   false, 0x39),
             ("prochot-deassertion-ramp",          true,  0x26),
             ("prochot-deassertion-ramp",          false, 0x3a),
+            ("apu-slow-limit",                    true,  0x21),
+            ("apu-slow-limit",                    false, 0x34),
 
 /* Power  */("power-saving",                      true,  0x19), // Using Smu features & CPU power management array structure
 /* Saving */("max-performance",                   true,  0x18),
@@ -1120,21 +1122,29 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("get-pbo-scalar",                    false, 0x62),
 
             ("max-cpuclk",                        true,  0x44),
+            ("max-cpuclk",                        false, 0x66),
             ("min-cpuclk",                        true,  0x45),
+            ("min-cpuclk",                        false, 0x67),
             ("max-gfxclk",                        true,  0x46),
             ("max-gfxclk",                        false, 0x68),
             ("min-gfxclk",                        true,  0x47),
             ("min-gfxclk",                        false, 0x69),
             ("max-socclk-frequency",              true,  0x48),
-            ("max-socclk-frequency",              false, 0x66),
+            ("max-socclk-frequency",              false, 0x6a),
 /*Subsystm*/("min-socclk-frequency",              true,  0x49),
-/* Clocks */("min-socclk-frequency",              false, 0x67),
+/* Clocks */("min-socclk-frequency",              false, 0x6B),
             ("max-fclk-frequency",                true,  0x4a),
+            ("max-fclk-frequency",                false, 0x6c),
             ("min-fclk-frequency",                true,  0x4b),
+            ("min-fclk-frequency",                false, 0x6d),
             ("max-vcn",                           true,  0x4c),
+            ("max-vcn",                           false, 0x6e),
             ("min-vcn",                           true,  0x4d),
+            ("min-vcn",                           false, 0x6f),
             ("max-lclk",                          true,  0x4e),
+            ("max-lclk",                          false, 0x70),
             ("min-lclk",                          true,  0x4f),
+            ("min-lclk",                          false, 0x71),
 
 /*  Curve */("set-coper",                         false, 0x58),
 /*Optimizr*/("set-coall",                         false, 0x59),
@@ -1424,6 +1434,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             // on: Ryzen 5 1600
             // SMU command map for early AM4 socket (last update: 2025-11-23)
             ("enable-feature",                    true,  0x09),
+            ("disable-feature",                   true,  0x0A),
             ("fast-limit",                        false, 0x64), // PPT limit
             ("fast-limit",                        true,  0x31), // PPT limit
             ("vrm-current",                       false, 0x65),

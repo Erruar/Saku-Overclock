@@ -601,7 +601,7 @@ public sealed partial class ИнформацияPage
             LoadDiscreteGpuInformation();
 
             var currBatRate = 0d;
-            var previousMaxBatRate = 0;
+            var previousMaxBatRate = 0d;
             if (!_doNotTrackBattery)
             {
                 BatteryChargeRate.Text = BatUsageBigBannerPolygonText.Text =
@@ -635,7 +635,7 @@ public sealed partial class ИнформацияPage
                     BatteryPercent.Text + " " + BatteryChargeRate.Text + "\n" + BatteryTime.Text;
 
                 currBatRate = Math.Abs(_sensorsInformation.BatteryChargeRate);
-                previousMaxBatRate = (int)_maxBatRate;
+                previousMaxBatRate = _maxBatRate;
                 if (currBatRate > _maxBatRate)
                 {
                     _maxBatRate = currBatRate;
@@ -1088,7 +1088,7 @@ public sealed partial class ИнформацияPage
                     }
 
                     element.X -= 1;
-                    element.Y = (int)(element.Y * previousMaxBatRate / _maxBatRate);
+                    element.Y = element.Y * previousMaxBatRate / _maxBatRate;
                     BatBannerPolygon.Points.Add(element);
                     if (BatFlyout.IsOpen)
                     {

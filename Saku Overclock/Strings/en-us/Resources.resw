@@ -2670,8 +2670,8 @@ Use of the Saku Software implies intervention in the standard operating modes of
   <data name="Main_FaqPage.Text" xml:space="preserve">
     <value>FAQ Page</value>
   </data>
-  <data name="Main_OverclockPage.Text" xml:space="preserve">
-    <value>Overclock page</value>
+  <data name="Main_MonitoringPage.Text" xml:space="preserve">
+    <value>Monitoring</value>
   </data>
   <data name="Main_OwnPresets.Text" xml:space="preserve">
     <value>Presets</value>
@@ -2785,10 +2785,10 @@ Use of the Saku Software implies intervention in the standard operating modes of
     <value>Extra features</value>
   </data>
   <data name="Preset_AdvancedMode.Text" xml:space="preserve">
-    <value>Advanced mode</value>
+    <value>Detailed settings</value>
   </data>
-  <data name="Preset_AdvancedModeTry.Text" xml:space="preserve">
-    <value>Try it</value>
+  <data name="Preset_AdvancedModeTry.Content" xml:space="preserve">
+    <value>Customize</value>
   </data>
   <data name="Preset_RtssOverlay.Text" xml:space="preserve">
     <value>RTSS Overlay</value>
@@ -2809,9 +2809,8 @@ Use of the Saku Software implies intervention in the standard operating modes of
     <value>Show fast settings:
 Simple and safe overclocking settings with clear explanations aimed at beginners</value>
   </data>
-  <data name="Param_ProMode" xml:space="preserve">
-    <value>Show detailed settings:
-Full control over the temperature and power consumption settings of the processor. Manual parameter setting for maximum efficiency</value>
+  <data name="Param_AdvancedModeDesc.Text" xml:space="preserve">
+    <value>Customize additional preset settings for more precise control</value>
   </data>
   <data name="Param_CO_PreferredMode_Desc.Text" xml:space="preserve">
     <value>Preferred mode</value>
@@ -2950,15 +2949,8 @@ All cores Curve Optimizer</value>
   <data name="Preset_BetterTurbo.Text" xml:space="preserve">
     <value>Better Turboboost</value>
   </data>
-  <data name="Preset_BetterTurboDesc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Better Turboboost
-Improves the processor's ability to conserve frequency 
-and power, enabling you to adjust its behaviour under 
-short-term and long-term load.
-
-These parameters of your preset will be changed:
-Time of slow frequency rise
-Time of fast frequency rise</value>
+  <data name="Preset_BetterTurboDesc.Text" xml:space="preserve">
+    <value>Set current CPU boost mode</value>
   </data>
   <data name="Preset_CurveOptions_Disabled.Text" xml:space="preserve">
     <value>Off</value>
@@ -2969,8 +2961,17 @@ Time of fast frequency rise</value>
   <data name="Preset_CurveOptions_Light.Text" xml:space="preserve">
     <value>Light</value>
   </data>
+  <data name="Preset_AutoTdpDisabled.Text" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Preset_AutoTdpEnabled.Text" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Preset_AutoTdpManual.Text" xml:space="preserve">
+    <value>Manual</value>
+  </data>
   <data name="Preset_DetailSettingsMode.Text" xml:space="preserve">
-    <value>Detailed settings</value>
+    <value>Detailed Settings</value>
   </data>
   <data name="Preset_IgpuAuto.Content" xml:space="preserve">
     <value>Auto</value>
@@ -2981,14 +2982,8 @@ Time of fast frequency rise</value>
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
     <value>iGPU Enhancement</value>
   </data>
-  <data name="Preset_IgpuOptimizationDesc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>iGPU Enhancement
-Increases the performance of the integrated graphics 
-(iGPU) through safe frequency overclocking
-
-These parameters of your preset will be changed:
-Minimum iGPU clock
-Maximum iGPU clock/Fixed iGPU freq</value>
+  <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
+    <value>Increases the performance of the integrated graphics through safe frequency overclocking</value>
   </data>
   <data name="Preset_IgpuStable.Content" xml:space="preserve">
     <value>Stable</value>
@@ -3018,13 +3013,13 @@ Average power limit</value>
   <data name="Preset_TdpLimitText.Text" xml:space="preserve">
     <value>TDP Limit</value>
   </data>
-  <data name="Preset_TurboAuto.Text" xml:space="preserve">
+  <data name="Preset_TurboAuto.Content" xml:space="preserve">
     <value>Auto</value>
   </data>
-  <data name="Preset_TurboHeavy.Text" xml:space="preserve">
+  <data name="Preset_TurboHeavy.Content" xml:space="preserve">
     <value>Heavy</value>
   </data>
-  <data name="Preset_TurboSmart.Text" xml:space="preserve">
+  <data name="Preset_TurboSmart.Content" xml:space="preserve">
     <value>Smart</value>
   </data>
   <data name="Param_GPU_g16_E.Content" xml:space="preserve">

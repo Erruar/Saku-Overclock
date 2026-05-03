@@ -2668,8 +2668,8 @@ Asus. Может не поддерживаться на
   <data name="Main_FaqPage.Text" xml:space="preserve">
     <value>Страница FAQ</value>
   </data>
-  <data name="Main_OverclockPage.Text" xml:space="preserve">
-    <value>Разгон</value>
+  <data name="Main_MonitoringPage.Text" xml:space="preserve">
+    <value>Мониторинг</value>
   </data>
   <data name="Main_OwnPresets.Text" xml:space="preserve">
     <value>Пресеты</value>
@@ -2783,10 +2783,10 @@ Asus. Может не поддерживаться на
     <value>Дополнительно</value>
   </data>
   <data name="Preset_AdvancedMode.Text" xml:space="preserve">
-    <value>Расширенный режим</value>
+    <value>Тонкая настройка</value>
   </data>
-  <data name="Preset_AdvancedModeTry.Text" xml:space="preserve">
-    <value>Попробовать</value>
+  <data name="Preset_AdvancedModeTry.Content" xml:space="preserve">
+    <value>Настроить</value>
   </data>
   <data name="Preset_RtssOverlay.Text" xml:space="preserve">
     <value>RTSS Оверлей</value>
@@ -2807,9 +2807,8 @@ Asus. Может не поддерживаться на
     <value>Отобразить быстрые настройки:
 Простые и безопасные настройки разгона с понятными объяснениями. Идеально для начинающих пользователей</value>
   </data>
-  <data name="Param_ProMode" xml:space="preserve">
-    <value>Отобразить дополнительные функции:
-Полный контроль над настройками температуры и энергопотребления процессора. Ручная настройка параметров для максимальной эффективности</value>
+  <data name="Param_AdvancedModeDesc.Text" xml:space="preserve">
+    <value>Настройте дополнительные параметры пресета для более точного контроля</value>
   </data>
   <data name="Param_CO_PreferredMode_Desc.Text" xml:space="preserve">
     <value>Предпочитаемый режим</value>
@@ -2950,16 +2949,8 @@ Asus. Может не поддерживаться на
   <data name="Preset_BetterTurbo.Text" xml:space="preserve">
     <value>Усиление турбобуста</value>
   </data>
-  <data name="Preset_BetterTurboDesc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Усиление турбобуста
-Вы можете настроить поведение процессора при 
-кратковременной и долговременной нагрузке, 
-улучшив его способность сохранять частоту и 
-мощность этим параметром
-
-Эти параметры вашего пресета будут изменены:
-Тик медленного разгона
-Тик быстрого разгона</value>
+  <data name="Preset_BetterTurboDesc.Text" xml:space="preserve">
+    <value>Режим увеличения частоты процессора</value>
   </data>
   <data name="Preset_CurveOptions_Disabled.Text" xml:space="preserve">
     <value>Выкл</value>
@@ -2969,6 +2960,15 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Preset_CurveOptions_Light.Text" xml:space="preserve">
     <value>Лёгкий</value>
+  </data>
+  <data name="Preset_AutoTdpDisabled.Text" xml:space="preserve">
+    <value>Выкл</value>
+  </data>
+  <data name="Preset_AutoTdpEnabled.Text" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Preset_AutoTdpManual.Text" xml:space="preserve">
+    <value>Ручное</value>
   </data>
   <data name="Preset_DetailSettingsMode.Text" xml:space="preserve">
     <value>Дополнительные функции</value>
@@ -2982,14 +2982,8 @@ Asus. Может не поддерживаться на
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
     <value>Улучшение iGPU</value>
   </data>
-  <data name="Preset_IgpuOptimizationDesc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Улучшение iGPU
-Увеличивает производительность встроенной графики 
-(iGPU) благодаря безопасному разгону частоты 
-
-Эти параметры вашего пресета будут изменены:
-Минимальная частота iGPU
-Максимальная частота iGPU/Зафиксировать частоту iGPU</value>
+  <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
+    <value>Увеличивает производительность встроенной графики благодаря безопасному разгону частоты</value>
   </data>
   <data name="Preset_IgpuStable.Content" xml:space="preserve">
     <value>Стабильное</value>
@@ -3019,13 +3013,13 @@ Asus. Может не поддерживаться на
   <data name="Preset_TdpLimitText.Text" xml:space="preserve">
     <value>Лимит TDP</value>
   </data>
-  <data name="Preset_TurboAuto.Text" xml:space="preserve">
+  <data name="Preset_TurboAuto.Content" xml:space="preserve">
     <value>Авто</value>
   </data>
-  <data name="Preset_TurboHeavy.Text" xml:space="preserve">
+  <data name="Preset_TurboHeavy.Content" xml:space="preserve">
     <value>Сильное</value>
   </data>
-  <data name="Preset_TurboSmart.Text" xml:space="preserve">
+  <data name="Preset_TurboSmart.Content" xml:space="preserve">
     <value>Умное</value>
   </data>
   <data name="Param_GPU_g16_E.Content" xml:space="preserve">

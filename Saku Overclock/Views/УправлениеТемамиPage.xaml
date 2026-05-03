@@ -31,11 +31,11 @@
                     Background="Transparent" BorderThickness="0"
                     Click="ResetAllThemes_Click">
                 <StackPanel Orientation="Horizontal" Spacing="6">
-                    <FontIcon Glyph="&#xE777;" FontSize="15"
-                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                     <TextBlock x:Uid="ThemeResetAllAction" Text="Сбросить все темы" FontSize="14"
                                VerticalAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <FontIcon Glyph="&#xE777;" FontSize="15"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </StackPanel>
             </Button>
 

@@ -259,23 +259,23 @@
                                                 <TextBlock Margin="0,0,-20,0" x:Uid="Main_Preset" Text="Пресеты" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
-                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xeadf;"/>
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xE945;"/>
                                             </Grid>
                                         </Grid>
                                     </Button>
                                     <Button Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16"
                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                            Click="OverclockPage_Click">
+                                            Click="MonitoringPage_Click">
                                         <Grid Margin="-10,-5,-5,-5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" x:Uid="Main_OverclockPage" Text="Разгон" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" x:Uid="Main_MonitoringPage" Text="Мониторинг" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="16,0,0,0">
-                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xE945;"/>
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Glyph="&#xF42F;"/>
                                             </Grid>
                                         </Grid>
                                     </Button>

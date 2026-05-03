@@ -1,0 +1,20 @@
+﻿using Windows.UI.Text;
+using Microsoft.UI.Xaml.Data;
+
+
+namespace Saku_Overclock.Helpers;
+
+public partial class BooleanToFontWeightConverter: IValueConverter
+{
+    public object? Convert(object value, Type targetType, object parameter, string language)
+    {
+        if (value is bool boolean)
+        {
+            return boolean ? new FontWeight(600) : new FontWeight(400);
+        }
+
+        return null;
+    }
+
+    public object? ConvertBack(object value, Type targetType, object parameter, string language) => null;
+}

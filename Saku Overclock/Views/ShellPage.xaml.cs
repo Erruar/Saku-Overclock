@@ -79,12 +79,13 @@ public sealed partial class ShellPage
         }
 
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
-        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
+        //KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
         KeyboardHotkeys.Initialize();
 
         App.AppTitlebar = VersionNumberIndicator;
         AppTitleBar.Loaded += AppTitleBar_Loaded;
+        PointerPressed += OnPointerPressed;
 
         NotificationsService.NotificationAdded += NotificationsService_NotificationAdded;
         InitializeBlurManager();
@@ -779,14 +780,14 @@ public sealed partial class ShellPage
         return keyboardAccelerator;
     }
 
-    private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender,
-        KeyboardAcceleratorInvokedEventArgs args)
+    private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator? sender,
+        KeyboardAcceleratorInvokedEventArgs? args)
     {
         var navigationService = App.GetService<INavigationService>();
 
         var result = navigationService.GoBack();
 
-        args.Handled = result;
+        args?.Handled = result;
     }
 
     private void NavigationViewControl_PaneOpened(NavigationView sender, object args)
@@ -813,6 +814,18 @@ public sealed partial class ShellPage
     #endregion
 
     #region Event Handlers
+    
+    private static void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        var point = e.GetCurrentPoint(null);
+        var props = point.Properties;
+
+        if (props.IsXButton1Pressed)
+        {
+            OnKeyboardAcceleratorInvoked(null, null);
+            e.Handled = true;
+        }
+    }
 
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
     {

@@ -16,7 +16,7 @@
                   Background="Transparent">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <ItemsControl ItemsSource="{Binding}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -27,23 +27,23 @@
                                 <DataTemplate>
                                     <ToggleButton Padding="5" 
                                                   CornerRadius="28" 
-                                                  Margin="0,0,6,5"
+                                                  Margin="6,0,6,5"
                                                   HorizontalAlignment="Stretch"
                                                   VerticalAlignment="Stretch"
                                                   Shadow="{ThemeResource SharedShadow}" 
                                                   Translation="0,0,20"
                                                   IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                  Width="{Binding ElementName=FlipViewContainer, Path=ActualHeight}"
+                                                  Width="115"
                                                   Click="ToggleButton_Click"
                                                   ToolTipService.ToolTip="{Binding Description}">
                                         <StackPanel Orientation="Vertical"
                                                     Margin="-2,0"
                                                     HorizontalAlignment="Center">
                                             <FontIcon Glyph="{Binding IconGlyph}"
-                                                      FontSize="20"
+                                                      FontSize="30"
                                                       HorizontalAlignment="Center"/>
                                             <TextBlock Text="{Binding Text}"
-                                                       FontSize="14"
+                                                       FontSize="11" Margin="0,0,0,-10"
                                                        TextWrapping="Wrap"
                                                        TextAlignment="Center"
                                                        HorizontalAlignment="Center"/>

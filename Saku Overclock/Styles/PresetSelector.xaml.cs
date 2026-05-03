@@ -80,8 +80,8 @@ public sealed partial class PresetSelector : UserControl
 
     private void CalculateVisibleItems()
     {
-        var containerWidth = ActualWidth;
-        var itemWidth = ActualHeight + 5;
+        var containerWidth = ActualWidth + 2;
+        var itemWidth = 127;//ActualHeight + 5;
 
         _visibleCount = (int)(containerWidth / itemWidth);
         if (_visibleCount < 1)

@@ -536,11 +536,11 @@ public sealed partial class ГлавнаяPage
     }
 
     /// <summary>
-    ///     Открывает страницу разгон
+    ///     Открывает страницу мониторинга сенсоров
     /// </summary>
-    private void OverclockPage_Click(object sender, RoutedEventArgs e)
+    private void MonitoringPage_Click(object sender, RoutedEventArgs e)
     {
-        _navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
     }
 
     /// <summary>

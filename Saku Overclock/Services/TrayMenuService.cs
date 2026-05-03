@@ -118,9 +118,7 @@ public partial class TrayMenuService(
             { "Command2", OpenPowerMonitor },
             { "Command3", () => NavigateAndShow(typeof(SettingsViewModel)) },
             { "Command4", () => NavigateAndShow(typeof(ПресетыViewModel)) },
-            { "Command5", () => NavigateAndShow(typeof(ПараметрыViewModel)) },
             { "Command6", () => NavigateAndShow(typeof(ИнформацияViewModel)) }
-            //{ "Command7", () => NavigateAndShow(typeof(КулерViewModel)) }
         };
     }
 
