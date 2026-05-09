@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Saku_Overclock.Contracts.Services;
+﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Views;
@@ -22,7 +21,6 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     // Профили и команды
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>();
-    private readonly ICustomSmuSettingsService _smuSettings = App.GetService<ICustomSmuSettingsService>();
     private readonly IPresetManagerService _presetManager = App.GetService<IPresetManagerService>();
     private readonly ICpuService _cpu = App.GetService<ICpuService>();
 
@@ -32,7 +30,6 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     // Флаги
     private bool _saveInfo;
-    private bool _cancelRange;
     private string _checkAdjLine = string.Empty;
     private bool _dangerSettingsApplied;
     private bool? _isOlderGeneration;
@@ -79,109 +76,11 @@ public class SendSmuCommandService : ISendSmuCommandService
     public SendSmuCommandService()
     {
         SetCodeNameGeneration();
-        _smuSettings.LoadSettings();
     }
 
     #region Apply Overclock Options
 
     #region Quick Smu Commands
-
-    /// <summary>
-    ///  Конвертер адреса в Uint
-    /// </summary>
-    private static bool TryConvertToUint(string text, out uint address)
-    {
-        return uint.TryParse(
-            text.Trim(),
-            NumberStyles.HexNumber,
-            CultureInfo.InvariantCulture,
-            out address
-        );
-    }
-
-    /// <summary>
-    /// Применяет быстрые команды SMU в зависимости от режима запуска
-    /// </summary>
-    /// <param name="startup">True - применяются команды при запуске (Startup или ApplyWith), false - только ApplyWith</param>
-    public void ApplyQuickSmuCommand(bool startup)
-    {
-        if (_smuSettings.QuickSmuCommands == null)
-        {
-            return;
-        }
-
-        if (_appSettings.Preset != -1 && _presetManager.Presets[_appSettings.Preset].DebugSmuCommandsSend == false)
-        {
-            return;
-        }
-
-        for (var i = 0; i < _smuSettings.QuickSmuCommands.Count; i++)
-        {
-            var command = _smuSettings.QuickSmuCommands[i];
-
-            // Определяем, нужно ли применять команду
-            if (command.ApplyWith || startup && command.Startup)
-            {
-                ApplySingleSmuCommand(i);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Применяет конкретную быструю команду SMU
-    /// </summary>
-    private void ApplySingleSmuCommand(int commandIndex)
-    {
-        try
-        {
-            var quickCommand = _smuSettings.QuickSmuCommands?[commandIndex];
-            if (quickCommand == null)
-            {
-                LogHelper.LogError($"Quick command at index {commandIndex} not found");
-                return;
-            }
-
-            var mailbox = _smuSettings.MailBoxes?[quickCommand.MailIndex];
-            if (mailbox == null)
-            {
-                LogHelper.LogError($"Mailbox at index {quickCommand.MailIndex} not found");
-                return;
-            }
-
-            if (!TryConvertToUint(mailbox.Cmd, out var addrMsg) ||
-                !TryConvertToUint(mailbox.Rsp, out var addrRsp) ||
-                !TryConvertToUint(mailbox.Arg, out var addrArg) ||
-                !TryConvertToUint(quickCommand.Command, out var command))
-            {
-                LogHelper.LogError($"Failed to parse mailbox addresses or command for index {commandIndex}");
-                return;
-            }
-
-            var quickMailbox = new SmuAddressSet(addrMsg, addrRsp, addrArg);
-
-            var args = MakeCmdArgs();
-            var userArgs = quickCommand.Argument.Trim().Split(',');
-
-            for (var i = 0; i < userArgs.Length && i < args.Length; i++)
-            {
-                if (!TryConvertToUint(userArgs[i], out args[i]))
-                {
-                    LogHelper.LogError($"Failed to parse argument at position {i}: '{userArgs[i]}'");
-                    return;
-                }
-            }    
-
-            var status = _cpu.SendSmuCommand(quickMailbox, command, ref args);
-            if (status != SmuStatus.Ok)
-            {
-                LogHelper.LogError(StatusCommandParser(status));
-            }
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError($"Failed to apply SMU command at index {commandIndex}: {ex.Message}");
-        }
-    }
 
     private static uint[] MakeCmdArgs(uint[] args, uint maxArgs = 6u)
     {
@@ -198,7 +97,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
-    public static uint[] MakeCmdArgs(uint arg = 0u, uint maxArgs = 6u)
+    private static uint[] MakeCmdArgs(uint arg = 0u, uint maxArgs = 6u)
     {
         return MakeCmdArgs([arg], maxArgs);
     }
@@ -451,11 +350,9 @@ public class SendSmuCommandService : ISendSmuCommandService
                 return SmuStatus.Ok; // Пропускаем команду, но возвращаем OK, для безопасности системы
             }
             if (_cpu.IsRaven &&
-                (commandName == "min-gfxclk" || commandName == "max-gfxclk"
-                || commandName == "min-socclk-frequency" || commandName == "max-socclk-frequency"
-                || commandName == "min-fclk-frequency" || commandName == "max-fclk-frequency"
-                || commandName == "min-vcn" || commandName == "max-vcn"
-                || commandName == "min-lclk" || commandName == "max-lclk"))
+                commandName is "min-gfxclk" or "max-gfxclk" or "min-socclk-frequency" 
+                    or "max-socclk-frequency" or "min-fclk-frequency" or "max-fclk-frequency" 
+                    or "min-vcn" or "max-vcn" or "min-lclk" or "max-lclk")
             {
                 // 0 - SoC-clk
                 // 1 - Fclk
@@ -609,110 +506,6 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     #endregion
 
-    #region Send Smu command range
-
-    /// <summary>
-    ///  Применение диапазона аргументов для команды Smu (для отладки)
-    /// </summary>
-    public async void SendRange(string commandIndex, string startIndex, string endIndex, int mailbox, bool log)
-    {
-        try
-        {
-            _cancelRange = false;
-            try
-            {
-                await Task.Run(() =>
-                {
-                    TryConvertToUint(startIndex, out var startes);
-                    TryConvertToUint(endIndex, out var endes);
-                    if (startes == endes)
-                    {
-                        startes = 0;
-                        endes = uint.MaxValue;
-                    }
-
-                    var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                      @"\SakuOverclock\smurangelog.txt";
-                    using var sw = new StreamWriter(logFilePath, true);
-                    if (log)
-                    {
-                        if (!File.Exists(logFilePath))
-                        {
-                            sw.WriteLine(@"//------SMU LOG------\\");
-                        }
-
-                        sw.WriteLine(
-                            $"{DateTime.Now:HH:mm:ss} | Date: {DateTime.Now:dd.MM.yyyy} | MailBox: {mailbox} | CMD: {commandIndex} | Range: {startIndex}-{endIndex}");
-                    }
-
-                    for (var j = startes; j < endes; j++)
-                    {
-                        if (_cancelRange)
-                        {
-                            _cancelRange = false;
-                            sw.WriteLine(@"//------CANCEL------\\");
-                            RangeCompleted?.Invoke(this, EventArgs.Empty);
-                            return;
-                        }
-
-                        var args = MakeCmdArgs();
-                        TryConvertToUint(_smuSettings?.MailBoxes![mailbox].Cmd!, out var addrMsg);
-                        TryConvertToUint(_smuSettings?.MailBoxes![mailbox].Rsp!, out var addrRsp);
-                        TryConvertToUint(_smuSettings?.MailBoxes![mailbox].Arg!, out var addrArg);
-                        TryConvertToUint(commandIndex, out var command);
-
-                        var newMailbox = new SmuAddressSet(addrMsg, addrRsp, addrArg);
-                        
-                        args[0] = j;
-                        try
-                        {
-                            var status = _cpu.SendSmuCommand(newMailbox, command, ref args);
-                            if (log)
-                            {
-                                sw.WriteLine(
-                                    $"{DateTime.Now:HH:mm:ss} | MailBox: {mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {status} | Output HEX: {args[0]:X2} | Output DEC: {args[0]}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            if (log)
-                            {
-                                sw.WriteLine(
-                                    $"{DateTime.Now:HH:mm:ss} | MailBox: {mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {ex.Message} | Output: {args[0]:X2} | Output: {args[0]}");
-                            }
-                        }
-                    }
-
-                    if (log)
-                    {
-                        RangeCompleted?.Invoke(this, EventArgs.Empty);
-                        sw.WriteLine(@"//------OK------\\");
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.TraceIt_TraceError(ex);
-            }
-        }
-        catch (Exception e)
-        {
-            await LogHelper.TraceIt_TraceError(e);
-        }
-    }
-
-    /// <summary>
-    ///  Отмена применения диапазона аргументов для команды Smu (для отладки)
-    /// </summary>
-    public void CancelRange() => _cancelRange = true;
-
-    /// <summary>
-    ///  Применение диапазона аргументов для команды Smu завершено (для отладки)
-    /// </summary>
-    public event EventHandler? RangeCompleted;
-
-    #endregion
-
     #endregion
 
     #region Generation helpers
@@ -773,14 +566,13 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <summary>
     ///  Возвращает имя платформы, CodeNameGeneration
     /// </summary>
-    public CodenameGeneration GetCodeNameGeneration()
+    private void GetCodeNameGeneration()
     {
         if (_codenameGeneration == CodenameGeneration.Unknown && !_lockCodenameGeneration)
         {
             _lockCodenameGeneration = true;
             SetCodeNameGeneration();
         }
-        return _codenameGeneration;
     }
 
     #endregion
@@ -1099,8 +891,8 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("psi0soc-current",                   false, 0x39),
             ("prochot-deassertion-ramp",          true,  0x26),
             ("prochot-deassertion-ramp",          false, 0x3a),
-            ("apu-slow-limit",                    true,  0x21),
-            ("apu-slow-limit",                    false, 0x34),
+            ("apu-slow-limit",                    true,  0x54),
+            ("apu-slow-limit",                    false, 0x75),
 
 /* Power  */("power-saving",                      true,  0x19), // Using Smu features & CPU power management array structure
 /* Saving */("max-performance",                   true,  0x18),

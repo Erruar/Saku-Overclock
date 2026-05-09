@@ -98,7 +98,6 @@ public partial class App
                 services.AddSingleton<ITrayMenuService, TrayMenuService>();
                 services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
                 services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
-                services.AddSingleton<ICustomSmuSettingsService, CustomSmuSettingsService>();
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
                 services.AddTransient<INavigationViewService, NavigationViewService>();
                 services.AddSingleton<IActivationService, ActivationService>();

@@ -11,9 +11,8 @@ public interface IApplyerService : IDisposable
     /// </summary>
     /// <param name="preset">Пресет для применения</param>
     /// <param name="saveInfo">Сохранять информацию о применении (о наличии ошибок)</param>
-    /// <param name="onlyDebugFunctions">Применять только дебаг-функции</param>
     /// <returns>Результат выполнения задачи</returns>
-    Task ApplyPreset(Preset preset, bool saveInfo = false, bool onlyDebugFunctions = false);
+    Task ApplyPreset(Preset preset, bool saveInfo = false);
 
     /// <summary>
     ///     Применяет ранее применённые настройки, при запуске приложения

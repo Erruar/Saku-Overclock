@@ -1,6 +1,4 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Text;
+﻿using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -11,9 +9,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
-using Windows.UI;
 using static Saku_Overclock.Services.CpuService;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
@@ -21,10 +17,7 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ПараметрыPage
 {
-    private FontIcon? _smuSymbol1; // То же самое что и SMUSymbol
     private readonly IAppNotificationService _notificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-    private readonly ISendSmuCommandService _sendSmuCommand = App.GetService<ISendSmuCommandService>();
-    private readonly ICustomSmuSettingsService _smuSettings = App.GetService<ICustomSmuSettingsService>();
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>();
     private readonly IApplyerService _applyer = App.GetService<IApplyerService>();
     private readonly IOcFinderService _ocFinder = App.GetService<IOcFinderService>();
@@ -32,12 +25,7 @@ public sealed partial class ПараметрыPage
     private int _presetIndex; // Выбранный пресет
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
     private readonly IPresetManagerService _presetManager = App.GetService<IPresetManagerService>(); // Менеджер пресетов разгона
-    private bool _isSearching; // Флаг выполнения поиска чтобы не сканировать адреса SMU 
     private readonly List<string> _searchItems = [];
-    private readonly SmuAddressSet _testMailbox = new(0,0,0);
-    private string
-        _smuSymbol =
-            "\uE8C8"; // Изначальный символ копирования, для секции Редактор параметров SMU. Используется для быстрых команд SMU
 
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений
     private bool _presetChanging = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета
@@ -325,7 +313,6 @@ public sealed partial class ПараметрыPage
                     AdvLaptopOcModeDesc.Visibility = Visibility.Collapsed;
                     AdvLaptopPboScalar.Visibility = Visibility.Collapsed;
                     AdvLaptopPboScalarDesc.Visibility = Visibility.Collapsed;
-                    SmuFunctionsGrid.Visibility = Visibility.Collapsed;
                     AdvancedFreqOptionsGrid.Visibility = Visibility.Collapsed;
                     CoExpander.Visibility = Visibility.Collapsed;
                     Ccd1Expander.Visibility = Visibility.Collapsed;
@@ -404,7 +391,7 @@ public sealed partial class ПараметрыPage
                 }
 
 
-                if (codenameGen == CodenameGeneration.Unknown && false)
+                /*if (codenameGen == CodenameGeneration.Unknown && false)
                 {
                     MainScroll.Visibility = Visibility.Collapsed;
                     ActionButtonApply.Visibility = Visibility.Collapsed;
@@ -419,7 +406,7 @@ public sealed partial class ПараметрыPage
                     ActionIncompatibleCpu.Visibility = Visibility.Visible;
 
                     return; // Остановить загрузку страницы
-                }
+                }*/
 
 
                 for (var i = 0; i < _cpu.PhysicalCores; i++)
@@ -727,20 +714,6 @@ public sealed partial class ПараметрыPage
                 LoadUiOption(_presetManager.Presets[index].CurveOptimizerAdvancedOptions.CurveOptimizerCores, 13, Ccd26, Ccd26V);
                 LoadUiOption(_presetManager.Presets[index].CurveOptimizerAdvancedOptions.CurveOptimizerCores, 14, Ccd27, Ccd27V);
                 LoadUiOption(_presetManager.Presets[index].CurveOptimizerAdvancedOptions.CurveOptimizerCores, 15, Ccd28, Ccd28V);
-                
-                EnableSmu.IsOn = _presetManager.Presets[index].DebugSmuCommandsSend;
-                SmuFuncEnableToggle.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.SmuFeaturesOverride;
-                Bit0FeatureCclkController.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.CpuFrequencyScaling;
-                Bit2FeatureDataCalculation.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.SensorsDataCalculation;
-                Bit3FeaturePpt.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.PowerLimits;
-                Bit4FeatureTdc.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.SustainVrmTdcCurrent;
-                Bit5FeatureThermal.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.TemperatureControl;
-                Bit8FeaturePllPowerDown.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.DpmFrequencyPowerDown;
-                Bit37FeatureProchot.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.ProchotSignal;
-                Bit39FeatureStapm.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.SustainedPowerLimit;
-                Bit40FeatureCoreCstates.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.CStatesBoost;
-                Bit41FeatureGfxDutyCycle.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.GraphicsDutyCycle;
-                Bit42FeatureAaMode.IsOn = _presetManager.Presets[index].SmuFeaturesSettings.AplusAPowerMode;
             }
             catch
             {
@@ -752,21 +725,6 @@ public sealed partial class ПараметрыPage
             }
 
             _presetChanging = false;
-
-            if (_smuSettings.Note != string.Empty)
-            {
-                SmuNotes.Document.SetText(TextSetOptions.FormatRtf, _smuSettings.Note.TrimEnd());
-                ChangeRichEditBoxTextColor(SmuNotes, GetColorFromBrush(TextColor.Foreground));
-            }
-
-            try
-            {
-                Init_QuickSMU();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.TraceIt_TraceError("Loading user SMU settings failed: " + ex);
-            }
         }
         catch (Exception e)
         {
@@ -808,209 +766,11 @@ public sealed partial class ПараметрыPage
         comboBox.SelectedIndex = option.Value;
     }
 
-    private void Init_QuickSMU()
-    {
-        if (_smuSettings.QuickSmuCommands == null)
-        {
-            return;
-        }
-
-        QuickSmu.Children.Clear();
-        QuickSmu.RowDefinitions.Clear();
-        for (var i = 0; i < _smuSettings.QuickSmuCommands.Count; i++)
-        {
-            var grid = new Grid
-            {
-                Margin = new Thickness(0, 10, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-
-            var rowDef = new RowDefinition
-            {
-                Height = GridLength.Auto
-            };
-
-            // Подготовка перед добавлением нового элемента
-            QuickSmu.RowDefinitions.Add(rowDef);
-            var rowIndex = QuickSmu.RowDefinitions.Count - 1;
-
-            QuickSmu.Children.Add(grid); // Добавить в секцию быстрой команды
-            Grid.SetRow(grid, rowIndex);
-
-            var button = new Button // Основная кнопка быстрой команды. В ней всё содержимое
-            {
-                Height = 50,
-                HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                CornerRadius = new CornerRadius(13),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-            
-            var innerGrid = new Grid // Grid внутри Button
-            {
-                Height = 50
-            };
-            
-            var fontIcon = new FontIcon // Иконка у этой команды
-            {
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, -10, 0, 0),
-                FontFamily = new FontFamily("Segoe Fluent Icons"),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Glyph = _smuSettings.QuickSmuCommands[i].Symbol
-            };
-            
-            innerGrid.Children.Add(fontIcon); // Иконка команды
-
-            var textBlock1 = new TextBlock
-            {
-                Margin = string.IsNullOrWhiteSpace(_smuSettings.QuickSmuCommands[i].Description) ? new Thickness(35, 9, 0, 0) : new Thickness(35, 0.5, 0, 0),
-                VerticalAlignment = VerticalAlignment.Top,
-                Text = _smuSettings.QuickSmuCommands[i].Name,
-                FontWeight = FontWeights.SemiBold
-            };
-            innerGrid.Children.Add(textBlock1); // Имя команды
-
-            var textBlock2 = new TextBlock
-            {
-                Margin = new Thickness(35, 17.5, 0, 0),
-                VerticalAlignment = VerticalAlignment.Top,
-                Text = _smuSettings.QuickSmuCommands[i].Description,
-                FontWeight = FontWeights.Light
-            };
-            innerGrid.Children.Add(textBlock2); // Подпись команды
-
-            button.Content = innerGrid; // Внутренний Grid в Button
-
-            var buttonsGrid = new Grid // Внешний Grid с кнопками
-            {
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-
-            // Создание и добавление кнопок во внешний Grid
-            var playButton = new Button // "Применить"
-            {
-                Name = $"Play_{rowIndex}",
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Width = 35,
-                Height = 35,
-                Margin = new Thickness(0, 0, 7, 0),
-                Content = new SymbolIcon
-                {
-                    Symbol = Symbol.Play,
-                    Margin = new Thickness(-5, 0, -5, 0),
-                    HorizontalAlignment = HorizontalAlignment.Left
-                },
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-            buttonsGrid.Children.Add(playButton);
-
-            var editButton = new Button // "Изменить"
-            {
-                Name = $"Edit_{rowIndex}",
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Width = 35,
-                Height = 35,
-                Margin = new Thickness(0, 0, 50, 0),
-                Content = new SymbolIcon
-                {
-                    Symbol = Symbol.Edit,
-                    Margin = new Thickness(-5, 0, -5, 0)
-                },
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-            buttonsGrid.Children.Add(editButton);
-
-            var rsmuButton = new Button // Кнопка отображающая текущий MailBox
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Width = 86,
-                Height = 35,
-                Margin = new Thickness(0, 0, 93, 0),
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow,
-                Content = new TextBlock
-                {
-                    Text = _smuSettings.MailBoxes![_smuSettings.QuickSmuCommands[i].MailIndex].Name
-                }
-            };
-            buttonsGrid.Children.Add(rsmuButton);
-
-            var cmdButton = new Button
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Width = 86,
-                Height = 35,
-                Margin = new Thickness(0, 0, 187, 0),
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow,
-                Content = new TextBlock
-                {
-                    Text = _smuSettings.QuickSmuCommands![i].Command + " / " + _smuSettings.QuickSmuCommands![i].Argument
-                }
-            };
-            buttonsGrid.Children.Add(cmdButton);
-
-            var autoButton = new Button
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Width = 86,
-                Height = 35,
-                Margin = new Thickness(0, 0, 281, 0),
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow,
-                Content = new TextBlock
-                {
-                    Text = _smuSettings.QuickSmuCommands![i].Startup ? "Autorun" : "Apply"
-                }
-            };
-            
-            if (_smuSettings.QuickSmuCommands![i].Startup || _smuSettings.QuickSmuCommands![i].ApplyWith)
-            {
-                buttonsGrid.Children.Add(autoButton);
-            }
-
-            // Добавление внешнего Grid в основной Grid
-            grid.Children.Add(button);
-            grid.Children.Add(buttonsGrid);
-
-            // Назначение событий на нажатия кнопок
-            editButton.Click += EditButton_Click;
-            playButton.Click += PlayButton_Click;
-        }
-    }
-
     #endregion
 
     #region Helpers
-    private static Color GetColorFromBrush(Brush brush)
-    {
-        if (brush is SolidColorBrush solidColorBrush)
-        {
-            return solidColorBrush.Color;
-        }
-
-        return Colors.White;
-    }
-
-    private static void ChangeRichEditBoxTextColor(RichEditBox richEditBox, Color color)
-    {
-        richEditBox.Document.ApplyDisplayUpdates();
-        var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
-        documentRange.CharacterFormat.ForegroundColor = color;
-        richEditBox.Document.ApplyDisplayUpdates();
-    }
 
     public static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
-
 
     #endregion
 
@@ -1050,7 +810,6 @@ public sealed partial class ПараметрыPage
         var expanders = VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
-            _isSearching = true;
             expander.IsExpanded = true;
             var stackPanels = VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
@@ -1069,7 +828,6 @@ public sealed partial class ПараметрыPage
     {
         if (!_isLoaded) { return; }
 
-        _isSearching = true;
 
         if (args?.Reason == AutoSuggestionBoxTextChangeReason.UserInput ||
             args?.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen ||
@@ -1164,14 +922,12 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
-        _isSearching = false;
     }
 
     private void FilterButton_Checked(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded) { return; }
 
-        _isSearching = true;
 
         List<(string, ToggleButton)> buttons = [
             ("", FilterButtonsFreq),
@@ -1282,12 +1038,10 @@ public sealed partial class ПараметрыPage
                 expander.IsExpanded = false;
             }
         }
-        _isSearching = false;
     }
 
     private void FilterButtons_ResetButton_Click(object? sender, RoutedEventArgs? e)
     {
-        _isSearching = true;
 
         FilterButtonsFreq.IsChecked = false;
         FilterButtonsCurrent.IsChecked = false;
@@ -1302,8 +1056,6 @@ public sealed partial class ПараметрыPage
             ResetVisibility();
             SuggestBox_OnTextChanged(null, null);
         }
-
-        _isSearching = false;
     }
 
     #endregion
@@ -1311,197 +1063,6 @@ public sealed partial class ПараметрыPage
     #endregion
 
     #region SMU Related voids and Quick SMU Commands
-
-    private void PopulateMailboxesList(ItemCollection l)
-    {
-        l.Clear();
-        l.Add(new MailboxListItem("RSMU", _cpu.Rsmu));
-        l.Add(new MailboxListItem("MP1", _cpu.Mp1));
-        l.Add(new MailboxListItem("HSMP", _cpu.Hsmp));
-    }
-
-    private void AddPopulatedSmuMailboxes()
-    {
-        try
-        {
-            PopulateMailboxesList(ComboBoxMailboxSelect.Items);
-            if (ComboBoxMailboxSelect.Items.Count > 0)
-            {
-                ComboBoxMailboxSelect.SelectedIndex = 0;
-            }
-            else
-            {
-                ComboBoxMailboxSelect.SelectedIndex = -1;
-            }
-
-            QuickCommand.IsEnabled = true;
-        }
-        catch (Exception exception)
-        {
-            LogHelper.TraceIt_TraceError(exception);
-        }
-    }
-    
-
-    private void ResetSmuAddresses()
-    {
-        TextBoxCmdAddress.Text = $"0x{Convert.ToString(_testMailbox.MsgAddress, 16).ToUpper()}";
-        TextBoxRspAddress.Text = $"0x{Convert.ToString(_testMailbox.RspAddress, 16).ToUpper()}";
-        TextBoxArgAddress.Text = $"0x{Convert.ToString(_testMailbox.ArgAddress, 16).ToUpper()}";
-    }
-
-    private void PlayButton_Click(object sender, RoutedEventArgs e)
-    {
-        ApplySettings(1, int.Parse((sender as Button)!.Name.Replace("Play_", "")));
-    }
-
-    private async void EditButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await QuickDialog(1, int.Parse((sender as Button)!.Name.Replace("Edit_", "")));
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    }
-
-    //SMU КОМАНДЫ
-    private void ApplySettings(int mode, int commandIndex)
-    {
-        _commandReturnedValue = false;
-
-        try
-        {
-            string[]? userArgs;
-            uint addrMsg;
-            uint addrRsp;
-            uint addrArg;
-            uint command;
-
-            var args = SendSmuCommandService.MakeCmdArgs();
-            if (mode != 0)
-            {
-                userArgs = _smuSettings.QuickSmuCommands![commandIndex].Argument.Trim().Split(',');
-                TryConvertToUint(_smuSettings.MailBoxes![_smuSettings.QuickSmuCommands![commandIndex].MailIndex].Cmd,
-                    out addrMsg);
-                TryConvertToUint(_smuSettings.MailBoxes![_smuSettings.QuickSmuCommands![commandIndex].MailIndex].Rsp,
-                    out addrRsp);
-                TryConvertToUint(_smuSettings.MailBoxes![_smuSettings.QuickSmuCommands![commandIndex].MailIndex].Arg,
-                    out addrArg);
-                TryConvertToUint(_smuSettings.QuickSmuCommands![commandIndex].Command, out command);
-            }
-            else
-            {
-                userArgs = TextBoxArg0.Text.Trim().Split(',');
-                TryConvertToUint(TextBoxCmdAddress.Text, out addrMsg);
-                TryConvertToUint(TextBoxRspAddress.Text, out addrRsp);
-                TryConvertToUint(TextBoxArgAddress.Text, out addrArg);
-                TryConvertToUint(TextBoxCmd.Text, out command);
-            }
-
-            _testMailbox.MsgAddress = addrMsg;
-            _testMailbox.RspAddress = addrRsp;
-            _testMailbox.ArgAddress = addrArg;
-
-            for (var i = 0; i < userArgs.Length; i++)
-            {
-                if (i == args.Length)
-                {
-                    break;
-                }
-
-                TryConvertToUint(userArgs[i], out var temp);
-                args[i] = temp;
-            }
-
-            var argsBefore = args.ToArray();
-
-            Task.Run(async () =>
-                await LogHelper.Log(
-                    $"Sending SMU Command: {_smuSettings.QuickSmuCommands?[commandIndex].Command}\n" +
-                    $"Args: {_smuSettings.QuickSmuCommands?[commandIndex].Argument}\n" +
-                    $"Address MSG: {_testMailbox.MsgAddress}\n" +
-                    $"Address RSP: {_testMailbox.RspAddress}\n" +
-                    $"Address ARG: {_testMailbox.ArgAddress}"));
-
-            var status = _cpu.SendSmuCommand(_testMailbox, command, ref args);
-            if (status != SmuStatus.Ok)
-            {
-                ApplyInfo += "\n" + "SMUErrorText".GetLocalized() + ": " +
-                             (TextBoxCmd.Text.Contains("0x") ? TextBoxCmd.Text : "0x" + TextBoxCmd.Text)
-                             + "Param_SMU_Args_From".GetLocalized() + ComboBoxMailboxSelect.SelectedValue
-                             + "Param_SMU_Args".GetLocalized() + (TextBoxArg0.Text.Contains("0x")
-                                 ? TextBoxArg0.Text
-                                 : "0x" + TextBoxArg0.Text);
-
-                if (status == SmuStatus.CmdRejectedPrereq)
-                {
-                    ApplyInfo += "\n" + "SMUErrorRejected".GetLocalized();
-                }
-                else
-                {
-                    ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
-                }
-            }
-
-            if (args[0] != argsBefore[0] || 
-                args[1] != argsBefore[1] || 
-                args[2] != argsBefore[2])
-            {
-                _commandReturnedValue = true;
-                ApplyInfo += "Param_DeveloperOptions_SmuCommand".GetLocalized() + 
-                             $" {ComboBoxMailboxSelect.SelectedValue} 0x{command:X} " + 
-                             "Param_DeveloperOptions_CommandResult".GetLocalized() + 
-                             $"0x{args[0]:X}({args[0]}) 0x{args[1]:X}({args[1]}) 0x{args[2]:X}({args[2]})" + 
-                             "Param_DeveloperOptions_ResultSaved".GetLocalized();
-            }
-            Task.Run(async () => await LogHelper.Log($"Get status: {status}"));
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError($"Applying user SMU settings error: {ex.Message}");
-            ApplyInfo += "\n" + "SMUErrorDesc".GetLocalized();
-        }
-    }
-
-    private static void TryConvertToUint(string text, out uint address)
-    {
-        try
-        {
-            address = Convert.ToUInt32(text.Trim().ToLower(), 16);
-        }
-        catch
-        {
-            throw new ApplicationException("Invalid hexadecimal value.");
-        }
-    }
-    private void SMUOptions_Expander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
-    {
-        if (_isSearching) 
-        { 
-            return; 
-        }
-
-        AddPopulatedSmuMailboxes();
-    }
-
-    private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (ComboBoxMailboxSelect.SelectedItem is MailboxListItem item)
-        {
-            InitTestMailbox(item.MsgAddr, item.RspAddr, item.ArgAddr);
-        }
-    }
-
-    private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
-    {
-        _testMailbox.MsgAddress = msgAddr;
-        _testMailbox.RspAddress = rspAddr;
-        _testMailbox.ArgAddress = argAddr;
-        ResetSmuAddresses();
-    }
 
     private async void Mon_Click(object sender, RoutedEventArgs e)
     {
@@ -1521,698 +1082,6 @@ public sealed partial class ПараметрыPage
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
-
-    private void Save_DebugSmuCommandsSend(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button)
-        {
-            EnableSmu.IsOn = !EnableSmu.IsOn;
-        }
-        
-        _presetManager.Presets[_presetIndex].DebugSmuCommandsSend = EnableSmu.IsOn;
-        _presetManager.SaveSettings();
-    }
-
-    private async void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await QuickDialog(0, 0);
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    }
-    private async void CreateQuickCommandSMU1_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await RangeDialog();
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    } 
-
-    private async Task QuickDialog(int destination, int rowindex)
-    {
-        try
-        {
-            _smuSymbol1 = new FontIcon
-            {
-                FontFamily = new FontFamily("Segoe Fluent Icons"),
-                Glyph = _smuSymbol,
-                Margin = new Thickness(-4, -2, -5, -5)
-            };
-
-            var symbolButton = new Button
-            {
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(0, 41, 0, 0),
-                Width = 40,
-                Height = 40,
-                Content = new ContentControl
-                {
-                    Content = _smuSymbol1
-                },
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-
-            var comboSelSmu = new ComboBox
-            {
-                Margin = new Thickness(55, 5, 0, 0),
-                VerticalAlignment = VerticalAlignment.Top,
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-
-            var mainText = new TextBox
-            {
-                Margin = new Thickness(55, 45, 0, 0),
-                PlaceholderText = "New_Name".GetLocalized(),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Width = 305,
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-
-            var descText = new TextBox
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(55, 85, 0, 0),
-                PlaceholderText = "Desc".GetLocalized(),
-                Width = 305,
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-
-            var cmdText = new TextBox
-            {
-                PlaceholderText = "Command".GetLocalized(),
-                Width = 176,
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-
-            var argText = new TextBox
-            {
-                PlaceholderText = "Arguments".GetLocalized(),
-                Width = 179,
-                CornerRadius = new CornerRadius(10),
-                Translation = new System.Numerics.Vector3(0, 0, 12),
-                Shadow = SharedShadow
-            };
-
-            var autoRun = new CheckBox
-            {
-                Margin = new Thickness(1, 185, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Content = "Param_Autorun".GetLocalized(),
-                IsChecked = false
-            };
-
-            var applyWith = new CheckBox
-            {
-                Margin = new Thickness(1, 215, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Content = "Param_WithApply".GetLocalized(),
-                IsChecked = false
-            };
-
-            try
-            {
-                foreach (var item in ComboBoxMailboxSelect.Items)
-                {
-                    comboSelSmu.Items.Add(item);
-                }
-
-                comboSelSmu.SelectedIndex = ComboBoxMailboxSelect.SelectedIndex;
-                comboSelSmu.SelectionChanged += ComboSelSMU_SelectionChanged;
-                symbolButton.Click += SymbolButton_Click;
-                if (destination != 0 && _smuSettings.QuickSmuCommands != null && rowindex >= 0 && _smuSettings.QuickSmuCommands.Count > rowindex)
-                {
-                    var command = _smuSettings.QuickSmuCommands[rowindex];
-
-                    _smuSymbol = command.Symbol;
-                    _smuSymbol1.Glyph = command.Symbol;
-
-                    comboSelSmu.SelectedIndex = command.MailIndex;
-                    mainText.Text = command.Name;
-                    descText.Text = command.Description;
-                    cmdText.Text = command.Command;
-                    argText.Text = command.Argument;
-                    autoRun.IsChecked = command.Startup;
-                    applyWith.IsChecked = command.ApplyWith;
-                }
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.TraceIt_TraceError(ex);
-            }
-
-            try
-            {
-                var newQuickCommand = new ContentDialog
-                {
-                    Title = "AdvancedCooler_DeleteAction".GetLocalized(),
-                    Content = new Grid
-                    {
-                        Children =
-                        {
-                            comboSelSmu,
-                            symbolButton,
-                            mainText,
-                            descText,
-                            new StackPanel
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Top,
-                                Margin = new Thickness(0, 122, 0, 0),
-                                Orientation = Orientation.Vertical,
-                                Children =
-                                {
-                                    new TextBlock
-                                    {
-                                        Margin = new Thickness(2,0,0,0),
-                                        Text = "Command".GetLocalized(),
-                                        Padding = new Thickness(0,0,0,3)
-                                    },
-                                    cmdText
-                                }
-                            },
-                            new StackPanel
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Top,
-                                Margin = new Thickness(180, 122, 0, 0),
-                                Orientation = Orientation.Vertical,
-                                Children =
-                                {
-                                    new TextBlock
-                                    {
-                                        Margin = new Thickness(2,0,0,0),
-                                        Text = "Arguments".GetLocalized(),
-                                        Padding = new Thickness(0,0,0,3)
-                                    },
-                                    argText
-                                }
-                            },
-                            autoRun,
-                            applyWith
-                        }
-                    },
-                    PrimaryButtonText = "Save".GetLocalized(),
-                    CloseButtonText = "CancelThis/Text".GetLocalized(),
-                    DefaultButton = ContentDialogButton.Close
-                };
-                if (destination != 0)
-                {
-                    newQuickCommand.SecondaryButtonText = "Delete".GetLocalized();
-                }
-
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    newQuickCommand.XamlRoot = XamlRoot;
-                }
-
-                // Отобразить ContentDialog и обработать результат
-                try
-                {
-                    var result = await newQuickCommand.ShowAsync();
-                    // Создать ContentDialog 
-                    if (result == ContentDialogResult.Primary)
-                    {
-                        var saveIndex = comboSelSmu.SelectedIndex;
-                        for (var i = 0; i < comboSelSmu.Items.Count; i++)
-                        {
-                            var addressName = false;
-                            comboSelSmu.SelectedIndex = i;
-                            if (_smuSettings.MailBoxes == null)
-                            {
-                                _smuSettings.MailBoxes =
-                                [
-                                    new CustomMailBoxes
-                                    {
-                                        Name = comboSelSmu.SelectedItem.ToString()!,
-                                        Cmd = TextBoxCmdAddress.Text,
-                                        Rsp = TextBoxRspAddress.Text,
-                                        Arg = TextBoxArgAddress.Text
-                                    }
-                                ];
-                            }
-                            else
-                            {
-                                for (var d = 0; d < _smuSettings.MailBoxes?.Count; d++)
-                                {
-                                    if (_smuSettings.MailBoxes[d].Name != string.Empty &&
-                                        _smuSettings.MailBoxes[d].Name == comboSelSmu.SelectedItem.ToString())
-                                    {
-                                        addressName = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!addressName)
-                                {
-                                    _smuSettings.MailBoxes?.Add(new CustomMailBoxes
-                                    {
-                                        Name = comboSelSmu.SelectedItem.ToString()!,
-                                        Cmd = TextBoxCmdAddress.Text,
-                                        Rsp = TextBoxRspAddress.Text,
-                                        Arg = TextBoxArgAddress.Text
-                                    });
-                                }
-                            }
-                        }
-
-                        _smuSettings.SaveSettings();
-
-                        if (cmdText.Text != string.Empty && argText.Text != string.Empty)
-                        {
-                            var run = false;
-                            var apply = false;
-                            if (autoRun.IsChecked == true)
-                            {
-                                run = true;
-                            }
-
-                            if (applyWith.IsChecked == true)
-                            {
-                                apply = true;
-                            }
-
-                            if (destination == 0)
-                            {
-                                _smuSettings.QuickSmuCommands ??= [];
-                                _smuSettings.QuickSmuCommands.Add(new QuickSmuCommands
-                                {
-                                    Name = mainText.Text,
-                                    Description = descText.Text,
-                                    Symbol = _smuSymbol,
-                                    MailIndex = saveIndex,
-                                    Startup = run,
-                                    ApplyWith = apply,
-                                    Command = cmdText.Text,
-                                    Argument = argText.Text
-                                });
-                            }
-                            else
-                            {
-                                _smuSettings.QuickSmuCommands![rowindex].Symbol = _smuSymbol;
-                                _smuSettings.QuickSmuCommands![rowindex].Symbol = _smuSymbol1.Glyph;
-                                _smuSettings.QuickSmuCommands![rowindex].MailIndex = saveIndex;
-                                _smuSettings.QuickSmuCommands![rowindex].Name = mainText.Text;
-                                _smuSettings.QuickSmuCommands![rowindex].Description = descText.Text;
-                                _smuSettings.QuickSmuCommands![rowindex].Command = cmdText.Text;
-                                _smuSettings.QuickSmuCommands![rowindex].Argument = argText.Text;
-                                _smuSettings.QuickSmuCommands![rowindex].Startup = run;
-                                _smuSettings.QuickSmuCommands![rowindex].ApplyWith = apply;
-                            }
-                        }
-
-                        ComboBoxMailboxSelect.SelectedIndex = saveIndex;
-                        _smuSettings.SaveSettings();
-                        Init_QuickSMU();
-                        newQuickCommand.Hide();
-                        newQuickCommand = null;
-                    }
-                    else
-                    {
-
-                        if (result == ContentDialogResult.Secondary)
-                        {
-                            _smuSettings.QuickSmuCommands?.RemoveAt(rowindex);
-                            _smuSettings.SaveSettings();
-                            Init_QuickSMU();
-                        }
-                        else
-                        {
-                            newQuickCommand.Hide();
-                            newQuickCommand = null;
-                        }
-                    }
-                }
-                catch
-                {
-                    newQuickCommand?.Hide();
-                }
-
-                comboSelSmu.SelectionChanged -= ComboSelSMU_SelectionChanged;
-                symbolButton.Click -= SymbolButton_Click;
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.TraceIt_TraceError(ex);
-            }
-        }
-        catch (Exception e)
-        {
-            await LogHelper.TraceIt_TraceError(e);
-        }
-    }
-
-    private async Task RangeDialog()
-    {
-        try
-        {
-            var comboSelSmu = new ComboBox
-            {
-                Margin = new Thickness(0, 20, 0, 0),
-                VerticalAlignment = VerticalAlignment.Top
-            };
-            var cmdStart = new TextBox
-            {
-                Margin = new Thickness(0, 60, 0, 0),
-                PlaceholderText = "Command".GetLocalized(),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Height = 40,
-                Width = 360
-            };
-            var argStart = new TextBox
-            {
-                Margin = new Thickness(0, 105, 0, 0),
-                PlaceholderText = "Param_Start".GetLocalized(),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Height = 40,
-                Width = 176
-            };
-            var argEnd = new TextBox
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(180, 105, 0, 0),
-                PlaceholderText = "Param_EndW".GetLocalized(),
-                Height = 40,
-                Width = 179
-            };
-            var autoRun = new CheckBox
-            {
-                Margin = new Thickness(1, 155, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Content = "Logging".GetLocalized(),
-                IsChecked = false
-            };
-            try
-            {
-                foreach (var item in ComboBoxMailboxSelect.Items)
-                {
-                    comboSelSmu.Items.Add(item);
-                }
-
-                comboSelSmu.SelectedIndex = ComboBoxMailboxSelect.SelectedIndex;
-                comboSelSmu.SelectionChanged += ComboSelSMU_SelectionChanged;
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.TraceIt_TraceError(ex);
-            }
-
-            try
-            {
-                var newQuickCommand = new ContentDialog
-                {
-                    Title = "AdvancedCooler_DeleteAction".GetLocalized(),
-                    Content = new Grid
-                    {
-                        Children =
-                        {
-                            comboSelSmu,
-                            cmdStart,
-                            argStart,
-                            argEnd,
-                            autoRun
-                        }
-                    },
-                    PrimaryButtonText = "Apply".GetLocalized(),
-                    CloseButtonText = "CancelThis/Text".GetLocalized(),
-                    DefaultButton = ContentDialogButton.Close
-                };
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    newQuickCommand.XamlRoot = XamlRoot;
-                }
-
-                newQuickCommand.Closed += (_, _) =>
-                {
-                    newQuickCommand = null;
-                };
-                // Отобразить ContentDialog и обработать результат
-                try
-                {
-                    var result = await newQuickCommand.ShowAsync();
-                    // Создать ContentDialog 
-                    if (result == ContentDialogResult.Primary)
-                    {
-                        var saveIndex = comboSelSmu.SelectedIndex;
-                        for (var i = 0; i < comboSelSmu.Items.Count; i++)
-                        {
-                            var addressName = false;
-                            comboSelSmu.SelectedIndex = i;
-                            if (_smuSettings.MailBoxes == null)
-                            {
-                                _smuSettings.MailBoxes = [];
-                                _smuSettings.MailBoxes?.Add(new CustomMailBoxes
-                                {
-                                    Name = comboSelSmu.SelectedItem.ToString()!,
-                                    Cmd = TextBoxCmdAddress.Text,
-                                    Rsp = TextBoxRspAddress.Text,
-                                    Arg = TextBoxArgAddress.Text
-                                });
-                            }
-                            else
-                            {
-                                for (var d = 0; d < _smuSettings.MailBoxes?.Count; d++)
-                                {
-                                    if (_smuSettings.MailBoxes != null &&
-                                        _smuSettings.MailBoxes[d].Name != string.Empty &&
-                                        _smuSettings.MailBoxes[d].Name == comboSelSmu.SelectedItem.ToString())
-                                    {
-                                        addressName = true;
-                                        break;
-                                    }
-                                }
-
-                                if (addressName == false)
-                                {
-                                    _smuSettings.MailBoxes?.Add(new CustomMailBoxes
-                                    {
-                                        Name = comboSelSmu.SelectedItem.ToString()!,
-                                        Cmd = TextBoxCmdAddress.Text,
-                                        Rsp = TextBoxRspAddress.Text,
-                                        Arg = TextBoxArgAddress.Text
-                                    });
-                                }
-                            }
-                        }
-
-                        _smuSettings.SaveSettings();
-                        var run = false;
-                        if (cmdStart.Text != string.Empty && argStart.Text != string.Empty &&
-                            argEnd.Text != string.Empty)
-                        {
-                            if (autoRun.IsChecked == true)
-                            {
-                                run = true;
-                            }
-
-                            _sendSmuCommand.RangeCompleted += CloseRangeStarted;
-
-                            _sendSmuCommand.SendRange(cmdStart.Text, argStart.Text, argEnd.Text, saveIndex, run);
-                            RangeStarted.IsOpen = true;
-                            RangeStarted.Title = "SMURange".GetLocalized() + ". " + argStart.Text + "-" + argEnd.Text;
-
-                        }
-
-                        ComboBoxMailboxSelect.SelectedIndex = saveIndex;
-                        _smuSettings.SaveSettings();
-                        Init_QuickSMU();
-                        newQuickCommand?.Hide();
-                        newQuickCommand = null;
-                    }
-                    else
-                    {
-                        newQuickCommand?.Hide();
-                        newQuickCommand = null;
-                    }
-                }
-                catch
-                {
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.TraceIt_TraceError(ex);
-            }
-        }
-        catch (Exception e)
-        {
-            await LogHelper.TraceIt_TraceError(e);
-        }
-    }
-    
-    private void CloseRangeStarted(object? sender, object? args)
-    {
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            RangeStarted.IsOpen = false;
-        });
-
-        
-        _sendSmuCommand.RangeCompleted -= CloseRangeStarted;
-    }
-
-    private void SymbolButton_Click(object sender, RoutedEventArgs e) => SymbolFlyout.ShowAt(sender as Button);
-
-    private void ComboSelSMU_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            var comboBox = sender as ComboBox;
-            if (comboBox != null)
-            {
-                ComboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
-            }
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        var glyph = (FontIcon)e.ClickedItem;
-        if (glyph != null)
-        {
-            _smuSymbol = glyph.Glyph;
-            _smuSymbol1!.Glyph = glyph.Glyph;
-        }
-    }
-
-    private void SMUNotes_TextChanged(object sender, RoutedEventArgs e)
-    {
-        var documentRange = SmuNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
-        documentRange.GetText(TextGetOptions.FormatRtf, out var content);
-        _smuSettings.Note = content.TrimEnd();
-        _smuSettings.SaveSettings();
-    }
-
-    private void ToHex_Click(object sender, RoutedEventArgs e)
-    {
-        // Преобразование выделенного текста в HEX
-        if (TextBoxArg0.SelectedText != "")
-        {
-            try
-            {
-                var decimalValue = int.Parse(TextBoxArg0.SelectedText);
-                var hexValue = decimalValue.ToString("X");
-                TextBoxArg0.SelectedText = hexValue;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.TraceIt_TraceError(ex);
-            }
-        }
-        else
-        {
-            try
-            {
-                var decimalValue = int.Parse(TextBoxArg0.Text);
-                var hexValue = decimalValue.ToString("X");
-                TextBoxArg0.Text = hexValue;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.TraceIt_TraceError(ex);
-            }
-        }
-    }
-
-    private void CopyThis_Click(object sender, RoutedEventArgs e)
-    {
-        if (TextBoxArg0.SelectedText != "")
-        {
-            // Скопировать текст в буфер обмена
-            var dataPackage = new DataPackage
-            {
-                RequestedOperation = DataPackageOperation.Copy
-            };
-            dataPackage.SetText(TextBoxArg0.SelectedText);
-            Clipboard.SetContent(dataPackage);
-        }
-        else
-        {
-            // Выделить весь текст
-            TextBoxArg0.SelectAll();
-            // Скопировать текст в буфер обмена
-            var dataPackage = new DataPackage
-            {
-                RequestedOperation = DataPackageOperation.Copy
-            };
-            dataPackage.SetText(TextBoxArg0.Text);
-            Clipboard.SetContent(dataPackage);
-        }
-    }
-
-    private void CutThis_Click(object sender, RoutedEventArgs e)
-    {
-        if (TextBoxArg0.SelectedText != "")
-        {
-            // Скопировать текст в буфер обмена
-            var dataPackage = new DataPackage
-            {
-                RequestedOperation = DataPackageOperation.Copy
-            };
-            dataPackage.SetText(TextBoxArg0.SelectedText);
-            Clipboard.SetContent(dataPackage);
-            // Обнулить текст
-            TextBoxArg0.SelectedText = "";
-        }
-        else
-        {
-            // Выделить весь текст
-            TextBoxArg0.SelectAll();
-            // Скопировать текст в буфер обмена
-            var dataPackage = new DataPackage
-            {
-                RequestedOperation = DataPackageOperation.Copy
-            };
-            dataPackage.SetText(TextBoxArg0.Text);
-            Clipboard.SetContent(dataPackage);
-            TextBoxArg0.Text = "";
-        }
-    }
-
-    private void SelectAllThis_Click(object sender, RoutedEventArgs e)
-    {
-        // Выделить весь текст
-        TextBoxArg0.SelectAll();
-    }
-
-    private void CancelRange_Click(object sender, RoutedEventArgs e)
-    {
-        _sendSmuCommand.CancelRange();
-        CloseInfoRange();
-    }
-
-    private void CloseInfoRange() => RangeStarted.IsOpen = false;
 
     #endregion
 
@@ -3995,17 +2864,7 @@ public sealed partial class ПараметрыPage
             ApplyInfo = "";
             _appSettings.SaveSettings();
             await _applyer.ApplyPreset(_presetManager.Presets[_presetIndex], 
-                true, DeveloperSettingsMode.Visibility == Visibility.Visible);
-
-            if (TextBoxArg0 != null &&
-                TextBoxArgAddress != null &&
-                TextBoxCmd != null &&
-                TextBoxCmdAddress != null &&
-                TextBoxRspAddress != null &&
-                EnableSmu.IsOn)
-            {
-                ApplySettings(0, 0);
-            }
+                true);
 
             var timerCounter = 0;
             while (!SettingsApplied)
@@ -4057,7 +2916,6 @@ public sealed partial class ПараметрыPage
                 infoSet,
                 true);
             _commandReturnedValue = false;
-            _sendSmuCommand.ApplyQuickSmuCommand(false);
         }
         catch (Exception exception)
         {
@@ -4215,281 +3073,6 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void Save_SmuFeaturesOverride(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            SmuFuncEnableToggle.IsOn = !SmuFuncEnableToggle.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.SmuFeaturesOverride = SmuFuncEnableToggle.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureCpuFrequencyScaling(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit0FeatureCclkController.IsOn = !Bit0FeatureCclkController.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.CpuFrequencyScaling = Bit0FeatureCclkController.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureDataCalculation(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit2FeatureDataCalculation.IsOn = !Bit2FeatureDataCalculation.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.SensorsDataCalculation = Bit2FeatureDataCalculation.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeaturePowerLimits(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit3FeaturePpt.IsOn = !Bit3FeaturePpt.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.PowerLimits = Bit3FeaturePpt.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureSustainVrmTdcCurrent(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit4FeatureTdc.IsOn = !Bit4FeatureTdc.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.SustainVrmTdcCurrent = Bit4FeatureTdc.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureTemperatureControl(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit5FeatureThermal.IsOn = !Bit5FeatureThermal.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.TemperatureControl = Bit5FeatureThermal.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureDpmFrequencyPowerDown(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit8FeaturePllPowerDown.IsOn = !Bit8FeaturePllPowerDown.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.DpmFrequencyPowerDown = Bit8FeaturePllPowerDown.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureProchotSignal(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit37FeatureProchot.IsOn = !Bit37FeatureProchot.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.ProchotSignal = Bit37FeatureProchot.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureSustainedPowerLimit(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit39FeatureStapm.IsOn = !Bit39FeatureStapm.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.SustainedPowerLimit = Bit39FeatureStapm.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureCStatesBoost(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit40FeatureCoreCstates.IsOn = !Bit40FeatureCoreCstates.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.CStatesBoost = Bit40FeatureCoreCstates.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureGraphicsDutyCycle(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit41FeatureGfxDutyCycle.IsOn = !Bit41FeatureGfxDutyCycle.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.GraphicsDutyCycle = Bit41FeatureGfxDutyCycle.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void Save_SmuFeatureAplusAPowerMode(object element, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        if (element is Button)
-        {
-            Bit42FeatureAaMode.IsOn = !Bit42FeatureAaMode.IsOn;
-        }
-
-        try
-        {
-            _presetManager.Presets[PresetCom.SelectedIndex - 1].SmuFeaturesSettings.AplusAPowerMode = Bit42FeatureAaMode.IsOn;
-            _presetManager.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
 
     private void TargetNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
@@ -4518,27 +3101,7 @@ public sealed partial class ПараметрыPage
             }
         }        
     }
-
-    private void BackToNormalMode_Click(object sender, RoutedEventArgs e)
-    {
-        ToolTipService.SetToolTip(ActionButtonApply, "Param_Apply/ToolTipService/ToolTip".GetLocalized());
-        DeveloperSettingsMode.Visibility = Visibility.Collapsed;
-        DeveloperOptionsApply.Visibility = Visibility.Collapsed;
-        NormalUserMode.Visibility = Visibility.Visible;
-        ParamName.Text = "Param_Name/Text".GetLocalized();
-        SuggestionsFilterStackPanel.Visibility = Visibility.Visible;
-    }
-
-    private void OpenDeveloperOptionsMode_Click(object sender, RoutedEventArgs e)
-    {
-        ToolTipService.SetToolTip(ActionButtonApply, "Param_Apply_DevOptions/ToolTipService/ToolTip".GetLocalized());
-        NormalUserMode.Visibility = Visibility.Collapsed;
-        DeveloperSettingsMode.Visibility = Visibility.Visible;
-        DeveloperOptionsApply.Visibility = Visibility.Visible;
-        ParamName.Text = "Param_DeveloperOptions_Name/Text".GetLocalized();
-        SuggestionsFilterStackPanel.Visibility = Visibility.Collapsed;
-    }
-
+    
     #endregion
 
 }

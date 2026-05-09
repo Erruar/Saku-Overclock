@@ -82,7 +82,7 @@
                           VerticalAlignment="Center" />
             </StackPanel>
         </Button>
-        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,-45,-22,0" CornerRadius="8">
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="-9,-45,-13,0" CornerRadius="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -94,7 +94,7 @@
                                       x:Name="PresetsControl" VerticalAlignment="Stretch"
                                       HorizontalAlignment="Stretch" />
             </Grid>
-            <Grid Grid.Column="0" VerticalAlignment="Top" Margin="1,0,16,7">
+            <Grid Grid.Column="0" VerticalAlignment="Top" Margin="10,0,0,7">
                 <Grid CornerRadius="28" Height="110"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,20" VerticalAlignment="Stretch"
@@ -367,21 +367,18 @@
                                     Click="TryAdvancedButton_Click"
                                     CornerRadius="15" Content="Перейти"/>
                         </Grid>
-                        <TextBlock HorizontalAlignment="Center"
-                                   Foreground="{ThemeResource TextFillColorSecondary}"
-                                   Margin="0,-1,0,0" FontSize="12"
-                                   x:Uid="Preset_AppliedAllSettings"
-                                   Text="Применяются все настройки пресета" />
                         <Border Background="Transparent" Height="77" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
         </Grid>
         <TeachingTip Grid.Row="0" x:Name="ApplyTeach" IsOpen="False" />
-        <Grid Grid.Row="1" Margin="0,0,23,10" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <Button x:Name="ApplyButton" Click="ApplyButton_Click" CornerRadius="16" Height="55"
-                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Width="329"
-                    VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
+        <Grid Grid.Row="1" Margin="1,0,8,10" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" 
+              Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}" Height="75" CornerRadius="28">
+            
+            <Button x:Name="ApplyButton" Click="ApplyButton_Click" CornerRadius="19" Height="55"
+                    HorizontalAlignment="Right" HorizontalContentAlignment="Stretch" Width="329" Margin="0,0,16,0"
+                    VerticalAlignment="Center" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
                 <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center"
                               Margin="10,0,0,0" />
