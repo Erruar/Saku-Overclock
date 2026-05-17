@@ -76,8 +76,8 @@ public sealed partial class ПресетыPage
         LoadPresets();
 
         CurveOptimizerCustomGrid.Visibility =
-            OcFinder.IsUndervoltingAvailable() ? Visibility.Visible : Visibility.Collapsed;
-        if (CurveOptimizerCustomGrid.Visibility == Visibility.Collapsed) CurveOptimizerCustom.IsOn = false;
+            OcFinder.IsUndervoltingAvailable() || true ? Visibility.Visible : Visibility.Collapsed;
+        if (CurveOptimizerCustomGrid.Visibility == Visibility.Collapsed) UndervoltingSetOnly(UndervoltingDisabled);
 
         _isLoaded = true;
     }
@@ -277,13 +277,13 @@ public sealed partial class ПресетыPage
 
             if (PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled)
             {
-                CurveOptimizerCustom.IsOn = true;
+                UndervoltingSetOnly(UndervoltingManual);
                 CurveOptimizerLevelCustomSlider.Value = PresetManager.Presets[index].CurveOptimizerOptions
                     .CpuCurveOptimizerUndervoltingLevel.Value;
             }
             else
             {
-                CurveOptimizerCustom.IsOn = false;
+                UndervoltingSetOnly(UndervoltingDisabled);
             }
         }
         catch
@@ -1102,22 +1102,45 @@ public sealed partial class ПресетыPage
         PresetManager.SaveSettings();
     }
 
-    private void CurveOptimizerCustom_Toggled(object sender, RoutedEventArgs e)
-    {
-        if (_presetChanging) return;
-
-
-        var index = _presetIndex == -1 ? 0 : _presetIndex;
-
-        PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled =
-            CurveOptimizerCustom.IsOn;
-        PresetManager.SaveSettings();
-    }
-
-    private void CurveOptimizerCustom_PointerPressed(object sender, PointerRoutedEventArgs e)
-    {
-        CurveOptimizerCustom.IsOn = !CurveOptimizerCustom.IsOn;
-    }
-
     #endregion
+    
+    private void UndervoltingSetOnly(ToggleButton toggleButton)
+    {
+        UndervoltingDisabled.IsChecked = false;
+        UndervoltingAuto.IsChecked = false;
+        UndervoltingManual.IsChecked = false;
+        
+        toggleButton.IsChecked = true;
+        
+        var normalFontWeight = new FontWeight(400);
+        UndervoltingText1.FontSize = 13;
+        UndervoltingText1.FontWeight = normalFontWeight;
+        UndervoltingText2.FontSize = 13;
+        UndervoltingText2.FontWeight = normalFontWeight;
+        UndervoltingText3.FontSize = 13;
+        UndervoltingText3.FontWeight = normalFontWeight;
+        UndervoltingGrid.Visibility = toggleButton.Name == "UndervoltingManual" ? Visibility.Visible : Visibility.Collapsed;
+        
+        var text = VisualTreeHelper.FindVisualChildren<TextBlock>(toggleButton).FirstOrDefault();
+        if (text != null)
+        {
+            text.FontSize = 14;
+            text.FontWeight = new  FontWeight(500);
+        }
+    }
+    
+    private void Undervolting_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement toggle)
+        {
+            UndervoltingSetOnly((toggle as ToggleButton)!);
+            ChangedBaseTdp_Value();
+            
+            var index = _presetIndex == -1 ? 0 : _presetIndex;
+
+            PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled =
+                UndervoltingAuto.IsChecked == true || UndervoltingManual.IsChecked == true;
+            PresetManager.SaveSettings();
+        }
+    }
 }

@@ -2932,13 +2932,8 @@ All results are saved in notifications</value>
   <data name="Preset_SavedPresetsAddNew.Text" xml:space="preserve">
     <value>Add new </value>
   </data>
-  <data name="Preset_UndervoltingDesc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Undervolting
-Reduces the voltage on your processor, for better performance at the same power consumption
-The value "0" completely disables the undervolting function. The recommended default value is "-10", however, you can experiment with more aggressive settings (for example, "-15", "-20"). In case of system instability, use values closer to zero (for example, set "-10" or "-5" instead of "-20")
-
-These parameters of your preset will be changed
-All cores Curve Optimizer</value>
+  <data name="Preset_UndervoltingDesc.Text" xml:space="preserve">
+    <value>Reduces the voltage for lower temperatures and power consumption</value>
   </data>
   <data name="Param_Preset_Delete_Preset.Content" xml:space="preserve">
     <value>Delete preset</value>
@@ -2980,10 +2975,10 @@ All cores Curve Optimizer</value>
     <value>Maximum</value>
   </data>
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
-    <value>iGPU Enhancement</value>
+    <value>iGPU Fixed frequency</value>
   </data>
   <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
-    <value>Increases the performance of the integrated graphics through safe frequency overclocking</value>
+    <value>Increases graphics stability through frequency locking</value>
   </data>
   <data name="Preset_IgpuStable.Content" xml:space="preserve">
     <value>Stable</value>

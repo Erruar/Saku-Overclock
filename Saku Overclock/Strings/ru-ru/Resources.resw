@@ -2932,13 +2932,8 @@ Asus. Может не поддерживаться на
   <data name="Preset_SavedPresetsAddNew.Text" xml:space="preserve">
     <value>Добавить </value>
   </data>
-  <data name="Preset_UndervoltingDesc.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Андервольтинг
-Снижает напряжение на вашем процессоре, для лучшей производительности при том же потреблении
-Значение "0" полностью отключает функцию андервольтинга. Рекомендуемое значение по умолчанию составляет "-10", однако вы можете экспериментировать с более агрессивными настройками (например, "-15", "-20"). В случае возникновения нестабильности системы используйте значения ближе к нулю (например, вместо "-20" установить "-10" или "-5")
-
-Эти параметры вашего пресета будут изменены:
-Оптимизатор кривой для всех ядер</value>
+  <data name="Preset_UndervoltingDesc.Text" xml:space="preserve">
+    <value>Понижение напряжения для повышения энергоэффективности и снижения температур</value>
   </data>
   <data name="Param_Preset_Delete_Preset.Content" xml:space="preserve">
     <value>Удалить пресет</value>
@@ -2980,7 +2975,7 @@ Asus. Может не поддерживаться на
     <value>Максимум</value>
   </data>
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
-    <value>Улучшение iGPU</value>
+    <value>Фиксированная частота iGPU</value>
   </data>
   <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
     <value>Увеличивает производительность встроенной графики благодаря безопасному разгону частоты</value>

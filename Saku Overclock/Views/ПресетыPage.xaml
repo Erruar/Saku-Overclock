@@ -7,6 +7,8 @@
     xmlns:double="using:Saku_Overclock.Helpers"
     mc:Ignorable="d">
     <Page.Resources>
+        <AcrylicBrush x:Key="CustomAcrylicBrush"
+                            TintOpacity="0,8080000383779407" TintColor="#FF000000" FallbackColor="#FF008000" />
         <ThemeShadow x:Name="SharedShadow" />
         <double:DoubleToPercentConverter x:Key="DoubleToPercent" />
         <double:BooleanToFontWeightConverter x:Key="BooleanToWeight" />
@@ -65,6 +67,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="147" />
             <RowDefinition />
+            <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
         <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="24" Margin="-1,-95,0,0" />
 
@@ -319,33 +322,74 @@
                                     </ComboBox>
                                 </Grid>
                         </Grid>
-                        <Grid x:Name="CurveOptimizerCustomGrid" Margin="0,-1,0,0"
-                              HorizontalAlignment="Stretch" Background="Transparent"
-                              PointerPressed="CurveOptimizerCustom_PointerPressed">
-                            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                <TextBlock Text="Андервольтинг" x:Uid="Preset_Undervolting"
-                                           VerticalAlignment="Center" />
-                                <FontIcon Margin="3,7,0,0" Glyph="&#xE9CE;"
-                                          x:Uid="Preset_UndervoltingDesc">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform CenterX="15" CenterY="15" ScaleX="0.7"
-                                                        ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </StackPanel>
-                            <ToggleSwitch HorizontalAlignment="Right" OffContent=""
-                                          OnContent="" Margin="113,0,-113,0"
-                                          x:Name="CurveOptimizerCustom"
-                                          Toggled="CurveOptimizerCustom_Toggled" />
+                        <Grid x:Name="CurveOptimizerCustomGrid" Margin="0,2,0,0" Height="60"
+                              HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xEAFC;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           Text="Андервольтинг" x:Uid="Preset_Undervolting" FontSize="14"/>
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Preset_UndervoltingDesc"/>
+                            </Grid>
+                            <Border Height="32" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
+                                    Background="{ThemeResource ControlElevationBorderBrush}"
+                                    BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Shadow="{ThemeResource SharedShadow}"
+                                    Translation="0,0,10">
+                                <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal"
+                                            HorizontalAlignment="Center">
+                                    <ToggleButton Background="Transparent"
+                                                  BorderBrush="Transparent" CornerRadius="10"
+                                                  Click="Undervolting_OnClick"
+                                                  x:Name="UndervoltingDisabled"
+                                                  IsChecked="True">
+                                        <TextBlock Margin="0,-2,0,-2" Text="Выкл"
+                                                   x:Uid="Preset_AutoTdpDisabled" FontSize="14" x:Name="UndervoltingText1"
+                                                   FontWeight="Medium" />
+                                    </ToggleButton>
+                                    <ToggleButton Background="Transparent"
+                                                  BorderBrush="Transparent" CornerRadius="10"
+                                                  Click="Undervolting_OnClick"
+                                                  x:Name="UndervoltingAuto"
+                                                  Margin="4,0,0,0">
+                                        <TextBlock Margin="0,-2,0,-2" Text="Авто" FontSize="13"
+                                                   x:Name="UndervoltingText2" x:Uid="Preset_AutoTdpEnabled"/>
+                                    </ToggleButton>
+                                    <ToggleButton Background="Transparent"
+                                                  BorderBrush="Transparent" CornerRadius="10"
+                                                  Click="Undervolting_OnClick"
+                                                  x:Name="UndervoltingManual"
+                                                  Margin="4,0,0,0">
+                                        <TextBlock Margin="0,-2,0,-2" Text="Ручное" FontSize="13"
+                                                   x:Name="UndervoltingText3" x:Uid="Preset_AutoTdpManual"/>
+                                    </ToggleButton>
+                                </StackPanel>
+                            </Border>
                         </Grid>
-                        <Grid Margin="-15,0,-15,0"
-                              Visibility="{Binding ElementName=CurveOptimizerCustom, Path=IsOn}">
-                            <Slider
-                                IsEnabled="{Binding ElementName=CurveOptimizerCustom, Path=IsOn}"
-                                x:Name="CurveOptimizerLevelCustomSlider" Margin="35,0,35,0"
-                                ValueChanged="CurveOptimizerLevelCustom_Slider_ValueChanged"
-                                HorizontalAlignment="Stretch" Minimum="-50" Maximum="30"
-                                Value="0" VerticalAlignment="Center" />
+                        <Grid Margin="0,1,0,0" Height="50" HorizontalAlignment="Stretch" x:Name="UndervoltingGrid"
+                              Background="{ThemeResource ControlStrokeColorSecondaryBrush}" Visibility="Collapsed">
+                            <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
+                                <FontIcon Glyph="&#xE739;" />
+                                <TextBlock VerticalAlignment="Center" Margin="16,0,0,0"
+                                           Text="Оптмизатор кривой для всех ядер" x:Uid="Param_CO_O1"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,17,0" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
+                                <Slider Style="{ThemeResource FatSliderStyle}" x:Name="CurveOptimizerLevelCustomSlider"
+                                        ValueChanged="CurveOptimizerLevelCustom_Slider_ValueChanged" Margin="40,0,0,0"
+                                        VerticalAlignment="Top" Width="230" HorizontalAlignment="Left"
+                                        Minimum="-50" Maximum="30" Value="20" />
+                                <NumberBox Minimum="-50" Maximum="30" ValueChanged="TargetNumberBox_ValueChanged" Height="33" Width="78" Margin="25,0,0,0"
+                                           SmallChange="1" LargeChange="10" Tag="CurveOptimizerLevelCustomSlider" SpinButtonPlacementMode="Compact"
+                                           Value="{Binding ElementName=CurveOptimizerLevelCustomSlider, Path=Value, Mode=TwoWay}" />
+                            </StackPanel>
                         </Grid>
                         <Grid CornerRadius="0,0,15,15" PointerPressed="TryAdvancedButton_Click"
                               Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
@@ -373,9 +417,7 @@
             </ScrollViewer>
         </Grid>
         <TeachingTip Grid.Row="0" x:Name="ApplyTeach" IsOpen="False" />
-        <Grid Grid.Row="1" Margin="1,0,8,10" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" 
-              Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}" Height="75" CornerRadius="28">
-            
+        <Grid Grid.Row="2">
             <Button x:Name="ApplyButton" Click="ApplyButton_Click" CornerRadius="19" Height="55"
                     HorizontalAlignment="Right" HorizontalContentAlignment="Stretch" Width="329" Margin="0,0,16,0"
                     VerticalAlignment="Center" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
