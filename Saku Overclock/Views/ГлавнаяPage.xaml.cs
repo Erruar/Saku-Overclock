@@ -79,7 +79,6 @@ public sealed partial class ГлавнаяPage
     {
         InitializeComponent();
 
-        PresetManager.LoadSettings();
         _dataUpdater.DataUpdated += OnDataUpdated;
 
         _hotkeysService.PresetChanged += PresetChanged;

@@ -1,10 +1,7 @@
 ﻿using System.Numerics;
 using Windows.Foundation.Metadata;
-using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -12,8 +9,8 @@ using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
+using static Saku_Overclock.Styles.BandCrowdToggle;
 using Task = System.Threading.Tasks.Task;
-using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
@@ -24,6 +21,7 @@ public sealed partial class ПресетыPage
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
+    private bool NotReady => !_isLoaded || _presetChanging || AppSettings.Preset < 0;
 
     private bool
         _presetChanging = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
@@ -35,14 +33,12 @@ public sealed partial class ПресетыPage
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
     private static readonly ICpuService Cpu = App.GetService<ICpuService>();
-    private static bool? _isPlatformPc = false;
     private string _doubleClickApplyToken = string.Empty;
 
     public ПресетыPage()
     {
         InitializeComponent();
 
-        PresetManager.LoadSettings();
         AppSettings.SaveSettings();
 
         _dataUpdater.DataUpdated += OnDataUpdated;
@@ -64,22 +60,63 @@ public sealed partial class ПресетыPage
         _presetChanging = false;
         SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
-        try
-        {
-            _isPlatformPc = Cpu.IsPlatformPc();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
-
         LoadPresets();
 
-        CurveOptimizerCustomGrid.Visibility =
-            OcFinder.IsUndervoltingAvailable() || true ? Visibility.Visible : Visibility.Collapsed;
-        if (CurveOptimizerCustomGrid.Visibility == Visibility.Collapsed) UndervoltingSetOnly(UndervoltingDisabled);
+        var coAvailable = OcFinder.IsUndervoltingAvailable();
 
+        if (coAvailable || true)
+        {
+            CurveOptimizerCustomGrid.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            UndervoltingToggle.State = BandCrowdStates.Off;
+            CurveOptimizerCustomGrid.Visibility = Visibility.Collapsed;
+        }
+
+        SetCallbacks();
+        
         _isLoaded = true;
+    }
+
+    private PresetCpuSettings CurrentCpuSettings => PresetManager.Presets[_presetIndex].CpuSettings;
+    private PresetVrmSettings CurrentVrmSettings => PresetManager.Presets[_presetIndex].VrmSettings;
+    private PresetFrequenciesSettings CurrentFrequenciesSettings => PresetManager.Presets[_presetIndex].FrequenciesSettings;
+    private PresetSubsystemsSettings CurrentSubsystemsSettings => PresetManager.Presets[_presetIndex].SubsystemsSettings;
+    private PresetCurveOptimizerOptions CurrentCurveOptimizerOptions => PresetManager.Presets[_presetIndex].CurveOptimizerOptions;
+    private PresetAdvancedCpuModesSettings CurrentCpuModesSettings => PresetManager.Presets[_presetIndex].CpuModesSettings;
+    private void SetCallbacks()
+    {
+        CpuTemp.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.CpuMaximumTemperature = val);
+        GpuTemp.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.IntegratedGpuMaximumTemperature = val);
+        CpuPowerLimit.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.CpuSustainedPowerLimit = val);
+        CpuActualPower.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.CpuActualPowerLimit = val);
+        CpuAveragePower.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.CpuAveragePowerLimit = val);
+        GpuPowerLimit.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.IntegratedGpuPowerLimit = val); 
+        CpuTurboSlowTime.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.CpuBoostTimeSlow = val);
+        CpuTurboFastTime.ValueChanged += val => UpdatePresetSetting(() => CurrentCpuSettings.CpuBoostTimeFast = val);
+        CpuFreqRestoreTime.ValueChanged += val => UpdatePresetSetting(() => CurrentVrmSettings.VrmCpuFrequencyRestoreTime = val);
+        FixedCpuFrequency.ValueChanged += val => UpdatePresetSetting(() => CurrentFrequenciesSettings.CpuFrequency = val);
+        if (IsRavenFamily())
+        {
+            FixedGpuFrequency.ValueChanged += val => UpdatePresetSetting(() => CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency = val);
+        }
+        else
+        {
+            FixedGpuFrequency.ValueChanged += val => UpdatePresetSetting(() => CurrentFrequenciesSettings.IntegratedGraphicsFrequency = val);
+        }
+        
+        UndervoltingCpu.ValueChanged += val => UpdatePresetSetting(() => CurrentCurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel = val);
+        UndervoltingGpu.ValueChanged += val => UpdatePresetSetting(() => CurrentCurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel = val);
+    }
+    
+    private void UpdatePresetSetting(Action assignmentAction)
+    {
+        if (NotReady) return;
+
+        assignmentAction();
+    
+        PresetManager.SaveSettings();
     }
 
     #region JSON and Initialization
@@ -88,9 +125,6 @@ public sealed partial class ПресетыPage
 
     private void LoadPresets()
     {
-        // Загрузить пресеты перед началом работы с ними
-        PresetManager.LoadSettings();
-
         // Очистить элементы PresetsControl
         PresetsControl.Items.Clear();
 
@@ -155,7 +189,7 @@ public sealed partial class ПресетыPage
                 }
             }
 
-        if (AppSettings.Preset != -1) InitializeCustomPresetSettings(AppSettings.Preset);
+        InitializeCustomPresetSettings(AppSettings.Preset);
     }
 
     private void InitializeCustomPresetSettings(int index)
@@ -169,121 +203,85 @@ public sealed partial class ПресетыPage
 
         try
         {
-            // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
-            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(
-                1.17335141 * PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value + 0.21631949);
+            var preset = PresetManager.Presets[index];
+            var cpu = preset.CpuSettings;
+            var vrm = preset.VrmSettings;
+            var sub = preset.SubsystemsSettings;
+            var co = preset.CurveOptimizerOptions;
+            
+            // Температуры
+            AdaptiveTemperature.State = preset switch
+            {
+                _ when cpu.AutomaticTemperatureManagement.IsEnabled => BandCrowdStates.Auto,
+                _ when cpu.CpuMaximumTemperature.IsEnabled || 
+                       cpu.IntegratedGpuMaximumTemperature.IsEnabled => BandCrowdStates.Manual,
+                _ => BandCrowdStates.Off
+            };
+            CpuTemp.Value = cpu.CpuMaximumTemperature;
+            GpuTemp.Value = cpu.IntegratedGpuMaximumTemperature;
 
-            BaseTdpSlider.Value = PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value;
-            if (PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled &&
-                PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.IsEnabled &&
-                PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled &&
-                (int)PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value ==
-                (int)PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.Value &&
-                (int)PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value == fineTunedTdp)
-            {
-                AutoTdpSetOnly(AutoTdpEnabled);
-            }
-            else
-            {
-                if (_isPlatformPc != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
-                {
-                    // Так как на компьютерах невозможно выставить другие Power лимиты
-                    if (!PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled &&
-                        !PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled &&
-                        (int)PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value == fineTunedTdp)
-                        AutoTdpSetOnly(AutoTdpEnabled);
-                }
-                else
-                {
-                    if (PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled ||
-                        PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.IsEnabled ||
-                        PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled)
-                    {
-                        AutoTdpSetOnly(AutoTdpManual);
-                    }
-                    else
-                    {
-                        AutoTdpSetOnly(AutoTdpDisabled);
-                    }
-                }
-            }
+            // Лимиты TDP
+            CpuPowerLimit.Value = cpu.CpuSustainedPowerLimit;
+            CpuActualPower.Value = cpu.CpuActualPowerLimit;
+            CpuAveragePower.Value = cpu.CpuAveragePowerLimit;
+            GpuPowerLimit.Value = cpu.IntegratedGpuPowerLimit;
 
-            if (IsRavenFamily())
+            AutoTdp.State = preset switch
             {
-                if (PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled &&
-                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled &&
-                    (int)PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value ==
-                    1200)
-                {
-                    if ((int)PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value ==
-                        800)
-                        IntegratedGpuEnchantmentCombo.SelectedIndex = 1;
+                _ when cpu.AutomaticPowerManagement.IsEnabled => BandCrowdStates.Auto,
+                _ when cpu.CpuSustainedPowerLimit.IsEnabled || 
+                       cpu.CpuActualPowerLimit.IsEnabled || 
+                       cpu.CpuAveragePowerLimit.IsEnabled => BandCrowdStates.Manual,
+                _ => BandCrowdStates.Off
+            };
+            
+            // Управление Turbo Boost
+            BetterTurbo.State = preset switch
+            {
+                _ when cpu.AutomaticTurboManagement.IsEnabled => BandCrowdStates.Auto,
+                _ when cpu.CpuBoostTimeSlow.IsEnabled || 
+                       cpu.CpuBoostTimeFast.IsEnabled => BandCrowdStates.Manual,
+                _ => BandCrowdStates.Off
+            };
 
-                    if ((int)PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value ==
-                        1000)
-                        IntegratedGpuEnchantmentCombo.SelectedIndex = 2;
-                }
-                else
-                {
-                    IntegratedGpuEnchantmentCombo.SelectedIndex = 0;
-                }
-            }
-            else
-            {
-                if (PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled)
-                {
-                    if ((int)PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value == 1750)
-                        IntegratedGpuEnchantmentCombo.SelectedIndex = 1;
+            CpuTurboSlowTime.Value = cpu.CpuBoostTimeSlow;
+            CpuTurboFastTime.Value = cpu.CpuBoostTimeFast;
+            CpuFreqRestoreTime.Value = vrm.VrmCpuFrequencyRestoreTime;
+            
+            // Fix 0.4 GHz 
+            CpuFrequency04Fix.State = CurrentCpuModesSettings.CpuFrequency04Fix.IsEnabled
+                ? BandCrowdStates.Manual
+                : BandCrowdStates.Off;
+            
+            // Частота процессора
+            FixedCpuFrequency.Value = preset.FrequenciesSettings.CpuFrequency;
+            
+            FixedCpuFrequencyToggle.State = preset.FrequenciesSettings.CpuFrequency.IsEnabled
+                ? BandCrowdStates.Manual
+                : BandCrowdStates.Off;
 
-                    if ((int)PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value == 2200)
-                        IntegratedGpuEnchantmentCombo.SelectedIndex = 2;
-                }
-                else
-                {
-                    IntegratedGpuEnchantmentCombo.SelectedIndex = 0;
-                }
-            }
+            // Частота встроенной графики 
+            FixedGpuFrequency.Value = IsRavenFamily() ? sub.MinimumIntegratedGraphicsFrequency 
+                : preset.FrequenciesSettings.IntegratedGraphicsFrequency;
+            
+            FixedIntegratedGpuFrequency.State = sub.MaximumIntegratedGraphicsFrequency.IsEnabled ||
+                                                sub.MinimumIntegratedGraphicsFrequency.IsEnabled ||
+                                                preset.FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled
+                ? BandCrowdStates.Manual
+                : BandCrowdStates.Off;
 
-            if (!PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled &&
-                !PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled)
+            // Андервольтинг
+            UndervoltingToggle.State = co switch
             {
-                BetterTurboCombo.SelectedIndex = 0;
-            }
-            else
-            {
-                if ((PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled &&
-                     !PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled) ||
-                    (!PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled &&
-                     PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled))
-                    BetterTurboCombo.SelectedIndex = 0;
+                _ when co.AutomaticCurveOptimizerManagement.IsEnabled => BandCrowdStates.Auto,
+                _ when co.CpuCurveOptimizerUndervoltingLevel.IsEnabled => BandCrowdStates.Manual,
+                _ => BandCrowdStates.Off
+            };
 
-                if (PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled &&
-                    PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled)
-                {
-                    if ((int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value == 400 &&
-                        (int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value == 3)
-                        BetterTurboCombo.SelectedIndex = 1;
-                    else if ((int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value == 5000 &&
-                             (int)PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value == 1)
-                        BetterTurboCombo.SelectedIndex = 2;
-                    else
-                        BetterTurboCombo.SelectedIndex = 0;
-                }
-                else
-                {
-                    BetterTurboCombo.SelectedIndex = 0;
-                }
-            }
-
-            if (PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled)
+            if (UndervoltingToggle.State == BandCrowdStates.Manual)
             {
-                UndervoltingSetOnly(UndervoltingManual);
-                CurveOptimizerLevelCustomSlider.Value = PresetManager.Presets[index].CurveOptimizerOptions
-                    .CpuCurveOptimizerUndervoltingLevel.Value;
-            }
-            else
-            {
-                UndervoltingSetOnly(UndervoltingDisabled);
+                UndervoltingCpu.Value = co.CpuCurveOptimizerUndervoltingLevel;
+                UndervoltingGpu.Value = co.IntegratedGpuCurveOptimizerUndervoltingLevel;
             }
         }
         catch
@@ -324,139 +322,9 @@ public sealed partial class ПресетыPage
 
     #region Additional Functions
 
-    private void BaseTdp_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (!_isLoaded || _presetChanging) return;
-
-        ChangedBaseTdp_Value();
-    }
-
-    private void ChangedBaseTdp_Value()
-    {
-        if (_presetChanging) return;
-
-        var index = _presetIndex == -1 ? 0 : _presetIndex;
-
-        // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
-        var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdpSlider.Value + 0.21631949);
-
-        PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled = true;
-        PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.IsEnabled = true;
-        PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled = true;
-        PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.Value = BaseTdpSlider.Value;
-        PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.Value = BaseTdpSlider.Value;
-
-        if (AutoTdpEnabled.IsChecked == true)
-            PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value = fineTunedTdp;
-        else
-            PresetManager.Presets[index].CpuSettings.CpuActualPowerLimit.Value = BaseTdpSlider.Value;
-
-        if (_isPlatformPc != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
-        {
-            // Так как на компьютерах невозможно выставить другие Power лимиты
-            PresetManager.Presets[index].CpuSettings.CpuSustainedPowerLimit.IsEnabled = false;
-            PresetManager.Presets[index].CpuSettings.CpuAveragePowerLimit.IsEnabled = false;
-        }
-
-        PresetManager.SaveSettings();
-    }
-
-    private void IntegratedGpuEnchantmentCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!_isLoaded || _presetChanging) return;
-
-        if (AppSettings.Preset == -1) return;
-
-        var index = AppSettings.Preset;
-
-        switch (IntegratedGpuEnchantmentCombo.SelectedIndex)
-        {
-            case 0:
-                if (IsRavenFamily())
-                {
-                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled =
-                        false;
-                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled =
-                        false;
-                }
-                else
-                {
-                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = false;
-                }
-
-                break;
-            case 1:
-                if (IsRavenFamily())
-                {
-                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = true;
-                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = 1200;
-                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
-                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = 800;
-                }
-                else
-                {
-                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = true;
-                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value = 1750;
-                }
-
-                break;
-            case 2:
-                if (IsRavenFamily())
-                {
-                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.IsEnabled = true;
-                    PresetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = 1200;
-                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
-                    PresetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = 1000;
-                }
-                else
-                {
-                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = true;
-                    PresetManager.Presets[index].FrequenciesSettings.IntegratedGraphicsFrequency.Value = 2200;
-                }
-
-                break;
-        }
-
-        PresetManager.SaveSettings();
-    }
-
-    private void BetterTurboCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!_isLoaded || _presetChanging) return;
-
-        if (AppSettings.Preset == -1) return;
-
-        var index = AppSettings.Preset;
-
-        switch (BetterTurboCombo.SelectedIndex)
-        {
-            case 0:
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled = false;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled = false;
-                break;
-            case 1:
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled = true;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled = true;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value = 400;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value = 3;
-                break;
-            case 2:
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.IsEnabled = true;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.IsEnabled = true;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeSlow.Value = 5000;
-                PresetManager.Presets[index].CpuSettings.CpuBoostTimeFast.Value = 1;
-                break;
-        }
-        
-        PresetManager.SaveSettings();
-    }
-    
     #region Function Helpers
 
-    private bool IsRavenFamily()
-    {
-        return Cpu.GetCodenameGeneration() == CpuService.CodenameGeneration.Fp5;
-    }
+    private static bool IsRavenFamily() => Cpu.GetCodenameGeneration() == CpuService.CodenameGeneration.Fp5;
 
     private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
     {
@@ -466,7 +334,7 @@ public sealed partial class ПресетыPage
 
     #endregion
 
-    #region Preset Management
+    #region Preset Management Dialogs
 
     private async void AddPresetButton_Click(object sender, RoutedEventArgs e)
     {
@@ -544,8 +412,6 @@ public sealed partial class ПресетыPage
             Content = content,
             DefaultButton = ContentDialogButton.Close
         };
-
-        // --- Обработчики ---
 
         // Обработчик выбора иконки — обновляем иконку при выборе сразу
         ItemClickEventHandler itemClickHandler = (_, e) =>
@@ -920,70 +786,6 @@ public sealed partial class ПресетыPage
         }
     }
 
-    private void AutoTdpSetOnly(ToggleButton toggleButton)
-    {
-        AutoTdpDisabled.IsChecked = false;
-        AutoTdpEnabled.IsChecked = false;
-        AutoTdpManual.IsChecked = false;
-        
-        toggleButton.IsChecked = true;
-        
-        var normalFontWeight = new FontWeight(400);
-        AutoTdpText1.FontSize = 13;
-        AutoTdpText1.FontWeight = normalFontWeight;
-        AutoTdpText2.FontSize = 13;
-        AutoTdpText2.FontWeight = normalFontWeight;
-        AutoTdpText3.FontSize = 13;
-        AutoTdpText3.FontWeight = normalFontWeight;
-        PowerAdjustment.Visibility = toggleButton.Name == "AutoTdpManual" ? Visibility.Visible : Visibility.Collapsed;
-        
-        var text = VisualTreeHelper.FindVisualChildren<TextBlock>(toggleButton).FirstOrDefault();
-        if (text != null)
-        {
-            text.FontSize = 14;
-            text.FontWeight = new  FontWeight(500);
-        }
-    }
-    
-    private void AutoTdpEnabled_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is FrameworkElement toggle)
-        {
-            AutoTdpSetOnly((toggle as ToggleButton)!);
-            ChangedBaseTdp_Value();
-        }
-    }
-    
-    private void TargetNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        var name = sender.Tag.ToString();
-            
-        if (name != null)
-        {
-            object sliderObject;
-
-            try
-            {
-                sliderObject = FindName(name);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.TraceIt_TraceError(ex);
-                return;
-            }
-
-            if (sliderObject is Slider slider)
-            {
-                if (slider.Maximum < sender.Value)
-                {
-                    slider.Maximum = FromValueToUpperFive(sender.Value);
-                }
-            }
-        }        
-    }
-
-    private static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
-
     private async void ApplyButton_Click(object? sender, RoutedEventArgs? e)
     {
         try
@@ -1077,70 +879,169 @@ public sealed partial class ПресетыPage
         }
     }
 
-    /// <summary>
-    ///     Изменяет состояние привязанных ToggleSwitch
-    /// </summary>
-    private void ToggleTheSwitchByTag(object sender, object e)
+    private void AdaptiveTemperature_OnClick(BandCrowdStates state)
     {
-        if (sender is FrameworkElement { Tag: string targetName })
+        if (NotReady) return;
+        
+        CurrentCpuSettings.AutomaticTemperatureManagement.IsEnabled = false;
+        switch (state)
         {
-            // Ищем элемент по имени на текущей странице и меняем его состояние
-            var targetToggle = FindName(targetName) as ToggleSwitch;
-            if (targetToggle != null) targetToggle.IsOn = !targetToggle.IsOn;
+            case BandCrowdStates.Off:
+                CurrentCpuSettings.CpuMaximumTemperature.IsEnabled = false;
+                CurrentCpuSettings.IntegratedGpuMaximumTemperature.IsEnabled = false;
+                break;
+            case BandCrowdStates.Auto:
+                CurrentCpuSettings.AutomaticTemperatureManagement.IsEnabled = true;
+                CurrentCpuSettings.CpuMaximumTemperature.IsEnabled = false; // will be ignored and auto calculated in Oc Finder
+                break;
+            case BandCrowdStates.Manual:
+                CurrentCpuSettings.CpuMaximumTemperature.IsEnabled = true;
+                CpuTemp.Value = null;
+                CpuTemp.Value = CurrentCpuSettings.CpuMaximumTemperature;
+                break;
         }
+        
+        PresetManager.SaveSettings();
+    }
+    
+    private void AutoTdp_OnClick(BandCrowdStates state)
+    {
+        if (NotReady) return;
+        
+        CurrentCpuSettings.AutomaticPowerManagement.IsEnabled = false;
+        switch (state)
+        {
+            case BandCrowdStates.Off:
+                CurrentCpuSettings.CpuActualPowerLimit.IsEnabled = false;
+                CurrentCpuSettings.CpuAveragePowerLimit.IsEnabled = false;
+                CurrentCpuSettings.CpuSustainedPowerLimit.IsEnabled = false;
+                CurrentCpuSettings.IntegratedGpuPowerLimit.IsEnabled = false;
+                break;
+            case BandCrowdStates.Auto:
+                CurrentCpuSettings.AutomaticPowerManagement.IsEnabled = true;
+                break;
+            case BandCrowdStates.Manual:
+                CurrentCpuSettings.CpuSustainedPowerLimit.IsEnabled = true;
+                CpuPowerLimit.Value = null;
+                CpuPowerLimit.Value = CurrentCpuSettings.CpuSustainedPowerLimit;
+                break;
+        }
+        
+        PresetManager.SaveSettings();
+    }
+    
+    private void BetterTurbo_OnClick(BandCrowdStates state)
+    {
+        if (NotReady) return;
+        
+        CurrentCpuSettings.AutomaticTurboManagement.IsEnabled = false;
+        switch (state)
+        {
+            case BandCrowdStates.Off:
+                CurrentCpuSettings.CpuBoostTimeSlow.IsEnabled = false;
+                CurrentCpuSettings.CpuBoostTimeFast.IsEnabled = false;
+                CurrentVrmSettings.VrmCpuFrequencyRestoreTime.IsEnabled = false;
+                break;
+            case BandCrowdStates.Auto:
+                CurrentCpuSettings.AutomaticTurboManagement.IsEnabled = true;
+                break;
+            case BandCrowdStates.Manual:
+                CurrentCpuSettings.CpuBoostTimeSlow.IsEnabled = true;
+                CpuTurboSlowTime.Value = null;
+                CpuTurboSlowTime.Value = CurrentCpuSettings.CpuBoostTimeSlow;
+                break;
+        }
+        
+        PresetManager.SaveSettings();
     }
 
-    private void CurveOptimizerLevelCustom_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    private void FixedCpuFrequencyToggle_OnClick(BandCrowdStates state)
     {
-        if (_presetChanging) return;
+        if (NotReady) return;
+        
+        switch (state)
+        {
+            case BandCrowdStates.Off:
+                CurrentFrequenciesSettings.CpuFrequency.IsEnabled = false;
+                break;
+            case BandCrowdStates.Manual:
+                CurrentFrequenciesSettings.CpuFrequency.IsEnabled = true;
+                FixedCpuFrequency.Value = null;
+                FixedCpuFrequency.Value = CurrentFrequenciesSettings.CpuFrequency;
+                break;
+        }
 
+        PresetManager.SaveSettings();
+    }
+    
+    private void FixedIntegratedGpuFrequency_OnClick(BandCrowdStates state)
+    {
+        if (NotReady) return;
+        
+        switch (state)
+        {
+            case BandCrowdStates.Off:
+                if (IsRavenFamily())
+                {
+                    CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = false;
+                }
+                else
+                {
+                    CurrentFrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = false;
+                }
 
-        var index = _presetIndex == -1 ? 0 : _presetIndex;
+                break;
+            case BandCrowdStates.Manual:
+                if (IsRavenFamily())
+                {
+                    CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
+                    FixedGpuFrequency.Value = null;
+                    FixedGpuFrequency.Value = CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency;
+                }
+                else
+                {
+                    CurrentFrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = true;
+                    FixedGpuFrequency.Value = null;
+                    FixedGpuFrequency.Value = CurrentFrequenciesSettings.IntegratedGraphicsFrequency;
+                }
 
-        PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.Value =
-            CurveOptimizerLevelCustomSlider.Value;
+                break;
+        }
+
+        PresetManager.SaveSettings();
+    }
+
+    private void UndervoltingToggle_OnClick(BandCrowdStates state)
+    {
+        if (NotReady) return;
+        
+        CurrentCurveOptimizerOptions.AutomaticCurveOptimizerManagement.IsEnabled = false;
+        switch (state)
+        {
+            case BandCrowdStates.Off:
+                CurrentCurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled = false;
+                CurrentCurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel.IsEnabled = false;
+                break;
+            case BandCrowdStates.Auto:
+                CurrentCurveOptimizerOptions.AutomaticCurveOptimizerManagement.IsEnabled = true;
+                break;
+            case BandCrowdStates.Manual:
+                CurrentCurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled = true;
+                UndervoltingCpu.Value = null;
+                UndervoltingCpu.Value = CurrentCurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel;
+                break;
+        }
+        
         PresetManager.SaveSettings();
     }
 
     #endregion
-    
-    private void UndervoltingSetOnly(ToggleButton toggleButton)
-    {
-        UndervoltingDisabled.IsChecked = false;
-        UndervoltingAuto.IsChecked = false;
-        UndervoltingManual.IsChecked = false;
-        
-        toggleButton.IsChecked = true;
-        
-        var normalFontWeight = new FontWeight(400);
-        UndervoltingText1.FontSize = 13;
-        UndervoltingText1.FontWeight = normalFontWeight;
-        UndervoltingText2.FontSize = 13;
-        UndervoltingText2.FontWeight = normalFontWeight;
-        UndervoltingText3.FontSize = 13;
-        UndervoltingText3.FontWeight = normalFontWeight;
-        UndervoltingGrid.Visibility = toggleButton.Name == "UndervoltingManual" ? Visibility.Visible : Visibility.Collapsed;
-        
-        var text = VisualTreeHelper.FindVisualChildren<TextBlock>(toggleButton).FirstOrDefault();
-        if (text != null)
-        {
-            text.FontSize = 14;
-            text.FontWeight = new  FontWeight(500);
-        }
-    }
-    
-    private void Undervolting_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is FrameworkElement toggle)
-        {
-            UndervoltingSetOnly((toggle as ToggleButton)!);
-            ChangedBaseTdp_Value();
-            
-            var index = _presetIndex == -1 ? 0 : _presetIndex;
 
-            PresetManager.Presets[index].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.IsEnabled =
-                UndervoltingAuto.IsChecked == true || UndervoltingManual.IsChecked == true;
-            PresetManager.SaveSettings();
-        }
+    private void CpuFrequency04Fix_OnClick(BandCrowdStates state)
+    {
+        if (NotReady) return;
+        
+        CurrentCpuModesSettings.CpuFrequency04Fix.IsEnabled = state == BandCrowdStates.Manual;
+        PresetManager.SaveSettings();
     }
 }

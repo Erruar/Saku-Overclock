@@ -51,15 +51,13 @@ public sealed partial class PresetSelector : UserControl
     {
         foreach (var element in Helpers.VisualTreeHelper.FindVisualChildren<Button>(FlipViewContainer))
         {
-            if (element != null)
-            {
-                element.Shadow = new ThemeShadow();
-                element.Translation = new System.Numerics.Vector3(0, 0, 20);
-                element.Margin = new Thickness(0, -5, 0, 0);
-            }
+            element.Shadow = new ThemeShadow();
+            element.Translation = new System.Numerics.Vector3(0, 0, 20);
+            element.Margin = new Thickness(0, -5, 0, 0);
         }
         foreach (var item in Items)
         {
+            if (item.IsSelected) SelectedItem = item;
             if (item.Description == string.Empty)
             {
                 item.Description = item.Text;
@@ -95,6 +93,7 @@ public sealed partial class PresetSelector : UserControl
         _pages.Clear();
         for (var i = 0; i < Items.Count; i += _visibleCount)
         {
+            if (Items[i].IsSelected && SelectedItem != Items[i]) SelectedItem = Items[i];
             _pages.Add(new ObservableCollection<PresetItem>(Items.Skip(i).Take(_visibleCount)));
         }
 

@@ -4,14 +4,33 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="using:Saku_Overclock.Styles"
-    xmlns:double="using:Saku_Overclock.Helpers"
     mc:Ignorable="d">
     <Page.Resources>
-        <AcrylicBrush x:Key="CustomAcrylicBrush"
-                            TintOpacity="0,8080000383779407" TintColor="#FF000000" FallbackColor="#FF008000" />
         <ThemeShadow x:Name="SharedShadow" />
-        <double:DoubleToPercentConverter x:Key="DoubleToPercent" />
-        <double:BooleanToFontWeightConverter x:Key="BooleanToWeight" />
+        <Style TargetType="local:BandCrowdToggle">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Width" Value="188" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,1,17,0" />
+            <Setter Property="Background" Value="{ThemeResource ControlElevationBorderBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource CircleElevationBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Shadow" Value="{StaticResource SharedShadow}" />
+        </Style>
+        <Style TargetType="local:CrowdToggle">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Width" Value="188" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,1,17,0" />
+            <Setter Property="Background" Value="{ThemeResource ControlElevationBorderBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource CircleElevationBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Shadow" Value="{StaticResource SharedShadow}" />
+        </Style>
         <Flyout x:Name="SymbolFlyout" Placement="Bottom">
             <!-- flyout content -->
             <GridView x:Name="SelectionGrid" IsItemClickEnabled="True">
@@ -90,14 +109,14 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="1" Margin="17,-77,15,0" CornerRadius="8" HorizontalAlignment="Stretch"
+            <Grid Grid.Column="0" Margin="4,-77,28,0" CornerRadius="8" HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
                 <local:PresetSelector Height="115"
                                       SelectionChanged="PresetsControl_SelectionChanged"
                                       x:Name="PresetsControl" VerticalAlignment="Stretch"
                                       HorizontalAlignment="Stretch" />
             </Grid>
-            <Grid Grid.Column="0" VerticalAlignment="Top" Margin="10,0,0,7">
+            <Grid Grid.Column="1" VerticalAlignment="Top" Margin="-3,0,21,7">
                 <Grid CornerRadius="28" Height="110"
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,20" VerticalAlignment="Stretch"
@@ -191,7 +210,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="1" Margin="0,-48,6,0">
-            <ScrollViewer Margin="-1,-2,-11,0">
+            <ScrollViewer Margin="-1,-2,-11,0" CornerRadius="0,0,15,15">
                 <StackPanel Orientation="Vertical" Margin="2,0,13,0">
                     <StackPanel x:Name="PresetSettingsBeginnerView"
                                 Orientation="Vertical">
@@ -200,9 +219,31 @@
                                 <RepositionThemeTransition />
                             </TransitionCollection>
                         </StackPanel.ChildrenTransitions>
-                        <Grid PointerPressed="ToggleTheSwitchByTag" Tag="SmartTdp" CornerRadius="15,15,0,0"
+                        <Grid CornerRadius="15,15,0,0"
                               Margin="0,0,0,0" Height="60" HorizontalAlignment="Stretch"
                               Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xE9CA;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           FontSize="14" Text="Адаптивное ограничение температуры" x:Uid="Preset_AdaptiveTemperature" />
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="Preset_AdaptiveTemperature_Desc"
+                                           Text="Подстраивает лимит температуры для лучшего охлаждения" />
+                            </Grid>
+                            <local:BandCrowdToggle x:Name="AdaptiveTemperature" OnClick="AdaptiveTemperature_OnClick"/>
+                        </Grid>
+                        <local:PresetSetting x:Name="CpuTemp" Text="Максимальная температура CPU" x:Uid="Param_CPU_c1" Minimum="30" Maximum="100" SliderMaximum="100"
+                                             Visibility="{x:Bind AdaptiveTemperature.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="GpuTemp" Text="Максимальная температура iGPU" x:Uid="Param_ADV_a6" Minimum="30" Maximum="100" SliderMaximum="100"
+                                             Visibility="{x:Bind AdaptiveTemperature.IsManual, Mode=OneWay}"/>
+                        <Grid Margin="0,2,0,0" Tag="SmartTdp"
+                                              Height="60" HorizontalAlignment="Stretch"
+                                              Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
@@ -213,63 +254,80 @@
                                 <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
                                            FontSize="14" Text="Умная оптимизация TDP" x:Uid="Preset_SmartTdp" />
                                 <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
-                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="Preset_SmartTdp_Desc"
                                            Text="Автоматически подстраивать лимит мощности под активную задачу" />
                             </Grid>
-                            <Border Height="32" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
-                                    Background="{ThemeResource ControlElevationBorderBrush}"
-                                    BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="10"
-                                    Shadow="{ThemeResource SharedShadow}"
-                                    Translation="0,0,10">
-                                <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal"
-                                            HorizontalAlignment="Center">
-                                    <ToggleButton Background="Transparent"
-                                                  BorderBrush="Transparent" CornerRadius="10"
-                                                  Click="AutoTdpEnabled_OnClick"
-                                                  x:Name="AutoTdpDisabled"
-                                                  IsChecked="True">
-                                        <TextBlock Margin="0,-2,0,-2" Text="Выкл"
-                                                   x:Uid="Preset_AutoTdpDisabled" FontSize="14" x:Name="AutoTdpText1"
-                                                   FontWeight="Medium" />
-                                    </ToggleButton>
-                                    <ToggleButton Background="Transparent"
-                                                  BorderBrush="Transparent" CornerRadius="10"
-                                                  Click="AutoTdpEnabled_OnClick"
-                                                  x:Name="AutoTdpEnabled"
-                                                  Margin="4,0,0,0">
-                                        <TextBlock Margin="0,-2,0,-2" Text="Авто" FontSize="13"
-                                                   x:Name="AutoTdpText2" x:Uid="Preset_AutoTdpEnabled"/>
-                                    </ToggleButton>
-                                    <ToggleButton Background="Transparent"
-                                                  BorderBrush="Transparent" CornerRadius="10"
-                                                  Click="AutoTdpEnabled_OnClick"
-                                                  x:Name="AutoTdpManual"
-                                                  Margin="4,0,0,0">
-                                        <TextBlock Margin="0,-2,0,-2" Text="Ручное" FontSize="13"
-                                                   x:Name="AutoTdpText3" x:Uid="Preset_AutoTdpManual"/>
-                                    </ToggleButton>
-                                </StackPanel>
-                            </Border>
+                            <local:BandCrowdToggle x:Name="AutoTdp" OnClick="AutoTdp_OnClick"/>
                         </Grid>
-                        <Grid Margin="0,1,0,0" Height="50" HorizontalAlignment="Stretch" x:Name="PowerAdjustment"
-                              Background="{ThemeResource ControlStrokeColorSecondaryBrush}" Visibility="Collapsed">
-                            <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                <FontIcon Glyph="&#xEB3C;" />
-                                <TextBlock VerticalAlignment="Center" Margin="16,0,0,0"
-                                           Text="Лимит TDP" x:Uid="Preset_TdpLimitText"/>
-                            </StackPanel>
-                            <StackPanel Margin="0,0,17,0" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
-                                <Slider Style="{ThemeResource FatSliderStyle}" x:Name="BaseTdpSlider"
-                                        ValueChanged="BaseTdp_Slider_ValueChanged" Margin="40,0,0,0"
-                                        VerticalAlignment="Top" Width="230" HorizontalAlignment="Left"
-                                        Minimum="1" Maximum="40" Value="20" />
-                                <NumberBox Minimum="1" ValueChanged="TargetNumberBox_ValueChanged" Height="33" Width="78" Margin="25,0,0,0"
-                                           SmallChange="1" LargeChange="10" Tag="BaseTdpSlider" SpinButtonPlacementMode="Compact"
-                                           Value="{Binding ElementName=BaseTdpSlider, Path=Value, Mode=TwoWay}" />
-                            </StackPanel>
+                        <local:PresetSetting x:Name="CpuPowerLimit" Text="Общий лимит потребления" x:Uid="Param_ADV_a9" Minimum="3" SliderMaximum="45"
+                                             Visibility="{x:Bind AutoTdp.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="CpuActualPower" Text="Реальная мощность CPU" x:Uid="Param_CPU_c3" Minimum="3" SliderMaximum="50"
+                                             Visibility="{x:Bind AutoTdp.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="CpuAveragePower" Text="Средняя мощность CPU" x:Uid="Param_CPU_c4" Minimum="3" SliderMaximum="48"
+                                             Visibility="{x:Bind AutoTdp.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="GpuPowerLimit" Text="Лимит потребления iGPU" x:Uid="Param_ADV_a8" Minimum="3" SliderMaximum="25"
+                                             Visibility="{x:Bind AutoTdp.IsManual, Mode=OneWay}"/>
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xE847;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           Text="Усиление турбобуста" x:Uid="Preset_BetterTurbo" FontSize="14" />
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Preset_BetterTurboDesc" />
+                            </Grid>
+                            <local:BandCrowdToggle x:Name="BetterTurbo" OnClick="BetterTurbo_OnClick"/>
                         </Grid>
+                        <local:PresetSetting x:Name="CpuTurboSlowTime" Text="Время медленного разгона" x:Uid="Param_CPU_c5" Minimum="0" SliderMaximum="300"
+                                             Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="CpuTurboFastTime" Text="Время быстрого разгона" x:Uid="Param_CPU_c6" Minimum="0" SliderMaximum="300"
+                                             Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="CpuFreqRestoreTime" Text="Время восстановления частоты" x:Uid="Param_VRM_v7" Minimum="0" SliderMaximum="100"
+                                             Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                              Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xE785;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           Text="Исправление 0,4 ГГц CPU" x:Uid="Param_GPU_g16" FontSize="14"/>
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Preset_CpuFix04Desc"/>
+                            </Grid>
+                                
+                            <local:CrowdToggle x:Name="CpuFrequency04Fix" x:Uid="BandCrowdToggle_Fix04" OnClick="CpuFrequency04Fix_OnClick"/>
+                        </Grid>
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                              Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xE950;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           Text="Управление частотой CPU" x:Uid="Preset_CpuOptimization" FontSize="14"/>
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Preset_CpuOptimizationDesc"/>
+                            </Grid>
+                                
+                            <local:CrowdToggle x:Name="FixedCpuFrequencyToggle" x:Uid="BandCrowdToggle_Fixed" OnClick="FixedCpuFrequencyToggle_OnClick"/>
+                        </Grid>
+                        <local:PresetSetting x:Name="FixedCpuFrequency" Text="Зафиксировать частоту CPU" x:Uid="Param_ADV_a11" Minimum="400" SliderMaximum="5000"
+                                             Visibility="{x:Bind FixedCpuFrequencyToggle.IsManual, Mode=OneWay}"/>
                         <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                                 <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
@@ -280,48 +338,16 @@
                                     <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                               Glyph="&#xE950;" />
                                     <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
-                                               Text="Улучшение iGPU" x:Uid="Preset_IgpuOptimization" FontSize="14"/>
+                                               Text="Управление частотой iGPU" x:Uid="Preset_IgpuOptimization" FontSize="14"/>
                                     <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                                Foreground="{ThemeResource TextFillColorSecondary}"
                                                x:Uid="Preset_IgpuOptimizationDesc"/>
                                 </Grid>
-                                <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
-                                      Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
-                                    <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190" SelectedIndex="0"
-                                              x:Name="IntegratedGpuEnchantmentCombo" SelectionChanged="IntegratedGpuEnchantmentCombo_SelectionChanged"
-                                              CornerRadius="15">
-                                        <ComboBoxItem x:Uid="Preset_IgpuAuto" Content="Авто" />
-                                        <ComboBoxItem x:Uid="Preset_IgpuStable" Content="Стабильное" />
-                                        <ComboBoxItem x:Uid="Preset_IgpuMaxed" Content="Максимум" />
-                                    </ComboBox>
-                                </Grid>
+                                
+                            <local:CrowdToggle x:Name="FixedIntegratedGpuFrequency" x:Uid="BandCrowdToggle_Fixed"  OnClick="FixedIntegratedGpuFrequency_OnClick"/>
                         </Grid>
-                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
-                                  Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
-                                              Glyph="&#xE847;" />
-                                    <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
-                                               Text="Усиление турбобуста" x:Uid="Preset_BetterTurbo" FontSize="14"/>
-                                    <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
-                                               Foreground="{ThemeResource TextFillColorSecondary}"
-                                               x:Uid="Preset_BetterTurboDesc"/>
-                                </Grid>
-                                <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
-                                      Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
-                                    <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190" SelectedIndex="0"
-                                              x:Name="BetterTurboCombo" SelectionChanged="BetterTurboCombo_OnSelectionChanged"
-                                              CornerRadius="15">
-                                        <ComboBoxItem x:Uid="Preset_TurboAuto" Content="Авто" />
-                                        <ComboBoxItem x:Uid="Preset_TurboSmart" Content="Умное" />
-                                        <ComboBoxItem x:Uid="Preset_TurboHeavy" Content="Сильное" />
-                                    </ComboBox>
-                                </Grid>
-                        </Grid>
+                        <local:PresetSetting x:Name="FixedGpuFrequency" Text="Зафиксировать частоту iGPU" x:Uid="Param_ADV_a10" Minimum="100" SliderMaximum="1800"
+                                             Visibility="{x:Bind FixedIntegratedGpuFrequency.IsManual, Mode=OneWay}"/>
                         <Grid x:Name="CurveOptimizerCustomGrid" Margin="0,2,0,0" Height="60"
                               HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
@@ -337,60 +363,12 @@
                                            Foreground="{ThemeResource TextFillColorSecondary}"
                                            x:Uid="Preset_UndervoltingDesc"/>
                             </Grid>
-                            <Border Height="32" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,17,0"
-                                    Background="{ThemeResource ControlElevationBorderBrush}"
-                                    BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="10"
-                                    Shadow="{ThemeResource SharedShadow}"
-                                    Translation="0,0,10">
-                                <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal"
-                                            HorizontalAlignment="Center">
-                                    <ToggleButton Background="Transparent"
-                                                  BorderBrush="Transparent" CornerRadius="10"
-                                                  Click="Undervolting_OnClick"
-                                                  x:Name="UndervoltingDisabled"
-                                                  IsChecked="True">
-                                        <TextBlock Margin="0,-2,0,-2" Text="Выкл"
-                                                   x:Uid="Preset_AutoTdpDisabled" FontSize="14" x:Name="UndervoltingText1"
-                                                   FontWeight="Medium" />
-                                    </ToggleButton>
-                                    <ToggleButton Background="Transparent"
-                                                  BorderBrush="Transparent" CornerRadius="10"
-                                                  Click="Undervolting_OnClick"
-                                                  x:Name="UndervoltingAuto"
-                                                  Margin="4,0,0,0">
-                                        <TextBlock Margin="0,-2,0,-2" Text="Авто" FontSize="13"
-                                                   x:Name="UndervoltingText2" x:Uid="Preset_AutoTdpEnabled"/>
-                                    </ToggleButton>
-                                    <ToggleButton Background="Transparent"
-                                                  BorderBrush="Transparent" CornerRadius="10"
-                                                  Click="Undervolting_OnClick"
-                                                  x:Name="UndervoltingManual"
-                                                  Margin="4,0,0,0">
-                                        <TextBlock Margin="0,-2,0,-2" Text="Ручное" FontSize="13"
-                                                   x:Name="UndervoltingText3" x:Uid="Preset_AutoTdpManual"/>
-                                    </ToggleButton>
-                                </StackPanel>
-                            </Border>
+                            <local:BandCrowdToggle x:Name="UndervoltingToggle" OnClick="UndervoltingToggle_OnClick"/>
                         </Grid>
-                        <Grid Margin="0,1,0,0" Height="50" HorizontalAlignment="Stretch" x:Name="UndervoltingGrid"
-                              Background="{ThemeResource ControlStrokeColorSecondaryBrush}" Visibility="Collapsed">
-                            <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                <FontIcon Glyph="&#xE739;" />
-                                <TextBlock VerticalAlignment="Center" Margin="16,0,0,0"
-                                           Text="Оптмизатор кривой для всех ядер" x:Uid="Param_CO_O1"/>
-                            </StackPanel>
-                            <StackPanel Margin="0,0,17,0" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
-                                <Slider Style="{ThemeResource FatSliderStyle}" x:Name="CurveOptimizerLevelCustomSlider"
-                                        ValueChanged="CurveOptimizerLevelCustom_Slider_ValueChanged" Margin="40,0,0,0"
-                                        VerticalAlignment="Top" Width="230" HorizontalAlignment="Left"
-                                        Minimum="-50" Maximum="30" Value="20" />
-                                <NumberBox Minimum="-50" Maximum="30" ValueChanged="TargetNumberBox_ValueChanged" Height="33" Width="78" Margin="25,0,0,0"
-                                           SmallChange="1" LargeChange="10" Tag="CurveOptimizerLevelCustomSlider" SpinButtonPlacementMode="Compact"
-                                           Value="{Binding ElementName=CurveOptimizerLevelCustomSlider, Path=Value, Mode=TwoWay}" />
-                            </StackPanel>
-                        </Grid>
+                        <local:PresetSetting x:Name="UndervoltingCpu" Text="Оптмизатор кривой для всех ядер" x:Uid="Param_CO_O1" Minimum="-50" SliderMaximum="30"
+                                             Visibility="{x:Bind UndervoltingToggle.IsManual, Mode=OneWay}"/>
+                        <local:PresetSetting x:Name="UndervoltingGpu" Text="Оптмизатор кривой для iGPU" x:Uid="Param_CO_O2" Minimum="-50" SliderMaximum="30"
+                                             Visibility="{x:Bind UndervoltingToggle.IsManual, Mode=OneWay}"/>
                         <Grid CornerRadius="0,0,15,15" PointerPressed="TryAdvancedButton_Click"
                               Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                               Background="{ThemeResource ControlStrokeColorDefaultBrush}">

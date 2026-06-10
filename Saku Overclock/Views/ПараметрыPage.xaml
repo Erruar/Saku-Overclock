@@ -260,9 +260,9 @@
                                                 <Slider Style="{ThemeResource FatSliderStyle}" x:Name="C1V"
                                                         ValueChanged="C1_ValueChanged" Margin="40,0,0,0"
                                                         VerticalAlignment="Top" Width="250" Value="80"
-                                                        HorizontalAlignment="Left" Minimum="50" Maximum="100" />
+                                                        HorizontalAlignment="Left" Minimum="30" Maximum="100" />
                                             </Grid>
-                                            <NumberBox Minimum="50" SmallChange="1"
+                                            <NumberBox Minimum="30" Maximum="100" SmallChange="1"
                                                        LargeChange="10" Tag="C1V"
                                                        ValueChanged="TargetNumberBox_ValueChanged"
                                                        Value="{Binding ElementName=C1V, Path=Value, Mode=TwoWay}" />
@@ -638,7 +638,7 @@
                                                 </Border.Background>
                                             </Border>
                                             <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c5"
-                                                       Text="Время быстрого разгона" FontSize="15" />
+                                                       Text="Время медленного разгона" FontSize="15" />
                                             <FontIcon Margin="5,4,0,-4" x:Uid="Param_c5_Help"
                                                       HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                 <FontIcon.RenderTransform>
@@ -701,7 +701,7 @@
                                                 </Border.Background>
                                             </Border>
                                             <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c6"
-                                                       Text="Время медленного разгона" FontSize="15" />
+                                                       Text="Время быстрого разгона" FontSize="15" />
                                             <FontIcon Margin="5,4,0,-4" x:Uid="Param_c6_Help"
                                                       HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                 <FontIcon.RenderTransform>

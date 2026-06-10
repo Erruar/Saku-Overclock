@@ -2956,14 +2956,20 @@ Asus. Может не поддерживаться на
   <data name="Preset_CurveOptions_Light.Text" xml:space="preserve">
     <value>Лёгкий</value>
   </data>
-  <data name="Preset_AutoTdpDisabled.Text" xml:space="preserve">
+  <data name="BandCrowdToggle_Disabled.Text" xml:space="preserve">
     <value>Выкл</value>
   </data>
-  <data name="Preset_AutoTdpEnabled.Text" xml:space="preserve">
+  <data name="BandCrowdToggle_Enabled.Text" xml:space="preserve">
     <value>Авто</value>
   </data>
-  <data name="Preset_AutoTdpManual.Text" xml:space="preserve">
+  <data name="BandCrowdToggle_Manual.Text" xml:space="preserve">
     <value>Ручное</value>
+  </data>
+  <data name="BandCrowdToggle_Fixed.PrimaryText" xml:space="preserve">
+    <value>Фиксированная</value>
+  </data>
+  <data name="BandCrowdToggle_Fix04.PrimaryText" xml:space="preserve">
+    <value>Исправление</value>
   </data>
   <data name="Preset_DetailSettingsMode.Text" xml:space="preserve">
     <value>Дополнительные функции</value>
@@ -2974,11 +2980,26 @@ Asus. Может не поддерживаться на
   <data name="Preset_IgpuMaxed.Content" xml:space="preserve">
     <value>Максимум</value>
   </data>
+  <data name="Preset_CpuFix04Desc.Text" xml:space="preserve">
+    <value>Блокирует зависание процессора на минимальной частоте, возвращая системе изначальную производительность</value>
+  </data>
+  <data name="Preset_CpuOptimization.Text" xml:space="preserve">
+    <value>Фиксированная частота CPU</value>
+  </data>
+  <data name="Preset_CpuOptimizationDesc.Text" xml:space="preserve">
+    <value>Устраняет скачки производительности и обеспечивает стабильный отклик системы под переменной нагрузкой</value>
+  </data>
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
     <value>Фиксированная частота iGPU</value>
   </data>
   <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
-    <value>Увеличивает производительность встроенной графики благодаря безопасному разгону частоты</value>
+    <value>Предотвращает резкие просадки FPS, удерживая стабильную мощность графического ядра в играх</value>
+  </data>
+  <data name="Preset_StreamStabilizer.Text" xml:space="preserve">
+    <value>Stream Stabilizer</value>
+  </data>
+  <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
+    <value>Интеллектуально удерживает частоту процессора при пиковых нагрузках, полностью исключая микрофризы и потерю кадров</value>
   </data>
   <data name="Preset_IgpuStable.Content" xml:space="preserve">
     <value>Стабильное</value>
@@ -2986,8 +3007,17 @@ Asus. Может не поддерживаться на
   <data name="Preset_QuickSettingsMode.Text" xml:space="preserve">
     <value>Быстрая настройка</value>
   </data>
+  <data name="Preset_AdaptiveTemperature.Text" xml:space="preserve">
+    <value>Адаптивное ограничение температуры</value>
+  </data>
+  <data name="Preset_AdaptiveTemperature_Desc.Text" xml:space="preserve">
+    <value>Подстраивает лимит температуры для лучшего охлаждения</value>
+  </data>
   <data name="Preset_SmartTdp.Text" xml:space="preserve">
     <value>Умная оптимизация TDP</value>
+  </data>
+  <data name="Preset_SmartTdp_Desc.Text" xml:space="preserve">
+    <value>Автоматически изменяет лимит мощности под активную задачу</value>
   </data>
   <data name="Preset_TdpLimit.ToolTipService.ToolTip" xml:space="preserve">
     <value>Лимит TDP и Умная оптимизация TDP
@@ -3040,26 +3070,6 @@ Asus. Может не поддерживаться на
   </data>
   <data name="infoTimings.Text" xml:space="preserve">
     <value>Тайминги</value>
-  </data>
-  <data name="Preset_StreamStabilizer.Text" xml:space="preserve">
-    <value>Stream Stabilizer v4.0©</value>
-  </data>
-  <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
-    <value>Инновация для Ryzen: максимум FPS, без лагов, фризов, перегрева. Умный авторазгон во время стриминга</value>
-  </data>
-  <data name="Preset_StreamStabilizerTooltip.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Stream Stabilizer
-Инновационная технология 
-для стабильной работы вашего AMD Ryzen. 
-Функция фиксирует оптимальные уровни 
-работы видеокарты и процессора, избавляя вас 
-от лагов и фризов во время игр и стриминга. 
-Контроль температуры заботится о системе, 
-позволяя наслаждаться максимальной 
-производительностью без перегрева</value>
-  </data>
-  <data name="Preset_StreamStabilizer_Smart.Text" xml:space="preserve">
-    <value>Умный</value>
   </data>
   <data name="Preset_RtssOverlayDesc.Text" xml:space="preserve">
     <value>Мониторинг FPS, температуры, загрузки CPU в игре. Без сворачивания. Требует RTSS</value>
@@ -3226,24 +3236,6 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
     <value>Переодически применять параметры пресета для избежания перезаписи другими приложениями</value>
-  </data>
-  <data name="Preset_StreamStabilizerBaseLock.Content" xml:space="preserve">
-    <value>Базовый</value>
-  </data>
-  <data name="Preset_StreamStabilizerMode.Text" xml:space="preserve">
-    <value>Предпочтительный режим</value>
-  </data>
-  <data name="Preset_StreamStabilizerTargetFreq.Text" xml:space="preserve">
-    <value>Целевая частота</value>
-  </data>
-  <data name="Preset_StreamStabilizerTargetFreqPercent.Text" xml:space="preserve">
-    <value>Целевой % от частоты</value>
-  </data>
-  <data name="Preset_StreamStabilizerTargetMHz.Content" xml:space="preserve">
-    <value>Целевая MHz</value>
-  </data>
-  <data name="Preset_StreamStabilizerTargetPercentMHz.Content" xml:space="preserve">
-    <value>Целевой % от MHz</value>
   </data>
   <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
     <value>На вашем устройстве не установлен NBFC. Невозможно изменить кривую кулера</value>

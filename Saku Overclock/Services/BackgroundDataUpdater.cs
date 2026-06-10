@@ -94,8 +94,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     {
         try
         {
-            AppSettings.LoadSettings(); // Перестраховка на случай если настройки к тому времени не были загружены
-
             if (AppSettings.NiIconsEnabled && !_isIconsCreated)
             {
                 CreateNotifyIcons();

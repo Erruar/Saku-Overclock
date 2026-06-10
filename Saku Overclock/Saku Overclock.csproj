@@ -289,6 +289,15 @@
     <Page Update="Styles\PresetSelector.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Styles\BandCrowdToggle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Styles\CrowdToggle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Styles\PresetSetting.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\ОбучениеPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

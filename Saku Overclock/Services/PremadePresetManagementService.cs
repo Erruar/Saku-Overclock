@@ -25,9 +25,10 @@ public class PremadePresetManagementService(IPresetManagerService presetManager,
             presetManager.AddPreset(ecoPreset);
             presetManager.AddPreset(maximumPreset);
             presetManager.SaveSettings();
+            
+            appSettings.PremadePresetsAdded = true;
+            appSettings.SaveSettings();
         }
-        appSettings.PremadePresetsAdded = true;
-        appSettings.SaveSettings();
     }
 
     private Preset CreatePreset(PresetType presetType)

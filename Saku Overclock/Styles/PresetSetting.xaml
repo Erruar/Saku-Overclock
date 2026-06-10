@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Saku_Overclock.Styles.PresetSetting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    
+    <Grid Margin="0,1,0,0" Height="50" HorizontalAlignment="Stretch"
+          Background="{ThemeResource ControlStrokeColorSecondaryBrush}">
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!-- Колонка 0: Включение настройки -->
+            <CheckBox Grid.Column="0" x:Name="SettingCheck" 
+                      Checked="SettingComponent_Changed" 
+                      Unchecked="SettingComponent_Changed" 
+                      Margin="17,0,0,0" VerticalAlignment="Center"/>
+
+            <!-- Колонка 1: Название (Привязываемся к новому свойству Text) -->
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="9,0,0,0"
+                       Text="{x:Bind Text, Mode=OneWay}"/>
+        </Grid>
+        <StackPanel Margin="0,0,17,0" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Slider Style="{ThemeResource FatSliderStyle}" x:Name="SettingSlider" 
+                    Minimum="{x:Bind Minimum, Mode=OneWay}" 
+                    Maximum="{x:Bind SliderMaximum, Mode=OneWay}"
+                    ValueChanged="SettingSlider_OnValueChanged" 
+                    Width="230" VerticalAlignment="Center"/>
+            
+            <NumberBox Minimum="{x:Bind Minimum, Mode=OneWay}" 
+                       Maximum="{x:Bind Maximum, Mode=OneWay}" 
+                       ValueChanged="TargetNumberBox_ValueChanged" 
+                       Height="33" Width="78" Margin="25,0,0,0"
+                       SmallChange="1" LargeChange="10" SpinButtonPlacementMode="Compact"
+                       Value="{Binding ElementName=SettingSlider, Path=Value, Mode=TwoWay}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

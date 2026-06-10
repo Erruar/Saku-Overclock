@@ -426,7 +426,7 @@ public class CpuService : ICpuService
 
     public bool Avx512AvailableByCodename => _codeName >= CodeName.Raphael;
     public string CpuCodeName => _codeName.ToString();
-    public string SmuVersion => _cpu?.systemInfo.GetSmuVersionString() ?? "0.0.0";
+    public string SmuVersion => _cpu?.systemInfo.SmuVersionString ?? "0.0.0";
 
     public uint MakeCoreMask(uint core = 0u, uint ccd = 0u, uint ccx = 0u) => _cpu?.MakeCoreMask(core, ccd, ccx) ?? 0;
 

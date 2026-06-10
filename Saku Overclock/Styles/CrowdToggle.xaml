@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Saku_Overclock.Styles.CrowdToggle"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:double="using:Saku_Overclock.Helpers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!-- Разделение ресурсов по темам -->
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- Светлая тема -->
+                <ResourceDictionary x:Key="Light">
+                    <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="ControlStrokeColorSecondaryBrush" />
+                    <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver"
+                                    ResourceKey="ControlStrokeColorOnAccentTertiaryBrush" />
+                    <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="SmokeFillColorDefaultBrush" />
+                </ResourceDictionary>
+
+                <!-- Тёмная тема (Default используется как базовая тёмная) -->
+                <ResourceDictionary x:Key="Default">
+                    <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="ControlFillColorSecondaryBrush" />
+                    <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver"
+                                    ResourceKey="ControlFillColorSecondaryBrush" />
+                    <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="ControlFillColorDefaultBrush" />
+                </ResourceDictionary>
+
+                <!-- На всякий случай дублируем для Dark, если переопределение темы идёт явно -->
+                <ResourceDictionary x:Key="Dark">
+                    <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="ControlFillColorSecondaryBrush" />
+                    <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver"
+                                    ResourceKey="ControlFillColorSecondaryBrush" />
+                    <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="ControlFillColorDefaultBrush" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <!-- Общие ресурсы, которые одинаковы для всех тем -->
+            <double:BooleanToFontWeightConverter x:Key="BooleanToWeight" />
+            <double:BooleanToFontSizeConverter x:Key="BooleanToFontSize" />
+
+            <!-- 1. Состояние "НЕ ВЫДЕЛЕН" -> Полностью прозрачный -->
+            <StaticResource x:Key="ToggleButtonBackground" ResourceKey="ControlFillColorTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonBackgroundPressed" ResourceKey="ControlFillColorTransparentBrush" />
+
+            <StaticResource x:Key="ToggleButtonBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushPointerOver" ResourceKey="ControlElevationBorderBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushPressed" ResourceKey="ControlFillColorTransparentBrush" />
+
+            <!-- 2. Состояние "ВЫДЕЛЕН" (Checked) -> Остальные состояния кнопки -->
+            <StaticResource x:Key="ToggleButtonBackgroundCheckedPressed" ResourceKey="ControlFillColorTertiaryBrush" />
+            <StaticResource x:Key="ToggleButtonBackgroundCheckedDisabled" ResourceKey="ControlFillColorDisabledBrush" />
+
+            <StaticResource x:Key="ToggleButtonForegroundChecked" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedPointerOver" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedPressed" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedDisabled" ResourceKey="TextFillColorDisabledBrush" />
+
+            <StaticResource x:Key="ToggleButtonBorderBrushChecked" ResourceKey="ControlElevationBorderBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushCheckedPointerOver" ResourceKey="ControlElevationBorderBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushCheckedPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushCheckedDisabled" ResourceKey="ControlStrokeColorDefaultBrush" />
+
+            <!-- Неявный стиль оставляем только для задания геометрии кнопок -->
+            <Style TargetType="ToggleButton">
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="MinHeight" Value="27" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border Height="{x:Bind Height, Mode=OneWay}" 
+            Width="{x:Bind Width, Mode=OneWay}"
+            Background="{x:Bind Background, Mode=OneWay}"
+            BorderBrush="{x:Bind BorderBrush, Mode=OneWay}"
+            BorderThickness="{x:Bind BorderThickness, Mode=OneWay}"
+            CornerRadius="{x:Bind CornerRadius, Mode=OneWay}"
+            Shadow="{x:Bind Shadow, Mode=OneWay}"
+            Translation="0,0,10"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+        <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal"
+                    HorizontalAlignment="Left">
+            <ToggleButton MinWidth="54" Click="Crowd_OnClick" x:Name="CrowdDisabled" IsChecked="True" Margin="1,0,0,0">
+                <TextBlock Margin="0,-2,0,-2" Text="Выкл"
+                           x:Uid="BandCrowdToggle_Disabled"
+                           FontSize="{Binding ElementName=CrowdDisabled, 
+                                                   Path=IsChecked, Converter={StaticResource BooleanToFontSize}, 
+                                                   Mode=OneWay, FallbackValue=14}"
+                           FontWeight="{Binding ElementName=CrowdDisabled, 
+                                                   Path=IsChecked, Converter={StaticResource BooleanToWeight}, 
+                                                   Mode=OneWay, FallbackValue=Medium}" />
+            </ToggleButton>
+            <ToggleButton MinWidth="126" Click="Crowd_OnClick" x:Name="CrowdManual" Margin="4,0,0,0">
+                <TextBlock Margin="0,-2,0,-2" Text="{x:Bind PrimaryText, Mode=OneWay}"
+                           FontSize="{Binding ElementName=CrowdManual, 
+                                                   Path=IsChecked, Converter={StaticResource BooleanToFontSize}, 
+                                                   Mode=OneWay, FallbackValue=14}"
+                           FontWeight="{Binding ElementName=CrowdManual, 
+                                                   Path=IsChecked, Converter={StaticResource BooleanToWeight}, 
+                                                   Mode=OneWay, FallbackValue=Medium}" />
+            </ToggleButton>
+        </StackPanel>
+    </Border>
+</UserControl>
