@@ -365,9 +365,9 @@
                             </Grid>
                             <local:BandCrowdToggle x:Name="UndervoltingToggle" OnClick="UndervoltingToggle_OnClick"/>
                         </Grid>
-                        <local:PresetSetting x:Name="UndervoltingCpu" Text="Оптмизатор кривой для всех ядер" x:Uid="Param_CO_O1" Minimum="-50" SliderMaximum="30"
+                        <local:PresetSetting x:Name="UndervoltingCpu" Text="Оптимизатор кривой для всех ядер" x:Uid="Param_CO_O1" Minimum="-50" SliderMaximum="30"
                                              Visibility="{x:Bind UndervoltingToggle.IsManual, Mode=OneWay}"/>
-                        <local:PresetSetting x:Name="UndervoltingGpu" Text="Оптмизатор кривой для iGPU" x:Uid="Param_CO_O2" Minimum="-50" SliderMaximum="30"
+                        <local:PresetSetting x:Name="UndervoltingGpu" Text="Оптимизатор кривой для iGPU" x:Uid="Param_CO_O2" Minimum="-50" SliderMaximum="30"
                                              Visibility="{x:Bind UndervoltingToggle.IsManual, Mode=OneWay}"/>
                         <Grid CornerRadius="0,0,15,15" PointerPressed="TryAdvancedButton_Click"
                               Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
@@ -396,18 +396,32 @@
         </Grid>
         <TeachingTip Grid.Row="0" x:Name="ApplyTeach" IsOpen="False" />
         <Grid Grid.Row="2">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="1,0,0,0" VerticalAlignment="Center">
+                <Button Click="ExportButton_Click" Height="55" Width="115" VerticalAlignment="Center" Margin="0,0,10,0" CornerRadius="19">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon Glyph="&#xE8A7;" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock Text="Export" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Margin="2,0,0,0" Click="ImportButton_Click" Height="55" Width="115" VerticalAlignment="Center" CornerRadius="19">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon Glyph="&#xE944;" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock Text="Import" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
             <Button x:Name="ApplyButton" Click="ApplyButton_Click" CornerRadius="19" Height="55"
                     HorizontalAlignment="Right" HorizontalContentAlignment="Stretch" Width="329" Margin="0,0,16,0"
                     VerticalAlignment="Center" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
                 <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center"
-                              Margin="10,0,0,0" />
+                               Margin="10,0,0,0" />
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                               x:Uid="Main_ApplyButton" Text="Применить" FontWeight="SemiBold"
-                               FontSize="16" Margin="0,-1,0,0" />
+                                x:Uid="Main_ApplyButton" Text="Применить" FontWeight="SemiBold"
+                                FontSize="16" Margin="0,-1,0,0" />
                     <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" VerticalAlignment="Center"
-                              Margin="0,0,10,0" />
-                </Grid>
+                               Margin="0,0,10,0" />
+                </Grid>            
             </Button>
         </Grid>
     </Grid>

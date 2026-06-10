@@ -1,5 +1,7 @@
-﻿using System.Numerics;
+﻿﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -698,6 +700,209 @@ public sealed partial class ПресетыPage
             EditPresetButton_Click(nameBox.Text, descBox.Text, presetIcon);
         else if (result == ContentDialogResult.Secondary) DeletePresetButton_Click();
     }
+    
+    private async void ExportButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await OpenExportDialogAsync();
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
+    }
+
+    private async void ImportButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await OpenImportDialogAsync();
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
+    }
+
+    private async Task OpenExportDialogAsync()
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "Export Presets",
+            XamlRoot = XamlRoot,
+            CloseButtonText = "Cancel",
+            PrimaryButtonText = "Export",
+            DefaultButton = ContentDialogButton.Primary
+        };
+
+        var listView = new ListView
+        {
+            MaxHeight = 300,
+            Margin = new Thickness(0, 10, 0, 10)
+        };
+
+        for (var i = 0; i < PresetManager.Presets.Length; i++)
+        {
+            try
+            {
+                var preset = PresetManager.Presets[i];
+                var checkBox = new CheckBox
+                {
+                    Content = preset.PresetName.Contains("Preset_") ? preset.PresetName.GetLocalized() : preset.PresetName,
+                    Tag = i,
+                    IsChecked = true
+                };
+                listView.Items.Add(checkBox);
+            }
+            catch (Exception ex)
+            {
+                await LogHelper.Log(ex.Message);
+            }
+        }
+
+        var stackPanel = new StackPanel { Spacing = 10 };
+        stackPanel.Children.Add(listView);
+
+        var buttonStack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, 
+            Spacing = 10, 
+            HorizontalAlignment = HorizontalAlignment.Left
+        };
+        
+        var selectAllBtn = new Button { Content = "Select All" };
+        selectAllBtn.Click += (_, _) =>
+        {
+            foreach (var t in listView.Items)
+            {
+                ((CheckBox)t).IsChecked = true;
+            }
+        };
+
+        buttonStack.Children.Add(selectAllBtn);
+        stackPanel.Children.Add(buttonStack);
+
+        dialog.Content = stackPanel;
+
+        var result = await dialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+        {
+            var selectedIndices = listView.Items.Cast<CheckBox>()
+                .Where(cb => cb.IsChecked == true)
+                .Select(cb => (int)cb.Tag)
+                .ToArray();
+
+            if (selectedIndices.Length == 0) return;
+
+            var ofn = new OpenFileName
+            {
+                structSize = Marshal.SizeOf<OpenFileName>(),
+                filter = "JSON files (*.json)\0*.json\0All files (*.*)\0*.*\0",
+                file = new string(new char[256]),
+                fileTitle = new string(new char[64]),
+                title = "Save Presets",
+                defExt = "json"
+            };
+            ofn.maxFile = ofn.file.Length;
+            ofn.maxFileTitle = ofn.fileTitle.Length;
+
+            if (OpenFileDialog.GetOpenFileNameApi(ofn))
+            {
+                var fullPath = Path.GetFullPath(ofn.file.TrimEnd('\0'));
+                var folder = Path.GetDirectoryName(fullPath);
+                var fileName = Path.GetFileName(fullPath);
+
+                try
+                {
+                    if (folder != null)
+                    {
+                        if (selectedIndices.Length == PresetManager.Presets.Length)
+                        {
+                            PresetManager.ExportAllPresets(folder, fileName);
+                        }
+                        else
+                        {
+                            PresetManager.ExportPresets(selectedIndices, folder, fileName);
+                        }
+                        NotificationsService.ShowNotification("Export Successful", "Presets exported successfully", InfoBarSeverity.Success);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await LogHelper.LogError(ex);
+                }
+            }
+        }
+    }
+
+    private async Task OpenImportDialogAsync()
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "Import Presets",
+            XamlRoot = XamlRoot,
+            CloseButtonText = "Cancel",
+            PrimaryButtonText = "Import",
+            DefaultButton = ContentDialogButton.Primary
+        };
+
+        var rootPanel = new StackPanel { Spacing = 12, Margin = new Thickness(0, 10, 0, 10) };
+        
+        var instruction = new TextBlock 
+        { 
+            Text = "Select import mode:", 
+            FontWeight = new FontWeight(600)
+        };
+        rootPanel.Children.Add(instruction);
+
+        var modeSelector = new RadioButtons { HorizontalAlignment = HorizontalAlignment.Stretch };
+        var rbAppend = new RadioButton { Content = "Append (Add to end)", IsChecked = true };
+        var rbReplace = new RadioButton { Content = "Replace all" };
+        modeSelector.Items.Add(rbAppend);
+        modeSelector.Items.Add(rbReplace);
+        rootPanel.Children.Add(modeSelector);
+
+        dialog.Content = rootPanel;
+
+        var result = await dialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+        {
+            var ofn = new OpenFileName
+            {
+                structSize = Marshal.SizeOf<OpenFileName>(),
+                filter = "JSON files (*.json)\0*.json\0All files (*.*)\0*.*\0",
+                file = new string(new char[256]),
+                fileTitle = new string(new char[64]),
+                title = "Open Preset File",
+                defExt = "json"
+            };
+            ofn.maxFile = ofn.file.Length;
+            ofn.maxFileTitle = ofn.fileTitle.Length;
+
+            if (OpenFileDialog.GetOpenFileNameApi(ofn))
+            {
+                var fullPath = Path.GetFullPath(ofn.file.TrimEnd('\0'));
+                var folder = Path.GetDirectoryName(fullPath)!;
+                var fileName = Path.GetFileName(fullPath);
+                var append = rbAppend.IsChecked ?? true;
+
+                try
+                {
+                    PresetManager.ImportPresets(folder, fileName, append);
+                    PresetManager.SaveSettings();
+                    LoadPresets();
+                    NotificationsService.ShowNotification("Import Successful", $"Presets {(append ? "added to" : "replaced")} successfully", InfoBarSeverity.Success);
+                }
+                catch (Exception ex)
+                {
+                    await LogHelper.LogError(ex);
+                }
+            }
+        }
+    }
 
     #endregion
 
@@ -878,7 +1083,7 @@ public sealed partial class ПресетыPage
             await LogHelper.LogWarn(ex);
         }
     }
-
+    
     private void AdaptiveTemperature_OnClick(BandCrowdStates state)
     {
         if (NotReady) return;
@@ -1035,8 +1240,6 @@ public sealed partial class ПресетыPage
         PresetManager.SaveSettings();
     }
 
-    #endregion
-
     private void CpuFrequency04Fix_OnClick(BandCrowdStates state)
     {
         if (NotReady) return;
@@ -1044,4 +1247,6 @@ public sealed partial class ПресетыPage
         CurrentCpuModesSettings.CpuFrequency04Fix.IsEnabled = state == BandCrowdStates.Manual;
         PresetManager.SaveSettings();
     }
+    
+    #endregion
 }
