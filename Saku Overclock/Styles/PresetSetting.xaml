@@ -9,14 +9,13 @@
     
     <Grid Margin="0,1,0,0" Height="50" HorizontalAlignment="Stretch"
           Background="{ThemeResource ControlStrokeColorSecondaryBrush}">
-        
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <!-- Колонка 0: Включение настройки -->
-            <CheckBox Grid.Column="0" x:Name="SettingCheck" 
+            <CheckBox Grid.Column="0" x:Name="SettingCheck" Visibility="{x:Bind CheckBoxVisibility, Mode=OneWay}"
                       Checked="SettingComponent_Changed" 
                       Unchecked="SettingComponent_Changed" 
                       Margin="17,0,0,0" VerticalAlignment="Center"/>

@@ -326,7 +326,7 @@
                                 
                             <local:CrowdToggle x:Name="FixedCpuFrequencyToggle" x:Uid="BandCrowdToggle_Fixed" OnClick="FixedCpuFrequencyToggle_OnClick"/>
                         </Grid>
-                        <local:PresetSetting x:Name="FixedCpuFrequency" Text="Зафиксировать частоту CPU" x:Uid="Param_ADV_a11" Minimum="400" SliderMaximum="5000"
+                        <local:PresetSetting CheckBoxVisibility="Collapsed" x:Name="FixedCpuFrequency" Text="Зафиксировать частоту CPU" x:Uid="Param_ADV_a11" Minimum="400" SliderMaximum="5000"
                                              Visibility="{x:Bind FixedCpuFrequencyToggle.IsManual, Mode=OneWay}"/>
                         <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -346,7 +346,7 @@
                                 
                             <local:CrowdToggle x:Name="FixedIntegratedGpuFrequency" x:Uid="BandCrowdToggle_Fixed"  OnClick="FixedIntegratedGpuFrequency_OnClick"/>
                         </Grid>
-                        <local:PresetSetting x:Name="FixedGpuFrequency" Text="Зафиксировать частоту iGPU" x:Uid="Param_ADV_a10" Minimum="100" SliderMaximum="1800"
+                        <local:PresetSetting CheckBoxVisibility="Collapsed" x:Name="FixedGpuFrequency" Text="Зафиксировать частоту iGPU" x:Uid="Param_ADV_a10" Minimum="100" SliderMaximum="1800"
                                              Visibility="{x:Bind FixedIntegratedGpuFrequency.IsManual, Mode=OneWay}"/>
                         <Grid x:Name="CurveOptimizerCustomGrid" Margin="0,2,0,0" Height="60"
                               HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
@@ -399,14 +399,14 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="1,0,0,0" VerticalAlignment="Center">
                 <Button Click="ExportButton_Click" Height="55" Width="115" VerticalAlignment="Center" Margin="0,0,10,0" CornerRadius="19">
                     <StackPanel Orientation="Horizontal">
-                        <FontIcon Glyph="&#xE8A7;" Margin="0,0,8,0" VerticalAlignment="Center" />
-                        <TextBlock Text="Export" VerticalAlignment="Center" />
+                        <FontIcon FontSize="16" Glyph="&#xE8A7;" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock x:Uid="Preset_Export" FontSize="13" Text="Export" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
                 <Button Margin="2,0,0,0" Click="ImportButton_Click" Height="55" Width="115" VerticalAlignment="Center" CornerRadius="19">
                     <StackPanel Orientation="Horizontal">
-                        <FontIcon Glyph="&#xE944;" Margin="0,0,8,0" VerticalAlignment="Center" />
-                        <TextBlock Text="Import" VerticalAlignment="Center" />
+                        <FontIcon FontSize="16" Glyph="&#xE944;" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock x:Uid="Preset_Import" FontSize="13" Text="Import" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
             </StackPanel>

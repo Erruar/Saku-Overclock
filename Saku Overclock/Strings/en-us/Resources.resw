@@ -1065,7 +1065,7 @@ provided via SMU (Power Table)</value>
     <value>Cut this</value>
   </data>
   <data name="SelectAll.Text" xml:space="preserve">
-    <value>Select All</value>
+    <value>Select all</value>
   </data>
   <data name="ToHex.Text" xml:space="preserve">
     <value>Convert to Hex</value>
@@ -2980,6 +2980,36 @@ All results are saved in notifications</value>
   <data name="Preset_IgpuMaxed.Content" xml:space="preserve">
     <value>Maximum</value>
   </data>
+  <data name="Preset_Export.Text" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Preset_ExportTitle" xml:space="preserve">
+    <value>Export Presets</value>
+  </data>
+  <data name="Preset_ExportSuccess" xml:space="preserve">
+    <value>Export Successful</value>
+  </data>
+  <data name="Preset_Import.Text" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Preset_ImportModeSelect" xml:space="preserve">
+    <value>Select import mode:</value>
+  </data>
+  <data name="Preset_ImportModeAppend" xml:space="preserve">
+    <value>Append (Add to end)</value>
+  </data>
+  <data name="Preset_ImportModeReplace" xml:space="preserve">
+    <value>Replace all</value>
+  </data>
+  <data name="Preset_ImportOpenFile" xml:space="preserve">
+    <value>Open Preset File</value>
+  </data>
+  <data name="Preset_ImportSuccess" xml:space="preserve">
+    <value>Import Successful</value>
+  </data>
+  <data name="Preset_ImportTitle" xml:space="preserve">
+    <value>Import Presets</value>
+  </data>
   <data name="Preset_CpuFix04Desc.Text" xml:space="preserve">
     <value>Prevents the CPU from getting stuck at the minimal 0.4 GHz power state, restoring normal system performance</value>
   </data>
@@ -3237,6 +3267,9 @@ Set up a personalized undervolting level that will be applied to all premade pre
   </data>
   <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
     <value>Periodically restores your overclocking options every few seconds if changed by other apps</value>
+  </data>
+  <data name="Preset_ReapplyOptionsSetDesc.Text" xml:space="preserve">
+    <value>Overclocking options restore time</value>
   </data>
   <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
     <value>NBFC is not installed on your device. It is impossible to change the cooler curve</value>

@@ -1077,7 +1077,7 @@
     <value>Вырезать</value>
   </data>
   <data name="SelectAll.Text" xml:space="preserve">
-    <value>Выбрать всё</value>
+    <value>Выбрать все</value>
   </data>
   <data name="ToHex.Text" xml:space="preserve">
     <value>Перевести в Hex</value>
@@ -2980,6 +2980,36 @@ Asus. Может не поддерживаться на
   <data name="Preset_IgpuMaxed.Content" xml:space="preserve">
     <value>Максимум</value>
   </data>
+  <data name="Preset_Export.Text" xml:space="preserve">
+    <value>Экспорт</value>
+  </data>
+  <data name="Preset_ExportTitle" xml:space="preserve">
+    <value>Экспортировать пресеты</value>
+  </data>
+  <data name="Preset_ExportSuccess" xml:space="preserve">
+    <value>Пресеты экспортированы успешно</value>
+  </data>
+  <data name="Preset_Import.Text" xml:space="preserve">
+    <value>Импорт</value>
+  </data>
+  <data name="Preset_ImportModeSelect" xml:space="preserve">
+    <value>Выберите тип импортирования:</value>
+  </data>
+  <data name="Preset_ImportModeAppend" xml:space="preserve">
+    <value>Добавить в конец</value>
+  </data>
+  <data name="Preset_ImportModeReplace" xml:space="preserve">
+    <value>Заменить все</value>
+  </data>
+  <data name="Preset_ImportOpenFile" xml:space="preserve">
+    <value>Выберите файл с пресетами</value>
+  </data>
+  <data name="Preset_ImportSuccess" xml:space="preserve">
+    <value>Пресеты импортированы успешно</value>
+  </data>
+  <data name="Preset_ImportTitle" xml:space="preserve">
+    <value>Импортировать пресеты</value>
+  </data>
   <data name="Preset_CpuFix04Desc.Text" xml:space="preserve">
     <value>Блокирует зависание процессора на минимальной частоте, возвращая системе изначальную производительность</value>
   </data>
@@ -3236,6 +3266,9 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
     <value>Переодически применять параметры пресета для избежания перезаписи другими приложениями</value>
+  </data>
+  <data name="Preset_ReapplyOptionsSetDesc.Text" xml:space="preserve">
+    <value>Время переприменения параметров</value>
   </data>
   <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
     <value>На вашем устройстве не установлен NBFC. Невозможно изменить кривую кулера</value>

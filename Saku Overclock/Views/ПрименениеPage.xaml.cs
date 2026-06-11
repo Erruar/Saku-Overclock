@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
 
 namespace Saku_Overclock.Views;
@@ -42,13 +43,13 @@ public sealed partial class ПрименениеPage
     /// <param name="e"></param>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _isLoaded = true;
         GetSystemInfo.ReadDesignCapacity(out var notTrack);
         if (notTrack)
         {
             AutomationOptions.Visibility = Visibility.Collapsed;
         }
         LoadApplyOptions();
+        _isLoaded = true;
     }
 
     /// <summary>
@@ -58,6 +59,16 @@ public sealed partial class ПрименениеPage
     {
         ApplyStart.IsOn = _appSettings.ReapplyLatestSettingsOnAppLaunch;
         AutoReapply.IsOn = _appSettings.ReapplyOverclock;
+        AutoReapplyGrid.CornerRadius = AutoReapply.IsOn 
+            ? new CornerRadius(0) 
+            : new  CornerRadius(0,0,15,15);
+        ReapplyTimeSet.Value = new PresetOption<double>(_appSettings.ReapplyOverclock, _appSettings.ReapplyOverclockTimer);
+
+        ReapplyTimeSet.ValueChanged += option =>
+        {
+            _appSettings.ReapplyOverclockTimer = option.Value;
+            _appSettings.SaveSettings();
+        };
     }
 
     #endregion
@@ -90,10 +101,12 @@ public sealed partial class ПрименениеPage
             return;
         }
 
+        AutoReapplyGrid.CornerRadius = AutoReapply.IsOn 
+            ? new CornerRadius(0) 
+            : new  CornerRadius(0,0,15,15);
+
         _appSettings.ReapplyOverclock = AutoReapply.IsOn;
-
-        _appSettings.ReapplyOverclockTimer = 3;
-
+        _appSettings.ReapplyOverclockTimer = ReapplyTimeSet.Value?.Value ?? 3;
         _appSettings.SaveSettings();
     }
 

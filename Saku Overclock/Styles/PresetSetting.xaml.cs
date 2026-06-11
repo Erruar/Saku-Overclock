@@ -19,6 +19,11 @@ public partial class PresetSetting : UserControl
     public static readonly DependencyProperty TextProperty =
         DependencyProperty.Register(nameof(Text), typeof(string), typeof(PresetSetting), new PropertyMetadata(string.Empty));
     public string Text { get => (string)GetValue(TextProperty); set => SetValue(TextProperty, value); }
+    
+    // Видимость чекбокса
+    public static readonly DependencyProperty CheckBoxVisibilityProperty =
+        DependencyProperty.Register(nameof(CheckBoxVisibility), typeof(Visibility), typeof(PresetSetting), new PropertyMetadata(Visibility.Visible));
+    public Visibility CheckBoxVisibility { get => (Visibility)GetValue(CheckBoxVisibilityProperty); set => SetValue(CheckBoxVisibilityProperty, value); }
 
     // Минумум
     public static readonly DependencyProperty MinimumProperty =

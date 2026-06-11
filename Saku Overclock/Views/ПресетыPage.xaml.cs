@@ -729,10 +729,10 @@ public sealed partial class ПресетыPage
     {
         var dialog = new ContentDialog
         {
-            Title = "Export Presets",
+            Title = "Preset_ExportTitle".GetLocalized(),
             XamlRoot = XamlRoot,
-            CloseButtonText = "Cancel",
-            PrimaryButtonText = "Export",
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
+            PrimaryButtonText = "Preset_Export/Text".GetLocalized(),
             DefaultButton = ContentDialogButton.Primary
         };
 
@@ -771,7 +771,7 @@ public sealed partial class ПресетыPage
             HorizontalAlignment = HorizontalAlignment.Left
         };
         
-        var selectAllBtn = new Button { Content = "Select All" };
+        var selectAllBtn = new Button { Content = "SelectAll/Text".GetLocalized() };
         selectAllBtn.Click += (_, _) =>
         {
             foreach (var t in listView.Items)
@@ -802,7 +802,7 @@ public sealed partial class ПресетыPage
                 filter = "JSON files (*.json)\0*.json\0All files (*.*)\0*.*\0",
                 file = new string(new char[256]),
                 fileTitle = new string(new char[64]),
-                title = "Save Presets",
+                title = "Preset_ExportTitle".GetLocalized(),
                 defExt = "json"
             };
             ofn.maxFile = ofn.file.Length;
@@ -826,7 +826,7 @@ public sealed partial class ПресетыPage
                         {
                             PresetManager.ExportPresets(selectedIndices, folder, fileName);
                         }
-                        NotificationsService.ShowNotification("Export Successful", "Presets exported successfully", InfoBarSeverity.Success);
+                        NotificationsService.ShowNotification("Preset_ExportSuccess".GetLocalized(), string.Empty, InfoBarSeverity.Success);
                     }
                 }
                 catch (Exception ex)
@@ -841,10 +841,10 @@ public sealed partial class ПресетыPage
     {
         var dialog = new ContentDialog
         {
-            Title = "Import Presets",
+            Title = "Preset_ImportTitle".GetLocalized(),
             XamlRoot = XamlRoot,
-            CloseButtonText = "Cancel",
-            PrimaryButtonText = "Import",
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
+            PrimaryButtonText = "Preset_Import/Text".GetLocalized(),
             DefaultButton = ContentDialogButton.Primary
         };
 
@@ -852,14 +852,14 @@ public sealed partial class ПресетыPage
         
         var instruction = new TextBlock 
         { 
-            Text = "Select import mode:", 
+            Text = "Preset_ImportModeSelect".GetLocalized(), 
             FontWeight = new FontWeight(600)
         };
         rootPanel.Children.Add(instruction);
 
         var modeSelector = new RadioButtons { HorizontalAlignment = HorizontalAlignment.Stretch };
-        var rbAppend = new RadioButton { Content = "Append (Add to end)", IsChecked = true };
-        var rbReplace = new RadioButton { Content = "Replace all" };
+        var rbAppend = new RadioButton { Content = "Preset_ImportModeAppend".GetLocalized(), IsChecked = true };
+        var rbReplace = new RadioButton { Content = "Preset_ImportModeReplace".GetLocalized() };
         modeSelector.Items.Add(rbAppend);
         modeSelector.Items.Add(rbReplace);
         rootPanel.Children.Add(modeSelector);
@@ -876,7 +876,7 @@ public sealed partial class ПресетыPage
                 filter = "JSON files (*.json)\0*.json\0All files (*.*)\0*.*\0",
                 file = new string(new char[256]),
                 fileTitle = new string(new char[64]),
-                title = "Open Preset File",
+                title = "Preset_ImportOpenFile".GetLocalized(),
                 defExt = "json"
             };
             ofn.maxFile = ofn.file.Length;
@@ -894,7 +894,7 @@ public sealed partial class ПресетыPage
                     PresetManager.ImportPresets(folder, fileName, append);
                     PresetManager.SaveSettings();
                     LoadPresets();
-                    NotificationsService.ShowNotification("Import Successful", $"Presets {(append ? "added to" : "replaced")} successfully", InfoBarSeverity.Success);
+                    NotificationsService.ShowNotification("Preset_ImportSuccess".GetLocalized(), string.Empty, InfoBarSeverity.Success);
                 }
                 catch (Exception ex)
                 {
