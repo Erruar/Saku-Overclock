@@ -26,10 +26,7 @@ public partial class App
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    private IHost? Host
-    {
-        get;
-    }
+    private IHost? Host { get; }
 
     public static T GetService<T>()
         where T : class
@@ -37,9 +34,8 @@ public partial class App
         try
         {
             if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
-            {
-                throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
-            }
+                throw new ArgumentException(
+                    $"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
 
             return service;
         }
@@ -51,19 +47,12 @@ public partial class App
             throw;
         }
     }
-    
+
     public static IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
-    public static WindowEx MainWindow
-    {
-        get;
-    } = new MainWindow();
+    public static WindowEx MainWindow { get; } = new MainWindow();
 
-    public static UIElement? AppTitlebar
-    {
-        get;
-        set;
-    }
+    public static UIElement? AppTitlebar { get; set; }
 
     public App()
     {
@@ -74,68 +63,68 @@ public partial class App
         try
         {
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
-            .ConfigureServices((context, services) =>
-            {
-                // Default Activation Handler
-                services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
-                // Other Activation Handlers
-                services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
-                // Core Services
-                services.AddSingleton<IFileService, FileService>();
-                // Services
-                services.AddSingleton<ICpuService, CpuService>(); 
-                services.AddSingleton<IPstateStrategy, Zen4PstateStrategy>();
-                services.AddSingleton<IPstateStrategy, Zen5PstateStrategy>();
-                services.AddSingleton<IPstateService, PstateService>();
-                services.AddSingleton<IAppNotificationService, AppNotificationService>();
-                services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
-                services.AddSingleton<IAppSettingsService, AppSettingsService>();
-                services.AddSingleton<IPresetManagerService, PresetManagerService>();
-                services.AddSingleton<IUpdateCheckerService, UpdateCheckerService>();
-                services.AddSingleton<INotesWriterService, NotesWriterService>();
-                services.AddSingleton<IApplyerService, ApplyerService>();
-                services.AddSingleton<IKeyboardHotkeysService, KeyboardHotkeysService>();
-                services.AddSingleton<ITrayMenuService, TrayMenuService>();
-                services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
-                services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
-                services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
-                services.AddTransient<INavigationViewService, NavigationViewService>();
-                services.AddSingleton<IActivationService, ActivationService>();
-                services.AddSingleton<IPageService, PageService>();
-                services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
-                services.AddSingleton<IOcFinderService, OcFinderService>();
-                services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
-                services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
-                services.AddSingleton<ISensorReader, SensorReader>();
-                services.AddSingleton<CoreMetricsCalculator>();
-                services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
-                services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
-                // Views and ViewModels
-                services.AddTransient<SettingsViewModel>();
-                services.AddTransient<SettingsPage>();
-                services.AddTransient<ИнформацияViewModel>();
-                services.AddTransient<ИнформацияPage>();
-                services.AddTransient<ПараметрыViewModel>();
-                services.AddTransient<ПараметрыPage>();
-                services.AddTransient<ПресетыViewModel>();
-                services.AddTransient<ПресетыPage>();
-                services.AddTransient<ГлавнаяViewModel>();
-                services.AddTransient<ГлавнаяPage>();
-                services.AddTransient<ShellPage>();
-                services.AddTransient<ShellViewModel>();
-                services.AddTransient<ОбновлениеPage>();
-                services.AddTransient<ОбновлениеViewModel>();
-                services.AddTransient<ОбучениеPage>();
-                services.AddTransient<ОбучениеViewModel>();
-                services.AddTransient<УправлениеТемамиPage>();
-                services.AddTransient<УправлениеТемамиViewModel>();
-                services.AddTransient<ПрименениеPage>();
-                services.AddTransient<ПрименениеViewModel>();
-                // Configuration
-                services.Configure<LocalSettingsOptions>(
-                    context.Configuration.GetSection(nameof(LocalSettingsOptions)));
-            }).Build();
+                .ConfigureServices((context, services) =>
+                {
+                    // Default Activation Handler
+                    services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+                    // Other Activation Handlers
+                    services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
+                    // Core Services
+                    services.AddSingleton<IFileService, FileService>();
+                    // Services
+                    services.AddSingleton<ICpuService, CpuService>();
+                    services.AddSingleton<IPstateStrategy, Zen4PstateStrategy>();
+                    services.AddSingleton<IPstateStrategy, Zen5PstateStrategy>();
+                    services.AddSingleton<IPstateService, PstateService>();
+                    services.AddSingleton<IAppNotificationService, AppNotificationService>();
+                    services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
+                    services.AddSingleton<IAppSettingsService, AppSettingsService>();
+                    services.AddSingleton<IPresetManagerService, PresetManagerService>();
+                    services.AddSingleton<IUpdateCheckerService, UpdateCheckerService>();
+                    services.AddSingleton<INotesWriterService, NotesWriterService>();
+                    services.AddSingleton<IApplyerService, ApplyerService>();
+                    services.AddSingleton<IKeyboardHotkeysService, KeyboardHotkeysService>();
+                    services.AddSingleton<ITrayMenuService, TrayMenuService>();
+                    services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
+                    services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
+                    services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+                    services.AddTransient<INavigationViewService, NavigationViewService>();
+                    services.AddSingleton<IActivationService, ActivationService>();
+                    services.AddSingleton<IPageService, PageService>();
+                    services.AddSingleton<INavigationService, NavigationService>();
+                    services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
+                    services.AddSingleton<IOcFinderService, OcFinderService>();
+                    services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
+                    services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
+                    services.AddSingleton<ISensorReader, SensorReader>();
+                    services.AddSingleton<CoreMetricsCalculator>();
+                    services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
+                    services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
+                    // Views and ViewModels
+                    services.AddTransient<SettingsViewModel>();
+                    services.AddTransient<SettingsPage>();
+                    services.AddTransient<ИнформацияViewModel>();
+                    services.AddTransient<ИнформацияPage>();
+                    services.AddTransient<ПараметрыViewModel>();
+                    services.AddTransient<ПараметрыPage>();
+                    services.AddTransient<ПресетыViewModel>();
+                    services.AddTransient<ПресетыPage>();
+                    services.AddTransient<ГлавнаяViewModel>();
+                    services.AddTransient<ГлавнаяPage>();
+                    services.AddTransient<ShellPage>();
+                    services.AddTransient<ShellViewModel>();
+                    services.AddTransient<ОбновлениеPage>();
+                    services.AddTransient<ОбновлениеViewModel>();
+                    services.AddTransient<ОбучениеPage>();
+                    services.AddTransient<ОбучениеViewModel>();
+                    services.AddTransient<УправлениеТемамиPage>();
+                    services.AddTransient<УправлениеТемамиViewModel>();
+                    services.AddTransient<ПрименениеPage>();
+                    services.AddTransient<ПрименениеViewModel>();
+                    // Configuration
+                    services.Configure<LocalSettingsOptions>(
+                        context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+                }).Build();
             GetService<IAppNotificationService>().Initialize();
         }
         catch (Exception ex)
@@ -144,10 +133,7 @@ public partial class App
             Current.Exit();
         }
 
-        UnhandledException += (_,e) => 
-        {
-            HandleCriticalError(e.Exception); 
-        };
+        UnhandledException += (_, e) => { HandleCriticalError(e.Exception); };
     }
 
     #region JSON and Initialization
@@ -175,7 +161,7 @@ public partial class App
     }
 
     /// <summary>
-    ///    Обработка критической ошибки приложения
+    ///     Обработка критической ошибки приложения
     /// </summary>
     private static void HandleCriticalError(Exception e)
     {
@@ -185,13 +171,14 @@ public partial class App
         Process.Start(new ProcessStartInfo
         {
             FileName = "CrashHandler.exe",
-            Arguments = $"\"{e.Message} {e.StackTrace} {e.InnerException?.StackTrace}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
+            Arguments =
+                $"\"{e.Message} {e.StackTrace} {e.InnerException?.StackTrace}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
             Verb = "runas"
         });
     }
 
     /// <summary>
-    ///    Проверка на отсутствие других запущенных экземпляров приложения
+    ///     Проверка на отсутствие других запущенных экземпляров приложения
     /// </summary>
     private static void CheckForSecondInstance()
     {
@@ -212,7 +199,7 @@ public partial class App
     }
 
     /// <summary>
-    ///    Фикс запуска в "режиме эффективности" на Windows 11
+    ///     Фикс запуска в "режиме эффективности" на Windows 11
     /// </summary>
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool SetPriorityClass(IntPtr hProcess, uint dwPriorityClass);
