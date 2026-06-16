@@ -114,10 +114,6 @@ public partial class App
                 // Views and ViewModels
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<SettingsPage>();
-                services.AddTransient<КулерViewModel>();
-                services.AddTransient<КулерPage>();
-                services.AddTransient<AdvancedКулерViewModel>();
-                services.AddTransient<AdvancedКулерPage>();
                 services.AddTransient<ИнформацияViewModel>();
                 services.AddTransient<ИнформацияPage>();
                 services.AddTransient<ПараметрыViewModel>();
@@ -185,7 +181,7 @@ public partial class App
     {
         var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
         var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-        var sakuLogo = Path.Combine(pathToProgramDirectory!, "WindowIcon.ico");
+        var sakuLogo = Path.Combine(pathToProgramDirectory!, "Assets/WindowIcon.ico");
         Process.Start(new ProcessStartInfo
         {
             FileName = "CrashHandler.exe",

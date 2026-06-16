@@ -12,7 +12,7 @@
               Height="50"
               IsHitTestVisible="True"
               VerticalAlignment="Top">
-            <Image Margin="12,-6,0,0" Source="/Assets/powermon.png"
+            <Image Margin="12,-6,0,0" Source="/Assets/powermon.ico"
                    HorizontalAlignment="Left"
                    Width="24"
                    Height="24"/>

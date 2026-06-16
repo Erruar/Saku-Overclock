@@ -10,7 +10,7 @@
         Description="Saku Overclock© - An awesome Ryzen Laptop overclocking app"
         >
         <XamlUICommand.IconSource>
-            <BitmapIconSource ShowAsMonochrome="False" UriSource="ms-appx:///WindowIcon.ico"/>
+            <BitmapIconSource ShowAsMonochrome="False" UriSource="ms-appx:///Assets/WindowIcon.ico"/>
         </XamlUICommand.IconSource>
     </XamlUICommand>
     <XamlUICommand
@@ -92,7 +92,7 @@
         ContextMenuMode="SecondWindow"
         LeftClickCommand="{StaticResource ShowHideWindowCommand}"
         NoLeftClickDelay="True"
-        IconSource="ms-appx:///WindowIcon.ico"
+        IconSource="ms-appx:///Assets/WindowIcon.ico"
         >
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>

@@ -398,7 +398,7 @@ public sealed partial class УправлениеТемамиPage
             {
                 Header = "ThemeBgSelectSource".GetLocalized()
             };
-            var rbNone = new RadioButton { Content = "None", IsChecked = true };
+            var rbNone = new RadioButton { Content = "Preset_SelectionNone".GetLocalized(), IsChecked = true };
             var rbFile = new RadioButton { Content = "ThemeBgFromFile".GetLocalized() };
             var rbLink = new RadioButton { Content = "ThemeBgFromURL".GetLocalized() };
             modeSelector.Items.Add(rbNone);
