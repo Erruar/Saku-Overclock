@@ -292,8 +292,7 @@
                                            Margin="420,12,0,0">
                             <Grid>
                                 <ContentControl>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                              HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;" />
+                                    <FontIcon HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;" />
                                 </ContentControl>
                                 <TextBlock Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" HorizontalAlignment="Left"
                                            VerticalAlignment="Center" Margin="21,0,0,0" />
@@ -383,8 +382,7 @@
                                            Margin="420,33,0,0">
                             <Grid>
                                 <ContentControl>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                              HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;" />
+                                    <FontIcon HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;" />
                                 </ContentControl>
                                 <TextBlock Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" HorizontalAlignment="Left"
                                            VerticalAlignment="Center" Margin="21,0,0,0" />

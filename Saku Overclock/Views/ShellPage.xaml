@@ -46,31 +46,31 @@
                     <NavigationViewItem CornerRadius="9" x:Uid="Shell_Главная"
                                         helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ГлавнаяViewModel">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf157;"/>
+                            <FontIcon Glyph="&#xf157;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <NavigationViewItem CornerRadius="9" x:Uid="Shell_Пресеты"
                                         helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПресетыViewModel">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe945;"/><!--xeadf-->
+                            <FontIcon Glyph="&#xe945;"/><!--xeadf-->
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <!--<NavigationViewItem CornerRadius="9" x:Uid="Shell_Параметры"
                                         helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПараметрыViewModel">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe945;"/>
+                            <FontIcon Glyph="&#xe945;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>-->
                     <NavigationViewItem CornerRadius="9" x:Uid="Shell_Информация"
                                         helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ИнформацияViewModel">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF42F;"/>
+                            <FontIcon Glyph="&#xF42F;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <!--<NavigationViewItem CornerRadius="9" x:Uid="Shell_Кулер"
                                         helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
+                            <FontIcon Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>-->
                 </NavigationView.MenuItems>
@@ -324,7 +324,7 @@
                                        x:Uid="Shell_Clear_Notifications"
                                        Text="Clear All"/>
                             <FontIcon
-                                FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                FontSize="16"
                                 Glyph="&#xE74D;" Margin="0,-2,0,0"/>
                         </StackPanel>
                     </Button>

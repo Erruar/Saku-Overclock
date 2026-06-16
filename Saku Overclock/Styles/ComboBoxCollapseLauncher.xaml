@@ -220,7 +220,7 @@ SOFTWARE.
                                       IsHitTestVisible="False">
                             <animatedvisuals:AnimatedChevronDownSmallVisualSource/>
                             <AnimatedIcon.FallbackIconSource>
-                                <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                <FontIconSource FontFamily="ms-appx:///Assets/Fonts/SegoeIcons.ttf#Segoe Fluent Icons"
                                                 FontSize="12"
                                                 Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
                                                 Glyph="&#xE70D;"/>

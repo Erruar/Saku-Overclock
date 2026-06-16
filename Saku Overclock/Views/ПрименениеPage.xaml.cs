@@ -12,6 +12,7 @@ public sealed partial class ПрименениеPage
 {
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки
     private readonly INavigationService _navigationService = App.GetService<INavigationService>(); // Навигация
+    private readonly IPresetManagerService _presetManager = App.GetService<IPresetManagerService>(); // Пресеты
 
     private bool _isLoaded; // Состояние загрузки
 
@@ -45,9 +46,7 @@ public sealed partial class ПрименениеPage
     {
         GetSystemInfo.ReadDesignCapacity(out var notTrack);
         if (notTrack)
-        {
             AutomationOptions.Visibility = Visibility.Collapsed;
-        }
         LoadApplyOptions();
         _isLoaded = true;
     }
@@ -69,6 +68,47 @@ public sealed partial class ПрименениеPage
             _appSettings.ReapplyOverclockTimer = option.Value;
             _appSettings.SaveSettings();
         };
+        
+        var presetCollection = new List<PresetDisplayItem>
+        {
+            new()
+            {
+                Id = string.Empty,
+                Name = "Preset_SelectionNone".GetLocalized()
+            }
+        };
+
+        PresetDisplayItem? selectedBatteryPreset = null;
+        PresetDisplayItem? selectedChargerPreset = null;
+        foreach (var preset in _presetManager.Presets)
+        {
+            var presetName = preset.PresetName;
+    
+            if (presetName.Contains("Preset_")) presetName = ГлавнаяPage.TryLocalize(presetName);
+
+            var currentPreset = new PresetDisplayItem
+            {
+                Id = preset.PresetId,
+                Name = presetName
+            };
+            presetCollection.Add(currentPreset);
+            
+            if (!string.IsNullOrWhiteSpace(_appSettings.BatteryPreset) && preset.PresetId == _appSettings.BatteryPreset) selectedBatteryPreset = currentPreset;
+            if (!string.IsNullOrWhiteSpace(_appSettings.AcPreset) && preset.PresetId == _appSettings.AcPreset) selectedChargerPreset = currentPreset;
+        }
+
+        BatteryComboBox.ItemsSource = presetCollection;
+        ChargerComboBox.ItemsSource = presetCollection;
+
+        if (selectedBatteryPreset != null)
+            BatteryComboBox.SelectedItem = selectedBatteryPreset;
+        else
+            BatteryComboBox.SelectedIndex = 0;
+
+        if (selectedChargerPreset != null)
+            ChargerComboBox.SelectedItem = selectedChargerPreset;
+        else
+            ChargerComboBox.SelectedIndex = 0;
     }
 
     #endregion
@@ -96,10 +136,7 @@ public sealed partial class ПрименениеPage
     /// </summary>
     private void AutoReapplyOptionsEverySeconds_Click(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded)
-        {
-            return;
-        }
+        if (!_isLoaded) return;
 
         AutoReapplyGrid.CornerRadius = AutoReapply.IsOn 
             ? new CornerRadius(0) 
@@ -173,11 +210,19 @@ public sealed partial class ПрименениеPage
 
     private void ChargerComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (!_isLoaded) return;
         
+        if (ChargerComboBox.SelectedIndex == BatteryComboBox.SelectedIndex && BatteryComboBox.SelectedIndex != 0) BatteryComboBox.SelectedIndex = 0;
+        _appSettings.AcPreset = ((PresetDisplayItem)ChargerComboBox.SelectedItem).Id;
+        _appSettings.SaveSettings();
     }
 
     private void BatteryComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        
+        if (!_isLoaded)  return;
+
+        if (ChargerComboBox.SelectedIndex == BatteryComboBox.SelectedIndex && BatteryComboBox.SelectedIndex != 0) ChargerComboBox.SelectedIndex = 0;
+        _appSettings.BatteryPreset = ((PresetDisplayItem)BatteryComboBox.SelectedItem).Id;
+        _appSettings.SaveSettings();
     }
 }

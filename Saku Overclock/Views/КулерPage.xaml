@@ -249,8 +249,7 @@
                                                                         CenterY="20" />
                                                     </Button.RenderTransform>
                                                     <Grid>
-                                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                                                  HorizontalAlignment="Left" Margin="-5,0,-5,0"
+                                                        <FontIcon HorizontalAlignment="Left" Margin="-5,0,-5,0"
                                                                   Glyph="&#xe897;" />
                                                     </Grid>
                                                 </Button>

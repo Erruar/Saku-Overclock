@@ -59,6 +59,7 @@ public sealed partial class ПресетыPage
 
     private void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
     {
+        _presetIndex = AppSettings.Preset;
         _presetChanging = false;
         SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
@@ -747,9 +748,11 @@ public sealed partial class ПресетыPage
             try
             {
                 var preset = PresetManager.Presets[i];
+                var presetName = preset.PresetName;
+                if (presetName.Contains("Preset_")) presetName = ГлавнаяPage.TryLocalize(presetName);
                 var checkBox = new CheckBox
                 {
-                    Content = preset.PresetName.Contains("Preset_") ? preset.PresetName.GetLocalized() : preset.PresetName,
+                    Content = presetName,
                     Tag = i,
                     IsChecked = true
                 };

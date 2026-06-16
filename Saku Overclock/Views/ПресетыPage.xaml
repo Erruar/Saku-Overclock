@@ -397,13 +397,13 @@
         <TeachingTip Grid.Row="0" x:Name="ApplyTeach" IsOpen="False" />
         <Grid Grid.Row="2">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="1,0,0,0" VerticalAlignment="Center">
-                <Button Click="ExportButton_Click" Height="55" Width="115" VerticalAlignment="Center" Margin="0,0,10,0" CornerRadius="19">
+                <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,12" Click="ExportButton_Click" Height="55" Width="115" VerticalAlignment="Center" Margin="0,0,10,0" CornerRadius="19">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontSize="16" Glyph="&#xE8A7;" Margin="0,0,8,0" VerticalAlignment="Center" />
                         <TextBlock x:Uid="Preset_Export" FontSize="13" Text="Export" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
-                <Button Margin="2,0,0,0" Click="ImportButton_Click" Height="55" Width="115" VerticalAlignment="Center" CornerRadius="19">
+                <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,12" Margin="2,0,0,0" Click="ImportButton_Click" Height="55" Width="115" VerticalAlignment="Center" CornerRadius="19">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontSize="16" Glyph="&#xE944;" Margin="0,0,8,0" VerticalAlignment="Center" />
                         <TextBlock x:Uid="Preset_Import" FontSize="13" Text="Import" VerticalAlignment="Center" />

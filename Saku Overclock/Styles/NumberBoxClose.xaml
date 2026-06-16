@@ -313,7 +313,7 @@
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="BorderThickness" Value="0,1,1,1" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+            <Setter Property="FontFamily" Value="ms-appx:///Assets/Fonts/SegoeIcons.ttf#Segoe Fluent Icons" />
         </Style.Setters>
     </Style>
     <Style x:Name="NumberBoxPopupSpinButtonStyle" TargetType="RepeatButton">
@@ -325,7 +325,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+            <Setter Property="FontFamily" Value="ms-appx:///Assets/Fonts/SegoeIcons.ttf#Segoe Fluent Icons" />
             <Setter Property="CornerRadius" Value="4" />
         </Style.Setters>
     </Style>
@@ -414,7 +414,7 @@
                                                            FontStyle="Normal"
                                                            FontSize="{ThemeResource TextBoxIconFontSize}"
                                                            Text="&#xE894;"
-                                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                           FontFamily="ms-appx:///Assets/Fonts/SegoeIcons.ttf#Segoe Fluent Icons"
                                                            IsTextScaleFactorEnabled="False"
                                                            AutomationProperties.AccessibilityView="Raw" />
                                             </Grid>
@@ -620,7 +620,7 @@
                                    Margin="{StaticResource NumberBoxPopupIndicatorMargin}"
                                    Foreground="{ThemeResource NumberBoxPopupIndicatorForeground}"
                                    VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12"
-                                   Text="&#xEC8F;" FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   Text="&#xEC8F;" FontFamily="ms-appx:///Assets/Fonts/SegoeIcons.ttf#Segoe Fluent Icons"
                                    AutomationProperties.AccessibilityView="Raw" />
 
                     </Grid>

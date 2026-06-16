@@ -3110,6 +3110,9 @@ Average power limit</value>
   <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
     <value>On</value>
   </data>
+  <data name="Preset_SelectionNone" xml:space="preserve">
+    <value>None (Disabled)</value>
+  </data>
   <data name="PowerMon_Goto.Text" xml:space="preserve">
     <value>Go to:</value>
   </data>
@@ -3254,7 +3257,7 @@ Set up a personalized undervolting level that will be applied to all premade pre
     <value>Hide program in system tray when closing</value>
   </data>
   <data name="Preset_AppStartDesc.Text" xml:space="preserve">
-    <value>Run the program when power on device. The startup mode can be selected: in the tray, with a window, or not to start</value>
+    <value>Run the program when power on device</value>
   </data>
   <data name="Preset_AutoApplyOptions.Text" xml:space="preserve">
     <value>Auto Reapply</value>

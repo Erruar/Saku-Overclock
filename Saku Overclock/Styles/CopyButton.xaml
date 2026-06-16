@@ -17,7 +17,7 @@
         <Setter Property="ToolTipService.ToolTip" Value="Copy to clipboard" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+        <Setter Property="FontFamily" Value="ms-appx:///Assets/Fonts/SegoeIcons.ttf#Segoe Fluent Icons" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
         <Setter Property="FocusVisualMargin" Value="-3" />

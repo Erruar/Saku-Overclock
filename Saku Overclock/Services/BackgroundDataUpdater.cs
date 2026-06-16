@@ -70,6 +70,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private bool _cachedBatteryUnavailable;
     private int _currentUpdateErrorCycle;
     private const int MaxErrorsWhileUpdating = 5;
+    private volatile string _lastAppliedPreset = string.Empty;
+    private volatile GetSystemInfo.BatteryStatus _batteryStatus = GetSystemInfo.BatteryStatus.Undefined;
+    private Timer? _debounceTimer;
 
     private readonly string _stapmText = "Settings_ni_Values_STAPM".GetLocalized();
     private readonly string _fastText = "Settings_ni_Values_Fast".GetLocalized();
@@ -107,7 +110,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         }
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
+        _debounceTimer = new Timer(BatteryDebounceTimer_Tick, null, Timeout.Infinite, Timeout.Infinite);
+        
         Task.Run(async () =>
         {
             // Инициализируем статические данные один раз перед входом в цикл
@@ -163,6 +167,13 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                         _sensorsInformation.BatteryState = batteryState;
                         _sensorsInformation.BatteryChargeRate = chargeRate;
                         _sensorsInformation.BatteryLifeTime = batteryLifeTime;
+                        if (_batteryStatus != ((GetSystemInfo.BatteryStatus)batteryState))
+                        {
+                            _batteryStatus = (GetSystemInfo.BatteryStatus)batteryState;
+    
+                            // Перезапускаем таймер
+                            _debounceTimer?.Change(350, Timeout.Infinite);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -221,6 +232,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     {
         if (_cts is { IsCancellationRequested: false })
         {
+            _debounceTimer?.Dispose();
             _cts.Cancel();
             DisposeAllNotifyIcons();
             RtssHandler.ResetOsdText();
@@ -307,6 +319,55 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
         {
             // Батарея недоступна
             return (0, 10, 0, 0);
+        }
+    }
+
+    private IApplyerService? _applier;
+    private IPresetManagerService? _presetManager;
+
+    private void BatteryDebounceTimer_Tick(object? sender)
+    {
+        try
+        {
+            // 1. Определяем целевой ID пресета с помощью switch-выражения
+            var targetPresetId = _batteryStatus switch
+            {
+                GetSystemInfo.BatteryStatus.Charging or
+                    GetSystemInfo.BatteryStatus.ChargingAndHigh or
+                    GetSystemInfo.BatteryStatus.ChargingAndLow or
+                    GetSystemInfo.BatteryStatus.ChargingAndCritical or
+                    GetSystemInfo.BatteryStatus.PartiallyCharged or
+                    GetSystemInfo.BatteryStatus.AcConnected or
+                    GetSystemInfo.BatteryStatus.FullyCharged => AppSettings.AcPreset,
+
+                GetSystemInfo.BatteryStatus.Undefined => null,
+
+                _ => AppSettings.BatteryPreset // Все остальные статусы (разрядка)
+            };
+
+            if (string.IsNullOrEmpty(targetPresetId) || targetPresetId == _lastAppliedPreset) return;
+
+            _applier ??= App.GetService<IApplyerService>();
+            _presetManager ??= App.GetService<IPresetManagerService>();
+
+            var preset = _presetManager?.Presets.FirstOrDefault(p => p.PresetId.ToString() == targetPresetId);
+
+            if (preset != null)
+            {
+                _applier?.ApplyPreset(preset);
+                _lastAppliedPreset = targetPresetId;
+            }
+            else
+            {
+                _lastAppliedPreset = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError($"[BatteryDebounceTimer_Tick] Ошибка применения пресета: {ex}");
+
+            // Сбрасываем _lastAppliedPreset, чтобы при следующем тике попробовать снова
+            _lastAppliedPreset = string.Empty;
         }
     }
 

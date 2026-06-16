@@ -3110,6 +3110,9 @@ Asus. Может не поддерживаться на
   <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
     <value>Вкл</value>
   </data>
+  <data name="Preset_SelectionNone" xml:space="preserve">
+    <value>Не выбрано</value>
+  </data>
   <data name="PowerMon_Goto.Text" xml:space="preserve">
     <value>Нам на:</value>
   </data>
