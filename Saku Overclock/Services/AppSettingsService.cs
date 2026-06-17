@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -9,19 +10,19 @@ public class AppSettingsService : IAppSettingsService
     private const string FolderPath = "Saku Overclock/Settings";
     private const string FileName = "AppSettings.json";
 
-    private readonly string _localApplicationData =
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _applicationDataFolder = 
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), FolderPath);
 
-    private readonly string _applicationDataFolder;
-
-    private readonly IFileService _fileService;
+    private readonly IFileService? _fileService;
+    
+    [JsonConstructor]
+    private AppSettingsService() { }
 
     public AppSettingsService(IFileService fileService)
     {
-        _applicationDataFolder = Path.Combine(_localApplicationData, FolderPath);
         _fileService = fileService;
     }
-
+    
     // Настройки приложения
 
     public bool FixedTitleBar
@@ -34,8 +35,7 @@ public class AppSettingsService : IAppSettingsService
     {
         get;
         set;
-    } =
-        0;
+    } = 0;
 
     public bool HideToTray
     {
@@ -140,71 +140,12 @@ public class AppSettingsService : IAppSettingsService
     } = true;
 
     // Настройки управления кулером
-    public bool IsNbfcModeEnabled
-    {
-        get;
-        set;
-    } = true;
-
-    public string NbfcConfigXmlName
-    {
-        get;
-        set;
-    } = string.Empty;
-
-    public int NbfcServiceType
-    {
-        get;
-        set;
-    } = 0;
-
-    public double NbfcFan1UserFanSpeedRpm
-    {
-        get;
-        set;
-    } = 110.0;
-
-    public double NbfcFan2UserFanSpeedRpm
-    {
-        get;
-        set;
-    } = 110.0;
-
-    public double NbfcAnswerSpeedFan1
-    {
-        get;
-        set;
-    } = -1;
-
-    public double NbfcAnswerSpeedFan2
-    {
-        get;
-        set;
-    } = -1;
-
-    public int AsusCoolerServiceType
-    {
-        get;
-        set;
-    } = 0;
-
-    public double AsusModeFan1UserFanSpeedRpm
-    {
-        get;
-        set;
-    } = 110.0;
-
-    public double AsusModeFan2UserFanSpeedRpm
-    {
-        get;
-        set;
-    } = 110.0;
 
     public void LoadSettings()
     {
         try
         {
-            var settings = _fileService.Read<AppSettingsService>(_applicationDataFolder, FileName);
+            var settings = _fileService?.Read<AppSettingsService>(_applicationDataFolder, FileName);
 
             if (settings == null)
             {
@@ -229,5 +170,5 @@ public class AppSettingsService : IAppSettingsService
         }
     }
 
-    public void SaveSettings() => _fileService.Save(_applicationDataFolder, FileName, this);
+    public void SaveSettings() => _fileService?.Save(_applicationDataFolder, FileName, this);
 }

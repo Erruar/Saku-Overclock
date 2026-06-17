@@ -1,21 +1,18 @@
 ﻿using System.Buffers;
 using System.Runtime.InteropServices;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
-using static ZenStates.Core.Cpu;
 
 namespace Saku_Overclock.Services;
 
 /// <summary>
-/// Класс для расчёта метрик процессора: частота, напряжение, температура, мощность per-core
-/// и общая загрузка процессора
+///     Класс для расчёта метрик процессора: частота, напряжение, температура, мощность per-core
+///     и общая загрузка процессора
 /// </summary>
 public class CoreMetricsCalculator
 {
     private readonly ISensorReader _sensorReader;
     private readonly ISensorIndexResolver _indexResolver;
-    private readonly ICpuService _cpu;
     private int _coreCount;
 
     // Кэш массивов для предотвращения аллокаций
@@ -33,7 +30,7 @@ public class CoreMetricsCalculator
     private readonly Dictionary<int, int[]> _activeCoreToPhysicalIndex = [];
 
     /// <summary>
-    /// Проверка на определённые версии Windows, где время в простое необходимо считать отдельно
+    ///     Проверка на определённые версии Windows, где время в простое необходимо считать отдельно
     /// </summary>
     private static readonly bool QueryIdleTimeSeparated =
         Environment.OSVersion.Version >= new Version(10, 0, 22621, 0) &&
@@ -46,22 +43,15 @@ public class CoreMetricsCalculator
     {
         _sensorReader = sensorReader;
         _indexResolver = indexResolver;
-        _cpu = cpu;
 
         var codenameGen = cpu.GetCodenameGeneration();
-        if (codenameGen == CpuService.CodenameGeneration.Fp5)
-        {
-            _isRavenFamily = true;
-        }
+        if (codenameGen == CpuService.CodenameGeneration.Fp5) _isRavenFamily = true;
 
-        if (codenameGen == CpuService.CodenameGeneration.Fp7)
-        {
-            _isHawkPointFamily = true;
-        }
+        if (codenameGen == CpuService.CodenameGeneration.Fp7) _isHawkPointFamily = true;
     }
 
     /// <summary>
-    /// Инициализирует массивы для хранения per-core метрик
+    ///     Инициализирует массивы для хранения per-core метрик
     /// </summary>
     public void Initialize(int coreCount)
     {
@@ -73,15 +63,12 @@ public class CoreMetricsCalculator
     }
 
     /// <summary>
-    /// Рассчитывает все метрики процессора и возвращает средние значения
+    ///     Рассчитывает все метрики процессора и возвращает средние значения
     /// </summary>
     public (double avgCoreClk, double avgCoreVolt, double[] clkPerCore, double[] voltPerCore,
         double[] tempPerCore, double[] powerPerCore) CalculateMetrics()
     {
-        if (_coreCount == 0)
-        {
-            return (0, 0, [], [], [], []);
-        }
+        if (_coreCount == 0) return (0, 0, [], [], [], []);
 
         var tableVersion = _sensorReader.CurrentTableVersion;
         var startFreqIndex = _indexResolver.ResolveIndex(tableVersion, SensorId.CpuFrequencyStart);
@@ -137,20 +124,14 @@ public class CoreMetricsCalculator
             if (core < _tempPerCoreCache.Length)
             {
                 var temp = GetCoreMetric(startTempIndex, core, -300, 150);
-                if (temp > 0)
-                {
-                    _tempPerCoreCache[core] = Math.Round(temp, 2);
-                }
+                if (temp > 0) _tempPerCoreCache[core] = Math.Round(temp, 2);
             }
 
             // Мощность
             if (core < _powerPerCoreCache.Length)
             {
                 var power = GetCoreMetric(startPowerIndex, core, 0.001, 1000);
-                if (power > 0)
-                {
-                    _powerPerCoreCache[core] = Math.Round(power, 2);
-                }
+                if (power > 0) _powerPerCoreCache[core] = Math.Round(power, 2);
             }
         }
 
@@ -161,52 +142,36 @@ public class CoreMetricsCalculator
     }
 
     /// <summary>
-    /// Возвращает значение метрики для конкретного ядра с проверкой границ
+    ///     Возвращает значение метрики для конкретного ядра с проверкой границ
     /// </summary>
     private double GetCoreMetric(int startIndex, int logicalCore, double minValid, double maxValid)
     {
         try
         {
-            if (startIndex == -1)
-            {
-                return 0;
-            }
+            if (startIndex == -1) return 0;
 
             // Убедимся, что маппинг построен
             if (_activeCoreToPhysicalIndex.Count == 0 || !_activeCoreToPhysicalIndex.ContainsKey(startIndex))
-            {
                 BuildActiveCoreMapping(startIndex);
-            }
 
             // Проверяем наличие ключа
-            if (!_activeCoreToPhysicalIndex.TryGetValue(startIndex, out var values))
-            {
-                return 0;
-            }
+            if (!_activeCoreToPhysicalIndex.TryGetValue(startIndex, out var values)) return 0;
 
             // Проверяем доступность значения
             if (logicalCore < 0 || logicalCore >=
-                (_isRavenFamily && _coreCount == 2 ? 4 : _coreCount)
-                || values.Length <= logicalCore)
-            {
+                                (_isRavenFamily && _coreCount == 2 ? 4 : _coreCount)
+                                || values.Length <= logicalCore)
                 return 0;
-            }
 
             var physicalTableIndex = values[logicalCore];
 
             // Читаем значение через SensorReader
             var (success, value) = _sensorReader.ReadSensorByIndex(physicalTableIndex);
 
-            if (!success)
-            {
-                return 0;
-            }
+            if (!success) return 0;
 
             // Проверка на валидность
-            if (value >= minValid && value <= maxValid)
-            {
-                return value;
-            }
+            if (value >= minValid && value <= maxValid) return value;
 
             return 0;
         }
@@ -217,7 +182,7 @@ public class CoreMetricsCalculator
     }
 
     /// <summary>
-    /// Создаёт маппинг активных ядер к физическим индексам в таблице
+    ///     Создаёт маппинг активных ядер к физическим индексам в таблице
     /// </summary>
     private void BuildActiveCoreMapping(int startIndex)
     {
@@ -240,22 +205,16 @@ public class CoreMetricsCalculator
         for (var physIndex = 0; physIndex < coresCount; physIndex++)
         {
             var tableIndex = startIndex + physIndex;
-            if (tableIndex >= table.Length)
-            {
-                break;
-            }
+            if (tableIndex >= table.Length) break;
 
-            if (table[tableIndex] != 0)
-            {
-                mapping.Add(tableIndex);
-            }
+            if (table[tableIndex] != 0) mapping.Add(tableIndex);
         }
 
         _activeCoreToPhysicalIndex[startIndex] = [.. mapping];
     }
 
     /// <summary>
-    /// Нормализует количество ядер до фактического количества в CCD/CCX.
+    ///     Нормализует количество ядер до фактического количества в CCD/CCX.
     /// </summary>
     /// <param name="startIndex">Стартовый индекс последовательности слотов-индексов</param>
     /// <returns>Нормализованное количество ядер процессора</returns>
@@ -272,34 +231,21 @@ public class CoreMetricsCalculator
         // Специальный фикс для Hawk Point: при старте со смещения 105 читаем напряжение процессора.
         // Берём напряжение только из SVI2, так как индексы по ядрам возвращают некорректные значения
         // (баг в прошивке Smu)
-        if (_isHawkPointFamily && startIndex == 105)
-        {
-            return 2;
-        }
+        if (_isHawkPointFamily && startIndex == 105) return 2;
 
         // Raven Ridge и совместимые семейства: при старте со смещения 121 читаем частоту процессора.
         // 2-ядерные отображают последовательность ядра+потоки через нулевое значение (отключенные ядра),
         // поэтому учитываем fused структуру как 8 слотов-индексов.
-        if (_coreCount == 2 && _isRavenFamily && startIndex == 121)
-        {
-            return 8;
-        }
+        if (_coreCount == 2 && _isRavenFamily && startIndex == 121) return 8;
 
         // Общее правило для остальных Ryzen: младшие процессоры имеют "отключенные" (fused-off) ядра,
         // но PM Table сохраняет полный ряд значений для всего кристалла.
         // Поэтому нормализуем количество слотов до фактического количества в CCD/CCX.
         if (_coreCount > 8)
-        {
             coresCount = 16;
-        }
         else if (_coreCount > 4)
-        {
             coresCount = 8;
-        }
-        else if (_coreCount > 1)
-        {
-            coresCount = 4;
-        }
+        else if (_coreCount > 1) coresCount = 4;
 
         return coresCount;
     }
@@ -307,14 +253,11 @@ public class CoreMetricsCalculator
     #region CPU Load Calculation
 
     /// <summary>
-    /// Возвращает текущую загрузку процессора в процентах
+    ///     Возвращает текущую загрузку процессора в процентах
     /// </summary>
     public float GetCoreLoad()
     {
-        if (!GetTimes(out var newIdleTimes, out var newTotalTimes))
-        {
-            return _currentCpuLoad;
-        }
+        if (!GetTimes(out var newIdleTimes, out var newTotalTimes)) return _currentCpuLoad;
 
         // Первый запуск - сохраняем данные
         if (_idleTimes.Length == 0 || _totalTimes.Length == 0)
@@ -326,12 +269,8 @@ public class CoreMetricsCalculator
 
         // Проверяем минимальную разность времени
         for (var i = 0; i < Math.Min(newTotalTimes.Length, _totalTimes.Length); i++)
-        {
             if (newTotalTimes[i] - _totalTimes[i] < 100000)
-            {
                 return _currentCpuLoad;
-            }
-        }
 
         // Вычисляем загрузку
         float totalIdle = 0;
@@ -367,10 +306,7 @@ public class CoreMetricsCalculator
         idle = [];
         total = [];
 
-        if (QueryIdleTimeSeparated)
-        {
-            return GetWindowsTimesFromIdleTimes(out idle, out total);
-        }
+        if (QueryIdleTimeSeparated) return GetWindowsTimesFromIdleTimes(out idle, out total);
 
         var perfInfo = ArrayPool<CpuPerformanceInformation>.Shared.Rent(64);
         var perfSize = Marshal.SizeOf<CpuPerformanceInformation>();
@@ -378,9 +314,7 @@ public class CoreMetricsCalculator
         if (NtQuerySystemInformation(
                 CpuSysInformation.SystemProcessorPerformanceInformation,
                 perfInfo, perfInfo.Length * perfSize, out var perfReturn) != 0)
-        {
             return false;
-        }
 
         var count = perfReturn / perfSize;
         idle = new long[count];
@@ -412,22 +346,15 @@ public class CoreMetricsCalculator
         if (NtQuerySystemInformation(
                 CpuSysInformation.SystemProcessorIdleInformation,
                 idleInfo, idleInfo.Length * idleSize, out var idleReturn) != 0)
-        {
             return false;
-        }
 
         if (NtQuerySystemInformation(
                 CpuSysInformation.SystemProcessorPerformanceInformation,
                 perfInfo, perfInfo.Length * perfSize, out var perfReturn) != 0)
-        {
             return false;
-        }
 
         var count = perfReturn / perfSize;
-        if (count != idleReturn / idleSize)
-        {
-            return false;
-        }
+        if (count != idleReturn / idleSize) return false;
 
         idle = new long[count];
         total = new long[count];

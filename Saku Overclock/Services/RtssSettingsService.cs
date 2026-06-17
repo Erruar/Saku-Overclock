@@ -1,4 +1,5 @@
-﻿using Saku_Overclock.Contracts.Services;
+﻿using System.Text.Json.Serialization;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
 
@@ -9,22 +10,23 @@ public class RtssSettingsService : IRtssSettingsService
     private const string FolderPath = "Saku Overclock/Settings";
     private const string FileName = "RtssSettings.json";
 
-    private readonly string _localApplicationData =
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _applicationDataFolder = 
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), FolderPath);
 
-    private readonly string _applicationDataFolder;
-
-    private readonly IFileService _fileService;
+    private readonly IFileService? _fileService;
+        
+    [JsonConstructor]
+    private RtssSettingsService() { }
 
     public RtssSettingsService(IFileService fileService)
     {
-        _applicationDataFolder = Path.Combine(_localApplicationData, FolderPath);
         _fileService = fileService;
     }
 
     public List<RtssElementsClass> RtssElements
     {
         get;
+        set;
     } =
     [
         new()
@@ -117,7 +119,7 @@ public class RtssSettingsService : IRtssSettingsService
     {
         try
         {
-            var settings = _fileService.Read<RtssSettingsService>(_applicationDataFolder, FileName);
+            var settings = _fileService?.Read<RtssSettingsService>(_applicationDataFolder, FileName);
 
             if (settings == null)
             {
@@ -126,7 +128,7 @@ public class RtssSettingsService : IRtssSettingsService
 
             foreach (var prop in typeof(RtssSettingsService).GetProperties())
             {
-                if (prop.CanRead && prop.CanWrite)
+                if (prop is { CanRead: true, CanWrite: true })
                 {
                     var value = prop.GetValue(settings);
                     if (value != null)
@@ -143,7 +145,7 @@ public class RtssSettingsService : IRtssSettingsService
     }
 
     // Сохранение настроек
-    public void SaveSettings() => _fileService.Save(_applicationDataFolder, FileName, this);
+    public void SaveSettings() => _fileService?.Save(_applicationDataFolder, FileName, this);
 }
 
 public class RtssElementsClass

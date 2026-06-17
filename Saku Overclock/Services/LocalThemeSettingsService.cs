@@ -43,10 +43,15 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
         }
     }
 
-    public void SaveThemeSettings(LocalThemeSettingsOptions themeSettings) =>
+    public void SaveThemeSettings(LocalThemeSettingsOptions themeSettings)
+    {
         _fileService.Save(_applicationDataFolder, _themeSettingsFile, themeSettings);
+    }
 
-    public List<ThemeClass> GetDefaultThemes() => DefaultThemes;
+    public List<ThemeClass> GetDefaultThemes()
+    {
+        return DefaultThemes;
+    }
 
     private static List<ThemeClass> DefaultThemes =>
     [

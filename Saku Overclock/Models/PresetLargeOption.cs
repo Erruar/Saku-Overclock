@@ -1,9 +1,19 @@
-﻿namespace Saku_Overclock.Models;
+﻿using System.Text.Json.Serialization;
 
-public class PresetLargeOption<T>(bool[] isEnabled, T value)
+namespace Saku_Overclock.Models;
+
+public class PresetLargeOption<T>
 {
-    public bool[] IsEnabled { get; set; } = isEnabled;
-    public T Value { get; set; } = value;
+    public bool[] IsEnabled { get; set; } = null!;
+    public T Value { get; set; } = default!;
 
+    [JsonConstructor]
+    public PresetLargeOption() { }
+
+    public PresetLargeOption(bool[] isEnabled, T value)
+    {
+        IsEnabled = isEnabled;
+        Value = value;
+    }
     public PresetLargeOption(T value) : this([], value) { }
 }

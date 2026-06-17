@@ -43,18 +43,12 @@ public class NavigationService(IPageService pageService) : INavigationService
 
     private void RegisterFrameEvents()
     {
-        if (_frame != null)
-        {
-            _frame.Navigated += OnNavigated;
-        }
+        if (_frame != null) _frame.Navigated += OnNavigated;
     }
 
     private void UnregisterFrameEvents()
     {
-        if (_frame != null)
-        {
-            _frame.Navigated -= OnNavigated;
-        }
+        if (_frame != null) _frame.Navigated -= OnNavigated;
     }
 
     public bool GoBack()
@@ -63,10 +57,7 @@ public class NavigationService(IPageService pageService) : INavigationService
         {
             var vmBeforeNavigation = _frame.GetPageViewModel();
             _frame.GoBack();
-            if (vmBeforeNavigation is INavigationAware navigationAware)
-            {
-                navigationAware.OnNavigatedFrom();
-            }
+            if (vmBeforeNavigation is INavigationAware navigationAware) navigationAware.OnNavigatedFrom();
 
             return true;
         }
@@ -87,29 +78,17 @@ public class NavigationService(IPageService pageService) : INavigationService
             if (navigated)
             {
                 _lastParameterUsed = parameter;
-                if (vmBeforeNavigation is INavigationAware navigationAware)
-                {
-                    navigationAware.OnNavigatedFrom();
-                }
+                if (vmBeforeNavigation is INavigationAware navigationAware) navigationAware.OnNavigatedFrom();
             }
         }
     }
 
     public void ReloadPage(string from)
     {
-        if (from.Contains("Shell"))
-        {
-            return;
-        }
+        if (from.Contains("Shell")) return;
 
-        if (!from.Contains("Главная"))
-        {
-            NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-        }
-        else
-        {
-            NavigateTo(typeof(SettingsViewModel).FullName!, null, true);
-        }
+        NavigateTo(!from.Contains("Главная") ? typeof(ГлавнаяViewModel).FullName! : typeof(SettingsViewModel).FullName!,
+            null, true);
 
         NavigateTo(from, null, true);
     }
@@ -119,15 +98,10 @@ public class NavigationService(IPageService pageService) : INavigationService
         if (sender is Frame frame)
         {
             var clearNavigation = (bool)frame.Tag;
-            if (clearNavigation)
-            {
-                frame.BackStack.Clear();
-            }
+            if (clearNavigation) frame.BackStack.Clear();
 
             if (frame.GetPageViewModel() is INavigationAware navigationAware)
-            {
                 navigationAware.OnNavigatedTo(e.Parameter);
-            }
 
             Navigated?.Invoke(sender, e);
         }

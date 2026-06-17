@@ -35,16 +35,16 @@ public class NavigationViewService(INavigationService navigationService, IPageSe
     public NavigationViewItem? GetSelectedItem(Type pageType)
     {
         if (_navigationView != null)
-        {
             return GetSelectedItem(_navigationView.MenuItems, pageType) ??
                    GetSelectedItem(_navigationView.FooterMenuItems, pageType);
-        }
 
         return null;
     }
 
-    private void OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args) =>
+    private void OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+    {
         navigationService.GoBack();
+    }
 
     private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
@@ -57,9 +57,7 @@ public class NavigationViewService(INavigationService navigationService, IPageSe
             var selectedItem = args.InvokedItemContainer as NavigationViewItem;
 
             if (selectedItem?.GetValue(NavigationHelper.NavigateToProperty) is string pageKey)
-            {
                 navigationService.NavigateTo(pageKey);
-            }
         }
     }
 
@@ -67,16 +65,10 @@ public class NavigationViewService(INavigationService navigationService, IPageSe
     {
         foreach (var item in menuItems.OfType<NavigationViewItem>())
         {
-            if (IsMenuItemForPageType(item, pageType))
-            {
-                return item;
-            }
+            if (IsMenuItemForPageType(item, pageType)) return item;
 
             var selectedChild = GetSelectedItem(item.MenuItems, pageType);
-            if (selectedChild != null)
-            {
-                return selectedChild;
-            }
+            if (selectedChild != null) return selectedChild;
         }
 
         return null;
@@ -85,9 +77,7 @@ public class NavigationViewService(INavigationService navigationService, IPageSe
     private bool IsMenuItemForPageType(NavigationViewItem menuItem, Type sourcePageType)
     {
         if (menuItem.GetValue(NavigationHelper.NavigateToProperty) is string pageKey)
-        {
             return pageService.GetPageType(pageKey) == sourcePageType;
-        }
 
         return false;
     }
