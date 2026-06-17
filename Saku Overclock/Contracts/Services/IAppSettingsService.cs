@@ -187,6 +187,4 @@ public interface IAppSettingsService
         get;
         set;
     }
-
-    // Настройки управления кулером
 }

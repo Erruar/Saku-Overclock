@@ -37,7 +37,7 @@ public class FileService : IFileService
         {
             File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
         }
-        catch (Exception e)
+        catch
         {
             // Невозможно сохранить файл
         }

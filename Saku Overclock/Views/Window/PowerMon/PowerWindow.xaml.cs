@@ -2,17 +2,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
 using Saku_Overclock.SmuEngine;
 
 namespace Saku_Overclock.Views.Window.PowerMon;
 
 internal partial class PowerWindow : IDisposable
 {
-    private Powercfg? _notes;
+    private static readonly IPowerMonSettingsService SettingsService = App.GetService<IPowerMonSettingsService>();
     private ObservableCollection<PowerMonitorItem>? _powerGridItems;
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private bool _isInitialized;
@@ -59,7 +57,7 @@ internal partial class PowerWindow : IDisposable
         try
         {
             // Быстрая загрузка заметок
-            NoteLoad();
+            SettingsService.LoadSettings();
 
             // Получаем данные
             _rawData = _dataProvider?.GetPowerTable();
@@ -105,9 +103,9 @@ internal partial class PowerWindow : IDisposable
             for (var i = startIndex; i < endIndex; i++)
             {
                 // Убеждаемся что у нас есть заметка
-                while (_notes?.Notelist.Count <= i)
+                while (SettingsService?.Notelist.Count <= i)
                 {
-                    _notes?.Notelist.Add(" ");
+                    SettingsService.Notelist.Add(" ");
                 }
 
                 var item = new PowerMonitorItem
@@ -115,7 +113,7 @@ internal partial class PowerWindow : IDisposable
                     Index = $"{i:D4}",
                     Offset = $"0x{i * 4:X4}",
                     Value = $"{_rawData[i]:F6}",
-                    Note = _notes?.Notelist[i] ?? " ",
+                    Note = SettingsService?.Notelist[i] ?? " ",
                     RealIndex = i // Сохраняем реальный индекс
                 };
 
@@ -137,55 +135,6 @@ internal partial class PowerWindow : IDisposable
         NextPageButton.IsEnabled = _currentPage < totalPages - 1;
     }
 
-    #region JSON containers
-
-    private void NoteSave()
-    {
-        if (_notes == null)
-        {
-            return;
-        }
-
-        try
-        {
-            var basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock",
-                "PowerMon");
-            Directory.CreateDirectory(basePath);
-
-            var filePath = Path.Combine(basePath, "powercfg.json");
-            File.WriteAllText(filePath, JsonConvert.SerializeObject(_notes, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void NoteLoad()
-    {
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock",
-            "PowerMon", "powercfg.json");
-
-        if (File.Exists(filePath))
-        {
-            try
-            {
-                _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(filePath));
-            }
-            catch
-            {
-                _notes = new Powercfg();
-            }
-        }
-        else
-        {
-            _notes = new Powercfg();
-        }
-
-        _notes ??= new Powercfg();
-    }
-
-    #endregion
 
     #region Event Handlers
 
@@ -200,7 +149,6 @@ internal partial class PowerWindow : IDisposable
         _powerCfgTimer.Stop();
         _powerGridItems?.Clear();
         _powerGridItems = null;
-        _notes = null;
         _rawData = null;
         PowerGridView.ItemsSource = null;
 
@@ -359,17 +307,22 @@ internal partial class PowerWindow : IDisposable
 
     private sealed partial class PowerMonitorItem : INotifyPropertyChanged
     {
+        // ReSharper disable once ReplaceWithFieldKeyword
         private string? _value;
+        
+        // ReSharper disable once ReplaceWithFieldKeyword
         private string? _note;
 
         public string? Index
         {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             get;
             set;
         }
 
         public string? Offset
         {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             get;
             set;
         }
@@ -377,7 +330,7 @@ internal partial class PowerWindow : IDisposable
         public int RealIndex
         {
             get;
-            set;
+            init;
         } // Реальный индекс в массиве
 
         public string? Value
@@ -445,12 +398,12 @@ internal partial class PowerWindow : IDisposable
                 }
 
                 // Сохраняем заметки если изменились
-                if (item.Note != _notes?.Notelist[realIndex]
-                    && _notes != null && realIndex < _notes.Notelist.Count)
+                if (item.Note != SettingsService.Notelist[realIndex]
+                    && realIndex < SettingsService.Notelist.Count)
                 {
-                    _notes.Notelist[realIndex] = item.Note ?? " ";
+                    SettingsService.Notelist[realIndex] = item.Note ?? " ";
                     // Отложенное сохранение
-                    Task.Run(NoteSave);
+                    Task.Run(SettingsService.SaveSettings).Wait();
                 }
             }
         }

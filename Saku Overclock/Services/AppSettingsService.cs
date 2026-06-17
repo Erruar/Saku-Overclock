@@ -139,8 +139,6 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = true;
 
-    // Настройки управления кулером
-
     public void LoadSettings()
     {
         try

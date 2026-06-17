@@ -16,11 +16,6 @@ public interface IBackgroundDataUpdater
     void Stop();
 
     /// <summary>
-    ///     Обновить состояние TrayMon иконок
-    /// </summary>
-    void UpdateTrayMonIcons();
-
-    /// <summary>
     ///     Событие, возвращающее полученные данные с сенсоров устройства
     /// </summary>
     event EventHandler<SensorsInformation> DataUpdated;

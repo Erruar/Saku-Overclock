@@ -1,13 +1,5 @@
 ﻿namespace Saku_Overclock.Models;
 
-internal class NiIconsSettings
-{
-    /// <summary>
-    ///     Полностью пустая коллекция (нет ни одного элемента)
-    /// </summary>
-    public readonly List<NiIconsElements> Elements = [];
-}
-
 public class NiIconsElements
 {
     public string Name = "New Element";

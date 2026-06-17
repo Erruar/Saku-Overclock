@@ -80,6 +80,8 @@ public partial class App
                     services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
                     services.AddSingleton<IAppSettingsService, AppSettingsService>();
                     services.AddSingleton<IPresetManagerService, PresetManagerService>();
+                    services.AddSingleton<IPowerMonSettingsService, PowerMonSettingsService>();
+                    services.AddSingleton<INotifyIconsService, NotifyIconsService>();
                     services.AddSingleton<IUpdateCheckerService, UpdateCheckerService>();
                     services.AddSingleton<INotesWriterService, NotesWriterService>();
                     services.AddSingleton<IApplyerService, ApplyerService>();

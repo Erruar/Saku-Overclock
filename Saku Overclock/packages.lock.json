@@ -94,12 +94,6 @@
           "Microsoft.WindowsAppSDK.WinUI": "[1.8.260224000]"
         }
       },
-      "Newtonsoft.Json": {
-        "type": "Direct",
-        "requested": "[13.0.4, )",
-        "resolved": "13.0.4",
-        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
-      },
       "Octokit": {
         "type": "Direct",
         "requested": "[14.0.0, )",
@@ -627,10 +621,7 @@
         }
       },
       "saku overclock.core": {
-        "type": "Project",
-        "dependencies": {
-          "Newtonsoft.Json": "[13.0.2, )"
-        }
+        "type": "Project"
       },
       "zenstates-core": {
         "type": "Project",
