@@ -1,7 +1,5 @@
-/Saku Overclock/bin/
-/Saku Overclock/obj/
-/Saku Overclock.Core/bin/
-/Saku Overclock.Core/obj/
+[Bb]in/
+[Oo]bj/
 /packages/
 /.vs/
 /.github/

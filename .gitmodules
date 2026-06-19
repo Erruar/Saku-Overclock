@@ -7,3 +7,7 @@
 [submodule "Saku Overclock.CrashHandler"]
 	path = Saku Overclock.CrashHandler
 	url = https://github.com/Erruar/Saku-Overclock.CrashHandler
+[submodule "ZenStates.Core"]
+	path = ZenStates.Core
+	url = https://github.com/irusanov/ZenStates-Core
+	branch = dev
