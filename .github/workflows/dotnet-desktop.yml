@@ -1,0 +1,61 @@
+name: Saku Overclock CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-package:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive # Рекурсивно выкачиваем все подмодули (Shared, CrashHandler, Core, ZenStates.Core)
+
+    - name: Setup .NET 10 SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Setup MSBuild Tooling
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore NuGet Packages
+      run: dotnet restore "Saku Overclock.sln"
+
+    - name: Create Temporary Self-Signed Certificate for Package Signing
+      shell: powershell
+      run: |
+        # Генерируем временный сертификат прямо в хранилище раннера
+        $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=Sakura" -KeyUsage DigitalSignature -FriendlyName "Saku Temporary CI Key" -CertStoreLocation "Cert:\CurrentUser\My"
+        $password = ConvertTo-SecureString "SakuPassword123" -AsPlainText -Force
+        Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\CI_SigningCert.pfx" -Password $password
+        
+        # Принудительно пишем в UTF-8, чтобы GitHub Actions успешно импортировал переменную окружения
+        "MSIX_CERT_PATH=${{ github.workspace }}\CI_SigningCert.pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+    - name: Compile and Package MSIX (Release x64)
+      shell: powershell
+      run: |
+        msbuild "Saku Overclock\Saku Overclock.csproj" `
+          /p:Configuration=Release `
+          /p:Platform=x64 `
+          /p:EnableMsixTooling=true `
+          /p:AppxPackageSigningEnabled=true `
+          /p:PackageCertificateKeyFile="$env:MSIX_CERT_PATH" `
+          /p:PackageCertificatePassword="SakuPassword123" `
+          /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\" `
+          /p:AppxBundle=Never
+
+    - name: Upload Finished MSIX Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Saku-Overclock-MSIX-Package
+        path: BuildArtifacts\**\*.msix
+        if-no-files-found: error
+        
