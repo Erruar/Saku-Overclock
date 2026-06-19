@@ -1,3 +1,6 @@
 [submodule "Saku Overclock.Shared"]
 	path = Saku Overclock.Shared
 	url = https://github.com/Erruar/Saku-Overclock.Shared
+[submodule "Saku Overclock.Core"]
+	path = Saku Overclock.Core
+	url = https://github.com/Erruar/Saku-Overclock.Core
