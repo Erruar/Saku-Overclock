@@ -4,3 +4,6 @@
 [submodule "Saku Overclock.Core"]
 	path = Saku Overclock.Core
 	url = https://github.com/Erruar/Saku-Overclock.Core
+[submodule "Saku Overclock.CrashHandler"]
+	path = Saku Overclock.CrashHandler
+	url = https://github.com/Erruar/Saku-Overclock.CrashHandler
