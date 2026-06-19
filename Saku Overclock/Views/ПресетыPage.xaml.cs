@@ -1,4 +1,4 @@
-﻿﻿using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
 using Windows.Foundation.Metadata;
 using Windows.UI.Text;
@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
-using Saku_Overclock.Services;
+using Saku_Overclock.Shared;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using static Saku_Overclock.Styles.BandCrowdToggle;
@@ -327,7 +327,7 @@ public sealed partial class ПресетыPage
 
     #region Function Helpers
 
-    private static bool IsRavenFamily() => Cpu.GetCodenameGeneration() == CpuService.CodenameGeneration.Fp5;
+    private static bool IsRavenFamily() => Cpu.GetCodenameGeneration() == CodenameGeneration.Fp5;
 
     private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
     {
@@ -915,7 +915,7 @@ public sealed partial class ПресетыPage
 
     #region Preset Settings Events
 
-    private void PresetsControl_SelectionChanged(object sender, SelectionChangedEventArgs? e)
+    private void PresetsControl_SelectionChanged(object sender, PresetSelectorChangedEventArgs? e)
     {
         try
         {

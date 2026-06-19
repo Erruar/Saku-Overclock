@@ -3,12 +3,12 @@ using System.Text;
 
 namespace Saku_Overclock.Wrappers;
 
-internal static class NvApi
+internal static partial class NvApi
 {
-    public const int MAX_GPU_UTILIZATIONS = 8;
-    public const int MAX_PHYSICAL_GPUS = 64;
-    public const int MAX_THERMAL_SENSORS_PER_GPU = 3;
-    public const int MAX_GPU_PUBLIC_CLOCKS = 32;
+    public const int MaxGpuUtilization = 8;
+    public const int MaxPhysicalGpus = 64;
+    public const int MaxThermalSensorsPerGpu = 3;
+    public const int MaxGpuPublicClocks = 32;
     private const int ShortStringMax = 64;
 
     private const string DllName = "nvapi.dll";
@@ -102,10 +102,14 @@ internal static class NvApi
     [DllImport(DllName64, EntryPoint = "nvapi_QueryInterface", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr NvAPI64_QueryInterface(uint interfaceId);
 
-    private static T? GetDelegate<T>(uint id) where T : class
+    private static T? GetDelegate<T>(uint id) where T : Delegate
     {
         var ptr = Environment.Is64BitProcess ? NvAPI64_QueryInterface(id) : NvAPI32_QueryInterface(id);
-        return ptr != IntPtr.Zero ? Marshal.GetDelegateForFunctionPointer(ptr, typeof(T)) as T : null;
+        
+        if (ptr == IntPtr.Zero) 
+            return null;
+
+        return Marshal.GetDelegateForFunctionPointer<T>(ptr);
     }
 
     public static NvStatus NvAPI_GPU_GetFullName(NvPhysicalGpuHandle gpuHandle, out string name)
@@ -197,7 +201,7 @@ internal static class NvApi
         public uint Version;
         public uint Count;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_THERMAL_SENSORS_PER_GPU)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxThermalSensorsPerGpu)]
         public NvSensor[] Sensor;
     }
 
@@ -217,7 +221,7 @@ internal static class NvApi
         public uint Version;
         private readonly uint _reserved;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_GPU_PUBLIC_CLOCKS)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxGpuPublicClocks)]
         public NvGpuClockFrequenciesDomain[] Clocks;
     }
 
@@ -236,7 +240,7 @@ internal static class NvApi
         public uint Version;
         public uint Flags;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_GPU_UTILIZATIONS)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxGpuUtilization)]
         public NvDynamicPState[] Utilizations;
     }
 

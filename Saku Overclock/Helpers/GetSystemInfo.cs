@@ -4,10 +4,9 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using Microsoft.Win32;
-using Saku_Overclock.Helpers;
-using static Saku_Overclock.Services.CpuService;
+using Saku_Overclock.Shared;
 
-namespace Saku_Overclock.SmuEngine;
+namespace Saku_Overclock.Helpers;
 
 internal class GetSystemInfo
 {

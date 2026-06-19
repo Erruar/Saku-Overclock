@@ -1,3 +1,5 @@
+using Saku_Overclock.Shared;
+
 namespace Saku_Overclock.Models;
 
 public class MailboxListItem(string label, SmuAddressSet addressSet)

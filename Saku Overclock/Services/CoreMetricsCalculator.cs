@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Models;
+using Saku_Overclock.Shared;
 
 namespace Saku_Overclock.Services;
 
@@ -45,9 +46,9 @@ public class CoreMetricsCalculator
         _indexResolver = indexResolver;
 
         var codenameGen = cpu.GetCodenameGeneration();
-        if (codenameGen == CpuService.CodenameGeneration.Fp5) _isRavenFamily = true;
+        if (codenameGen == CodenameGeneration.Fp5) _isRavenFamily = true;
 
-        if (codenameGen == CpuService.CodenameGeneration.Fp7) _isHawkPointFamily = true;
+        if (codenameGen == CodenameGeneration.Fp7) _isHawkPointFamily = true;
     }
 
     /// <summary>

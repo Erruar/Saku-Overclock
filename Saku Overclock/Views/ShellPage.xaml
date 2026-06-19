@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helpers="using:Saku_Overclock.Helpers"
-    xmlns:local="using:Saku_Overclock.ViewModels"
     Loaded="OnLoaded">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
@@ -187,14 +186,8 @@
                                            VerticalAlignment="Center"
                                            FontSize="8"
                                            FontWeight="Bold"
-                                           Foreground="{ThemeResource DefaultFGColorAccentBrush}">
-                                    <TextBlock.Text>
-                                        <Binding Path="Version" />
-                                    </TextBlock.Text>
-                                    <TextBlock.DataContext>
-                                        <local:ГлавнаяViewModel/>
-                                    </TextBlock.DataContext>
-                                </TextBlock>
+                                           Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                           Text="{x:Bind VersionViewModel.Version, Mode=OneWay}" />
                             </StackPanel>
                         </StackPanel>
                     </Button>

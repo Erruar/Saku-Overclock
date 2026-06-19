@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
 
 namespace Saku_Overclock.Services;

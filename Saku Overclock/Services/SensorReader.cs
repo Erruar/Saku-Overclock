@@ -1,5 +1,6 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Shared;
 
 namespace Saku_Overclock.Services;
 
@@ -193,7 +194,7 @@ public class SensorReader : ISensorReader
         var codenameGen = _cpu.GetCodenameGeneration();
 
         // Zen fallback
-        if (tableVersion == 0 && codenameGen == CpuService.CodenameGeneration.Am4V1)
+        if (tableVersion == 0 && codenameGen == CodenameGeneration.Am4V1)
         {
             tableVersion = 0x00190001;
         }
@@ -204,7 +205,7 @@ public class SensorReader : ISensorReader
             tableVersion = 0x00380805;
         }
 
-        if (codenameGen == CpuService.CodenameGeneration.Am5)
+        if (codenameGen == CodenameGeneration.Am5)
         {
             var baseRevision = (tableVersion >> 16) & 0xFFFF;
             if (baseRevision == 0x54 

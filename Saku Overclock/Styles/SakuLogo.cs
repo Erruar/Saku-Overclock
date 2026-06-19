@@ -57,7 +57,7 @@ namespace AnimatedVisuals
     // Frame rate:  60 fps
     // Frame count: 224
     // Duration:    3733.3 mS
-    sealed class SakuLogo
+    sealed partial class SakuLogo
         : Microsoft.UI.Xaml.Controls.IAnimatedVisualSource
         , Microsoft.UI.Xaml.Controls.IAnimatedVisualSource2
     {
@@ -130,7 +130,7 @@ namespace AnimatedVisuals
         {
         }
 
-        sealed class SakuLogo_AnimatedVisual
+        sealed partial class SakuLogo_AnimatedVisual
             : Microsoft.UI.Xaml.Controls.IAnimatedVisual
             , Microsoft.UI.Xaml.Controls.IAnimatedVisual2
         {

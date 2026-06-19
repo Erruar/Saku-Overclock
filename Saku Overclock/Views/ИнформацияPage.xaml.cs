@@ -8,12 +8,11 @@ using Microsoft.UI.Xaml.Shapes;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
-using Saku_Overclock.SmuEngine;
 using Saku_Overclock.Wrappers;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
-using static Saku_Overclock.Services.CpuService;
+using Saku_Overclock.Shared;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 

@@ -1,48 +1,46 @@
-﻿using System.Reflection;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Saku_Overclock.Helpers;
 using Windows.ApplicationModel; 
 
 namespace Saku_Overclock.ViewModels;
 
-#pragma warning disable CS0162 // Unreachable code detected
-
 public partial class ГлавнаяViewModel : ObservableRecipient
 {
-    private static readonly string Versioning = SettingsViewModel.VersionId == 0 
-        // ReSharper disable once HeuristicUnreachableCode
-        ? $"CC-{Assembly.GetExecutingAssembly().GetName().Version.Revision}"
-        : $"v{Assembly.GetExecutingAssembly().GetName().Version!.Major}.{Assembly.GetExecutingAssembly().GetName().Version!.Minor}";
+    private static string? _versioning;
+    private static string Versioning => _versioning ??= GetSafeVersioning();
 
-    public string VersionDescription
-    {
-        get;
-    } = GetVersionDescription();
-
+    public string VersionDescription => GetVersionDescription();
     public string Version => Versioning;
 
-    private static string GetVersionDescription()
+    private static Version GetSafeAssemblyVersion()
     {
-        Version version;
-
         if (RuntimeHelper.IsMsix)
         {
             var packageVersion = Package.Current.Id.Version;
-            version = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            return new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
-        else
-        {
-            version = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1,0,1,0);
-        }
+        
+        return typeof(ГлавнаяViewModel).Assembly.GetName().Version ?? new Version(1, 0, 0, 0);
+    }
+
+    private static string GetSafeVersioning()
+    {
+        var version = GetSafeAssemblyVersion();
+        
+        return SettingsViewModel.VersionId == 0 
+            // ReSharper disable once HeuristicUnreachableCode
+#pragma warning disable CS0162 // Unreachable code detected
+            ? $"CC-{version.Revision}"
+#pragma warning restore CS0162 // Unreachable code detected
+            : $"v{version.Major}.{version.Minor}";
+    }
+
+    private static string GetVersionDescription()
+    {
+        var version = GetSafeAssemblyVersion();
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
 
-    public static string GetPublicVersionDescription()
-    {
-        return GetVersionDescription();
-    }
-    public static string GetVersion()
-    {
-        return Versioning;
-    }
+    public static string GetPublicVersionDescription() => GetVersionDescription();
+    public static string GetVersion() => Versioning;
 }

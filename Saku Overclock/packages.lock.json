@@ -102,13 +102,13 @@
       },
       "ScottPlot.WinUI": {
         "type": "Direct",
-        "requested": "[5.1.57, )",
-        "resolved": "5.1.57",
-        "contentHash": "p36i4uqnBtbxhHhowlbrPayo5L+fBFNp4jLTmru8RnXyUqa1FaQVYfC0GZ8nJcA0T6BtBoeONtlTtWzQFgefqQ==",
+        "requested": "[5.1.58, )",
+        "resolved": "5.1.58",
+        "contentHash": "9d7e5OIX8UDBQHwH/l4803427o4P9AepM4CWblR2s8SE+auTGEzAsGW9ifiynKqR/OmDgcaNbl17W1LGlBTjKw==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
           "Microsoft.WindowsAppSDK": "1.5.240802000",
-          "ScottPlot": "5.1.57",
+          "ScottPlot": "5.1.58",
           "SkiaSharp.Views.WinUI": "3.119.0"
         }
       },
@@ -538,8 +538,8 @@
       },
       "ScottPlot": {
         "type": "Transitive",
-        "resolved": "5.1.57",
-        "contentHash": "x/4nH1T6ILZyVhCsJDd3GYE3DW4xnXk1q1KOHDBOXld8+BooNtjUlE3wPI6Un82/VYQ2h1J6E4wGC8GdN62B+w==",
+        "resolved": "5.1.58",
+        "contentHash": "prikNmFbV+z2ruXYmE06yYlnHQfuYzhPrrj30SvcUkRXfdiC07A+2LBSYhuSMaRFCHvgRKo6gXjfwHzhOW8ASg==",
         "dependencies": {
           "HarfBuzzSharp.NativeAssets.Linux": "8.3.1.1",
           "SkiaSharp": "3.119.0",
@@ -612,23 +612,8 @@
         "resolved": "9.0.0",
         "contentHash": "hyJB4UlpAi19Xr9AXzu2NuagKC4lPfHObNMEAA0HmqFz2rX7wKgzeYzO/jM/eBHDhnUGFFEjk5cOoJaxqg5J4A=="
       },
-      "System.ServiceProcess.ServiceController": {
-        "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "qMBvG8ZFbkXoe0Z5/D7FAAadfPkH2v7vSuh2xsLf3U6jNoejpIdeV18A0htiASsLK1CCAc/p59kaLXlt2yB1gw==",
-        "dependencies": {
-          "System.Diagnostics.EventLog": "6.0.0"
-        }
-      },
-      "saku overclock.core": {
+      "saku overclock.shared": {
         "type": "Project"
-      },
-      "zenstates-core": {
-        "type": "Project",
-        "dependencies": {
-          "System.Management": "[6.0.0, )",
-          "System.ServiceProcess.ServiceController": "[6.0.0, )"
-        }
       }
     },
     "net10.0-windows10.0.19041/win-x64": {
@@ -698,14 +683,6 @@
         "type": "Transitive",
         "resolved": "9.0.10",
         "contentHash": "Jc+az1pTMujPLDn2j5eqSfzlO7j/T1K/LB7THxdfRWOxujE4zaitUqBs7sv1t6/xmmvpU6Xx3IofCs4owYH0yQ=="
-      },
-      "System.ServiceProcess.ServiceController": {
-        "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "qMBvG8ZFbkXoe0Z5/D7FAAadfPkH2v7vSuh2xsLf3U6jNoejpIdeV18A0htiASsLK1CCAc/p59kaLXlt2yB1gw==",
-        "dependencies": {
-          "System.Diagnostics.EventLog": "6.0.0"
-        }
       }
     }
   }

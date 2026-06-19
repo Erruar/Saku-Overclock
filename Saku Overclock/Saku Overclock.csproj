@@ -44,6 +44,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <TrimmerRootAssembly Include="Octokit" />
+    <TrimmerRootAssembly Include="ScottPlot" />
+    <TrimmerRootAssembly Include="ScottPlot.WinUI" />
+    <TrimmerRootAssembly Include="SkiaSharp" />
+    <TrimmerRootAssembly Include="Microsoft.Win32.TaskScheduler" />
+    <TrimmerRootAssembly Include="System.Management" />
+    <TrimmerRootAssembly Include="WinUIEx" />
+    <TrimmerRootAssembly Include="Microsoft.WinUI" />
+    <TrimmerRootAssembly Include="Microsoft.InteractiveExperiences.Projection" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <EmbeddedResource Include="Assets\PawnIO\PawnIO_setup.exe" />
   </ItemGroup>
 
@@ -56,15 +68,14 @@
     <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
     <PackageReference Include="Octokit" Version="14.0.0" />
-    <PackageReference Include="ScottPlot.WinUI" Version="5.1.57" />
+    <PackageReference Include="ScottPlot.WinUI" Version="5.1.58" />
     <PackageReference Include="System.Management" Version="9.0.10" />
     <PackageReference Include="TaskScheduler" Version="2.12.2" />
     <PackageReference Include="WinUIEx" Version="2.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Saku Overclock.Core\Saku Overclock.Core.csproj" />
-    <ProjectReference Include="..\ZenStates.Core.Dev\ZenStates-Core.csproj" />
+    <Reference Include="Microsoft.Web.WebView2.Core.Projection">
+      <HintPath>$(NugetPackageRoot)microsoft.web.webview2\1.0.3179.45\lib_manual\net8.0-windows10.0.17763.0\Microsoft.Web.WebView2.Core.Projection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -150,6 +161,10 @@
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Saku Overclock.Shared\Saku Overclock.Shared\Saku Overclock.Shared.csproj" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

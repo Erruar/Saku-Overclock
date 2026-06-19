@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.Core.Contracts.Services;
+﻿namespace Saku_Overclock.Contracts.Services;
 
 public interface IFileService
 {

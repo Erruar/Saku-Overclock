@@ -1,12 +1,5 @@
 ﻿using System.Reflection;
-using System.Windows.Input;
-
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-using Microsoft.UI.Xaml;
-
-using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 
 using Windows.ApplicationModel;

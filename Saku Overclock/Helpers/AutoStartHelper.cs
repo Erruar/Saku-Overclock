@@ -78,9 +78,7 @@ internal abstract class AutoStartHelper
     /// <returns>Полный путь к Saku Overclock.exe</returns>
     private static string GetExecutablePath()
     {
-        var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-        var programDirectory = Path.GetDirectoryName(assemblyLocation);
-        return Path.Combine(programDirectory!, "Saku Overclock.exe");
+        return Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "SakuOverclock.exe");
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,8 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Saku_Overclock.Activation;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Core.Contracts.Services;
-using Saku_Overclock.Core.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Services;
@@ -56,6 +55,7 @@ public partial class App
 
     public App()
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
         InitializeComponent();
 
         CheckForSecondInstance();

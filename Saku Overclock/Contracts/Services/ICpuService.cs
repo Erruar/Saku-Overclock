@@ -1,4 +1,4 @@
-﻿using Saku_Overclock.Models;
+﻿using Saku_Overclock.Shared;
 using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.Contracts.Services;

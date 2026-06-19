@@ -1,4 +1,3 @@
-[submodule "ZenStates.Core.Dev"]
-	path = ZenStates.Core.Dev
-	url = https://github.com/irusanov/ZenStates-Core
-	branch = dev
+[submodule "Saku Overclock.Shared"]
+	path = Saku Overclock.Shared
+	url = https://github.com/Erruar/Saku-Overclock.Shared

@@ -1,4 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Saku_Overclock.Helpers;
 
 namespace Saku_Overclock.Wrappers;
 
@@ -40,7 +40,7 @@ public sealed class NvidiaGpuMonitor
         }
 
         // Получаем GPU handles
-        var handles = new NvApi.NvPhysicalGpuHandle[NvApi.MAX_PHYSICAL_GPUS];
+        var handles = new NvApi.NvPhysicalGpuHandle[NvApi.MaxPhysicalGpus];
         var count = 0;
         if ((NvApi.NvApiEnumPhysicalGpUs != null &&
              NvApi.NvApiEnumPhysicalGpUs(handles, out count) != NvApi.NvStatus.Ok) || count == 0)
@@ -98,7 +98,7 @@ public sealed class NvidiaGpuMonitor
         var pStatesInfo = new NvApi.NvDynamicPStatesInfo
         {
             Version = (uint)NvApi.MAKE_NVAPI_VERSION<NvApi.NvDynamicPStatesInfo>(1),
-            Utilizations = new NvApi.NvDynamicPState[NvApi.MAX_GPU_UTILIZATIONS]
+            Utilizations = new NvApi.NvDynamicPState[NvApi.MaxGpuUtilization]
         };
 
         if (NvApi.NvApiGpuGetDynamicPstatesInfoEx != null &&
@@ -115,7 +115,7 @@ public sealed class NvidiaGpuMonitor
         var clockFreq = new NvApi.NvGpuClockFrequencies
         {
             Version = (uint)NvApi.MAKE_NVAPI_VERSION<NvApi.NvGpuClockFrequencies>(_clockVersion),
-            Clocks = new NvApi.NvGpuClockFrequenciesDomain[NvApi.MAX_GPU_PUBLIC_CLOCKS]
+            Clocks = new NvApi.NvGpuClockFrequenciesDomain[NvApi.MaxGpuPublicClocks]
         };
 
         if (NvApi.NvApiGpuGetAllClockFrequencies != null &&
@@ -138,8 +138,8 @@ public sealed class NvidiaGpuMonitor
         var thermalSettings = new NvApi.NvThermalSettings
         {
             Version = (uint)NvApi.MAKE_NVAPI_VERSION<NvApi.NvThermalSettings>(2),
-            Count = NvApi.MAX_THERMAL_SENSORS_PER_GPU,
-            Sensor = new NvApi.NvSensor[NvApi.MAX_THERMAL_SENSORS_PER_GPU]
+            Count = NvApi.MaxThermalSensorsPerGpu,
+            Sensor = new NvApi.NvSensor[NvApi.MaxThermalSensorsPerGpu]
         };
 
         if (NvApi.NvApiGpuGetThermalSettings != null &&
@@ -191,7 +191,7 @@ public sealed class NvidiaGpuMonitor
 
                 if (totalMemory == 0)
                 {
-                    totalMemory = SmuEngine.GetSystemInfo.GetGpuVramSize(data.GpuName);
+                    totalMemory = GetSystemInfo.GetGpuVramSize(data.GpuName);
                     Helpers.LogHelper.LogError("Using Vram Size fallback " + totalMemory);
                 }
 
@@ -224,7 +224,7 @@ public sealed class NvidiaGpuMonitor
 
         if (string.IsNullOrWhiteSpace(data.DriverVersion) || data.TotalMemory == 0) 
         {
-            var (memSize, driver) = SmuEngine.GetSystemInfo.GetRegistryGpuDriverInformation(data.GpuName, true);
+            var (memSize, driver) = GetSystemInfo.GetRegistryGpuDriverInformation(data.GpuName, true);
             if (string.IsNullOrWhiteSpace(data.DriverVersion))
             {
                 data.DriverVersion = driver;

@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -33,7 +35,7 @@ public sealed partial class PresetSelector : UserControl
         return -1;
     }
 
-    public event SelectionChangedEventHandler? SelectionChanged;
+    public event EventHandler<PresetSelectorChangedEventArgs>? SelectionChanged;
 
     private int _visibleCount = 3;
     private readonly ObservableCollection<ObservableCollection<PresetItem>> _pages = [];
@@ -55,19 +57,23 @@ public sealed partial class PresetSelector : UserControl
             element.Translation = new System.Numerics.Vector3(0, 0, 20);
             element.Margin = new Thickness(0, -5, 0, 0);
         }
+
         foreach (var item in Items)
         {
             if (item.IsSelected) SelectedItem = item;
-            if (item.Description == string.Empty)
+            
+            if (!item.Description.StartsWith(item.Text + "\n"))
             {
-                item.Description = item.Text;
-            }
-            else 
-            {
-                item.Description = item.Text + "\n" + item.Description;
+                if (item.Description == string.Empty || item.Description == item.Text)
+                {
+                    item.Description = item.Text;
+                }
+                else 
+                {
+                    item.Description = item.Text + "\n" + item.Description;
+                }
             }
         }
-        UpdateView();
     }
 
     private void PresetSelector_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -79,12 +85,16 @@ public sealed partial class PresetSelector : UserControl
     private void CalculateVisibleItems()
     {
         var containerWidth = ActualWidth + 2;
-        var itemWidth = 127;//ActualHeight + 5;
+        var itemWidth = 127;
 
-        _visibleCount = (int)(containerWidth / itemWidth);
-        if (_visibleCount < 1)
+        var newCount = (int)(containerWidth / itemWidth);
+        if (newCount < 1) newCount = 1;
+
+        // Вызываем тяжелый UpdateView ТОЛЬКО если реально изменилось количество колонок на странице
+        if (_visibleCount != newCount)
         {
-            _visibleCount = 1;
+            _visibleCount = newCount;
+            UpdateView();
         }
     }
 
@@ -102,48 +112,70 @@ public sealed partial class PresetSelector : UserControl
 
     private void ToggleButton_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is ToggleButton toggleButton && toggleButton.DataContext is PresetItem item)
+        if (sender is ToggleButton { DataContext: PresetItem item } toggleButton)
         {
-            if (toggleButton.IsChecked == false) { toggleButton.IsChecked = true; }
-            foreach (var preset in Items)
+            if (item.IsSelected) 
             {
-                preset.IsSelected = false;
+                toggleButton.IsChecked = true; 
             }
-
-            item.IsSelected = true;
-            SelectedItem = item;
-
-            SelectionChanged?.Invoke(this, new SelectionChangedEventArgs([], [item]));
-            foreach (var element in Helpers.VisualTreeHelper.FindVisualChildren<ToggleButton>(FlipViewContainer))
+            else
             {
-                if (element != toggleButton)
+                foreach (var preset in Items)
                 {
-                    if (element != null)
-                    {
-                        element.IsChecked = false;
-                    }
+                    preset.IsSelected = false;
                 }
+
+                item.IsSelected = true;
+                SelectedItem = item;
             }
+
+            SelectionChanged?.Invoke(this, new PresetSelectorChangedEventArgs(item));
         }
     }
 }
 
-public class PresetItem
+public class PresetSelectorChangedEventArgs(PresetItem addedItem) : EventArgs
 {
+    public PresetItem AddedItem { get; } = addedItem;
+}
+
+public class PresetItem : INotifyPropertyChanged
+{
+    private string _text = string.Empty;
+    private string _description = string.Empty;
+    private string _iconGlyph = "\uE783";
+    private bool _isSelected;
+
     public string Text
     {
-        get; set;
-    } = string.Empty;
+        get => _text;
+        set => SetProperty(ref _text, value);
+    }
+
     public string Description
     {
-        get; set;
-    } = string.Empty;
+        get => _description;
+        set => SetProperty(ref _description, value);
+    }
+
     public string IconGlyph
     {
-        get; set;
-    } = "\uE783";
+        get => _iconGlyph;
+        set => SetProperty(ref _iconGlyph, value);
+    }
+
     public bool IsSelected
     {
-        get; set;
+        get => _isSelected;
+        set => SetProperty(ref _isSelected, value);
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (Equals(storage, value)) return;
+        storage = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

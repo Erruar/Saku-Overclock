@@ -10,7 +10,7 @@ using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
-using static Saku_Overclock.Services.CpuService;
+using Saku_Overclock.Shared;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;

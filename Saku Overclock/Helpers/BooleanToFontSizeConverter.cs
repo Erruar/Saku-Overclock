@@ -1,5 +1,4 @@
-﻿using Windows.UI.Text;
-using Microsoft.UI.Xaml.Data;
+﻿using Microsoft.UI.Xaml.Data;
 
 namespace Saku_Overclock.Helpers;
 

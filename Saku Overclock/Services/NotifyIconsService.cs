@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using H.NotifyIcon;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Views;

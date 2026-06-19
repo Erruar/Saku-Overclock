@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 
 namespace Saku_Overclock.Styles;
-public sealed class CopyButton : Button
+public sealed partial class CopyButton : Button
 {
     public CopyButton()
     {

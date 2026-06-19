@@ -48,10 +48,15 @@ public sealed partial class ShellPage
     {
         get;
     }
+    public ГлавнаяViewModel VersionViewModel
+    {
+        get;
+    }
 
-    public ShellPage(ShellViewModel viewModel)
+    public ShellPage(ShellViewModel viewModel, ГлавнаяViewModel  versionViewModel)
     {
         ViewModel = viewModel;
+        VersionViewModel = versionViewModel;
         InitializeComponent();
         ViewModel.NavigationService.Frame = NavigationFrame; // Выбранная пользователем страница
         ViewModel.NavigationViewService.Initialize(NavigationViewControl); // Инициализировать выбор страниц
@@ -1083,8 +1088,9 @@ public sealed class BlurredBackgroundManager : IDisposable
         };
 
         var factory = _compositor.CreateEffectFactory(
-            blurEffect,
-            ["Blur.BlurAmount"]);
+            // ReSharper disable once UseCollectionExpression
+            // ReSharper disable once RedundantExplicitArrayCreation
+            blurEffect, new string[] { "Blur.BlurAmount" });
 
         _effectBrush = factory.CreateBrush();
 

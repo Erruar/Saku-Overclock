@@ -24,7 +24,7 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="local:PresetItem">
                                     <ToggleButton Padding="5" 
                                                   CornerRadius="28" 
                                                   Margin="6,0,6,5"
@@ -32,17 +32,17 @@
                                                   VerticalAlignment="Stretch"
                                                   Shadow="{ThemeResource SharedShadow}" 
                                                   Translation="0,0,20"
-                                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                  IsChecked="{x:Bind IsSelected, Mode=OneWay}"
                                                   Width="115"
                                                   Click="ToggleButton_Click"
-                                                  ToolTipService.ToolTip="{Binding Description}">
+                                                  ToolTipService.ToolTip="{x:Bind Description}">
                                         <StackPanel Orientation="Vertical"
                                                     Margin="-2,0"
                                                     HorizontalAlignment="Center">
-                                            <FontIcon Glyph="{Binding IconGlyph}"
+                                            <FontIcon Glyph="{x:Bind IconGlyph}"
                                                       FontSize="30"
                                                       HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Text}"
+                                            <TextBlock Text="{x:Bind Text}"
                                                        FontSize="11" Margin="0,0,0,-10"
                                                        TextWrapping="Wrap"
                                                        TextAlignment="Center"

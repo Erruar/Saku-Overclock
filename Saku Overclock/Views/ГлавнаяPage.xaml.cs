@@ -10,7 +10,6 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Services;
-using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using ScottPlot.TickGenerators;
 using Windows.UI.Text;
@@ -650,7 +649,7 @@ public sealed partial class ГлавнаяPage
                     var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(button);
                     foreach (var block in textBlocks)
                     {
-                        if (block.FontWeight == new FontWeight(700))
+                        if (block.FontWeight == new FontWeight(500))
                         {
                             name = block.Text;
                         }
@@ -670,11 +669,18 @@ public sealed partial class ГлавнаяPage
                     }
 
                     Preset? requiredPreset = null;
+                    var reqName = PresetManager.Presets[_selectedIndex].PresetName;
+                    if (reqName.Contains("Preset_")) { reqName = TryLocalize(reqName); }
                     if (_selectedIndex > -1 && _selectedIndex < PresetManager.Presets.Length &&
-                        name == PresetManager.Presets[_selectedIndex].PresetName)
+                        name == reqName)
                     {
+                        if (_lastAppliedPreset == _selectedIndex)
+                        {
+                            return;
+                        }
                         requiredPreset = PresetManager.Presets[_selectedIndex];
                         AppSettings.Preset = _selectedIndex;
+                        _lastAppliedPreset = _selectedIndex;
                     }
                     else
                     {

@@ -1,6 +1,6 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Models;
-using static Saku_Overclock.Services.CpuService;
+using Saku_Overclock.Shared;
 
 namespace Saku_Overclock.Services;
 

@@ -1,165 +1,142 @@
-using System.Text.Json.Serialization;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Models;
 
 namespace Saku_Overclock.Services;
 
-public class AppSettingsService : IAppSettingsService
+public class AppSettingsService(IFileService fileService) : IAppSettingsService
 {
     private const string FolderPath = "Saku Overclock/Settings";
     private const string FileName = "AppSettings.json";
 
-    private readonly string _applicationDataFolder = 
+    private readonly string _applicationDataFolder =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), FolderPath);
 
-    private readonly IFileService? _fileService;
-    
-    [JsonConstructor]
-    private AppSettingsService() { }
-
-    public AppSettingsService(IFileService fileService)
-    {
-        _fileService = fileService;
-    }
-    
-    // Настройки приложения
+    private AppSettings _settings = new();
 
     public bool FixedTitleBar
     {
-        get;
-        set;
-    } = false;
+        get => _settings.FixedTitleBar;
+        set => _settings.FixedTitleBar = value;
+    }
 
     public int AutostartType
     {
-        get;
-        set;
-    } = 0;
+        get => _settings.AutostartType;
+        set => _settings.AutostartType = value;
+    }
 
     public bool HideToTray
     {
-        get;
-        set;
-    } = true;
+        get => _settings.HideToTray;
+        set => _settings.HideToTray = value;
+    }
 
     public bool CheckForUpdates
     {
-        get;
-        set;
-    } = true;
+        get => _settings.CheckForUpdates;
+        set => _settings.CheckForUpdates = value;
+    }
 
     public bool HotkeysEnabled
     {
-        get;
-        set;
-    } = true;
+        get => _settings.HotkeysEnabled;
+        set => _settings.HotkeysEnabled = value;
+    }
 
     public bool ReapplyLatestSettingsOnAppLaunch
     {
-        get;
-        set;
-    } = true;
+        get => _settings.ReapplyLatestSettingsOnAppLaunch;
+        set => _settings.ReapplyLatestSettingsOnAppLaunch = value;
+    }
 
     public bool ReapplyOverclock
     {
-        get;
-        set;
-    } = true;
+        get => _settings.ReapplyOverclock;
+        set => _settings.ReapplyOverclock = value;
+    }
 
     public double ReapplyOverclockTimer
     {
-        get;
-        set;
-    } = 3.0;
+        get => _settings.ReapplyOverclockTimer;
+        set => _settings.ReapplyOverclockTimer = value;
+    }
 
     public int ThemeType
     {
-        get;
-        set;
-    } = 0;
+        get => _settings.ThemeType;
+        set => _settings.ThemeType = value;
+    }
 
     public bool NiIconsEnabled
     {
-        get;
-        set;
-    } = false;
+        get => _settings.NiIconsEnabled;
+        set => _settings.NiIconsEnabled = value;
+    }
 
     public bool RtssMetricsEnabled
     {
-        get;
-        set;
-    } = false;
+        get => _settings.RtssMetricsEnabled;
+        set => _settings.RtssMetricsEnabled = value;
+    }
 
     public int NiIconsType
     {
-        get;
-        set;
-    } = -1;
+        get => _settings.NiIconsType;
+        set => _settings.NiIconsType = value;
+    }
 
     public bool PresetsPageViewModeBeginner
     {
-        get;
-        set;
-    } = true;
+        get => _settings.PresetsPageViewModeBeginner;
+        set => _settings.PresetsPageViewModeBeginner = value;
+    }
 
     public int Preset
     {
-        get;
-        set;
-    } = 0;
-    
+        get => _settings.Preset;
+        set => _settings.Preset = value;
+    }
+
     public bool PremadePresetsAdded
     {
-        get;
-        set;
-    } = false;
-    
+        get => _settings.PremadePresetsAdded;
+        set => _settings.PremadePresetsAdded = value;
+    }
+
     public string AcPreset
     {
-        get;
-        set;
-    } = string.Empty;
-    
+        get => _settings.AcPreset;
+        set => _settings.AcPreset = value;
+    }
+
     public string BatteryPreset
     {
-        get;
-        set;
-    } = string.Empty;
+        get => _settings.BatteryPreset;
+        set => _settings.BatteryPreset = value;
+    }
 
     public string RyzenAdjLine
     {
-        get;
-        set;
-    } = string.Empty;
+        get => _settings.RyzenAdjLine;
+        set => _settings.RyzenAdjLine = value;
+    }
 
     public bool AppFirstRun
     {
-        get;
-        set;
-    } = true;
+        get => _settings.AppFirstRun;
+        set => _settings.AppFirstRun = value;
+    }
 
     public void LoadSettings()
     {
         try
         {
-            var settings = _fileService?.Read<AppSettingsService>(_applicationDataFolder, FileName);
+            var loaded = fileService.Read<AppSettings>(_applicationDataFolder, FileName);
 
-            if (settings == null)
+            if (loaded != null)
             {
-                return;
-            }
-
-            foreach (var prop in typeof(AppSettingsService).GetProperties())
-            {
-                if (prop is { CanRead: true, CanWrite: true })
-                {
-                    var value = prop.GetValue(settings);
-                    if (value != null)
-                    {
-                        prop.SetValue(this, value);
-                    }
-                }
+                _settings = loaded;
             }
         }
         catch (Exception ex)
@@ -168,5 +145,5 @@ public class AppSettingsService : IAppSettingsService
         }
     }
 
-    public void SaveSettings() => _fileService?.Save(_applicationDataFolder, FileName, this);
+    public void SaveSettings() => fileService.Save(_applicationDataFolder, FileName, _settings);
 }

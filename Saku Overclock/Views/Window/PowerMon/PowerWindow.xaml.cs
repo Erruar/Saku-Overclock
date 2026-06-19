@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.SmuEngine;
+using Garbage = Saku_Overclock.Helpers.Garbage;
 
 namespace Saku_Overclock.Views.Window.PowerMon;
 
