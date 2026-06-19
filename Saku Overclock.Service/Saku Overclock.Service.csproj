@@ -6,6 +6,8 @@
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Platforms>x64</Platforms>
+        <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
         <IsAotCompatible>true</IsAotCompatible>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
