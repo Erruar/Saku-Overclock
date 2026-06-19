@@ -14,16 +14,21 @@ namespace Saku_Overclock.Service;
 
 public static class Program
 {
-    private static async Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
-        var builder = Host.CreateApplicationBuilder(args);
+        // Используем CreateEmptyApplicationBuilder для исключения лишней рефлексии под Native AOT
+        var builder = Host.CreateEmptyApplicationBuilder(new HostApplicationBuilderSettings { Args = args });
 
-        builder.Services.AddWindowsService(options => { options.ServiceName = "SakuOverclockService"; });
+        // Важно: Имя должно ЖЕСТКО совпадать с Name="Saku_Overclock.Service" в Package.appxmanifest!
+        builder.Services.AddWindowsService(options =>
+        {
+            options.ServiceName = "Saku_Overclock.Service";
+        });
 
-// РЕГИСТРАЦИЯ DI ИЗ НАШЕГО ЯДРА (Core)
+        // РЕГИСТРАЦИЯ DI ИЗ ЯДРА (Core)
         builder.Services.AddSingleton<ICpuService, CpuService>();
-
-// Регистрируем сам воркер
+        
+        // Регистрация хостед-сервиса IPC канала
         builder.Services.AddHostedService<IpcNamedPipeWorker>();
 
         var host = builder.Build();

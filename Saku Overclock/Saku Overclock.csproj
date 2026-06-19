@@ -72,10 +72,6 @@
     <PackageReference Include="System.Management" Version="9.0.10" />
     <PackageReference Include="TaskScheduler" Version="2.12.2" />
     <PackageReference Include="WinUIEx" Version="2.9.0" />
-    <Reference Include="Microsoft.Web.WebView2.Core.Projection">
-      <HintPath>$(NugetPackageRoot)microsoft.web.webview2\1.0.3179.45\lib_manual\net8.0-windows10.0.17763.0\Microsoft.Web.WebView2.Core.Projection.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -136,15 +132,6 @@
     <None Update="Assets\Themes\ZqjqlOs.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="CrashHandler.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="CrashHandler.exe.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="CrashHandler.pdb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="inpoutx64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -178,4 +165,82 @@
   <PropertyGroup>
     <NoWarn>$(NoWarn);MSB3277;CS0612</NoWarn>
   </PropertyGroup>
+  <Target Name="CompileSubProjects" BeforeTargets="GetCopyToOutputDirectoryItems;AssignTargetPaths;BeforeBuild">
+    <MSBuild Projects="..\Saku Overclock.CrashHandler\CrashHandler\CrashHandler.csproj"
+             Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+
+    <MSBuild Projects="..\Saku Overclock.Service\Saku Overclock.Service.csproj"
+             Properties="Configuration=Debug;RuntimeIdentifier=win-x64"
+             Condition="'$(Configuration)' == 'Debug'" />
+
+    <MSBuild Projects="..\Saku Overclock.Service\Saku Overclock.Service.csproj"
+             Targets="Publish"
+             Properties="Configuration=Release;RuntimeIdentifier=win-x64"
+             Condition="'$(Configuration)' == 'Release'" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Saku Overclock.CrashHandler\CrashHandler\CrashHandler.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+    <ProjectReference Include="..\Saku Overclock.Service\Saku Overclock.Service.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="IncludeSubProjectOutputsToContent" BeforeTargets="GetCopyToOutputDirectoryItems;AssignTargetPaths">
+    <ItemGroup>
+      <Content Include="..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\CrashHandler.exe">
+        <Link>CrashHandler.exe</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\CrashHandler.dll">
+        <Link>CrashHandler.dll</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\CrashHandler.runtimeconfig.json">
+        <Link>CrashHandler.runtimeconfig.json</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+
+      <Content Include="..\Saku Overclock.Service\bin\$(Configuration)\net10.0\Saku Overclock.Service.exe"
+               Condition="!Exists('..\Saku Overclock.Service\bin\$(Configuration)\net10.0\win-x64\publish\Saku Overclock.Service.exe')">
+        <Link>Saku Overclock.Service.exe</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\Saku Overclock.Service\bin\$(Configuration)\net10.0\win-x64\publish\Saku Overclock.Service.exe"
+               Condition="Exists('..\Saku Overclock.Service\bin\$(Configuration)\net10.0\win-x64\publish\Saku Overclock.Service.exe')">
+        <Link>Saku Overclock.Service.exe</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="PublishSubProjectsBeforeMainPublish" BeforeTargets="ComputeFilesToPublish" Condition="'$(Configuration)' == 'Release'">
+    <MSBuild Projects="..\Saku Overclock.Service\Saku Overclock.Service.csproj"
+             Targets="Publish"
+             Properties="Configuration=Release;RuntimeIdentifier=win-x64" />
+
+    <ItemGroup>
+      <ResolvedFileToPublish Include="..\Saku Overclock.Service\bin\Release\net10.0\win-x64\publish\Saku Overclock.Service.exe">
+        <RelativePath>Saku Overclock.Service.exe</RelativePath>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+
+      <ResolvedFileToPublish Include="..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\Release\net10.0-windows\CrashHandler.exe">
+        <RelativePath>CrashHandler.exe</RelativePath>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\Release\net10.0-windows\CrashHandler.dll">
+        <RelativePath>CrashHandler.dll</RelativePath>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\Release\net10.0-windows\CrashHandler.runtimeconfig.json">
+        <RelativePath>CrashHandler.runtimeconfig.json</RelativePath>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 </Project>
