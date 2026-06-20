@@ -171,7 +171,7 @@
     <_CrashHandlerBinDir>$(MSBuildThisFileDirectory)..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\win-x64\</_CrashHandlerBinDir>
 
     <_ServiceProject>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\Saku Overclock.Service.csproj</_ServiceProject>
-    <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\x64\$(Configuration)\net10.0\win-x64\native\Saku Overclock.Service.exe</_ServicePublishExe>
+    <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\x64\$(Configuration)\net10.0-windows\win-x64\native\Saku Overclock.Service.exe</_ServicePublishExe>
   </PropertyGroup>
 
   <Target Name="BuildCrashHandlerPreBuild">
