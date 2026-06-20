@@ -31,12 +31,20 @@ jobs:
     - name: Create Temporary Self-Signed Certificate for Package Signing
       shell: powershell
       run: |
-        # Генерируем временный сертификат прямо в хранилище раннера
-        $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=Sakura" -KeyUsage DigitalSignature -FriendlyName "Saku Temporary CI Key" -CertStoreLocation "Cert:\CurrentUser\My"
+        # 1. Генерируем валидный CodeSigning сертификат.
+        $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=Sakura" -CertStoreLocation "Cert:\CurrentUser\My"
+        
+        # 2. Копируем его в TrustedPeople, иначе MSBuild и MSIX Tooling не признают его доверенным
+        $trustedStore = New-Object System.Security.Cryptography.X509Certificates.X509Store("TrustedPeople", "CurrentUser")
+        $trustedStore.Open("ReadWrite")
+        $trustedStore.Add($cert)
+        $trustedStore.Close()
+        
+        # 3. Экспортируем в PFX с временным паролем
         $password = ConvertTo-SecureString "SakuPassword123" -AsPlainText -Force
         Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\CI_SigningCert.pfx" -Password $password
         
-        # Принудительно пишем в UTF-8, чтобы GitHub Actions успешно импортировал переменную окружения
+        # Передаем путь в окружение GitHub Actions
         "MSIX_CERT_PATH=${{ github.workspace }}\CI_SigningCert.pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
     - name: Compile and Package MSIX (Release x64)
