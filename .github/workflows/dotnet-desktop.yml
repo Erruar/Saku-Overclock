@@ -32,14 +32,11 @@ jobs:
       shell: powershell
       run: |
         $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=Sakura" -CertStoreLocation "Cert:\CurrentUser\My"
+        $password = ConvertTo-SecureString "SakuPassword123" -AsPlainText -Force
         
-        $trustedStore = New-Object System.Security.Cryptography.X509Certificates.X509Store("TrustedPeople", "CurrentUser")
-        $trustedStore.Open("ReadWrite")
-        $trustedStore.Add($cert)
-        $trustedStore.Close()
-        
-        # Передаем в окружение только Thumbprint (отпечаток) сертификата
-        "MSIX_CERT_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        # Экспортируем в совместимом со старыми утилитами формате
+        Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\CI_SigningCert.pfx" -Password $password -CryptoAlgorithmOption TripleDES_SHA1
+
 
     - name: Compile and Package MSIX (Release x64)
       shell: powershell
@@ -48,11 +45,24 @@ jobs:
           /p:Configuration=Release `
           /p:Platform=x64 `
           /p:EnableMsixTooling=true `
-          /p:AppxPackageSigningEnabled=true `
-          /p:PackageCertificateThumbprint="$env:MSIX_CERT_THUMBPRINT" `
+          /p:AppxPackageSigningEnabled=false `
           /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\" `
           /p:AppxBundle=Never
 
+    - name: Sign MSIX Package via SignTool
+      shell: powershell
+      run: |
+        # Находим signtool в установленном Windows SDK
+        $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "signtool.exe" -Recurse | Where-Object { $_.DirectoryName -like "*x64*" } | Select-Object -First 1).FullName
+        
+        # Находим скомпилированный msix-файл
+        $msixFile = (Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
+        
+        Write-Output "Signing package: $msixFile using $signtool"
+        
+        # Подписываем пакет напрямую
+        & $signtool sign /v /fd SHA256 /f "${{ github.workspace }}\CI_SigningCert.pfx" /p "SakuPassword123" $msixFile
+        
     - name: Upload Finished MSIX Artifact
       uses: actions/upload-artifact@v4
       with:
