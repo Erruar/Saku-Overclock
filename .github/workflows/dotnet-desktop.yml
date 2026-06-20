@@ -42,7 +42,7 @@ jobs:
         
         # 3. Экспортируем в PFX с временным паролем
         $password = ConvertTo-SecureString "SakuPassword123" -AsPlainText -Force
-        Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\CI_SigningCert.pfx" -Password $password
+        Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\CI_SigningCert.pfx" -Password $password -CryptoAlgorithmOption TripleDES_SHA1
         
         # Передаем путь в окружение GitHub Actions
         "MSIX_CERT_PATH=${{ github.workspace }}\CI_SigningCert.pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
