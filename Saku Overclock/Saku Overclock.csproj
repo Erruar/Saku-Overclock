@@ -183,7 +183,7 @@
   <Target Name="BuildServicePreBuild" DependsOnTargets="BuildCrashHandlerPreBuild">
     <MSBuild Projects="$(_ServiceProject)"
              Targets="Publish"
-             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishAot=true;TargetFramework=net10.0;PublishTrimmed=true;IsAotCompatible=true;PublishSingleFile=true"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishAot=true;TargetFramework=net10.0-windows;PublishTrimmed=true;IsAotCompatible=true;PublishSingleFile=true"
              BuildInParallel="false" />
   </Target>
 
