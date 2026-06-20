@@ -20,6 +20,7 @@
     <Version>1.1.23.0</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
+    <PublishReadyToRun>false</PublishReadyToRun>
     <UseWPF>False</UseWPF>
     <UseWindowsForms>False</UseWindowsForms>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
