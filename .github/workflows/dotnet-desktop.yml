@@ -49,6 +49,25 @@ jobs:
           /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\" `
           /p:AppxBundle=Never
 
+    - name: Debug File System Layout
+      shell: powershell
+      run: |
+        Write-Output "========================================================="
+        Write-Output " СОДЕРЖИМОЕ BuildArtifacts "
+        Write-Output "========================================================="
+        if (Test-Path "${{ github.workspace }}\BuildArtifacts") {
+            Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts" -Recurse | Select-Object @{Name="RelativePath"; Expression={$_.FullName.Replace("${{ github.workspace }}\", "")}}
+        } else {
+            Write-Output "Папка BuildArtifacts вообще не была создана!"
+        }
+
+        Write-Output "========================================================="
+        Write-Output " BIN ПРОЕКТА"
+        Write-Output "========================================================="
+        if (Test-Path "${{ github.workspace }}\Saku Overclock\bin") {
+            Get-ChildItem -Path "${{ github.workspace }}\Saku Overclock\bin" -Recurse | Where-Object { $_.Extension -eq ".msix" -or $_.Name -eq "AppPackages" } | Select-Object @{Name="RelativePath"; Expression={$_.FullName.Replace("${{ github.workspace }}\", "")}}
+        }
+        
     - name: Sign MSIX Package via SignTool
       shell: powershell
       run: |
