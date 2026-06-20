@@ -53,22 +53,23 @@ jobs:
       shell: powershell
       run: |
         Write-Host "========================================================="
-        Write-Host " ПРОВЕРЯЕМ ПАПКУ BuildArtifacts "
+        Write-Host " CHECKING BuildArtifacts FOLDER "
         Write-Host "========================================================="
         if (Test-Path "BuildArtifacts") {
             Get-ChildItem -Path "BuildArtifacts" -Recurse | Select-Object -ExpandProperty FullName
         } else {
-            Write-Host "Папка BuildArtifacts вообще НЕ создана!"
+            Write-Host "Folder BuildArtifacts does NOT exist!"
         }
 
         Write-Host "========================================================="
-        Write-Host " ПРОВЕРЯЕМ ВСЁ СОДЕРЖИМОЕ ПАПКИ BIN "
+        Write-Host " CHECKING ALL CONTENTS OF BIN FOLDER "
         Write-Host "========================================================="
         if (Test-Path "Saku Overclock\bin") {
             Get-ChildItem -Path "Saku Overclock\bin" -Recurse | Select-Object -ExpandProperty FullName
         } else {
-            Write-Host "Папка bin не найдена!"
+            Write-Host "Folder bin NOT found!"
         }
+
         
         
     - name: Sign MSIX Package via SignTool
