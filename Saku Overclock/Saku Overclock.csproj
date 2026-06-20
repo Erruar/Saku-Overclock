@@ -168,31 +168,23 @@
   </PropertyGroup>
   <PropertyGroup>
     <_CrashHandlerProject>$(MSBuildThisFileDirectory)..\Saku Overclock.CrashHandler\CrashHandler\CrashHandler.csproj</_CrashHandlerProject>
-    <_CrashHandlerBinDir>$(MSBuildThisFileDirectory)..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\</_CrashHandlerBinDir>
+    <_CrashHandlerBinDir>$(MSBuildThisFileDirectory)..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\win-x64\</_CrashHandlerBinDir>
 
     <_ServiceProject>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\Saku Overclock.Service.csproj</_ServiceProject>
-    <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\$(Configuration)\net10.0\win-x64\publish\Saku Overclock.Service.exe</_ServicePublishExe>
+    <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\x64\$(Configuration)\net10.0\win-x64\native\Saku Overclock.Service.exe</_ServicePublishExe>
   </PropertyGroup>
 
   <Target Name="BuildCrashHandlerPreBuild">
     <MSBuild Projects="$(_CrashHandlerProject)"
-             Properties="Configuration=$(Configuration);Platform=x64"
+             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows"
              BuildInParallel="false" />
   </Target>
 
   <Target Name="BuildServicePreBuild" DependsOnTargets="BuildCrashHandlerPreBuild">
-
     <MSBuild Projects="$(_ServiceProject)"
              Targets="Publish"
-             Properties="Configuration=Debug;InsideAutoPublish=true"
-             BuildInParallel="false"
-             Condition="'$(Configuration)' == 'Debug'" />
-
-    <MSBuild Projects="$(_ServiceProject)"
-             Targets="Publish"
-             Properties="Configuration=Release;InsideAutoPublish=true"
-             BuildInParallel="false"
-             Condition="'$(Configuration)' != 'Debug'" />
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishAot=true;TargetFramework=net10.0;PublishTrimmed=true;IsAotCompatible=true;PublishSingleFile=true"
+             BuildInParallel="false" />
   </Target>
 
   <Target Name="IncludeSatellitesInOutput"
@@ -200,28 +192,23 @@
           BeforeTargets="GetCopyToOutputDirectoryItems;AssignTargetPaths">
 
     <ItemGroup>
-      <Content Include="$(_CrashHandlerBinDir)CrashHandler.exe"
-               Condition="Exists('$(_CrashHandlerBinDir)CrashHandler.exe')">
+      <Content Include="$(_CrashHandlerBinDir)CrashHandler.exe">
         <Link>CrashHandler.exe</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="$(_CrashHandlerBinDir)CrashHandler.dll"
-               Condition="Exists('$(_CrashHandlerBinDir)CrashHandler.dll')">
+      <Content Include="$(_CrashHandlerBinDir)CrashHandler.dll">
         <Link>CrashHandler.dll</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="$(_CrashHandlerBinDir)CrashHandler.runtimeconfig.json"
-               Condition="Exists('$(_CrashHandlerBinDir)CrashHandler.runtimeconfig.json')">
+      <Content Include="$(_CrashHandlerBinDir)CrashHandler.runtimeconfig.json">
         <Link>CrashHandler.runtimeconfig.json</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="$(_ServicePublishExe)"
-               Condition="Exists('$(_ServicePublishExe)')">
-        <Link>Saku Overclock.Service.exe</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Content Include="$(_ServicePublishExe)">
+        <Link>Saku Overclock.Service.exe</Link> <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
   </Target>
