@@ -27,25 +27,19 @@ jobs:
 
     - name: Restore NuGet Packages
       run: dotnet restore "Saku Overclock.sln"
-
+      
     - name: Create Temporary Self-Signed Certificate for Package Signing
       shell: powershell
       run: |
-        # 1. Генерируем валидный CodeSigning сертификат.
         $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=Sakura" -CertStoreLocation "Cert:\CurrentUser\My"
         
-        # 2. Копируем его в TrustedPeople, иначе MSBuild и MSIX Tooling не признают его доверенным
         $trustedStore = New-Object System.Security.Cryptography.X509Certificates.X509Store("TrustedPeople", "CurrentUser")
         $trustedStore.Open("ReadWrite")
         $trustedStore.Add($cert)
         $trustedStore.Close()
         
-        # 3. Экспортируем в PFX с временным паролем
-        $password = ConvertTo-SecureString "SakuPassword123" -AsPlainText -Force
-        Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\CI_SigningCert.pfx" -Password $password -CryptoAlgorithmOption TripleDES_SHA1
-        
-        # Передаем путь в окружение GitHub Actions
-        "MSIX_CERT_PATH=${{ github.workspace }}\CI_SigningCert.pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        # Передаем в окружение только Thumbprint (отпечаток) сертификата
+        "MSIX_CERT_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
     - name: Compile and Package MSIX (Release x64)
       shell: powershell
@@ -55,8 +49,7 @@ jobs:
           /p:Platform=x64 `
           /p:EnableMsixTooling=true `
           /p:AppxPackageSigningEnabled=true `
-          /p:PackageCertificateKeyFile="$env:MSIX_CERT_PATH" `
-          /p:PackageCertificatePassword="SakuPassword123" `
+          /p:PackageCertificateThumbprint="$env:MSIX_CERT_THUMBPRINT" `
           /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\" `
           /p:AppxBundle=Never
 
