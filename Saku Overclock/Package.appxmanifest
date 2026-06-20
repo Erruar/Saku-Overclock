@@ -14,7 +14,7 @@
     <Identity
             Name="Saku-Overclock-App"
             Publisher="CN=Sakura"
-            Version="1.1.23.0" />
+            Version="1.1.29.0" />
 
     <mp:PhoneIdentity PhoneProductId="129fe03a-4520-4c47-b74c-ba9210dc2f62" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -71,8 +71,6 @@
                     <!-- Исправлено StartType на StartupType -->
                     <desktop6:Service
                             Name="SakuOverclockService"
-                            DisplayName="Saku Overclock Service"
-                            Description="Hardware access service for Saku Overclock."
                             StartupType="auto"
                             StartAccount="localSystem" />
 

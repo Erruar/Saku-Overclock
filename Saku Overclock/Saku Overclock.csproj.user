@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <_LastSelectedProfileId>C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\Properties\PublishProfiles\win10-arm64.pubxml</_LastSelectedProfileId>
+    <_LastSelectedProfileId>C:\Users\Sakura\source\repos\Saku-Overclock\Saku Overclock\Properties\PublishProfiles\win-x64.pubxml</_LastSelectedProfileId>
     <ActiveDebugProfile>Saku Overclock (Win-32)</ActiveDebugProfile>
     <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
     <AppxShowAllApps>False</AppxShowAllApps>
@@ -14,14 +14,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="Views\AdvancedКулерPage.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\КулерPage.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup />
   <ItemGroup>
     <Page Update="Styles\ActiveButton.xaml">
