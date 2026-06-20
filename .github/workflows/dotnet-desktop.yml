@@ -45,6 +45,7 @@ jobs:
           /p:Configuration=Release `
           /p:Platform=x64 `
           /p:EnableMsixTooling=true `
+          /p:GenerateAppxPackageOnBuild=true `
           /p:AppxPackageSigningEnabled=false `
           /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\" `
           /p:AppxBundle=Never
@@ -60,30 +61,22 @@ jobs:
         } else {
             Write-Host "Folder BuildArtifacts does NOT exist!"
         }
-
-        Write-Host "========================================================="
-        Write-Host " CHECKING ALL CONTENTS OF BIN FOLDER "
-        Write-Host "========================================================="
-        if (Test-Path "Saku Overclock\bin") {
-            Get-ChildItem -Path "Saku Overclock\bin" -Recurse | Select-Object -ExpandProperty FullName
-        } else {
-            Write-Host "Folder bin NOT found!"
-        }
-
-        
         
     - name: Sign MSIX Package via SignTool
       shell: powershell
       run: |
-        # Находим signtool в установленном Windows SDK
+        # Find signtool.exe
         $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "signtool.exe" -Recurse | Where-Object { $_.DirectoryName -like "*x64*" } | Select-Object -First 1).FullName
         
-        # Находим скомпилированный msix-файл
-        $msixFile = (Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
+        # Search for .msix everywhere in workspace to be 100% sure
+        $msixFile = (Get-ChildItem -Path "${{ github.workspace }}" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
+        
+        if (-not $msixFile) {
+            Write-Error "CRITICAL: MSIX file was not found anywhere!"
+            exit 1
+        }
         
         Write-Output "Signing package: $msixFile using $signtool"
-        
-        # Подписываем пакет напрямую
         & $signtool sign /v /fd SHA256 /f "${{ github.workspace }}\CI_SigningCert.pfx" /p "SakuPassword123" $msixFile
         
     - name: Upload Finished MSIX Artifact
