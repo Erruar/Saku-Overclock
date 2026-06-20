@@ -7,9 +7,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Platforms>x64</Platforms>
-
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-
         <IsAotCompatible>true</IsAotCompatible>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
@@ -26,21 +23,4 @@
     <ItemGroup>
         <ProjectReference Include="..\Saku Overclock.Core\Saku Overclock.Core\Saku Overclock.Core.csproj" />
     </ItemGroup>
-
-    <Target Name="ForceAotOnBuild" AfterTargets="Build" Condition="'$(InsideAutoPublish)' != 'true'">
-        <Message Text="[Native AOT] Запуск нативной компиляции для текущей сборки..." Importance="high" />
-
-        <MSBuild Projects="$(MSBuildProjectFullPath)"
-                 Targets="Publish"
-                 Properties="InsideAutoPublish=true;Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier)" />
-
-        <ItemGroup>
-            <AotArtifacts Include="$(PublishDir)*" />
-        </ItemGroup>
-
-        <Message Text="[Native AOT] Перенос нативного бинарника в каталог вывода: $(TargetDir)" Importance="high" />
-        <Copy SourceFiles="@(AotArtifacts)"
-              DestinationFolder="$(TargetDir)"
-              OverwriteReadOnlyFiles="true" />
-    </Target>
 </Project>
