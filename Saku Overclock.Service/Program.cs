@@ -1,5 +1,7 @@
 ﻿using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,22 +40,112 @@ public sealed partial class IpcNamedPipeWorker(
     ICpuService cpuService,
     ILogger<IpcNamedPipeWorker> logger) : BackgroundService
 {
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool GetNamedPipeClientProcessId(IntPtr pipeHandle, out uint clientProcessId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, uint processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    // Вызываем именно Unicode (W) версию. Вместо StringBuilder передаем чистый IntPtr на буфер.
+    [DllImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern bool QueryFullProcessImageName(
+        IntPtr hProcess, 
+        uint dwFlags, 
+        IntPtr lpExeName, 
+        ref uint lpdwSize);
+
+    private const uint ProcessQueryLimitedInformation = 0x1000;
+
     private const string PipeName = "SakuOverclockIpcPipe";
+
+    private bool ValidateClientSignature(NamedPipeServerStream pipe)
+    {
+        if (pipe.SafePipeHandle.IsInvalid) return false;
+
+        // 1. Получаем PID клиента
+        if (!GetNamedPipeClientProcessId(pipe.SafePipeHandle.DangerousGetHandle(), out var pid))
+        {
+            logger.LogWarning("Failed to get client PID.");
+            return false;
+        }
+
+        var processHandle = OpenProcess(ProcessQueryLimitedInformation, false, pid);
+        if (processHandle == IntPtr.Zero) return false;
+
+        string? clientPath = null;
+        const int bufferSize = 2048;
+        var bufferPtr = Marshal.AllocHGlobal(bufferSize * sizeof(char));
+
+        try
+        {
+            uint size = bufferSize;
+            if (QueryFullProcessImageName(processHandle, 0, bufferPtr, ref size))
+            {
+                clientPath = Marshal.PtrToStringUni(bufferPtr, (int)size);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to query client process path.");
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(bufferPtr);
+            CloseHandle(processHandle);
+        }
+
+        if (string.IsNullOrEmpty(clientPath) || !File.Exists(clientPath))
+        {
+            logger.LogWarning("Client executable path is invalid.");
+            return false;
+        }
+
+        // 2. Извлекаем и проверяем цифровую подпись бинарника (Полностью Managed & AOT-safe)
+        try
+        {
+            // Берем сертификат текущего запущенного сервиса
+            var currentServicePath = Environment.ProcessPath ?? throw new InvalidOperationException();
+            
+            using var clientCert = X509CertificateLoader.LoadCertificateFromFile(clientPath);
+            using var serviceCert = X509CertificateLoader.LoadCertificateFromFile(currentServicePath);
+            var serviceCertHash = serviceCert.GetCertHashString();
+            var clientCertHash = clientCert.GetCertHashString();
+
+            // Сверяем хэши сертификатов (Thumbprint)
+            if (serviceCertHash == clientCertHash)
+            {
+                logger.LogInformation("Client signature verified successfully. Process: {Path}", clientPath);
+                return true;
+            }
+
+            logger.LogWarning("Signature mismatch! Client thumbprint doesn't match service certificate.");
+        }
+        catch (System.Security.Cryptography.CryptographicException)
+        {
+            // Если у клиента (или у самого сервиса) вообще нет цифровой подписи
+            logger.LogWarning("Access Denied: One of the binaries is unsigned. Client path: {Path}", clientPath);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while checking digital signatures.");
+        }
+
+        return false;
+    }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("IPC pipe worker started ({Pipe})", PipeName);
 
-        // 1. Настраиваем права доступа для Pipe (чтобы обычный юзер мог подключиться)
         var pipeSecurity = new PipeSecurity();
-
-        // Разрешаем встроенной группе "Пользователи" (включает не-админов) Read/Write
         pipeSecurity.AddAccessRule(new PipeAccessRule(
             new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
             PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance,
             AccessControlType.Allow));
 
-        // Разрешаем Системе полный доступ
         pipeSecurity.AddAccessRule(new PipeAccessRule(
             new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
             PipeAccessRights.FullControl,
@@ -63,7 +155,6 @@ public sealed partial class IpcNamedPipeWorker(
         {
             try
             {
-                // Используем фабрику, полностью совместимую с Native AOT
                 await using var pipe = NamedPipeServerStreamAcl.Create(
                     PipeName, PipeDirection.InOut, 1,
                     PipeTransmissionMode.Byte, PipeOptions.Asynchronous,
@@ -71,31 +162,7 @@ public sealed partial class IpcNamedPipeWorker(
 
                 await pipe.WaitForConnectionAsync(stoppingToken);
 
-                // 2. Проверка "кто стучится" через Имперсонацию (AOT-friendly)
-                var isAllowed = false;
-
-                pipe.RunAsClient(() =>
-                {
-                    // Внутри этого делегата поток временно выполняется с правами клиента
-                    using var identity = WindowsIdentity.GetCurrent();
-
-                    // Проверяем, что это не анонимный вход и не гость
-                    if (identity.IsAuthenticated &&
-                        identity.ImpersonationLevel == TokenImpersonationLevel.Impersonation)
-                    {
-                        logger.LogInformation("Client verified: {Name} (SID: {Sid})", identity.Name, identity.User);
-                        isAllowed = true;
-                    }
-                });
-
-                if (!isAllowed)
-                {
-                    logger.LogWarning("Unauthorized client connection rejected.");
-                    pipe.Disconnect();
-                    continue;
-                }
-
-                // Передаем управление обработчику
+                // Теперь проверку делает сам обработчик, когда данные начнут поступать
                 await HandleClientAsync(pipe, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
@@ -125,6 +192,8 @@ public sealed partial class IpcNamedPipeWorker(
         await using var writer = new StreamWriter(pipe, leaveOpen: true);
         writer.AutoFlush = true;
 
+        var isClientVerified = false;
+
         while (!ct.IsCancellationRequested && pipe.IsConnected)
         {
             string? rawRequest;
@@ -138,6 +207,43 @@ public sealed partial class IpcNamedPipeWorker(
             }
 
             if (string.IsNullOrEmpty(rawRequest)) break;
+
+            // Проверка клиента
+            if (!isClientVerified)
+            {
+                var isValid = false;
+                try
+                {
+                    pipe.RunAsClient(() =>
+                    {
+                        using var identity = WindowsIdentity.GetCurrent();
+                        // Проверяем, что это локальный пользователь
+                        if (identity is { IsAuthenticated: true, ImpersonationLevel: TokenImpersonationLevel.Impersonation or TokenImpersonationLevel.Delegation })
+                        {
+                            logger.LogInformation("Client verified: {Name}", identity.Name);
+                            isValid = true;
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Security validation failed.");
+                }
+                
+                // Дополнительная проверка соответствия подписи файла
+                if (isValid)
+                {
+                    isValid = ValidateClientSignature(pipe);
+                }
+
+                if (!isValid)
+                {
+                    logger.LogWarning("Access Denied: Unauthorized client process.");
+                    break; // Выходим из цикла, закрывая соединение
+                }
+
+                isClientVerified = true;
+            }
 
             var request = JsonSerializer.Deserialize(rawRequest, IpcJsonContext.Default.IpcRequest);
             if (request is null) continue;
