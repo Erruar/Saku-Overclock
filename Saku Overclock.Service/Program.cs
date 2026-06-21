@@ -1,4 +1,6 @@
 ﻿using System.IO.Pipes;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +20,10 @@ public static class Program
         // AddWindowsService делает две вещи:
         // - запущен SCM → ведёт себя как настоящий Windows Service (без окна, обрабатывает Start/Stop)
         // - запущен интерактивно → работает как консоль (удобно для отладки)
-        builder.Services.AddWindowsService(options => { options.ServiceName = "SakuOverclockService"; });
+        builder.Services.AddWindowsService(options =>
+        {
+            options.ServiceName = "SakuOverclockService";
+        });
 
         builder.Services.AddSingleton<ICpuService, CpuService>();
         builder.Services.AddHostedService<IpcNamedPipeWorker>();
@@ -35,24 +40,67 @@ public sealed partial class IpcNamedPipeWorker(
 {
     private const string PipeName = "SakuOverclockIpcPipe";
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("IPC pipe worker started ({Pipe})", PipeName);
+
+        // 1. Настраиваем права доступа для Pipe (чтобы обычный юзер мог подключиться)
+        var pipeSecurity = new PipeSecurity();
+
+        // Разрешаем встроенной группе "Пользователи" (включает не-админов) Read/Write
+        pipeSecurity.AddAccessRule(new PipeAccessRule(
+            new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
+            PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance,
+            AccessControlType.Allow));
+
+        // Разрешаем Системе полный доступ
+        pipeSecurity.AddAccessRule(new PipeAccessRule(
+            new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+            PipeAccessRights.FullControl,
+            AccessControlType.Allow));
 
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                await using var pipe = new NamedPipeServerStream(
+                // Используем фабрику, полностью совместимую с Native AOT
+                await using var pipe = NamedPipeServerStreamAcl.Create(
                     PipeName, PipeDirection.InOut, 1,
-                    PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                    PipeTransmissionMode.Byte, PipeOptions.Asynchronous,
+                    0, 0, pipeSecurity);
 
                 await pipe.WaitForConnectionAsync(stoppingToken);
+
+                // 2. Проверка "кто стучится" через Имперсонацию (AOT-friendly)
+                var isAllowed = false;
+
+                pipe.RunAsClient(() =>
+                {
+                    // Внутри этого делегата поток временно выполняется с правами клиента
+                    using var identity = WindowsIdentity.GetCurrent();
+
+                    // Проверяем, что это не анонимный вход и не гость
+                    if (identity.IsAuthenticated &&
+                        identity.ImpersonationLevel == TokenImpersonationLevel.Impersonation)
+                    {
+                        logger.LogInformation("Client verified: {Name} (SID: {Sid})", identity.Name, identity.User);
+                        isAllowed = true;
+                    }
+                });
+
+                if (!isAllowed)
+                {
+                    logger.LogWarning("Unauthorized client connection rejected.");
+                    pipe.Disconnect();
+                    continue;
+                }
+
+                // Передаем управление обработчику
                 await HandleClientAsync(pipe, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                break; // graceful stop
+                break;
             }
             catch (Exception ex)
             {
