@@ -39,16 +39,23 @@ jobs:
             exit 1
         }
         
-        # Декодируем Base64 строку обратно в бинарный pfx-файл на раннере
-        $certBytes = [System.Convert]::FromBase64String($env:CERT_BASE64)
+        # Очищаем Base64 от возможных случайных пробелов/переносов строк
+        $cleanBase64 = $env:CERT_BASE64.Trim()
+        $certBytes = [System.Convert]::FromBase64String($cleanBase64)
         $certPath = "${{ github.workspace }}\CI_SigningCert.pfx"
         [System.IO.File]::WriteAllBytes($certPath, $certBytes)
         
-        # Импортируем сертификат в личное хранилище текущего пользователя Windows-сборщика
-        $password = ConvertTo-SecureString $env:CERT_PASS -AsPlainText -Force
-        Import-PfxCertificate -FilePath $certPath -CertStoreLocation "Cert:\CurrentUser\My" -Password $password
-        Write-Output "Production certificate successfully imported into Windows Store."
-
+        # Очищаем пароль от возможных пробелов, которые могли попасть при копировании в Secrets
+        $cleanPass = $env:CERT_PASS.Trim()
+        $password = ConvertTo-SecureString $cleanPass -AsPlainText -Force
+        
+        try {
+            Import-PfxCertificate -FilePath $certPath -CertStoreLocation "Cert:\CurrentUser\My" -Password $password
+            Write-Output "Production certificate successfully imported into Windows Store."
+        } catch {
+            Write-Error "Failed to import certificate. Error details: $_"
+            exit 1
+        }
 
     - name: Compile and Package MSIX (Release x64)
       shell: powershell
