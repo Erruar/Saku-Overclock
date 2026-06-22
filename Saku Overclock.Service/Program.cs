@@ -19,9 +19,6 @@ public static class Program
     {
         var builder = Host.CreateApplicationBuilder(args);
 
-        // AddWindowsService делает две вещи:
-        // - запущен SCM → ведёт себя как настоящий Windows Service (без окна, обрабатывает Start/Stop)
-        // - запущен интерактивно → работает как консоль (удобно для отладки)
         builder.Services.AddWindowsService(options =>
         {
             options.ServiceName = "SakuOverclockService";
@@ -49,91 +46,206 @@ public sealed partial class IpcNamedPipeWorker(
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool CloseHandle(IntPtr hObject);
 
-    // Вызываем именно Unicode (W) версию. Вместо StringBuilder передаем чистый IntPtr на буфер.
-    [DllImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", CharSet = CharSet.Unicode, SetLastError = true)]
+    [DllImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", CharSet = CharSet.Unicode,
+        SetLastError = true)]
     private static extern bool QueryFullProcessImageName(
-        IntPtr hProcess, 
-        uint dwFlags, 
-        IntPtr lpExeName, 
+        IntPtr hProcess,
+        uint dwFlags,
+        IntPtr lpExeName,
         ref uint lpdwSize);
 
-    private const uint ProcessQueryLimitedInformation = 0x1000;
+    [DllImport("wintrust.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
+    private static extern uint WinVerifyTrust(IntPtr hwnd, ref Guid pgActionId, IntPtr pWvtData);
 
+    private const uint ProcessQueryLimitedInformation = 0x1000;
     private const string PipeName = "SakuOverclockIpcPipe";
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WinTrustFileInfo
+    {
+        public uint StructSize;
+        public IntPtr FilePath; // LPCWSTR
+        public IntPtr FileHandle; // HANDLE (null)
+        public IntPtr Subject; // GUID*  (null)
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WinTrustData
+    {
+        public uint StructSize;
+        public IntPtr PolicyCallbackData;
+        public IntPtr SIPClientData;
+        public uint UIChoice; // 2  = WTD_UI_NONE
+        public uint RevocationChecks; // 0  = WTD_REVOKE_NONE
+        public uint UnionChoice; // 1  = WTD_CHOICE_FILE
+        public IntPtr FileInfo; // WinTrustFileInfo*
+        public uint StateAction; // 1  = VERIFY, 2 = CLOSE
+        public IntPtr StateData;
+        public IntPtr URLReference;
+        public uint ProvFlags; // 0x10 = WTD_CACHE_ONLY_URL_RETRIEVAL
+        public uint UIContext;
+        public IntPtr SignatureSettings;
+    }
+
+    private static readonly Guid ActionGenericVerifyV2 =
+        new("00AAC56B-CD44-11d0-8CC2-00C04FC295EE");
+
+    private string? _serviceThumbprint;
+    private bool _serviceIsSigned;
+    private bool _serviceCertChecked;
+
+    private void EnsureServiceCertCached()
+    {
+        if (_serviceCertChecked) return;
+        _serviceCertChecked = true;
+
+        try
+        {
+            var path = Environment.ProcessPath;
+            if (path is not null && VerifyAuthenticode(path))
+            {
+                using var cert = X509CertificateLoader.LoadCertificateFromFile(path);
+                _serviceThumbprint = cert.GetCertHashString();
+                _serviceIsSigned = true;
+                logger.LogInformation("Service is signed. Thumbprint: {Tp}", _serviceThumbprint);
+            }
+            else
+            {
+                logger.LogInformation("Service is unsigned — debug/dev mode active.");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Service cert check failed — debug/dev mode active.");
+        }
+    }
+
+    private static unsafe bool VerifyAuthenticode(string filePath)
+    {
+        var actionId = ActionGenericVerifyV2;
+
+        fixed (char* pathPtr = filePath)
+        {
+            var fileInfo = new WinTrustFileInfo
+            {
+                StructSize = (uint)sizeof(WinTrustFileInfo),
+                FilePath = (IntPtr)pathPtr,
+            };
+
+            var trustData = new WinTrustData
+            {
+                StructSize = (uint)sizeof(WinTrustData),
+                UIChoice = 2, // WTD_UI_NONE
+                RevocationChecks = 0, // WTD_REVOKE_NONE — оффлайн, не проверяем отзыв
+                UnionChoice = 1, // WTD_CHOICE_FILE
+                FileInfo = (IntPtr)(&fileInfo),
+                StateAction = 1, // WTD_STATEACTION_VERIFY
+                ProvFlags = 0x10, // WTD_CACHE_ONLY_URL_RETRIEVAL
+            };
+
+            var result = WinVerifyTrust(IntPtr.Zero, ref actionId, (IntPtr)(&trustData));
+
+            // Освобождаем StateData — иначе утечка внутри wintrust.dll
+            trustData.StateAction = 2; // WTD_STATEACTION_CLOSE
+            WinVerifyTrust(IntPtr.Zero, ref actionId, (IntPtr)(&trustData));
+
+            // 0x00000000 = S_OK          — подпись валидна, файл не изменён
+            // 0x80096010 = BAD_DIGEST    — файл изменён после подписания
+            // 0x800B0100 = NOSIGNATURE   — подписи нет
+            return result == 0;
+        }
+    }
+
+    private string? GetClientProcessPath(uint pid)
+    {
+        var handle = OpenProcess(ProcessQueryLimitedInformation, false, pid);
+        if (handle == IntPtr.Zero) return null;
+
+        try
+        {
+            const int bufferSize = 2048;
+            var bufferPtr = Marshal.AllocHGlobal(bufferSize * sizeof(char));
+            try
+            {
+                uint size = bufferSize;
+                return QueryFullProcessImageName(handle, 0, bufferPtr, ref size)
+                    ? Marshal.PtrToStringUni(bufferPtr, (int)size)
+                    : null;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(bufferPtr);
+            }
+        }
+        finally
+        {
+            CloseHandle(handle);
+        }
+    }
 
     private bool ValidateClientSignature(NamedPipeServerStream pipe)
     {
         if (pipe.SafePipeHandle.IsInvalid) return false;
 
-        // 1. Получаем PID клиента
+        EnsureServiceCertCached();
+
         if (!GetNamedPipeClientProcessId(pipe.SafePipeHandle.DangerousGetHandle(), out var pid))
         {
             logger.LogWarning("Failed to get client PID.");
             return false;
         }
 
-        var processHandle = OpenProcess(ProcessQueryLimitedInformation, false, pid);
-        if (processHandle == IntPtr.Zero) return false;
-
-        string? clientPath = null;
-        const int bufferSize = 2048;
-        var bufferPtr = Marshal.AllocHGlobal(bufferSize * sizeof(char));
-
-        try
-        {
-            uint size = bufferSize;
-            if (QueryFullProcessImageName(processHandle, 0, bufferPtr, ref size))
-            {
-                clientPath = Marshal.PtrToStringUni(bufferPtr, (int)size);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to query client process path.");
-        }
-        finally
-        {
-            Marshal.FreeHGlobal(bufferPtr);
-            CloseHandle(processHandle);
-        }
-
+        var clientPath = GetClientProcessPath(pid);
         if (string.IsNullOrEmpty(clientPath) || !File.Exists(clientPath))
         {
             logger.LogWarning("Client executable path is invalid.");
             return false;
         }
 
-        // 2. Извлекаем и проверяем цифровую подпись бинарника (Полностью Managed & AOT-safe)
+        // 2. Базовая проверка имени — дополнительный фильтр, не основная защита
+        var fileName = Path.GetFileName(clientPath);
+        if (!string.Equals(fileName, "Saku Overclock.exe", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.LogWarning("Unexpected client process name: {Name}", fileName);
+            return false;
+        }
+
+        // 3. Debug/dev mode — сервис собран без подписи (из исходников / GitHub без сертификата)
+        if (!_serviceIsSigned)
+        {
+            logger.LogInformation("Debug mode: signature check skipped. Client: {Path}", clientPath);
+            return true;
+        }
+
+        // 4. Production: WinVerifyTrust — подпись есть и файл не изменён
+        if (!VerifyAuthenticode(clientPath))
+        {
+            logger.LogWarning("Client Authenticode failed (unsigned or tampered): {Path}", clientPath);
+            return false;
+        }
+
+        // 5. Thumbprint клиента должен совпадать с thumbprint сервиса
+        //    (оба подписаны одним сертификатом)
         try
         {
-            // Берем сертификат текущего запущенного сервиса
-            var currentServicePath = Environment.ProcessPath ?? throw new InvalidOperationException();
-            
             using var clientCert = X509CertificateLoader.LoadCertificateFromFile(clientPath);
-            using var serviceCert = X509CertificateLoader.LoadCertificateFromFile(currentServicePath);
-            var serviceCertHash = serviceCert.GetCertHashString();
-            var clientCertHash = clientCert.GetCertHashString();
+            var clientThumbprint = clientCert.GetCertHashString();
 
-            // Сверяем хэши сертификатов (Thumbprint)
-            if (serviceCertHash == clientCertHash)
+            if (!string.Equals(clientThumbprint, _serviceThumbprint, StringComparison.OrdinalIgnoreCase))
             {
-                logger.LogInformation("Client signature verified successfully. Process: {Path}", clientPath);
-                return true;
+                logger.LogWarning("Thumbprint mismatch. Client: {C} | Service: {S}",
+                    clientThumbprint, _serviceThumbprint);
+                return false;
             }
 
-            logger.LogWarning("Signature mismatch! Client thumbprint doesn't match service certificate.");
-        }
-        catch (System.Security.Cryptography.CryptographicException)
-        {
-            // Если у клиента (или у самого сервиса) вообще нет цифровой подписи
-            logger.LogWarning("Access Denied: One of the binaries is unsigned. Client path: {Path}", clientPath);
+            logger.LogInformation("Client verified successfully. Process: {Path}", clientPath);
+            return true;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while checking digital signatures.");
+            logger.LogError(ex, "Error comparing client certificate.");
+            return false;
         }
-
-        return false;
     }
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -145,7 +257,6 @@ public sealed partial class IpcNamedPipeWorker(
             new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
             PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance,
             AccessControlType.Allow));
-
         pipeSecurity.AddAccessRule(new PipeAccessRule(
             new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
             PipeAccessRights.FullControl,
@@ -161,8 +272,6 @@ public sealed partial class IpcNamedPipeWorker(
                     0, 0, pipeSecurity);
 
                 await pipe.WaitForConnectionAsync(stoppingToken);
-
-                // Теперь проверку делает сам обработчик, когда данные начнут поступать
                 await HandleClientAsync(pipe, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
@@ -208,7 +317,6 @@ public sealed partial class IpcNamedPipeWorker(
 
             if (string.IsNullOrEmpty(rawRequest)) break;
 
-            // Проверка клиента
             if (!isClientVerified)
             {
                 var isValid = false;
@@ -217,29 +325,36 @@ public sealed partial class IpcNamedPipeWorker(
                     pipe.RunAsClient(() =>
                     {
                         using var identity = WindowsIdentity.GetCurrent();
-                        // Проверяем, что это локальный пользователь
-                        if (identity is { IsAuthenticated: true, ImpersonationLevel: TokenImpersonationLevel.Impersonation or TokenImpersonationLevel.Delegation })
+                        if (!identity.IsAuthenticated) return;
+
+                        // Отклоняем сетевые логины
+                        var networkSid = new SecurityIdentifier(WellKnownSidType.NetworkSid, null);
+                        if (identity.Groups?.Any(g => g.Value == networkSid.Value) == true)
                         {
-                            logger.LogInformation("Client verified: {Name}", identity.Name);
+                            logger.LogWarning("Network logon rejected: {Name}", identity.Name);
+                            return;
+                        }
+
+                        if (identity.ImpersonationLevel is TokenImpersonationLevel.Impersonation
+                            or TokenImpersonationLevel.Delegation)
+                        {
+                            logger.LogInformation("Client identity confirmed: {Name}", identity.Name);
                             isValid = true;
                         }
                     });
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Security validation failed.");
+                    logger.LogError(ex, "Identity validation failed.");
                 }
-                
-                // Дополнительная проверка соответствия подписи файла
+
                 if (isValid)
-                {
                     isValid = ValidateClientSignature(pipe);
-                }
 
                 if (!isValid)
                 {
                     logger.LogWarning("Access Denied: Unauthorized client process.");
-                    break; // Выходим из цикла, закрывая соединение
+                    break;
                 }
 
                 isClientVerified = true;
@@ -274,6 +389,7 @@ public sealed partial class IpcNamedPipeWorker(
 
     private void ProcessCommand(IpcRequest request, IpcResponse response)
     {
+        return; // Wait for correct realisation!
         switch (request.Command)
         {
             case "Get_IsAvailable":
