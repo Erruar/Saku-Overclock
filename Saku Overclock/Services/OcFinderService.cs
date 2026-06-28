@@ -278,7 +278,6 @@ public class PresetRecommendations
 
 public class OcFinderService : IOcFinderService
 {
-    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private static readonly ICpuService Cpu = App.GetService<ICpuService>();
 
@@ -314,7 +313,7 @@ public class OcFinderService : IOcFinderService
             return;
         }
 
-        var cpuPower = Cpu.IsAvailable ? SendSmuCommand.ReturnCpuPowerLimit() : -1;
+        var cpuPower = Cpu.IsAvailable ? Cpu.ReturnCpuPowerLimit() : -1;
         CheckUndervoltingFeature();
         var powerTable = _dataProvider?.GetPowerTable();
         var powerTableCheckError = false;
@@ -395,7 +394,7 @@ public class OcFinderService : IOcFinderService
             return false;
         }
 
-        _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability();
+        _isUndervoltingAvailable = Cpu.ReturnUndervoltingAvailability();
         _isUndervoltingChecked = true;
         return _isUndervoltingAvailable;
     }

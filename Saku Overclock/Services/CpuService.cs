@@ -277,4 +277,14 @@ public class CpuService : ICpuService
     {
         CallResponse("GenerateDebugReport");
     }
+    
+    public double ReturnCpuPowerLimit()
+    {
+        return GetValue("ReturnCpuPowerLimit", IpcJsonContext.Default.Single);
+    }
+
+    public bool ReturnUndervoltingAvailability()
+    {
+        return GetValue("ReturnUndervoltingAvailability", IpcJsonContext.Default.Boolean);
+    }
 }

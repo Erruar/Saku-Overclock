@@ -13,7 +13,7 @@ using Saku_Overclock.Shared;
 
 namespace Saku_Overclock.Service;
 
-public static class Program
+public static class App
 {
     public static async Task Main(string[] args)
     {
@@ -52,7 +52,7 @@ public sealed partial class IpcNamedPipeWorker(
         IntPtr hProcess,
         uint dwFlags,
         IntPtr lpExeName,
-        ref uint lpdwSize);
+        ref uint lpdwordSize);
 
     [DllImport("wintrust.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern uint WinVerifyTrust(IntPtr hwnd, ref Guid pgActionId, IntPtr pWvtData);
@@ -139,19 +139,19 @@ public sealed partial class IpcNamedPipeWorker(
                 RevocationChecks = 0, // WTD_REVOKE_NONE — оффлайн, не проверяем отзыв
                 UnionChoice = 1, // WTD_CHOICE_FILE
                 FileInfo = (IntPtr)(&fileInfo),
-                StateAction = 1, // WTD_STATEACTION_VERIFY
+                StateAction = 1, // WTD_STATE-ACTION_VERIFY
                 ProvFlags = 0x10, // WTD_CACHE_ONLY_URL_RETRIEVAL
             };
 
             var result = WinVerifyTrust(IntPtr.Zero, ref actionId, (IntPtr)(&trustData));
 
             // Освобождаем StateData — иначе утечка внутри wintrust.dll
-            trustData.StateAction = 2; // WTD_STATEACTION_CLOSE
+            trustData.StateAction = 2; // WTD_STATE-ACTION_CLOSE
             WinVerifyTrust(IntPtr.Zero, ref actionId, (IntPtr)(&trustData));
 
             // 0x00000000 = S_OK          — подпись валидна, файл не изменён
             // 0x80096010 = BAD_DIGEST    — файл изменён после подписания
-            // 0x800B0100 = NOSIGNATURE   — подписи нет
+            // 0x800B0100 = NO-SIGNATURE   — подписи нет
             return result == 0;
         }
     }
@@ -248,7 +248,7 @@ public sealed partial class IpcNamedPipeWorker(
         }
     }
 
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("IPC pipe worker started ({Pipe})", PipeName);
 
@@ -389,7 +389,6 @@ public sealed partial class IpcNamedPipeWorker(
 
     private void ProcessCommand(IpcRequest request, IpcResponse response)
     {
-        return; // Wait for correct realisation!
         switch (request.Command)
         {
             case "Get_IsAvailable":
@@ -468,6 +467,12 @@ public sealed partial class IpcNamedPipeWorker(
             case "GetCpuTemperature":
                 response.Message = JsonSerializer.Serialize(cpuService.GetCpuTemperature(),
                     IpcJsonContext.Default.NullableSingle); break;
+            case "ReturnCpuPowerLimit":
+                response.Message = JsonSerializer.Serialize(cpuService.ReturnCpuPowerLimit(),
+                    IpcJsonContext.Default.Single); break;
+            case "ReturnUndervoltingAvailability":
+                response.Message = JsonSerializer.Serialize(cpuService.ReturnUndervoltingAvailability(),
+                    IpcJsonContext.Default.Boolean); break;
             case "GetCodenameGeneration":
                 response.Message = ((byte)cpuService.GetCodenameGeneration()).ToString(); break;
             case "IsPlatformPc":
@@ -491,12 +496,16 @@ public sealed partial class IpcNamedPipeWorker(
                 break;
 
             case "SetCoperSingleCore":
+                // TODO: MAKE ABSTRACTIONS. WORK IN PROGRESS
+                break;
                 var coperData = JsonSerializer.Deserialize(request.Payload,
                     IpcJsonContext.Default.SetCoperSingleCorePayload);
                 cpuService.SetCoperSingleCore(coperData!.CoreMask, coperData.Margin);
                 break;
 
             case "SendSmuCommand":
+                // TODO: MAKE ABSTRACTIONS. WORK IN PROGRESS
+                break;
                 var smuPayload = JsonSerializer.Deserialize(request.Payload,
                     IpcJsonContext.Default.SmuCommandPayload);
                 var args = smuPayload!.Arguments;
@@ -518,6 +527,8 @@ public sealed partial class IpcNamedPipeWorker(
                 break;
 
             case "WriteMsr":
+                // TODO: MAKE ABSTRACTIONS. WORK IN PROGRESS
+                break;
                 var msrWrite = JsonSerializer.Deserialize(request.Payload,
                     IpcJsonContext.Default.MsrWritePayload);
                 response.Message = JsonSerializer.Serialize(

@@ -283,4 +283,16 @@ public interface ICpuService
     ///     Создаёт и показывает дебаг репорт
     /// </summary>
     void GenerateDebugReport();
+    
+    /// <summary>
+    ///     Возвращает лимит мощности системы
+    /// </summary>
+    /// <returns>Лимит мощности TDP</returns>
+    double ReturnCpuPowerLimit();
+    
+    /// <summary>
+    ///     Возвращает возможность андервольтинга
+    /// </summary>
+    /// <returns></returns>
+    bool ReturnUndervoltingAvailability();
 }
