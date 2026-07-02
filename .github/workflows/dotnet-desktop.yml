@@ -66,10 +66,15 @@ jobs:
     - name: Setup .NET 10 SDK
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.301'
+        dotnet-version: '10.0.x'
 
     - name: Setup MSBuild Tooling
       uses: microsoft/setup-msbuild@v2
+
+    - name: Restore Solution (win-x64)
+      shell: powershell
+      run: |
+        dotnet restore "Saku Overclock.sln" -r win-x64
 
     - name: Decode and Import Production Certificate
       shell: powershell
@@ -203,7 +208,6 @@ jobs:
       shell: powershell
       run: |
         msbuild "Saku Overclock\Saku Overclock.csproj" `
-          /restore `
           /p:Configuration=Release `
           /p:Platform=x64 `
           /p:EnableMsixTooling=true `
