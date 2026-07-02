@@ -6,16 +6,62 @@ on:
   pull_request:
     branches: [ "main", "master" ]
   workflow_dispatch:
+    inputs:
+      build_mode:
+        description: 'Build mode (manual start)'
+        required: true
+        default: 'installer'
+        type: choice
+        options:
+          - installer
+          - full
+          - none
 
 jobs:
+
+  check-commit:
+    runs-on: ubuntu-latest
+    outputs:
+      build_mode: ${{ steps.check.outputs.build_mode }}
+    steps:
+      - name: Determine build mode
+        id: check
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "build_mode=${{ inputs.build_mode }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            MSG="${{ github.event.pull_request.title }}"
+          else
+            MSG="${{ github.event.head_commit.message }}"
+          fi
+
+          echo "Message: $MSG"
+
+          if [[ "$MSG" == *"build-ss" ]]; then
+            echo "build_mode=full" >> "$GITHUB_OUTPUT"
+          elif [[ "$MSG" == *"build-is" ]]; then
+            echo "build_mode=installer" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_mode=none" >> "$GITHUB_OUTPUT"
+          fi
+
   build-and-package:
+    needs: check-commit
+    if: needs.check-commit.outputs.build_mode != 'none'
     runs-on: windows-latest
+    env:
+      BUILD_MODE: ${{ needs.check-commit.outputs.build_mode }}
+      PUBLISH_DIR: Saku Overclock\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish
 
     steps:
     - name: Checkout Source Code
       uses: actions/checkout@v4
       with:
-        submodules: recursive # Рекурсивно выкачиваем все подмодули (Shared, CrashHandler, Core, ZenStates.Core)
+        submodules: recursive
 
     - name: Setup .NET 10 SDK
       uses: actions/setup-dotnet@v4
@@ -27,7 +73,7 @@ jobs:
 
     - name: Restore NuGet Packages
       run: dotnet restore "Saku Overclock.sln"
-      
+
     - name: Decode and Import Production Certificate
       shell: powershell
       env:
@@ -38,17 +84,15 @@ jobs:
             Write-Error "CRITICAL: SIGNING_CERT_BASE64 secret is missing in GitHub Secrets!"
             exit 1
         }
-        
-        # Очищаем Base64 от возможных случайных пробелов/переносов строк
+
         $cleanBase64 = $env:CERT_BASE64.Trim()
         $certBytes = [System.Convert]::FromBase64String($cleanBase64)
         $certPath = "${{ github.workspace }}\CI_SigningCert.pfx"
         [System.IO.File]::WriteAllBytes($certPath, $certBytes)
-        
-        # Очищаем пароль от возможных пробелов, которые могли попасть при копировании в Secrets
+
         $cleanPass = $env:CERT_PASS.Trim()
         $password = ConvertTo-SecureString $cleanPass -AsPlainText -Force
-        
+
         try {
             Import-PfxCertificate -FilePath $certPath -CertStoreLocation "Cert:\CurrentUser\My" -Password $password
             Write-Output "Production certificate successfully imported into Windows Store."
@@ -57,7 +101,108 @@ jobs:
             exit 1
         }
 
+    - name: Locate SignTool
+      id: signtool
+      shell: powershell
+      run: |
+        $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "signtool.exe" -Recurse | Where-Object { $_.DirectoryName -like "*x64*" } | Select-Object -First 1).FullName
+        if (-not $signtool) {
+            Write-Error "CRITICAL: signtool.exe not found!"
+            exit 1
+        }
+        Write-Output "Found signtool at: $signtool"
+        echo "path=$signtool" >> $env:GITHUB_OUTPUT
+
+    # ---------- Публикация основного приложения (win-x64) ----------
+
+    - name: Publish App (Release win-x64)
+      shell: powershell
+      run: |
+        dotnet publish "Saku Overclock\Saku Overclock.csproj" `
+          -c Release `
+          -r win-x64 `
+          -p:Platform=x64 `
+          -p:TargetFramework=net10.0-windows10.0.19041.0
+
+    - name: Sign App Binaries
+      shell: powershell
+      env:
+        CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+      run: |
+        $signtool = "${{ steps.signtool.outputs.path }}"
+        $pfx = "${{ github.workspace }}\CI_SigningCert.pfx"
+
+        $files = @(
+            "$env:PUBLISH_DIR\Saku Overclock.exe",
+            "$env:PUBLISH_DIR\Saku Overclock.Service.exe"
+        )
+
+        foreach ($f in $files) {
+            if (-not (Test-Path $f)) {
+                Write-Error "CRITICAL: File not found for signing: $f"
+                exit 1
+            }
+            Write-Output "Signing: $f"
+            & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $pfx /p "$env:CERT_PASS" $f
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+        }
+
+    # ---------- Сборка установщика (Bundle EXE + MSI) ----------
+
+    - name: Build Installer (WiX Bundle + MSI)
+      shell: powershell
+      run: |
+        dotnet build "Setup\SakuBundle\SakuBundle.wixproj" -c Release
+
+    - name: Sign Installer Files
+      shell: powershell
+      env:
+        CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+      run: |
+        $signtool = "${{ steps.signtool.outputs.path }}"
+        $pfx = "${{ github.workspace }}\CI_SigningCert.pfx"
+
+        $files = @(
+            "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe",
+            "Setup\SakuMsi\bin\Release\SakuOverclock.msi"
+        )
+
+        foreach ($f in $files) {
+            if (-not (Test-Path $f)) {
+                Write-Error "CRITICAL: File not found for signing: $f"
+                exit 1
+            }
+            Write-Output "Signing: $f"
+            & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $pfx /p "$env:CERT_PASS" $f
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+        }
+
+    - name: Stage Installer Artifacts
+      shell: powershell
+      run: |
+        New-Item -ItemType Directory -Force -Path "BuildArtifacts\Installer" | Out-Null
+        New-Item -ItemType Directory -Force -Path "BuildArtifacts\OEM" | Out-Null
+        Copy-Item "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe" "BuildArtifacts\Installer\"
+        Copy-Item "Setup\SakuMsi\bin\Release\SakuOverclock.msi" "BuildArtifacts\OEM\"
+
+    - name: Upload Installer Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Saku-Overclock-Installer
+        path: BuildArtifacts\Installer\SakuOverclock-Setup.exe
+        if-no-files-found: error
+
+    - name: Upload OEM (MSI) Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Saku-Overclock-OEM-MSI
+        path: BuildArtifacts\OEM\SakuOverclock.msi
+        if-no-files-found: error
+
+    # ---------- MSIX (только если build-ss / full) ----------
+
     - name: Compile and Package MSIX (Release x64)
+      if: env.BUILD_MODE == 'full'
       shell: powershell
       run: |
         msbuild "Saku Overclock\Saku Overclock.csproj" `
@@ -66,44 +211,33 @@ jobs:
           /p:EnableMsixTooling=true `
           /p:GenerateAppxPackageOnBuild=true `
           /p:AppxPackageSigningEnabled=false `
-          /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\" `
+          /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\MSIX\" `
           /p:AppxBundle=Never
 
-    - name: Debug File System Layout
-      shell: powershell
-      run: |
-        Write-Host "========================================================="
-        Write-Host " CHECKING BuildArtifacts FOLDER "
-        Write-Host "========================================================="
-        if (Test-Path "BuildArtifacts") {
-            Get-ChildItem -Path "BuildArtifacts" -Recurse | Select-Object -ExpandProperty FullName
-        } else {
-            Write-Host "Folder BuildArtifacts does NOT exist!"
-        }
-        
-    - name: Sign MSIX Package via SignTool
+    - name: Sign MSIX Package
+      if: env.BUILD_MODE == 'full'
       shell: powershell
       env:
         CERT_PASS: ${{ secrets.CERT_PASSWORD }}
       run: |
-        # Find signtool.exe
-        $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "signtool.exe" -Recurse | Where-Object { $_.DirectoryName -like "*x64*" } | Select-Object -First 1).FullName
-        
-        # Search for .msix everywhere in workspace to be 100% sure
-        $msixFile = (Get-ChildItem -Path "${{ github.workspace }}" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
-        
+        $signtool = "${{ steps.signtool.outputs.path }}"
+        $pfx = "${{ github.workspace }}\CI_SigningCert.pfx"
+
+        $msixFile = (Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts\MSIX" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
+
         if (-not $msixFile) {
-            Write-Error "CRITICAL: MSIX file was not found anywhere!"
+            Write-Error "CRITICAL: MSIX file was not found!"
             exit 1
         }
-        
-        Write-Output "Signing package: $msixFile using $signtool"
-        & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f "${{ github.workspace }}\CI_SigningCert.pfx" /p "$env:CERT_PASS" $msixFile
-        
-    - name: Upload Finished MSIX Artifact
+
+        Write-Output "Signing package: $msixFile"
+        & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $pfx /p "$env:CERT_PASS" $msixFile
+        if ($LASTEXITCODE -ne 0) { exit 1 }
+
+    - name: Upload MSIX Artifact
+      if: env.BUILD_MODE == 'full'
       uses: actions/upload-artifact@v4
       with:
         name: Saku-Overclock-MSIX-Package
-        path: BuildArtifacts\**\*.msix
+        path: BuildArtifacts\MSIX\**\*.msix
         if-no-files-found: error
-        
