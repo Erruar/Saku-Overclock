@@ -71,9 +71,6 @@ jobs:
     - name: Setup MSBuild Tooling
       uses: microsoft/setup-msbuild@v2
 
-    - name: Restore NuGet Packages
-      run: dotnet restore "Saku Overclock.sln"
-
     - name: Decode and Import Production Certificate
       shell: powershell
       env:
@@ -206,6 +203,7 @@ jobs:
       shell: powershell
       run: |
         msbuild "Saku Overclock\Saku Overclock.csproj" `
+          /restore `
           /p:Configuration=Release `
           /p:Platform=x64 `
           /p:EnableMsixTooling=true `
