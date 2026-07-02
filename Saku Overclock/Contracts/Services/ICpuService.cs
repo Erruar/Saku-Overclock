@@ -5,6 +5,15 @@ namespace Saku_Overclock.Contracts.Services;
 
 public interface ICpuService
 {
+
+    /// <summary>
+    ///     Флаг доступности Saku Overclock.Service
+    /// </summary>
+    bool IsServiceUnavailable
+    {
+        get;
+    }
+    
     /// <summary>
     ///     Флаг доступности ZenStates-Core
     /// </summary>

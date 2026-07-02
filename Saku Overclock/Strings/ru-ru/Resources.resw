@@ -316,6 +316,9 @@
   <data name="Settings_Start_Boot.Content" xml:space="preserve">
     <value>Автозапуск с ОС</value>
   </data>
+  <data name="Main_ServiceUnavailable" xml:space="preserve">
+    <value>Сервис не отвечает. Перезагрузите устройство или переустановите программу</value>
+  </data>
   <data name="Main_Disc.Text" xml:space="preserve">
     <value>Дискорд</value>
   </data>

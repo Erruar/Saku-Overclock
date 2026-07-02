@@ -316,6 +316,9 @@
   <data name="Settings_Start_Boot.Content" xml:space="preserve">
     <value>Startup with OS</value>
   </data>
+  <data name="Main_ServiceUnavailable" xml:space="preserve">
+    <value>Service is not responding. Reboot your device or reinstall the program</value>
+  </data>
   <data name="Main_Disc.Text" xml:space="preserve">
     <value>Discord</value>
   </data>

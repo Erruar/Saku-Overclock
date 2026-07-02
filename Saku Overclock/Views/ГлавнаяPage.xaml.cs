@@ -136,6 +136,11 @@ public sealed partial class ГлавнаяPage
             {
                 InfoCpuName.Text = "AMD Ryzen Eng Sample 104";
             }
+
+            if (_cpu.IsServiceUnavailable)
+            {
+                LogHelper.TraceIt_TraceError("Main_ServiceUnavailable".GetLocalized());
+            }
         }
         catch (Exception ex)
         {
