@@ -13,6 +13,7 @@ using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using ScottPlot.TickGenerators;
 using Windows.UI.Text;
+using Saku_Overclock.Shared.Models;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 #pragma warning disable CS0162 // Unreachable code detected
 

@@ -97,10 +97,6 @@ public partial class App
                     services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
                     services.AddSingleton<IOcFinderService, OcFinderService>();
                     services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
-                    services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
-                    services.AddSingleton<ISensorReader, SensorReader>();
-                    services.AddSingleton<CoreMetricsCalculator>();
-                    services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
                     services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
                     // Views and ViewModels
                     services.AddTransient<SettingsViewModel>();

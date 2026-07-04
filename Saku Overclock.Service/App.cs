@@ -24,6 +24,11 @@ public static class App
             options.ServiceName = "SakuOverclockService";
         });
 
+        
+        builder.Services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
+        builder.Services.AddSingleton<ISensorReader, SensorReader>();
+        builder.Services.AddSingleton<CoreMetricsCalculator>();
+        builder.Services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
         builder.Services.AddSingleton<ICpuService, CpuService>();
         builder.Services.AddHostedService<IpcNamedPipeWorker>();
 
