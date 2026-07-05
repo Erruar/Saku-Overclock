@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Models.PresetSettings;
 
 namespace Saku_Overclock.Views;
 
@@ -65,7 +66,6 @@ public sealed partial class ПрименениеPage
         ReapplyTimeSet.ValueChanged += option =>
         {
             _appSettings.ReapplyOverclockTimer = option.Value;
-            _appSettings.SaveSettings();
         };
         
         var presetCollection = new List<PresetDisplayItem>
@@ -120,14 +120,8 @@ public sealed partial class ПрименениеPage
     /// </summary>
     private void ApplyOptionsOnStart_Click(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
+        if (!_isLoaded) return;
         _appSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
-
-        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -143,7 +137,6 @@ public sealed partial class ПрименениеPage
 
         _appSettings.ReapplyOverclock = AutoReapply.IsOn;
         _appSettings.ReapplyOverclockTimer = ReapplyTimeSet.Value?.Value ?? 3;
-        _appSettings.SaveSettings();
     }
 
     #endregion
@@ -169,7 +162,6 @@ public sealed partial class ПрименениеPage
 
             _appSettings.ReapplyLatestSettingsOnAppLaunch = true;
             _appSettings.ReapplyOverclock = true;
-            _appSettings.SaveSettings();
             
             LoadApplyOptions();
         }
@@ -213,7 +205,6 @@ public sealed partial class ПрименениеPage
         
         if (ChargerComboBox.SelectedIndex == BatteryComboBox.SelectedIndex && BatteryComboBox.SelectedIndex != 0) BatteryComboBox.SelectedIndex = 0;
         _appSettings.AcPreset = ((PresetDisplayItem)ChargerComboBox.SelectedItem).Id;
-        _appSettings.SaveSettings();
     }
 
     private void BatteryComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -222,6 +213,5 @@ public sealed partial class ПрименениеPage
 
         if (ChargerComboBox.SelectedIndex == BatteryComboBox.SelectedIndex && BatteryComboBox.SelectedIndex != 0) ChargerComboBox.SelectedIndex = 0;
         _appSettings.BatteryPreset = ((PresetDisplayItem)BatteryComboBox.SelectedItem).Id;
-        _appSettings.SaveSettings();
     }
 }

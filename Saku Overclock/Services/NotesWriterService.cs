@@ -259,7 +259,7 @@ public partial class NotesWriterService(
         richTextBlock.Blocks.Add(paragraph);
     }
 
-    private bool ContainsUrl(string text) => text.Contains("https://") || text.Contains("http://");
+    private bool ContainsUrl(string text) => text.Contains("https://");
 
     private void AddParagraphWithLinks(RichTextBlock richTextBlock, string text, double topMargin = 0)
     {

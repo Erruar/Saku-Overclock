@@ -1,5 +1,7 @@
 ﻿using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Models;
 using static Saku_Overclock.Services.PresetManagerService;
+using PresetId = Saku_Overclock.Shared.Models.PresetId;
 
 namespace Saku_Overclock.Contracts.Services;
 
@@ -17,27 +19,22 @@ public interface IPresetManagerService
     /// <summary>
     ///     Загрузить пресеты
     /// </summary>
-    void LoadSettings();
-
-    /// <summary>
-    ///     Сохранить пресеты
-    /// </summary>
-    void SaveSettings();
+    Task LoadSettingsAsync();
 
     /// <summary>
     ///     Добавить новый пресет
     /// </summary>
-    void AddPreset(Preset preset);
+    Task AddPresetAsync(Preset preset);
 
     /// <summary>
     ///     Удалить пресет по индексу
     /// </summary>
-    void RemovePreset(int index);
+    Task RemovePresetAsync(int index);
 
     /// <summary>
     ///     Удалить несколько пресетов по индексам
     /// </summary>
-    void RemovePresets(int[]? indices);
+    Task RemovePresetsAsync(int[] indices);
 
     /// <summary>
     ///     Обновить существующий пресет
@@ -47,17 +44,17 @@ public interface IPresetManagerService
     /// <summary>
     ///     Экспортировать один пресет по индексу
     /// </summary>
-    void ExportPreset(int index, string exportFolder, string exportFile);
+    Task ExportPresetAsync(int index, string exportFolder, string exportFile);
 
     /// <summary>
     ///     Экспортировать несколько пресетов по индексам
     /// </summary>
-    void ExportPresets(int[] indices, string exportFolder, string exportFile);
+    Task ExportPresetsAsync(int[] indices, string exportFolder, string exportFile);
 
     /// <summary>
     ///     Экспортировать все пресеты
     /// </summary>
-    void ExportAllPresets(string exportFolder, string exportFile);
+    Task ExportAllPresetsAsync(string exportFolder, string exportFile);
 
     /// <summary>
     ///     Импортировать пресеты из файла
@@ -65,16 +62,16 @@ public interface IPresetManagerService
     /// <param name="importFolder">Путь к папке с файлом</param>
     /// <param name="importFile">Путь к файлу</param>
     /// <param name="append">Если true - добавляет к существующим, если false - заменяет</param>
-    void ImportPresets(string importFolder, string importFile, bool append = false);
+    Task ImportPresetsAsync(string importFolder, string importFile, bool append = false);
 
     /// <summary>
     ///     Выдаст информацию о следующем кастомном пресете (используется в горячих клавишах)
     /// </summary>
     /// <returns>Конфигурация следующего кастомного пресета</returns>
-    PresetId GetNextPreset();
+    Task<PresetId> GetNextPresetAsync();
     
     /// <summary>
     ///     Удалить виртуальное состояние применённого пресета после применения горячими клавишами
     /// </summary>
-    void ResetPresetStateAfterApply();
+    Task ResetPresetStateAfterApplyAsync();
 }

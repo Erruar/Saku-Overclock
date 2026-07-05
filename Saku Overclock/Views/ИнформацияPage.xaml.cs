@@ -7,12 +7,12 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
 using Saku_Overclock.Wrappers;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Models;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
@@ -30,11 +30,6 @@ public sealed partial class ИнформацияPage
     }
 
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private readonly ICpuService _cpu = App.GetService<ICpuService>(); // Ядро приложения
-
-    private readonly IPstateService
-        _pstates = App.GetService<IPstateService>(); // Производительные состояния процессора
-
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
@@ -75,7 +70,7 @@ public sealed partial class ИнформацияPage
     private int _numberOfLogicalProcessors; // Количество потоков
     private DispatcherTimer? _dispatcherTimer; // Таймер для автообновления информации
 
-    private readonly IBackgroundDataUpdater
+    private readonly IBackgroundDataUpdater?
         _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Фоновое обновление информации
 
     private SensorsInformation? _sensorsInformation; // Информация с датчиков
@@ -1765,7 +1760,6 @@ public sealed partial class ИнформацияPage
             }
 
             _appSettings.RtssMetricsEnabled = RtssButton.IsChecked == true;
-            _appSettings.SaveSettings();
         }
         catch (Exception ex)
         {

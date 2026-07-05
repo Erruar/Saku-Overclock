@@ -12,14 +12,9 @@ public class ActivationService(
     IThemeSelectorService themeSelectorService,
     IAppSettingsService appSettingsService,
     IUpdateCheckerService updateCheckerService,
-    IApplyerService applyerService,
     IWindowStateManagerService windowStateManager,
     ITrayMenuService trayMenuService,
-    IPstateService pstateService,
-    IBackgroundDataUpdater backgroundDataUpdater,
-    IPresetManagerService presetManagerService,
-    IOcFinderService ocFinderService,
-    IPremadePresetManagementService premadePresetManagementService)
+    IPresetManagerService presetManagerService)
     : IActivationService
 {
     private UIElement? _shell;
@@ -28,6 +23,12 @@ public class ActivationService(
 
     public async Task ActivateAsync(object activationArgs)
     {
+        // 1. Загрузка настроек приложения
+        await appSettingsService.LoadSettingsAsync();
+        
+        // 2. Загрузка пресетов пользователя
+        await presetManagerService.LoadSettingsAsync();
+        
         // Выполняется перед активацией
         Initialize();
 
@@ -72,12 +73,6 @@ public class ActivationService(
     /// </summary>
     private void Initialize()
     {
-        // 1. Загрузка настроек приложения
-        appSettingsService.LoadSettings();
-        
-        // 2. Загрузка пресетов пользователя
-        presetManagerService.LoadSettings();
-
         // 3. Обновление данных
         backgroundDataUpdater.StartAsync(_globalCts.Token);
 
@@ -86,12 +81,6 @@ public class ActivationService(
 
         // 5. Состояние окна и его скрытие в трей
         windowStateManager.Initialize();
-        
-        // 6. Инициализация TDP процессора
-        ocFinderService.LazyInitTdp();
-        
-        // 7. Инициализация готовых пресетов
-        premadePresetManagementService.Initialize();
     }
 
     /// <summary>
@@ -102,16 +91,10 @@ public class ActivationService(
         // 1. Установка выбранной темы приложения
         themeSelectorService.SetRequestedThemeAsync();
 
-        // 2. Восстановление предыдущих настроек разгона
-        await applyerService.RestoreAppliedSettings();
-
-        // 3. Установка стратегии работы с P-States
-        pstateService.Initialize();
-
-        // 4. Трей иконка и меню
+        // 3. Трей иконка и меню
         trayMenuService.Initialize();
 
-        // 5. Проверка наличия обновлений
+        // 4. Проверка наличия обновлений
         await updateCheckerService.CheckForUpdates();
     }
 }

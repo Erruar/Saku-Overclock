@@ -8,12 +8,12 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using ScottPlot.TickGenerators;
 using Windows.UI.Text;
 using Saku_Overclock.Shared.Models;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 #pragma warning disable CS0162 // Unreachable code detected
 
@@ -30,8 +30,6 @@ public sealed partial class ГлавнаяPage
 
     private static readonly IApplyerService Applyer = App.GetService<IApplyerService>(); // Применения пресетов
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
-    private readonly ICpuService _cpu = App.GetService<ICpuService>(); // Ядро приложения
-
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
@@ -707,10 +705,7 @@ public sealed partial class ГлавнаяPage
                                 {
                                     _lastAppliedPreset = i;
                                     _lastAppliedPresetName = name;
-
                                     AppSettings.Preset = i;
-                                    AppSettings.SaveSettings();
-
                                     requiredPreset = preset;
                                 }
 
@@ -740,7 +735,7 @@ public sealed partial class ГлавнаяPage
                     ApplyTeach.Subtitle = "";
                     ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
                     ApplyTeach.IsOpen = true;
-                    var infoSet = InfoBarSeverity.Success;
+                    var infoSet = Shared.Models.InfoBarSeverity.Success;
                     if (applyInfo != string.Empty)
                     {
                         await LogHelper.Log(applyInfo);
@@ -749,7 +744,7 @@ public sealed partial class ГлавнаяPage
                         ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
                         await Task.Delay(timer);
                         ApplyTeach.IsOpen = false;
-                        infoSet = InfoBarSeverity.Warning;
+                        infoSet = Shared.Models.InfoBarSeverity.Warning;
                     }
                     else
                     {
@@ -760,7 +755,7 @@ public sealed partial class ГлавнаяPage
                     NotificationsService.ShowNotification(ApplyTeach.Title,
                         ApplyTeach.Subtitle +
                         (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                        infoSet,
+                        (InfoBarSeverity)infoSet,
                         true);
                 }
             }

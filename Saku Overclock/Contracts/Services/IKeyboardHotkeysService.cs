@@ -1,4 +1,4 @@
-﻿using static Saku_Overclock.Services.PresetManagerService;
+﻿using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Contracts.Services;
 

@@ -1,5 +1,6 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Saku_Overclock.Models;
+﻿using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Models;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 
 namespace Saku_Overclock.Contracts.Services;
 

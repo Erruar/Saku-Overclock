@@ -1,12 +1,13 @@
 ﻿using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Web;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppNotifications;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 
 namespace Saku_Overclock.Services;
 
@@ -85,7 +86,6 @@ public class AppNotificationService : IAppNotificationService
         var appNotification = new AppNotification(payload);
 
         AppNotificationManager.Default.Show(appNotification);
-        //return appNotification.Id != 0;
     }
 
     private NameValueCollection ParseArguments(string arguments) => HttpUtility.ParseQueryString(arguments);

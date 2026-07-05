@@ -1,280 +1,171 @@
-﻿using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
-using Saku_Overclock.Views;
+﻿using System.Collections.Concurrent;
+using System.Text.Json;
+using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Ipc;
+using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Services;
 
-public class PresetManagerService(IFileService fileService, IAppSettingsService appSettings) : IPresetManagerService
+public class PresetManagerService : IPresetManagerService, IDisposable
 {
-    private const string FolderPath = "Saku Overclock/Presets";
-    private const string FileName = "UserPresets.json";
+    private readonly IpcConnectionService _ipc;
+    private Preset[] _cache = [];
+    private readonly Lock _lock = new();
 
-    private static readonly string LocalAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    private readonly string _applicationDataFolder = Path.Combine(LocalAppData, FolderPath);
-    
-    // Состояние для отслеживания позиции при быстром переключении
-    private int _virtualCustomPresetIndex = -1; // Виртуальная позиция в кастомных пресетах
-    private bool _isVirtualStateActive; // Флаг активности виртуального состояния
+    // дебаунс отдельно на каждый индекс, чтобы слайдеры на разных пресетах не мешали друг другу
+    private readonly ConcurrentDictionary<int, CancellationTokenSource> _pendingSaves = new();
 
+    public event Action? PresetsUpdated; // для UI (ObservableCollection и т.п.)
+
+    public PresetManagerService(IpcConnectionService ipc)
+    {
+        _ipc = ipc;
+        _ipc.OnEvent += OnIpcEvent;
+    }
 
     public Preset[] Presets
     {
-        get;
-        set;
-    } = [];
+        get { lock (_lock) return _cache; }
+        set { lock (_lock) _cache = value; }
+    }
 
-    public void LoadSettings()
+    public async Task LoadSettingsAsync()
     {
-        try
+        var json = await _ipc.SendCommandAsync("Get_Presets");
+        if (string.IsNullOrEmpty(json)) return;
+        var loaded = JsonSerializer.Deserialize(json, IpcJsonContext.Default.PresetArray);
+        if (loaded != null) { lock (_lock) _cache = loaded; }
+        PresetsUpdated?.Invoke();
+    }
+
+    private void OnIpcEvent(string name, string payload)
+    {
+        switch (name)
         {
-            Presets = fileService.Read<Preset[]>(_applicationDataFolder, FileName) ?? [];
-        }
-        catch
-        {
-            Presets = [];
-            SaveSettings();
+            case "PresetsChanged":
+                var full = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.PresetArray);
+                if (full != null) lock (_lock) _cache = full;
+                PresetsUpdated?.Invoke();
+                break;
+
+            case "PresetChanged":
+                var msg = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.PresetUpdateMessage);
+                if (msg != null)
+                {
+                    lock (_lock)
+                    {
+                        if (msg.Index >= 0 && msg.Index < _cache.Length)
+                            _cache[msg.Index] = msg.Preset;
+                    }
+                    PresetsUpdated?.Invoke();
+                }
+                break;
         }
     }
 
-    public void SaveSettings()
-    {
-        fileService.Save(_applicationDataFolder, FileName, Presets);
-    }
-
-    public void AddPreset(Preset preset)
-    {
-        var newPresets = new Preset[Presets.Length + 1];
-        Array.Copy(Presets, newPresets, Presets.Length);
-        newPresets[Presets.Length] = preset;
-        Presets = newPresets;
-    }
-
-    public void RemovePreset(int index)
-    {
-        if (index < 0 || index >= Presets.Length)
-        {
-            return;
-        }
-
-        var newPresets = new Preset[Presets.Length - 1];
-        Array.Copy(Presets, 0, newPresets, 0, index);
-        Array.Copy(Presets, index + 1, newPresets, index, Presets.Length - index - 1);
-        Presets = newPresets;
-    }
-
-    public void RemovePresets(int[]? indices)
-    {
-        if (indices == null || indices.Length == 0)
-        {
-            return;
-        }
-
-        var sortedIndices = indices.OrderByDescending(i => i).ToArray();
-        var tempPresets = Presets;
-
-        foreach (var index in sortedIndices)
-        {
-            if (index >= 0 && index < tempPresets.Length)
-            {
-                var newPresets = new Preset[tempPresets.Length - 1];
-                Array.Copy(tempPresets, 0, newPresets, 0, index);
-                Array.Copy(tempPresets, index + 1, newPresets, index, tempPresets.Length - index - 1);
-                tempPresets = newPresets;
-            }
-        }
-
-        Presets = tempPresets;
-    }
 
     public void UpdatePreset(int index, Preset preset)
     {
-        if (index < 0 || index >= Presets.Length)
+        lock (_lock)
         {
-            return;
+            if (index < 0 || index >= _cache.Length) return;
+            _cache[index] = preset;
         }
-
-        Presets[index] = preset;
+        PresetsUpdated?.Invoke();
+        ScheduleSend(index, preset);
     }
 
-    public void ExportPreset(int index, string exportFolder, string exportFile)
+    private void ScheduleSend(int index, Preset preset)
     {
-        if (index < 0 || index >= Presets.Length)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), "Invalid preset index");
-        }
+        if (_pendingSaves.TryRemove(index, out var old)) old.Cancel();
 
-        try
+        var cts = new CancellationTokenSource();
+        _pendingSaves[index] = cts;
+        var token = cts.Token;
+
+        _ = Task.Run(async () =>
         {
-            var preset = Presets[index];
-            fileService.Save(exportFolder, exportFile, preset);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to export preset: {ex.Message}", ex);
-        }
+            try { await Task.Delay(250, token); }
+            catch (TaskCanceledException) { return; }
+
+            var msg = new PresetUpdateMessage { Index = index, Preset = preset };
+            var json = JsonSerializer.Serialize(msg, IpcJsonContext.Default.PresetUpdateMessage);
+            await _ipc.SendCommandAsync("Set_Preset", json, token);
+
+            _pendingSaves.TryRemove(index, out _);
+        }, token);
     }
 
-    public void ExportPresets(int[] indices, string exportFolder, string exportFile)
+    public async Task AddPresetAsync(Preset preset)
     {
-        if (indices == null || indices.Length == 0)
-        {
-            throw new ArgumentException("No indices provided", nameof(indices));
-        }
-
-        try
-        {
-            var preset = indices
-                .Where(i => i >= 0 && i < Presets.Length)
-                .Select(i => Presets[i])
-                .ToArray();
-
-            if (preset.Length == 0)
-            {
-                throw new ArgumentException("No valid indices found");
-            }
-
-            fileService.Save(exportFolder, exportFile, preset);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to export presets: {ex.Message}", ex);
-        }
+        var json = JsonSerializer.Serialize(preset, IpcJsonContext.Default.Preset);
+        var res = await _ipc.SendCommandAsync("Add_Preset", json);
+        ApplyFullResponse(res);
     }
 
-    public void ExportAllPresets(string exportFolder, string exportFile)
+    public async Task RemovePresetAsync(int index)
     {
-        try
-        {
-            fileService.Save(exportFolder, exportFile, Presets);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to export all presets: {ex.Message}", ex);
-        }
+        var json = JsonSerializer.Serialize(index, IpcJsonContext.Default.Int32);
+        var res = await _ipc.SendCommandAsync("Remove_Preset", json);
+        ApplyFullResponse(res);
     }
 
-    public void ImportPresets(string importFolder, string importFile, bool append = false)
+    public async Task RemovePresetsAsync(int[] indices)
     {
-        try
-        {
-            var imported = fileService.Read<Preset[]>(importFolder, importFile);
-            if (imported == null || imported.Length == 0)
-            {
-                throw new InvalidOperationException("No valid presets found in file");
-            }
-
-            if (append)
-            {
-                var combined = new Preset[Presets.Length + imported.Length];
-                Array.Copy(Presets, combined, Presets.Length);
-                Array.Copy(imported, 0, combined, Presets.Length, imported.Length);
-                Presets = combined;
-            }
-            else
-            {
-                Presets = imported;
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to import presets: {ex.Message}", ex);
-        }
+        var json = JsonSerializer.Serialize(indices, IpcJsonContext.Default.Int32Array);
+        var res = await _ipc.SendCommandAsync("Remove_Presets", json);
+        ApplyFullResponse(res);
     }
 
-    public struct PresetId
+    public async Task ImportPresetsAsync(string folder, string file, bool append = false)
     {
-        public string PresetName;
-        public string? PresetDesc;
-        public string PresetIcon;
-        public int PresetIndex;
+        var req = new ImportPresetsRequest { Folder = folder, File = file, Append = append };
+        var json = JsonSerializer.Serialize(req, IpcJsonContext.Default.ImportPresetsRequest);
+        var res = await _ipc.SendCommandAsync("Import_Presets", json);
+        if (string.IsNullOrEmpty(res)) throw new InvalidOperationException("Failed to import presets");
+        ApplyFullResponse(res);
     }
 
-    /// <summary>
-    ///     Метод для получения следующего кастомного пресета, без применения настроек
-    /// </summary>
-    public PresetId GetNextPreset()
+    public async Task ExportPresetAsync(int index, string folder, string file)
     {
-        try
-        {
-            if (Presets.Length == 0)
-            {
-                LogHelper.TraceIt_TraceError("No custom presets available");
-
-                return new PresetId
-                {
-                    PresetName = "Balance",
-                    PresetDesc = string.Empty,
-                    PresetIcon = "\uE783",
-                    PresetIndex = -1
-                };
-            }
-
-            int nextPresetIndex;
-
-            // Определяем текущую позицию
-            if (_isVirtualStateActive && _virtualCustomPresetIndex >= 0)
-            {
-                nextPresetIndex = (_virtualCustomPresetIndex + 1) % Presets.Length;
-            }
-            else
-            {
-                if (appSettings.Preset == -1)
-                {
-                    // Сейчас активен готовый пресет - начинаем с первого кастомного
-                    nextPresetIndex = 0;
-                    _virtualCustomPresetIndex = -1; // Чтобы следующий был 0
-                }
-                else
-                {
-                    // Уже выбран кастомный пресет
-                    nextPresetIndex = (appSettings.Preset + 1) % Presets.Length;
-                    _virtualCustomPresetIndex = appSettings.Preset;
-                }
-
-                _isVirtualStateActive = true;
-            }
-
-            // Обновляем виртуальную позицию
-            _virtualCustomPresetIndex = nextPresetIndex;
-
-            // Проверяем корректность индекса и данных пресета
-            if (nextPresetIndex >= 0 && nextPresetIndex < Presets.Length &&
-                !string.IsNullOrEmpty(Presets[nextPresetIndex].PresetName))
-            {
-                var preset = Presets[nextPresetIndex];
-                var presetName = preset.PresetName; 
-                var presetDesc = preset.PresetDesc;
-                if (presetName.Contains("Preset_")){ presetName = ГлавнаяPage.TryLocalize(presetName); }
-                if (presetDesc.Contains("Preset_")){ presetDesc = ГлавнаяPage.TryLocalize(presetDesc); }
-                return new PresetId
-                {
-                    PresetName = presetName,
-                    PresetDesc = presetDesc,
-                    PresetIcon = preset.PresetIcon,
-                    PresetIndex = nextPresetIndex
-                };
-            }
-
-            LogHelper.TraceIt_TraceError($"Invalid preset index: {nextPresetIndex}");
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError($"Error getting next custom preset: {ex.Message}");
-        }
-
-        return new PresetId
-        {
-            PresetName = "Balance",
-            PresetDesc = string.Empty,
-            PresetIcon = "\uE783",
-            PresetIndex = -1
-        };
+        var req = new ExportPresetRequest { Index = index, Folder = folder, File = file };
+        var json = JsonSerializer.Serialize(req, IpcJsonContext.Default.ExportPresetRequest);
+        var res = await _ipc.SendCommandAsync("Export_Preset", json);
+        if (res is null) throw new InvalidOperationException("Failed to export preset");
     }
-
-    public void ResetPresetStateAfterApply()
+    
+    public async Task ExportPresetsAsync(int[] indices, string folder, string file)
     {
-        _isVirtualStateActive = false;
-        _virtualCustomPresetIndex = -1;
+        var req = new ExportPresetsRequest { Indices = indices, Folder = folder, File = file };
+        var json = JsonSerializer.Serialize(req, IpcJsonContext.Default.ExportPresetsRequest);
+        var res = await _ipc.SendCommandAsync("Export_Presets", json);
+        if (res is null) throw new InvalidOperationException("Failed to export preset");
     }
+
+    public async Task ExportAllPresetsAsync(string folder, string file)
+    {
+        var req = new ExportAllPresetsRequest { Folder = folder, File = file };
+        var json = JsonSerializer.Serialize(req, IpcJsonContext.Default.ExportAllPresetsRequest);
+        await _ipc.SendCommandAsync("Export_All_Presets", json);
+    }
+
+    public async Task<PresetId> GetNextPresetAsync()
+    {
+        var json = await _ipc.SendCommandAsync("Get_Next_Preset");
+        var id = JsonSerializer.Deserialize(json, IpcJsonContext.Default.PresetId);
+        return id;
+    }
+
+    public Task ResetPresetStateAfterApplyAsync() => _ipc.SendCommandAsync("Reset_Preset_State");
+
+    private void ApplyFullResponse(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return;
+        var full = JsonSerializer.Deserialize(json, IpcJsonContext.Default.PresetArray);
+        if (full != null) { lock (_lock) _cache = full; }
+        PresetsUpdated?.Invoke();
+    }
+
+    public void Dispose() => _ipc.OnEvent -= OnIpcEvent;
 }

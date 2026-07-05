@@ -13,7 +13,6 @@ public sealed partial class ОбучениеPage
     private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
     private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>(); // Управление треем
     private static readonly IThemeSelectorService ThemeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
-    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>(); // Управление готовыми пресетами
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private bool _isLoaded;
@@ -94,7 +93,6 @@ public sealed partial class ОбучениеPage
             {
                 // Сбрасываем на дефолтную тему
                 AppSettings.ThemeType = 0;
-                AppSettings.SaveSettings();
             }
 
             // Устанавливаем выбранную тему
@@ -106,7 +104,6 @@ public sealed partial class ОбучениеPage
 
             // Сбрасываем на безопасные значения
             AppSettings.ThemeType = 0;
-            AppSettings.SaveSettings();
         }
     }
 
@@ -121,7 +118,6 @@ public sealed partial class ОбучениеPage
         }
 
         AppSettings.ThemeType = ThemeComboBox.SelectedIndex > -1 ? ThemeComboBox.SelectedIndex : 0;
-        AppSettings.SaveSettings();
 
         if (ThemeSelectorService.Themes.Count == 0)
         {
@@ -133,7 +129,6 @@ public sealed partial class ОбучениеPage
             AppSettings.ThemeType >= ThemeSelectorService.Themes.Count) // Защита от некорректного индекса
         {
             AppSettings.ThemeType = 0;
-            AppSettings.SaveSettings();
         }
 
         var selectedTheme = ThemeSelectorService.Themes[AppSettings.ThemeType];
@@ -182,8 +177,6 @@ public sealed partial class ОбучениеPage
         {
             AutoStartHelper.RemoveStartupTask();
         }
-
-        AppSettings.SaveSettings();
     }
 
     /// <summary>
@@ -197,11 +190,10 @@ public sealed partial class ОбучениеPage
         }
 
         AppSettings.HideToTray = AppHideToTray.IsOn;
-        AppSettings.SaveSettings();
     }
 
     /// <summary>
-    ///     Изменяет состояние переприменения последних применённых параметров разгона при запуске программы (включены,
+    ///     Изменяет состояние пере-применения последних применённых параметров разгона при запуске программы (включены,
     ///     выключены)
     /// </summary>
     private void ApplyOptionsOnStart_Click(object sender, RoutedEventArgs e)
@@ -212,12 +204,10 @@ public sealed partial class ОбучениеPage
         }
 
         AppSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
-
-        AppSettings.SaveSettings();
     }
 
     /// <summary>
-    ///     Изменяет состояние переприменение последних применённых параметров каждые несколько секунд (включено, выключено)
+    ///     Изменяет состояние пере-применение последних применённых параметров каждые несколько секунд (включено, выключено)
     /// </summary>
     private void AutoReapplyOptionsEverySeconds_Click(object sender, RoutedEventArgs e)
     {
@@ -228,8 +218,6 @@ public sealed partial class ОбучениеPage
 
         AppSettings.ReapplyOverclock = AutoReapply.IsOn;
         AppSettings.ReapplyOverclockTimer = 3;
-
-        AppSettings.SaveSettings();
     }
 
     /// <summary>
@@ -243,8 +231,6 @@ public sealed partial class ОбучениеPage
         }
 
         AppSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
-
-        AppSettings.SaveSettings();
     }
 
     /// <summary>
@@ -395,7 +381,6 @@ public sealed partial class ОбучениеPage
             Storyboard.SetTarget(animShow, WelcomeLogoImage);
             Storyboard.SetTargetProperty(animShow, "Opacity");
 
-            // Добавляем в сториборд
             hideStoryBoard.Children.Add(animHide);
             hideStoryBoard.Children.Add(animShow);
 
@@ -490,7 +475,6 @@ public sealed partial class ОбучениеPage
             Storyboard.SetTarget(animFadeText, TextPanel);
             Storyboard.SetTargetProperty(animFadeText, "Opacity");
 
-            // Добавляем в сториборд
             moveStoryboard.Children.Add(animScaleX);
             moveStoryboard.Children.Add(animScaleY);
             moveStoryboard.Children.Add(animMoveLogo);
@@ -607,7 +591,6 @@ public sealed partial class ОбучениеPage
 
     private async Task AnimateOcFinderSearch()
     {
-        // Общие easing'и
         var quintEaseOut = new QuinticEase { EasingMode = EasingMode.EaseOut };
         var quintEaseInOut = new QuinticEase { EasingMode = EasingMode.EaseInOut };
 
@@ -825,7 +808,6 @@ public sealed partial class ОбучениеPage
     private void TrainingDone_Click(object sender, RoutedEventArgs e)
     {
         AppSettings.AppFirstRun = false;
-        AppSettings.SaveSettings();
         ShowNavbarAndControls();
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!);

@@ -11,9 +11,10 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
@@ -136,13 +137,9 @@ public sealed partial class SettingsPage
                     ThemeComboBox.Items.Add(theme.ThemeName);
                 }
 
-            // Проверяем индекс темы
+            // Проверяем индекс темы и сбрасываем на дефолтную тему в случае несоответствия
             if (_appSettings.ThemeType < 0 || _appSettings.ThemeType >= _themeSelectorService.Themes.Count)
-            {
-                // Сбрасываем на дефолтную тему
                 _appSettings.ThemeType = 0;
-                _appSettings.SaveSettings();
-            }
 
             // Устанавливаем выбранную тему
             ThemeComboBox.SelectedIndex = _appSettings.ThemeType;
@@ -151,9 +148,8 @@ public sealed partial class SettingsPage
         {
             LogHelper.LogError(ex);
 
-            // Сбрасываем на безопасные значения
+            // Сбрасываем на дефолтную тему
             _appSettings.ThemeType = 0;
-            _appSettings.SaveSettings();
         }
     }
 
@@ -291,8 +287,6 @@ public sealed partial class SettingsPage
             CollapseStoryboard.Begin();
             _hotkeysService.Disable();
         }
-
-        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -307,8 +301,6 @@ public sealed partial class SettingsPage
             AutoStartHelper.SetStartupTask();
         else
             AutoStartHelper.RemoveStartupTask();
-
-        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -319,7 +311,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _appSettings.HideToTray = AppHideToTray.IsOn;
-        _appSettings.SaveSettings();
     }
 
 
@@ -339,8 +330,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _appSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
-
-        _appSettings.SaveSettings();
     }
 
     #endregion
@@ -355,7 +344,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _appSettings.ThemeType = ThemeComboBox.SelectedIndex > -1 ? ThemeComboBox.SelectedIndex : 0;
-        _appSettings.SaveSettings();
 
         if (_themeSelectorService.Themes.Count == 0)
         {
@@ -364,11 +352,8 @@ public sealed partial class SettingsPage
         }
 
         if (_appSettings.ThemeType < 0 ||
-            _appSettings.ThemeType >= _themeSelectorService.Themes.Count) // Защита от некорректного индекса
-        {
-            _appSettings.ThemeType = 0;
-            _appSettings.SaveSettings();
-        }
+            _appSettings.ThemeType >= _themeSelectorService.Themes.Count)
+            _appSettings.ThemeType = 0; // Защита от некорректного индекса
 
         var selectedTheme = _themeSelectorService.Themes[_appSettings.ThemeType];
 
@@ -418,7 +403,6 @@ public sealed partial class SettingsPage
         catch
         {
             _appSettings.NiIconsType = -1; // Нет сохранённых
-            _appSettings.SaveSettings();
         }
     }
 
@@ -545,7 +529,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _appSettings.NiIconsEnabled = TrayMonIconsEnabled.IsOn;
-        _appSettings.SaveSettings();
         if (TrayMonIconsEnabled.IsOn)
         {
             NiIconComboboxElements.Visibility = Visibility.Visible;
@@ -936,7 +919,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _appSettings.NiIconsType = NiIconComboboxElements.SelectedIndex;
-        _appSettings.SaveSettings();
         if (_notifyIcons.Elements.Count != 0 && _appSettings.NiIconsType != -1)
         {
             if (NiIconComboboxElements.SelectedIndex >= 0)
@@ -1134,7 +1116,6 @@ public sealed partial class SettingsPage
             _notifyIcons.Elements.RemoveAt(_appSettings.NiIconsType);
             _notifyIcons.SaveSettings();
             _appSettings.NiIconsType = -1;
-            _appSettings.SaveSettings();
             InitializeTrayMonIcons();
 
             _notifyIcons.UpdateTrayMonIcons();
@@ -1545,7 +1526,6 @@ public sealed partial class SettingsPage
             RtssAdvancedCodeEditor.IsOn ? rtssVisibility : Visibility.Collapsed;
 
         _appSettings.RtssMetricsEnabled = RtssSettingsEnable.IsOn;
-        _appSettings.SaveSettings();
     }
 
     /// <summary>

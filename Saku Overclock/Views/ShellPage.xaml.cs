@@ -14,10 +14,11 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
 using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using Task = System.Threading.Tasks.Task;
 
 namespace Saku_Overclock.Views;
@@ -202,7 +203,7 @@ public sealed partial class ShellPage
 
             if (notify.Msg.Contains("DELETEUNAVAILABLE"))
             {
-                if (notify.Type != InfoBarSeverity.Success)
+                if (notify.Type != Saku_Overclock.Shared.Models.InfoBarSeverity.Success)
                 {
                     var but1 = new Button
                     {
@@ -465,7 +466,7 @@ public sealed partial class ShellPage
                                     loggingList += (loggingList == string.Empty ? "" : "\n") + currPos;
                                 }
 
-                            PresetManager.SaveSettings();
+                            PresetManager.UpdatePreset(AppSettings.Preset, presets[AppSettings.Preset]);
 
                             ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                             await Task.Delay(2000);
@@ -610,7 +611,7 @@ public sealed partial class ShellPage
                 notify.Msg = notify.Msg.Replace("DELETEUNAVAILABLE", "");
             }
 
-            MandarinAddNotification(notify.Title, notify.Msg, notify.Type, Notify.IsClosable, subcontent);
+            MandarinAddNotification(notify.Title, notify.Msg, (InfoBarSeverity)notify.Type, Notify.IsClosable, subcontent);
 
             if (NotificationContainer.Children.Count > 8) // Если 9 уведомлений - очистить
                 ClearAllNotification(NotificationPanelClearAllBtn, null); // Удалить все уведомления
@@ -756,11 +757,7 @@ public sealed partial class ShellPage
         }
     }
 
-    private void Icon_Click(object sender, RoutedEventArgs e)
-    {
-        AppSettings.FixedTitleBar = !AppSettings.FixedTitleBar;
-        AppSettings.SaveSettings();
-    }
+    private void Icon_Click(object sender, RoutedEventArgs e) => AppSettings.FixedTitleBar = !AppSettings.FixedTitleBar;
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender,
         NavigationViewDisplayModeChangedEventArgs args)
@@ -853,7 +850,7 @@ public sealed partial class ShellPage
         for (var i = 0; i < list.Count; i++)
         {
             var notify1 = list[i];
-            if (sender.Title == notify1.Title && sender.Message == notify1.Msg && sender.Severity == notify1.Type)
+            if (sender.Title == notify1.Title && sender.Message == notify1.Msg && sender.Severity == (InfoBarSeverity)notify1.Type)
             {
                 NotificationsService.Notifies?.RemoveAt(i);
                 NotificationsService.SaveNotificationsSettings();

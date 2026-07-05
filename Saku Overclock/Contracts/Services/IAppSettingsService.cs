@@ -3,14 +3,9 @@ namespace Saku_Overclock.Contracts.Services;
 public interface IAppSettingsService
 {
     /// <summary>
-    ///     Сохранение настроек
-    /// </summary>
-    void SaveSettings();
-
-    /// <summary>
     ///     Загрузка настроек
     /// </summary>
-    void LoadSettings();
+    Task LoadSettingsAsync();
 
     /// <summary>
     ///     Флаг фиксированного тайтл бара приложения

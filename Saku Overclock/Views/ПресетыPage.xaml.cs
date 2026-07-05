@@ -7,11 +7,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Models;
+using Saku_Overclock.Shared.Models.PresetSettings;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using static Saku_Overclock.Styles.BandCrowdToggle;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using Task = System.Threading.Tasks.Task;
 
 namespace Saku_Overclock.Views;
@@ -20,7 +22,6 @@ public sealed partial class ПресетыPage
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static readonly IApplyerService Applyer = App.GetService<IApplyerService>();
-    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool NotReady => !_isLoaded || _presetChanging || AppSettings.Preset < 0;
@@ -34,14 +35,11 @@ public sealed partial class ПресетыPage
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
-    private static readonly ICpuService Cpu = App.GetService<ICpuService>();
     private string _doubleClickApplyToken = string.Empty;
 
     public ПресетыPage()
     {
         InitializeComponent();
-
-        AppSettings.SaveSettings();
 
         _dataUpdater.DataUpdated += OnDataUpdated;
 
@@ -161,10 +159,7 @@ public sealed partial class ПресетыPage
         }
 
         if ((PresetManager.Presets.Length == 0 && AppSettings.Preset != -1) || !isOneSelected)
-        {
             AppSettings.Preset = -1;
-            AppSettings.SaveSettings();
-        }
 
         // Workaround чтобы все элементы корректно загрузились в PresetsControl
         PresetsControl.UpdateView();
@@ -499,7 +494,6 @@ public sealed partial class ПресетыPage
                 InfoBarSeverity.Error);
         }
 
-        AppSettings.SaveSettings();
         PresetManager.SaveSettings();
         LoadPresets();
     }
@@ -985,7 +979,6 @@ public sealed partial class ПресетыPage
                 }
 
             _presetIndex = AppSettings.Preset;
-            AppSettings.SaveSettings();
             InitializeCustomPresetSettings(_presetIndex);
         }
         catch (Exception ex)
@@ -1033,8 +1026,6 @@ public sealed partial class ПресетыPage
                     }
                 }
             }
-
-            AppSettings.SaveSettings();
 
             ПараметрыPage.ApplyInfo = string.Empty;
             if (requiredPreset != null) await Applyer.ApplyPreset(requiredPreset, true);

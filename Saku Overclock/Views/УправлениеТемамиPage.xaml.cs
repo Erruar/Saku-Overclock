@@ -12,7 +12,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Styles;
+using Saku_Overclock.Shared.Models;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 
 namespace Saku_Overclock.Views;
 
@@ -285,7 +286,6 @@ public sealed partial class УправлениеТемамиPage
             }
 
         _appSettings.ThemeType = index;
-        _appSettings.SaveSettings();
 
         // Применяет тему
         var selected = _themeSelectorService.Themes[index];
@@ -686,7 +686,6 @@ public sealed partial class УправлениеТемамиPage
             _themeSelectorService.SaveThemeInSettings();
 
             _appSettings.ThemeType = 0;
-            _appSettings.SaveSettings();
             _themeSelectorService.SetThemeAsync(ElementTheme.Default);
 
             LoadThemeCards();

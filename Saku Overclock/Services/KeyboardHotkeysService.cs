@@ -132,7 +132,6 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
     private void ToggleRtss()
     {
         settingsService.RtssMetricsEnabled = !settingsService.RtssMetricsEnabled;
-        settingsService.SaveSettings();
         if (!settingsService.RtssMetricsEnabled)
         {
             RtssHandler.ResetOsdText();

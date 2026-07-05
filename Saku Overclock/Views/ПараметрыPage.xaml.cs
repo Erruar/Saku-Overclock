@@ -11,6 +11,9 @@ using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Models;
+using Saku_Overclock.Shared.Models.PresetSettings;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
@@ -20,8 +23,6 @@ public sealed partial class ПараметрыPage
     private readonly IAppNotificationService _notificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>();
     private readonly IApplyerService _applyer = App.GetService<IApplyerService>();
-    private readonly IOcFinderService _ocFinder = App.GetService<IOcFinderService>();
-    private readonly ICpuService _cpu = App.GetService<ICpuService>();
     private int _presetIndex; // Выбранный пресет
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
     private readonly IPresetManagerService _presetManager = App.GetService<IPresetManagerService>(); // Менеджер пресетов разгона
@@ -94,10 +95,7 @@ public sealed partial class ПараметрыPage
         base.OnNavigatingFrom(e);
 
         if (_isPremadePresetApplied && _isLoaded)
-        {
             _appSettings.Preset = -1;
-            _appSettings.SaveSettings();
-        }
     }
 
     #endregion
@@ -149,7 +147,6 @@ public sealed partial class ПараметрыPage
         if (_appSettings.Preset > _presetManager.Presets.Length)
         {
             _appSettings.Preset = 0;
-            _appSettings.SaveSettings();
         }
         else
         {
@@ -165,7 +162,6 @@ public sealed partial class ПараметрыPage
 
                 _presetIndex = 0;
                 PresetCom.SelectedIndex = 1;
-                _appSettings.SaveSettings();
             }
             else
             {
@@ -1111,7 +1107,6 @@ public sealed partial class ПараметрыPage
             if (PresetCom.SelectedIndex != -1)
             {
                 _appSettings.Preset = PresetCom.SelectedIndex - 1;
-                _appSettings.SaveSettings();
             }
 
             _presetIndex = PresetCom.SelectedIndex - 1;
@@ -2862,7 +2857,6 @@ public sealed partial class ПараметрыPage
             SettingsApplied = false;
 
             ApplyInfo = "";
-            _appSettings.SaveSettings();
             await _applyer.ApplyPreset(_presetManager.Presets[_presetIndex], 
                 true);
 
@@ -2952,7 +2946,6 @@ public sealed partial class ПараметрыPage
                 AddTooltipError.IsOpen = false;
             }
 
-            _appSettings.SaveSettings();
             _presetManager.SaveSettings();
         }
         catch (Exception exception)

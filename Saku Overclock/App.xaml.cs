@@ -69,13 +69,8 @@ public partial class App
                     services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
                     // Other Activation Handlers
                     services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
-                    // Core Services
-                    services.AddSingleton<IFileService, FileService>();
                     // Services
-                    services.AddSingleton<ICpuService, CpuService>();
-                    services.AddSingleton<IPstateStrategy, Zen4PstateStrategy>();
-                    services.AddSingleton<IPstateStrategy, Zen5PstateStrategy>();
-                    services.AddSingleton<IPstateService, PstateService>();
+                    services.AddSingleton<IpcConnectionService>();
                     services.AddSingleton<IAppNotificationService, AppNotificationService>();
                     services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
                     services.AddSingleton<IAppSettingsService, AppSettingsService>();
@@ -94,9 +89,6 @@ public partial class App
                     services.AddSingleton<IActivationService, ActivationService>();
                     services.AddSingleton<IPageService, PageService>();
                     services.AddSingleton<INavigationService, NavigationService>();
-                    services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
-                    services.AddSingleton<IOcFinderService, OcFinderService>();
-                    services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
                     services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
                     // Views and ViewModels
                     services.AddTransient<SettingsViewModel>();
