@@ -8,6 +8,10 @@ public class AppActivationWorker(
     IAppSettingsService appSettings,
     IPresetManagerService presetManager,
     IPremadePresetManagementService premadePresetsService,
+    ILocalThemeSettingsService localThemeSettingsService,
+    INotifyIconsService notifyIconsService,
+    IPowerMonSettingsService powerMonSettingsService,
+    IRtssSettingsService rtssSettingsService,
     IPstateService powerStateService,
     IOcFinderService ocFinderService,
     IApplyerService applyerService,
@@ -32,13 +36,25 @@ public class AppActivationWorker(
         // 2. Загрузка пользовательских пресетов
         presetManager.RegisterIpcHandlers();
         
-        // 3. Обновление данных
+        // 3. Загрузка тем приложения
+        localThemeSettingsService.RegisterIpcHandlers();
+        
+        // 4. Загрузка настроек TrayMon
+        notifyIconsService.RegisterIpcHandlers();
+        
+        // 5. Загрузка настроек PowerMon
+        powerMonSettingsService.RegisterIpcHandlers();
+        
+        // 6. Загрузка настроек PowerMon
+        rtssSettingsService.RegisterIpcHandlers();
+        
+        // 7. Обновление данных
         backgroundDataUpdater.StartAsync(_globalCts.Token);
         
-        // 4. Создание пресетов под конкретное железо
+        // 8. Создание пресетов под конкретное железо
         ocFinderService.LazyInitTdp();
         
-        // 5. Загрузка методов изменения Power States
+        // 9. Загрузка методов изменения Power States
         powerStateService.Initialize();
         
         await Task.CompletedTask;
