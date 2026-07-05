@@ -1,15 +1,9 @@
-﻿using Saku_Overclock.Models;
-using Saku_Overclock.Shared.Models;
+﻿using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Contracts.Services;
 
 public interface IRtssSettingsService
 {
-    /// <summary>
-    ///     Сохранить настройки Rtss
-    /// </summary>
-    void SaveSettings();
-
     /// <summary>
     ///     Загрузить настройки Rtss
     /// </summary>

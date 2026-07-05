@@ -6,11 +6,6 @@ namespace Saku_Overclock.Contracts.Services;
 public interface INotifyIconsService
 {
     /// <summary>
-    ///     Сохранение настроек
-    /// </summary>
-    void SaveSettings();
-
-    /// <summary>
     ///     Загрузка настроек
     /// </summary>
     void LoadSettings();

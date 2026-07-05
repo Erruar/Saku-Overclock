@@ -21,14 +21,12 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ГлавнаяPage
 {
-    private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Обновление данных сенсоров системы
     private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Сервис горячих клавиш
     private readonly INavigationService _navigationService = App.GetService<INavigationService>(); // Навигация в приложении
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
-    private static readonly IApplyerService Applyer = App.GetService<IApplyerService>(); // Применения пресетов
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения

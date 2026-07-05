@@ -7,51 +7,24 @@ using H.NotifyIcon;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
+using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.Views;
 using Icon = System.Drawing.Icon;
 
 namespace Saku_Overclock.Services;
 
-public class NotifyIconsService : INotifyIconsService
+public class NotifyIconsService(IpcConnectionService ipc)
+    : SimpleIpcSettingsBase<List<NiIconsElements>>(ipc, "NotifyIcons", IpcJsonContext.Default.ListNiIconsElements, [])
+        , INotifyIconsService
 {
-    private const string FolderPath = "Saku Overclock/Settings";
-    private const string FileName = "NotifyIcons.json";
-
-    private readonly string _applicationDataFolder =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), FolderPath);
-
-    private readonly IFileService? _fileService;
-
-    [JsonConstructor]
-    private NotifyIconsService()
+    public List<NiIconsElements> Elements
     {
+        get => Get(s => s);
+        set => Set(cache => { cache.Clear(); cache.AddRange(value); });
     }
 
-    public NotifyIconsService(IFileService fileService)
-    {
-        _fileService = fileService;
-    }
-
-    public List<NiIconsElements> Elements { get; set; } = [];
-
-    public void LoadSettings()
-    {
-        try
-        {
-            Elements = _fileService?.Read<List<NiIconsElements>>(_applicationDataFolder, FileName) ?? [];
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
-    }
-
-    public void SaveSettings()
-    {
-        _fileService?.Save(_applicationDataFolder, FileName, Elements);
-    }
-
+    public void LoadSettings() => _ = LoadSettingsAsync();
 
     public bool IsIconsCreated { get; set; }
     public bool IsIconsUpdated { get; set; }
@@ -270,7 +243,6 @@ public class NotifyIconsService : INotifyIconsService
                     {
                         parsedGuid = Guid.NewGuid();
                         element.Guid = parsedGuid.ToString();
-                        SaveSettings();
                     }
 
                     // Проверяем есть ли уже TaskbarIcon с таким ID
@@ -315,7 +287,6 @@ public class NotifyIconsService : INotifyIconsService
                     catch
                     {
                         element.Guid = Guid.NewGuid().ToString();
-                        SaveSettings();
 
                         LogHelper.LogError(
                             "BackgroudDataUpdater Service: Невозможно создать TrayMon иконки. Перезапустите приложение.");

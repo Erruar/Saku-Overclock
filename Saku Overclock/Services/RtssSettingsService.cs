@@ -2,63 +2,36 @@
 using System.Text.RegularExpressions;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
+using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
 
 namespace Saku_Overclock.Services;
 
-public partial class RtssSettingsService(IFileService fileService) : IRtssSettingsService
+public partial class RtssSettingsService(IpcConnectionService ipc)
+    : SimpleIpcSettingsBase<RtssSettings>(ipc, "RtssSettings", IpcJsonContext.Default.RtssSettings, new())
+        , IRtssSettingsService
 {
-    private const string FolderPath = "Saku Overclock/Settings";
-    private const string FileName = "RtssSettings.json";
-
-    private readonly string _applicationDataFolder =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), FolderPath);
-
-    private readonly IFileService? _fileService = fileService;
-
-    private RtssSettings RtssSettingsClass { get; set; } = new();
-
     public List<RtssElementsClass> RtssElements
     {
-        get => RtssSettingsClass.RtssElements;
-        set => RtssSettingsClass.RtssElements = value;
+        get => Get(s => s.RtssElements);
+        set => Set(cache => cache.RtssElements = value);
     }
 
     public bool IsAdvancedCodeEditorEnabled
     {
-        get => RtssSettingsClass.IsAdvancedCodeEditorEnabled;
-        set => RtssSettingsClass.IsAdvancedCodeEditorEnabled = value;
+        get => Get(s => s.IsAdvancedCodeEditorEnabled);
+        set => Set(cache => cache.IsAdvancedCodeEditorEnabled = value);
     }
 
     public string AdvancedCodeEditor
     {
-        get => RtssSettingsClass.AdvancedCodeEditor;
-        set => RtssSettingsClass.AdvancedCodeEditor = value;
+        get => Get(s => s.AdvancedCodeEditor);
+        set => Set(cache => cache.AdvancedCodeEditor = value);
     }
 
-    // Загрузка настроек
-    public void LoadSettings()
-    {
-        try
-        {
-            RtssSettingsClass =
-                _fileService?.Read<RtssSettings>(_applicationDataFolder, FileName) ?? new RtssSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
-    }
-
-    // Сохранение настроек
-    public void SaveSettings()
-    {
-        _fileService?.Save(_applicationDataFolder, FileName, RtssSettingsClass);
-    }
-
+    public void LoadSettings() => _ = LoadSettingsAsync();
 
     public bool IsRtssUpdated { get; set; }
 

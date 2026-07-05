@@ -5,11 +5,10 @@ using Windows.System;
 using Saku_Overclock.Shared.Models;
 using WinRT.Interop;
 using WinUIEx.Messaging;
-using static Saku_Overclock.Services.PresetManagerService;
 
 namespace Saku_Overclock.Services;
 
-public partial class KeyboardHotkeysService(IAppSettingsService settingsService, IApplyerService applyerService)
+public partial class KeyboardHotkeysService(IAppSettingsService settingsService)
     : IKeyboardHotkeysService
 {
     private IntPtr _hwnd;

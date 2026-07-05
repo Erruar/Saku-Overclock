@@ -69,10 +69,6 @@ public sealed partial class ИнформацияPage
     private int _numberOfCores; // Количество ядер
     private int _numberOfLogicalProcessors; // Количество потоков
     private DispatcherTimer? _dispatcherTimer; // Таймер для автообновления информации
-
-    private readonly IBackgroundDataUpdater?
-        _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Фоновое обновление информации
-
     private SensorsInformation? _sensorsInformation; // Информация с датчиков
 
     private static readonly string BatFromWall = "InfoBatteryAC".GetLocalized(); // Устройство от сети

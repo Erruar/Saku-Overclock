@@ -716,7 +716,6 @@ public sealed partial class SettingsPage
                             try
                             {
                                 _notifyIcons.Elements.RemoveAt(int.Parse(sureDelete.Name));
-                                _notifyIcons.SaveSettings();
                                 niLoaderPanel.Children.Remove(eachButton);
                             }
                             catch
@@ -880,7 +879,6 @@ public sealed partial class SettingsPage
                                 });
                                 newNiIcon.Flyout.Hide();
                                 niAddIconDialog.Hide();
-                                _notifyIcons.SaveSettings();
                                 InitializeTrayMonIcons();
                             }
                             catch (Exception ex)
@@ -958,8 +956,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _notifyIcons.Elements[_appSettings.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
-        _notifyIcons.SaveSettings();
-
         _notifyIcons.UpdateTrayMonIcons();
     }
 
@@ -971,7 +967,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _notifyIcons.Elements[_appSettings.NiIconsType].IsEnabled = IsTrayMonIconShowing.IsOn;
-        _notifyIcons.SaveSettings();
         if (NiIconComboboxElements.SelectedIndex >= 0 && IsTrayMonIconShowing.IsOn)
         {
             NiIconStackPanel.Visibility = Visibility.Visible;
@@ -999,8 +994,6 @@ public sealed partial class SettingsPage
 
         _notifyIcons.Elements[_appSettings.NiIconsType].FontWeight =
             NiIconFontWeight.SelectedIndex;
-        _notifyIcons.SaveSettings();
-
         _notifyIcons.UpdateTrayMonIcons();
     }
 
@@ -1013,8 +1006,6 @@ public sealed partial class SettingsPage
 
         _notifyIcons.Elements[_appSettings.NiIconsType].FontSize =
             Convert.ToInt32(SettingsNiFontsize.Value);
-        _notifyIcons.SaveSettings();
-
         _notifyIcons.UpdateTrayMonIcons();
     }
 
@@ -1026,8 +1017,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _notifyIcons.Elements[_appSettings.NiIconsType].BgOpacity = SettingsNiOpacity.Value;
-        _notifyIcons.SaveSettings();
-
         _notifyIcons.UpdateTrayMonIcons();
     }
 
@@ -1044,9 +1033,6 @@ public sealed partial class SettingsPage
         else if (SettingsNiGradientColorSwitcher.IsChecked == true)
             _notifyIcons.Elements[_appSettings.NiIconsType].SecondColor =
                 $"{NiIconsColorPickerColorPicker.Color.R:X2}{NiIconsColorPickerColorPicker.Color.G:X2}{NiIconsColorPickerColorPicker.Color.B:X2}";
-
-        _notifyIcons.SaveSettings();
-
         _notifyIcons.UpdateTrayMonIcons();
     }
 
@@ -1059,8 +1045,6 @@ public sealed partial class SettingsPage
 
         _notifyIcons.Elements[_appSettings.NiIconsType].IsGradient =
             sender is ToggleSwitch { IsOn: true };
-        _notifyIcons.SaveSettings();
-
         _notifyIcons.UpdateTrayMonIcons();
     }
 
@@ -1099,7 +1083,6 @@ public sealed partial class SettingsPage
         if (!_isLoaded) return;
 
         _notifyIcons.Elements[_appSettings.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
-        _notifyIcons.SaveSettings();
 
         _notifyIcons.UpdateTrayMonIcons();
     }
@@ -1114,7 +1097,6 @@ public sealed partial class SettingsPage
         try
         {
             _notifyIcons.Elements.RemoveAt(_appSettings.NiIconsType);
-            _notifyIcons.SaveSettings();
             _appSettings.NiIconsType = -1;
             InitializeTrayMonIcons();
 
@@ -1140,7 +1122,6 @@ public sealed partial class SettingsPage
         _notifyIcons.Elements[_appSettings.NiIconsType].FontSize = 12;
         _notifyIcons.Elements[_appSettings.NiIconsType].BgOpacity = 1;
         _notifyIcons.Elements[_appSettings.NiIconsType].FontWeight = 0;
-        _notifyIcons.SaveSettings();
         TrayMonIconElements_SelectionChanged(null, null);
 
         _notifyIcons.UpdateTrayMonIcons();
@@ -1502,7 +1483,6 @@ public sealed partial class SettingsPage
         _rtssSettings.AdvancedCodeEditor = advancedCodeEditor.ToString();
         LoadAndFormatAdvancedCodeEditor(_rtssSettings.AdvancedCodeEditor);
         RtssHandler.ChangeOsdText(_rtssSettings.AdvancedCodeEditor);
-        _rtssSettings.SaveSettings();
         return;
 
         void AddColorIfUnique(string color)
@@ -1686,7 +1666,6 @@ public sealed partial class SettingsPage
         }
 
         GenerateAdvancedCodeEditor();
-        _rtssSettings.SaveSettings();
     }
 
     /// <summary>
@@ -1703,7 +1682,6 @@ public sealed partial class SettingsPage
             : new CornerRadius(15);
 
         _rtssSettings.IsAdvancedCodeEditorEnabled = RtssAdvancedCodeEditor.IsOn;
-        _rtssSettings.SaveSettings();
     }
 
     /// <summary>
@@ -1713,7 +1691,6 @@ public sealed partial class SettingsPage
     {
         RtssAdvancedCodeEditorEditBox.Document.GetText(TextGetOptions.None, out var newString);
         _rtssSettings.AdvancedCodeEditor = newString.Replace("\r", "\n").TrimEnd();
-        _rtssSettings.SaveSettings();
     }
 
     #endregion

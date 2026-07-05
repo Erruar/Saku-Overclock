@@ -4,7 +4,6 @@ using System.Web;
 using Microsoft.Windows.AppNotifications;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
 using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;

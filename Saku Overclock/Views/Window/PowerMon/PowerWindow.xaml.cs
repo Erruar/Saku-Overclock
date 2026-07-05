@@ -12,7 +12,6 @@ internal partial class PowerWindow : IDisposable
 {
     private static readonly IPowerMonSettingsService SettingsService = App.GetService<IPowerMonSettingsService>();
     private ObservableCollection<PowerMonitorItem>? _powerGridItems;
-    private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private bool _isInitialized;
     private float[]? _rawData; // Сырые данные
     private int _currentPage;
@@ -402,8 +401,6 @@ internal partial class PowerWindow : IDisposable
                     && realIndex < SettingsService.Notelist.Count)
                 {
                     SettingsService.Notelist[realIndex] = item.Note ?? " ";
-                    // Отложенное сохранение
-                    Task.Run(SettingsService.SaveSettings).Wait();
                 }
             }
         }

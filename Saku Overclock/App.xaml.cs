@@ -73,6 +73,7 @@ public partial class App
                     services.AddSingleton<IpcConnectionService>();
                     services.AddSingleton<IAppNotificationService, AppNotificationService>();
                     services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
+                    services.AddSingleton<IFileService, LocalFileService>();
                     services.AddSingleton<IAppSettingsService, AppSettingsService>();
                     services.AddSingleton<IPresetManagerService, PresetManagerService>();
                     services.AddSingleton<IPowerMonSettingsService, PowerMonSettingsService>();
