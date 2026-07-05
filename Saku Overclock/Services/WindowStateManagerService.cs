@@ -11,8 +11,7 @@ using Windows.UI.ViewManagement;
 namespace Saku_Overclock.Services;
 
 public class WindowStateManagerService(
-    IAppSettingsService settingsService,
-    IBackgroundDataUpdater backgroundDataUpdater)
+    IAppSettingsService settingsService)
     : IWindowStateManagerService
 {
     private DispatcherQueue? _dispatcherQueue;
@@ -164,10 +163,6 @@ public class WindowStateManagerService(
         {
             args.Cancel = true; // Отменяем закрытие
             App.MainWindow.Hide(); // Скрываем в трей
-        }
-        else
-        {
-            backgroundDataUpdater.Stop();
         }
     }
 

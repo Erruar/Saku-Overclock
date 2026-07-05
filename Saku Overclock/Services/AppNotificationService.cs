@@ -113,7 +113,7 @@ public class AppNotificationService : IAppNotificationService
         {
             Title = title,
             Msg = message,
-            Type = severity
+            Type = (Shared.Models.InfoBarSeverity)severity
         };
 
         if (save) 

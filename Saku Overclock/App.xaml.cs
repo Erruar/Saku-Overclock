@@ -79,7 +79,6 @@ public partial class App
                     services.AddSingleton<INotifyIconsService, NotifyIconsService>();
                     services.AddSingleton<IUpdateCheckerService, UpdateCheckerService>();
                     services.AddSingleton<INotesWriterService, NotesWriterService>();
-                    services.AddSingleton<IApplyerService, ApplyerService>();
                     services.AddSingleton<IKeyboardHotkeysService, KeyboardHotkeysService>();
                     services.AddSingleton<ITrayMenuService, TrayMenuService>();
                     services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
@@ -89,7 +88,6 @@ public partial class App
                     services.AddSingleton<IActivationService, ActivationService>();
                     services.AddSingleton<IPageService, PageService>();
                     services.AddSingleton<INavigationService, NavigationService>();
-                    services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
                     // Views and ViewModels
                     services.AddTransient<SettingsViewModel>();
                     services.AddTransient<SettingsPage>();

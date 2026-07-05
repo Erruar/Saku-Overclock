@@ -18,9 +18,6 @@ public class ActivationService(
     : IActivationService
 {
     private UIElement? _shell;
-
-    private readonly CancellationTokenSource _globalCts = new();
-
     public async Task ActivateAsync(object activationArgs)
     {
         // 1. Загрузка настроек приложения
@@ -73,9 +70,6 @@ public class ActivationService(
     /// </summary>
     private void Initialize()
     {
-        // 3. Обновление данных
-        backgroundDataUpdater.StartAsync(_globalCts.Token);
-
         // 4. Инициализация тем
         themeSelectorService.Initialize();
 

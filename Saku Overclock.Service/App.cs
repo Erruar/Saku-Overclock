@@ -33,6 +33,8 @@ public static class App
         builder.Services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
         builder.Services.AddSingleton<ICpuService, CpuService>();
         builder.Services.AddSingleton<IOcFinderService, OcFinderService>();
+        builder.Services.AddSingleton<IApplyerService, ApplyerService>();
+        builder.Services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
         builder.Services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
         
         // Сначала регистрируем сервис активации/инициализации железного ядра

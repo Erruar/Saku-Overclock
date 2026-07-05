@@ -2,6 +2,7 @@
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Wrappers;
 using Windows.System;
+using Saku_Overclock.Shared.Models;
 using WinRT.Interop;
 using WinUIEx.Messaging;
 using static Saku_Overclock.Services.PresetManagerService;

@@ -88,6 +88,7 @@ public class NotifyIconsService : INotifyIconsService
     private readonly string _niMinvalueText = "Settings_ni_Values_MinValue".GetLocalized();
     private readonly string _niMaxvalueText = "Settings_ni_Values_MaxValue".GetLocalized();
 
+    // Давай пока оставим в клиенте
     public void UpdateNotifyIcons(SensorsInformation sensorsInformation)
     {
         try
