@@ -89,7 +89,7 @@ public sealed partial class ГлавнаяPage
         InitializeChart();
     }
 
-    private void PresetChanged(object? sender, PresetManagerService.PresetId e)
+    private void PresetChanged(object? sender, PresetId e)
     {
         _userSwitchPreset = true;
 
