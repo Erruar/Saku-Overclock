@@ -30,6 +30,8 @@ public sealed partial class ИнформацияPage
     }
 
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private readonly ICpuGateService _cpu = App.GetService<ICpuGateService>();
+    private readonly IPstateGateService _pstates = App.GetService<IPstateGateService>();
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
@@ -123,10 +125,11 @@ public sealed partial class ИнформацияPage
     {
         InitializeComponent();
 
-        if (_dataUpdater != null)
+        // TODO: Implement Data Updater
+        /*if (_dataUpdater != null)
         {
             _dataUpdater.DataUpdated += OnDataUpdated;
-        }
+        }*/
 
         Loaded += ИнформацияPage_Loaded;
         Unloaded += ИнформацияPage_Unloaded;
@@ -345,7 +348,7 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///     Основной метод чтения P-States
     /// </summary>
-    private void ReadPowerStates()
+    private async Task ReadPowerStates()
     {
         if (!_pstates.IsSupported)
         {
@@ -353,7 +356,7 @@ public sealed partial class ИнформацияPage
             return;
         }
 
-        var pstates = _pstates.ReadAllPstates();
+        var pstates = await _pstates.ReadAllPstatesAsync();
         for (var i = 0; i < 3; i++)
         {
             var textBlock = i switch
@@ -455,7 +458,7 @@ public sealed partial class ИнформацияPage
             LoadCpuInformation();
             LoadRamInformation();
             LoadIntegratedGpuInformation();
-            ReadPowerStates();
+            await ReadPowerStates();
 
             if (CpuBannerButton.Shadow != new ThemeShadow())
             {
@@ -481,10 +484,11 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        if (_dataUpdater != null)
+        // TODO: Implement Data Updater
+        /*if (_dataUpdater != null)
         {
             _dataUpdater.DataUpdated -= OnDataUpdated;
-        }
+        }*/
 
         Unloaded -= ИнформацияPage_Unloaded;
         App.MainWindow.VisibilityChanged -= Window_VisibilityChanged;
@@ -1772,9 +1776,16 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///     Обработчик создания дебаг репорта
     /// </summary>
-    private void DebugReport_Click(object sender, RoutedEventArgs e)
+    private async void DebugReport_Click(object sender, RoutedEventArgs e)
     {
-        _cpu.GenerateDebugReport();
+        try
+        {
+            await _cpu.GenerateDebugReportAsync();
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
     }
 
     #region Flyouts and Banner Buttons handlers

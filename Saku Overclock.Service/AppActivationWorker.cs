@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Saku_Overclock.Core.Contracts;
+using Saku_Overclock.Core.Services;
 
 namespace Saku_Overclock.Service;
 
@@ -12,6 +13,7 @@ public class AppActivationWorker(
     INotifyIconsService notifyIconsService,
     IPowerMonSettingsService powerMonSettingsService,
     IRtssSettingsService rtssSettingsService,
+    CoreIpcHandlers ipcHandlers,
     IPstateService powerStateService,
     IOcFinderService ocFinderService,
     IApplyerService applyerService,
@@ -48,13 +50,16 @@ public class AppActivationWorker(
         // 6. Загрузка настроек PowerMon
         rtssSettingsService.RegisterIpcHandlers();
         
-        // 7. Обновление данных
+        // 7. Загрузка методов получения информации
+        ipcHandlers.RegisterIpcHandlers();
+        
+        // 8. Обновление данных
         backgroundDataUpdater.StartAsync(_globalCts.Token);
         
-        // 8. Создание пресетов под конкретное железо
+        // 9. Создание пресетов под конкретное железо
         ocFinderService.LazyInitTdp();
         
-        // 9. Загрузка методов изменения Power States
+        // 10. Загрузка методов изменения Power States
         powerStateService.Initialize();
         
         await Task.CompletedTask;
@@ -82,7 +87,7 @@ public class AppActivationWorker(
     /// <summary>
     ///     Логика при остановке сервиса
     /// </summary>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">Токен отмены</param>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         // 1. Сохранение пользовательских настроек

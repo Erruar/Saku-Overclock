@@ -22,6 +22,9 @@ public sealed partial class ПресетыPage
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
+    private static readonly IApplyerGateService Applyer = App.GetService<IApplyerGateService>();
+    private static readonly IOcFinderGateService OcFinder = App.GetService<IOcFinderGateService>();
+    private static readonly ICpuGateService Cpu = App.GetService<ICpuGateService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool NotReady => !_isLoaded || _presetChanging || AppSettings.Preset < 0;
 
@@ -39,7 +42,8 @@ public sealed partial class ПресетыPage
     {
         InitializeComponent();
 
-        _dataUpdater.DataUpdated += OnDataUpdated;
+        // TODO: Implement Data Updater
+        //_dataUpdater.DataUpdated += OnDataUpdated;
 
         Unloaded += ПресетыPage_Unloaded;
         Loaded += ПресетыPage_Loaded;
@@ -47,35 +51,42 @@ public sealed partial class ПресетыPage
 
     private void ПресетыPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        _dataUpdater.DataUpdated -= OnDataUpdated;
+        //_dataUpdater.DataUpdated -= OnDataUpdated;
 
         Unloaded -= ПресетыPage_Unloaded;
         Loaded -= ПресетыPage_Loaded;
     }
 
-    private void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
+    private async void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
     {
-        _presetIndex = AppSettings.Preset;
-        _presetChanging = false;
-        SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
-
-        LoadPresets();
-
-        var coAvailable = OcFinder.IsUndervoltingAvailable();
-
-        if (coAvailable || true)
+        try
         {
-            CurveOptimizerCustomGrid.Visibility = Visibility.Visible;
+            _presetIndex = AppSettings.Preset;
+            _presetChanging = false;
+            SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
+
+            LoadPresets();
+
+            var coAvailable = await OcFinder.IsUndervoltingAvailableAsync();
+
+            if (coAvailable || true)
+            {
+                CurveOptimizerCustomGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                UndervoltingToggle.State = BandCrowdStates.Off;
+                CurveOptimizerCustomGrid.Visibility = Visibility.Collapsed;
+            }
+
+            SetCallbacks();
+
+            _isLoaded = true;
         }
-        else
+        catch (Exception ex)
         {
-            UndervoltingToggle.State = BandCrowdStates.Off;
-            CurveOptimizerCustomGrid.Visibility = Visibility.Collapsed;
+            await LogHelper.LogError(ex);
         }
-
-        SetCallbacks();
-
-        _isLoaded = true;
     }
 
     private PresetCpuSettings CurrentCpuSettings => PresetManager.Presets[_presetIndex].CpuSettings;

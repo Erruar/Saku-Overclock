@@ -21,9 +21,14 @@ public static class App
         
         // Core Services
         builder.Services.AddSingleton<IpcHub>();
+        builder.Services.AddSingleton<CoreIpcHandlers>();
         builder.Services.AddSingleton<IFileService, FileService>();
         builder.Services.AddSingleton<IAppSettingsService, AppSettingsService>();
         builder.Services.AddSingleton<IPresetManagerService, PresetManagerService>();
+        builder.Services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
+        builder.Services.AddSingleton<INotifyIconsService, NotifyIconsService>();
+        builder.Services.AddSingleton<IPowerMonSettingsService, PowerMonSettingsService>();
+        builder.Services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
         builder.Services.AddSingleton<IPstateStrategy, Zen4PstateStrategy>();
         builder.Services.AddSingleton<IPstateStrategy, Zen5PstateStrategy>();
         builder.Services.AddSingleton<IPstateService, PstateService>();
@@ -37,10 +42,10 @@ public static class App
         builder.Services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
         builder.Services.AddSingleton<IPremadePresetManagementService, PremadePresetManagementService>();
         
-        // Сначала регистрируем сервис активации/инициализации железного ядра
+        // Сервис активации/инициализации ядра
         builder.Services.AddHostedService<AppActivationWorker>();
         
-        // Затем IPC воркер, чтобы пайпы открывались уже ПОСЛЕ того, как ядро инициализировано
+        // IPC воркер
         builder.Services.AddHostedService<IpcNamedPipeWorker>();
         
         await builder.Build().RunAsync();

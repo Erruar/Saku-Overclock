@@ -59,7 +59,8 @@ internal partial class PowerWindow : IDisposable
             SettingsService.LoadSettings();
 
             // Получаем данные
-            _rawData = _dataProvider?.GetPowerTable();
+            // TODO: Implement Data Updater
+            _rawData = null; //_dataProvider?.GetPowerTable();
             if (_rawData == null)
             {
                 return;
@@ -374,7 +375,8 @@ internal partial class PowerWindow : IDisposable
         }
 
         // Получаем новые данные
-        var newData = _dataProvider?.GetPowerTable();
+        // TODO: Implement Data Updater
+        var newData = Array.Empty<float>(); //_dataProvider?.GetPowerTable();
         if (newData == null)
         {
             return;

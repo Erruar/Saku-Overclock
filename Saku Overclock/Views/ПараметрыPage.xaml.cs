@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Composition.SystemBackdrops;
+﻿using Windows.Foundation.Metadata;
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -6,13 +7,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
-using Saku_Overclock.Services;
-using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.Shared.Models.PresetSettings;
+using Saku_Overclock.ViewModels;
 using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
@@ -31,6 +29,9 @@ public sealed partial class ПараметрыPage
 
     private readonly IPresetManagerService
         _presetManager = App.GetService<IPresetManagerService>(); // Менеджер пресетов разгона
+    private readonly ICpuGateService _cpu = App.GetService<ICpuGateService>();
+    private readonly IOcFinderGateService _ocFinder = App.GetService<IOcFinderGateService>();
+    private readonly IApplyerGateService _applyer = App.GetService<IApplyerGateService>();
 
     private readonly List<string> _searchItems = [];
 
@@ -46,7 +47,7 @@ public sealed partial class ПараметрыPage
 
     public static string ApplyInfo { get; set; } = "";
 
-    public static bool SettingsApplied { get; set; }
+    private bool _settingsApplied;
 
     public ПараметрыPage()
     {
@@ -67,18 +68,18 @@ public sealed partial class ПараметрыPage
 
     #region Page Load
 
-    private void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
+    private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
             _isLoaded = true;
             CollectSearchItems();
             SlidersInit();
-            RecommendationsInit();
+            await RecommendationsInit();
         }
         catch (Exception exception)
         {
-            LogHelper.TraceIt_TraceError(exception);
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -102,9 +103,9 @@ public sealed partial class ПараметрыPage
 
     #region Initialization
 
-    private void RecommendationsInit()
+    private async Task RecommendationsInit()
     {
-        var data = _ocFinder.GetPerformanceRecommendationData();
+        var data = await _ocFinder.GetPerformanceRecommendationDataAsync();
         TempRecommend0.Text = data.TemperatureLimits[0];
         TempRecommend1.Text = data.TemperatureLimits[1];
         StapmRecommend0.Text = data.StapmLimits[0];
@@ -2285,14 +2286,14 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            SettingsApplied = false;
+            _settingsApplied = false;
 
             ApplyInfo = "";
             await _applyer.ApplyPreset(_presetManager.Presets[_presetIndex],
                 true);
 
             var timerCounter = 0;
-            while (!SettingsApplied)
+            while (!_settingsApplied)
             {
                 await Task.Delay(50);
 

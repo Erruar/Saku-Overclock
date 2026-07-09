@@ -2,13 +2,14 @@
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Wrappers;
 using Windows.System;
+using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Models;
 using WinRT.Interop;
 using WinUIEx.Messaging;
 
 namespace Saku_Overclock.Services;
 
-public partial class KeyboardHotkeysService(IAppSettingsService settingsService)
+public partial class KeyboardHotkeysService(IAppSettingsService settingsService, IApplyerGateService applyerService)
     : IKeyboardHotkeysService
 {
     private IntPtr _hwnd;
@@ -79,27 +80,35 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService)
         KeyboardHookWrapper.UnregisterHotKey(_hwnd, HkRtss);
     }
 
-    private void OnWindowMessage(object? sender, WindowMessageEventArgs? e)
+    private async void OnWindowMessage(object? sender, WindowMessageEventArgs? e)
     {
-        if (e?.Message.MessageId != KeyboardHookWrapper.WM_HOTKEY)
+        try
         {
-            return;
-        }
+            if (e?.Message.MessageId != KeyboardHookWrapper.WM_HOTKEY)
+            {
+                return;
+            }
 
-        switch (e.Message.WParam)
+            switch (e.Message.WParam)
+            {
+                case HkPremade:
+                case HkCustom:
+                    var customPreset = await applyerService.SwitchNextPreset();
+                    HandlePreset(customPreset);
+                    if (customPreset.HasValue)
+                        PresetChanged?.Invoke(this, (PresetId)customPreset);
+                    break;
+                case HkRtss:
+                    ToggleRtss();
+                    break;
+            }
+
+            e.Handled = true;
+        }
+        catch (Exception ex)
         {
-            case HkPremade:
-            case HkCustom:
-                var customPreset = applyerService.SwitchNextPreset();
-                HandlePreset(customPreset);
-                PresetChanged?.Invoke(this, customPreset);
-                break;
-            case HkRtss:
-                ToggleRtss();
-                break;
+            await LogHelper.LogError(ex);
         }
-
-        e.Handled = true;
     }
 
     private void HandlePreset(PresetId? preset)

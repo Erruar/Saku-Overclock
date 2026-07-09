@@ -8,10 +8,10 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using ScottPlot.TickGenerators;
 using Windows.UI.Text;
+using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Models;
 using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
@@ -28,6 +28,8 @@ public sealed partial class ГлавнаяPage
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
+    private static readonly ICpuGateService CpuService = App.GetService<ICpuGateService>(); 
+    private static readonly IApplyerGateService Applyer = App.GetService<IApplyerGateService>(); 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
@@ -75,7 +77,8 @@ public sealed partial class ГлавнаяPage
     {
         InitializeComponent();
 
-        _dataUpdater.DataUpdated += OnDataUpdated;
+        // TODO: Implement Data Updater
+        //_dataUpdater.DataUpdated += OnDataUpdated;
 
         _hotkeysService.PresetChanged += PresetChanged;
 
@@ -125,8 +128,8 @@ public sealed partial class ГлавнаяPage
         {
             LoadPresetsToPivot();
 
-            InfoCpuName.Text = _cpu.CpuName;
-            InfoCpuCores.Text = _cpu.Cores.ToString();
+            InfoCpuName.Text = CpuService.CpuName;
+            InfoCpuCores.Text = CpuService.Cores.ToString();
             InfoCpuThreads.Text = Environment.ProcessorCount.ToString();
 
             if (DeveloperMockupMode)
@@ -134,7 +137,7 @@ public sealed partial class ГлавнаяPage
                 InfoCpuName.Text = "AMD Ryzen Eng Sample 104";
             }
 
-            if (_cpu.IsServiceUnavailable)
+            if (CpuService.IsAvailable)
             {
                 LogHelper.TraceIt_TraceError("Main_ServiceUnavailable".GetLocalized());
             }
@@ -157,7 +160,8 @@ public sealed partial class ГлавнаяPage
     private void ГлавнаяPage_Unloaded(object sender, RoutedEventArgs e)
     {
         // Отписка от всех событий для предотвращения утечек памяти
-        _dataUpdater.DataUpdated -= OnDataUpdated;
+        // TODO: Implement Data Updater
+        //_dataUpdater.DataUpdated -= OnDataUpdated;
 
         _hotkeysService.PresetChanged -= PresetChanged;
 
@@ -837,9 +841,9 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "BIOS:";
                 try
                 {
-                    if (_cpu.IsAvailable)
+                    if (CpuService.IsAvailable)
                     {
-                        var motherBoardInfo = _cpu.MotherBoardInfo;
+                        var motherBoardInfo = CpuService.MotherBoardInfo;
                         MainAdditionalInfo1Name.Text = motherBoardInfo.MotherBoardName;
                         MainAdditionalInfo2Name.Text = motherBoardInfo.MotherBoardVendor;
                         MainAdditionalInfo3Name.Text = motherBoardInfo.BiosVersion;
@@ -866,10 +870,10 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "SMT:";
                 try
                 {
-                    if (_cpu.IsAvailable)
+                    if (CpuService.IsAvailable)
                     {
-                        MainAdditionalInfo2Name.Text = _cpu.Cores.ToString();
-                        MainAdditionalInfo3Name.Text = _cpu.Smt.ToString()
+                        MainAdditionalInfo2Name.Text = CpuService.Cores.ToString();
+                        MainAdditionalInfo3Name.Text = CpuService.Smt.ToString()
                             .Replace("True", "Cooler_Service_Enabled/Content".GetLocalized())
                             .Replace("False",
                                 "Cooler_Service_Disabled/Content"

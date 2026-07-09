@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Shared;
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;
@@ -13,6 +14,7 @@ public sealed partial class ОбучениеPage
     private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
     private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>(); // Управление треем
     private static readonly IThemeSelectorService ThemeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
+    private static readonly IOcFinderGateService OcFinder = App.GetService<IOcFinderGateService>(); // Темы приложения
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private bool _isLoaded;
@@ -681,7 +683,8 @@ public sealed partial class ОбучениеPage
             sb.Children.Add(moveX);
 
             sb.Begin();
-            SearchSign.Text = "OcFinderCpuPower".GetLocalized() + OcFinder.GetCpuPower() + "W";
+            var cpuPower = await OcFinder.GetCpuPowerAsync();
+            SearchSign.Text = "OcFinderCpuPower".GetLocalized() + cpuPower + "W";
                 
             await Task.Delay(TimeSpan.FromSeconds(2.9));
         }
@@ -728,7 +731,7 @@ public sealed partial class ОбучениеPage
             sb.Children.Add(moveX);
 
             sb.Begin();
-            SearchSign.Text = OcFinder.IsUndervoltingAvailable()
+            SearchSign.Text = await OcFinder.IsUndervoltingAvailableAsync()
                 ? "OcFinderUndervoltingAvailableStatus".GetLocalized()
                 : "OcFinderUnableToSetUndervoltingStatus".GetLocalized();
             await Task.Delay(TimeSpan.FromSeconds(4));

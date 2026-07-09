@@ -176,7 +176,7 @@
 
   <Target Name="BuildCrashHandlerPreBuild">
     <MSBuild Projects="$(_CrashHandlerProject)"
-             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows"
+             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows;RuntimeIdentifier=win-x64"
              BuildInParallel="false" />
   </Target>
 

@@ -13,6 +13,7 @@ public class ActivationService(
     IAppSettingsService appSettingsService,
     IUpdateCheckerService updateCheckerService,
     IWindowStateManagerService windowStateManager,
+    CoreGatewayService coreGateway,
     ITrayMenuService trayMenuService,
     IPresetManagerService presetManagerService)
     : IActivationService
@@ -20,6 +21,7 @@ public class ActivationService(
     private UIElement? _shell;
     public async Task ActivateAsync(object activationArgs)
     {
+        await coreGateway.WarmupAsync();
         // 1. Загрузка настроек приложения
         await appSettingsService.LoadSettingsAsync();
         
