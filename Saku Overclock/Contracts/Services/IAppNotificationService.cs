@@ -6,7 +6,7 @@ namespace Saku_Overclock.Contracts.Services;
 public interface IAppNotificationService
 {
     /// <summary>
-    ///     Список уведомлений приложения
+    ///     In-app notifications list
     /// </summary>
     List<Notify>? Notifies
     {
@@ -15,33 +15,32 @@ public interface IAppNotificationService
     }
 
     /// <summary>
-    ///     Загружает предыдущие уведомления и регистрирует их
+    ///     Loading notifications from previous session
     /// </summary>
     void Initialize();
 
     /// <summary>
-    ///     Отобразит уведомление в системе
+    ///     Display message in System UI
     /// </summary>
-    /// <param name="payload">Xml-строка для отображения уведомления</param>
-    /// <returns>Результат выполнения</returns>
+    /// <param name="payload">Xml-string for message</param>
     void Show(string payload);
 
     /// <summary>
-    ///     Сохранить уведомления
+    ///     Saving notifications
     /// </summary>
     void SaveNotificationsSettings();
 
     /// <summary>
-    ///     Отобразить уведомление в приложении
+    ///     Display message in client
     /// </summary>
-    /// <param name="title">Заголовок</param>
-    /// <param name="message">Описание</param>
-    /// <param name="severity">Тип</param>
-    /// <param name="save">Сохранить после перезапуска приложения</param>
+    /// <param name="title">Title</param>
+    /// <param name="message">Message</param>
+    /// <param name="severity">Type</param>
+    /// <param name="save">Save after app restart</param>
     void ShowNotification(string title, string message, InfoBarSeverity severity, bool save = false);
 
     /// <summary>
-    ///     Событие добавления уведомления
+    ///     Notification added event
     /// </summary>
     event EventHandler<Notify> NotificationAdded;
 }

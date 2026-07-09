@@ -12,7 +12,7 @@ using Icon = System.Drawing.Icon;
 
 namespace Saku_Overclock.Services;
 
-public class NotifyIconsService(IpcConnectionService ipc)
+public partial class NotifyIconsService(IpcConnectionService ipc)
     : SimpleIpcSettingsBase<List<NiIconsElements>>(ipc, "NotifyIcons", IpcJsonContext.Default.ListNiIconsElements, [])
         , INotifyIconsService
 {
@@ -30,15 +30,15 @@ public class NotifyIconsService(IpcConnectionService ipc)
     private readonly List<ИнформацияPage.MinMax> _iconsMinMaxValues =
     [
         new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
-    ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
+    ]; // Saving min-max TrayMon icons values
 
     private readonly Dictionary<string, TaskbarIcon>
-        _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
+        _trayIcons = []; // Enabled TrayMon icons
 
-    // Кеш для иконок чтобы не создавать заново каждый раз
+    // Icons cache
     private readonly Dictionary<string, (Icon icon, IntPtr handle)> _iconCache = [];
     private readonly Lock _cacheLock = new();
-    private readonly Lock _trayIconsLock = new(); // Отдельный объект для синхронизационной блокировки
+    private readonly Lock _trayIconsLock = new();
 
     private readonly string _stapmText = "Settings_ni_Values_STAPM".GetLocalized();
     private readonly string _fastText = "Settings_ni_Values_Fast".GetLocalized();
@@ -59,7 +59,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
     private readonly string _niMinvalueText = "Settings_ni_Values_MinValue".GetLocalized();
     private readonly string _niMaxvalueText = "Settings_ni_Values_MaxValue".GetLocalized();
 
-    // Давай пока оставим в клиенте
+    // Need to rework
     public void UpdateNotifyIcons(SensorsInformation sensorsInformation)
     {
         try
@@ -88,9 +88,9 @@ public class NotifyIconsService(IpcConnectionService ipc)
 
             for (var i = 0; i < sensorValues.Length && i < _iconsMinMaxValues.Count; i++)
                 UpdateMinMaxValues(_iconsMinMaxValues, i,
-                    sensorValues[i]); // Вносит новые минимальные и максимальные значения в переменные
+                    sensorValues[i]); // Changing min-max
 
-            // UI обновления только в UI потоке
+            // UI only in UI thread
             App.MainWindow.DispatcherQueue.TryEnqueue(() => UpdateAllIconTexts(sensorsInformation));
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
     {
         try
         {
-            // Группируем все обновления UI в один метод
+            // Grouping UI work in one method
             var iconUpdates = new[]
             {
                 ("Settings_ni_Values_STAPM", sensorsInformation.CpuStapmValue, "W", _iconsMinMaxValues[0],
@@ -148,11 +148,10 @@ public class NotifyIconsService(IpcConnectionService ipc)
         UpdateMinMaxValues(List<ИнформацияPage.MinMax> minMaxValues, int index,
             double currentValue)
     {
-        // Индекс не выходит за пределы списка.
         if (index >= 0 && index < minMaxValues.Count)
         {
             if (minMaxValues[index].Min == 0.0d) minMaxValues[index].Min = currentValue;
-            if (index == 4 && currentValue > 150) currentValue = 150; // Фикс потенциально невозможной температуры
+            if (index == 4 && currentValue > 150) currentValue = 150; // Fix impossible temp (found on Ryzen 5 6600H)
 
             minMaxValues[index].Max = Math.Max(minMaxValues[index].Max, currentValue);
             minMaxValues[index].Min = Math.Min(minMaxValues[index].Min, currentValue);
@@ -165,26 +164,26 @@ public class NotifyIconsService(IpcConnectionService ipc)
     }
 
     private void UpdateNiIconText(string key, double currentValue, string unit, ИнформацияPage.MinMax minMaxValue,
-        string description) // Обновляет текущее значение показателей на трей иконках
+        string description) // Updating current TrayMon icon text
     {
-        // Ограничение и округление текущего, минимального и максимального значений
+        // Rounding values
         var currentValueText = $"{currentValue:0.#}";
         var minValueText = $"{minMaxValue.Min:0.#}";
         var maxValueText = $"{minMaxValue.Max:0.#}";
 
 
         var tooltip = $"{description}" +
-                      _niCurrentValueText + currentValueText + unit; // Сам тултип
+                      _niCurrentValueText + currentValueText + unit; // Tooltip
 
 
         var extendedTooltip = _niMinvalueText + minValueText + unit +
                               _niMaxvalueText + maxValueText +
-                              unit; // Расширенная часть тултипа (минимум и максимум)
+                              unit; // Advanced tooltip (min-max values)
 
         Change_Ni_Icons_Text(key, currentValueText, tooltip, extendedTooltip);
     }
 
-    /// <summary> Внешний метод для обновления иконок после изменения их в настройках приложения </summary>
+    /// <summary> Update icons from UI </summary>
     public void UpdateTrayMonIcons()
     {
         if (IsIconsUpdated) DisposeAllNotifyIcons();
@@ -202,7 +201,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
             _trayIcons.Clear();
         }
 
-        // Безопасно перебираем все иконки и вызываем Dispose для каждой из них
+        // Rebuild all icons
         foreach (var icon in iconsToDispose)
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
@@ -217,7 +216,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
                     }
             });
 
-        // Очищаем коллекцию иконок
+        // Clean icons collection
         lock (_trayIconsLock)
         {
             _trayIcons.Clear();
@@ -226,9 +225,9 @@ public class NotifyIconsService(IpcConnectionService ipc)
 
     public void CreateNotifyIcons()
     {
-        LoadSettings(); // Сначала загрузить конфиг со всеми настройками
+        LoadSettings(); // Load config
 
-        // Если нет элементов, не создаём иконки
+        // Return if nothing to show
         if (Elements.Count == 0) return;
 
         App.MainWindow.DispatcherQueue.TryEnqueue(() =>
@@ -243,18 +242,18 @@ public class NotifyIconsService(IpcConnectionService ipc)
                         element.Guid = parsedGuid.ToString();
                     }
 
-                    // Проверяем есть ли уже TaskbarIcon с таким ID
+                    // Check for Icon with same ID
                     TaskbarIcon? existingIcon;
                     lock (_trayIconsLock)
                     {
                         _trayIcons.TryGetValue(element.Name, out existingIcon);
                     }
 
-                    // Если иконка уже есть - удаляем
+                    // If exist - remove
                     if (existingIcon != null && !existingIcon.IsDisposed)
                         try
                         {
-                            existingIcon.Icon?.Dispose(); // Освобождаем старую иконку
+                            existingIcon.Icon?.Dispose(); // Remove old icon
                             existingIcon.Dispose();
                         }
                         catch (Exception disposeEx)
@@ -270,11 +269,11 @@ public class NotifyIconsService(IpcConnectionService ipc)
                         continue;
                     }
 
-                    // Создаём NotifyIcon
+                    // Crating TrayMon icons
                     var notifyIcon = new TaskbarIcon
                     {
                         Icon = icon,
-                        Id = parsedGuid, // Уникальный ID иконки ЕСЛИ ЕГО НЕТ - ПЕРЕЗАПИШЕТ ОСНОВНОЕ ТРЕЙ МЕНЮ ПРОГРАММЫ
+                        Id = parsedGuid, // Unique icon ID (IF NOT EXIT - NEW ICON WILL OVERWRITE EXISTING MAIN APP TRAY ICON!)
                         ToolTipText = element.ContextMenuType != 0 ? element.Name : ""
                     };
 
@@ -311,21 +310,21 @@ public class NotifyIconsService(IpcConnectionService ipc)
     {
         if (element == null) return null;
 
-        // Создаем ключ для кеша на основе параметров иконки
+        // Creating cache for icon
         var cacheKey =
             $"{element.Color}_{element.SecondColor}_{element.FontSize}_{element.IconShape}_{element.BgOpacity}_Text";
 
         lock (_cacheLock)
         {
-            if (_iconCache.TryGetValue(cacheKey, out var cached)) return cached.icon; // Возвращаем из кеша
+            if (_iconCache.TryGetValue(cacheKey, out var cached)) return cached.icon; // Get from cache
         }
 
-        // Создаем новую иконку
+        // Create new icon
         var newIcon = CreateIconFast(element);
 
         lock (_cacheLock)
         {
-            // Добавляем в кеш (handle нужен для правильного освобождения)
+            // Add into cache
             _iconCache[cacheKey] = (newIcon, newIcon.Handle);
         }
 
@@ -359,35 +358,35 @@ public class NotifyIconsService(IpcConnectionService ipc)
         return Icon.FromHandle(bitmap.GetHicon());
     }
 
-    /// <summary>Создаёт точную область скруглённого куба с учётом съедания пикселей GDI+</summary>
+    /// <summary>Creating round cube</summary>
     private static GraphicsPath CreateRoundedRectanglePath(Rectangle rect, int radius)
     {
         var path = new GraphicsPath();
         var diameter = radius * 2;
-        var factor = 0.99f; // Компенсирует "съедание" пикселей GDI+
+        var factor = 0.99f; // Fix pixel eating in GDI+
 
-        // Верхний левый угол
+        // Top left corner
         path.AddArc(rect.Left, rect.Top, diameter, diameter, 180, 90);
 
-        // Верхняя линия
+        // Top line
         path.AddLine(rect.Left + radius, rect.Top, rect.Right - radius - factor, rect.Top);
 
-        // Верхний правый угол
+        // Top right corner
         path.AddArc(rect.Right - diameter - factor, rect.Top, diameter, diameter, 270, 90);
 
-        // Правая линия
+        // Right line
         path.AddLine(rect.Right, rect.Top + radius, rect.Right, rect.Bottom - radius - factor);
 
-        // Нижний правый угол
+        // Bottom right corner
         path.AddArc(rect.Right - diameter - factor, rect.Bottom - diameter - factor, diameter, diameter, 0, 90);
 
-        // Нижняя линия
+        // Bottom line
         path.AddLine(rect.Right - radius - factor, rect.Bottom, rect.Left + radius, rect.Bottom);
 
-        // Нижний левый угол
+        // Bottom left corner
         path.AddArc(rect.Left, rect.Bottom - diameter - factor, diameter, diameter, 90, 90);
 
-        // Левая линия
+        // Bottom line
         path.AddLine(rect.Left, rect.Bottom - radius - factor, rect.Left, rect.Top + radius);
 
         path.CloseFigure();
@@ -412,10 +411,10 @@ public class NotifyIconsService(IpcConnectionService ipc)
                 var element = Elements.FirstOrDefault(e => e.Name == iconName);
                 if (element != null)
                 {
-                    // Сохраняем ссылку на старую иконку для правильного освобождения
+                    // Save pointer to old icon
                     var oldIcon = notifyIcon.Icon;
 
-                    // Создаем новую (с кешированием)
+                    // Create new icon
                     var newIcon = UpdateIconText(newText, element.Color,
                         element.IsGradient ? element.SecondColor : string.Empty,
                         element.FontSize, element.IconShape, element.BgOpacity,
@@ -423,23 +422,23 @@ public class NotifyIconsService(IpcConnectionService ipc)
 
                     if (newIcon != null)
                     {
-                        // Устанавливаем новую иконку
+                        // Set new icon
                         notifyIcon.Icon = newIcon;
 
-                        // Только ПОСЛЕ установки новой иконки освобождаем старую
+                        // Remove old
                         if (oldIcon != null)
                             try
                             {
                                 var handle = oldIcon.Handle;
                                 oldIcon.Dispose();
-                                DestroyIcon(handle); // Освобождаем Handle после Dispose
+                                DestroyIcon(handle);
                             }
                             catch (Exception disposeEx)
                             {
                                 LogHelper.LogError($"Ошибка освобождения старой иконки: {disposeEx.Message}");
                             }
 
-                        // Обновляем tooltip
+                        // Update tooltip
                         if (tooltipText != null)
                             notifyIcon.ToolTipText = element.ContextMenuType == 2
                                 ? $"{tooltipText}\n{advancedTooltip}"
@@ -451,7 +450,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
         catch (Exception ex)
         {
             LogHelper.LogError($"Ошибка в Change_Ni_Icons_Text: {ex.Message}");
-            CreateNotifyIcons(); // Пересоздать иконки
+            CreateNotifyIcons(); // Re-create icons
         }
     }
 
@@ -461,12 +460,12 @@ public class NotifyIconsService(IpcConnectionService ipc)
         GraphicsPath? path = null;
         var hIcon = IntPtr.Zero;
 
-        // Создаём новую иконку на основе существующей с новым текстом
+        // Create new icon with existing text
         var bitmap = new Bitmap(32, 32);
         var g = Graphics.FromImage(bitmap);
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
-        // Цвет фона и кисть
+        // Background
         var bgColor = ColorTranslator.FromHtml("#" + newColor);
         Brush bgBrush = new SolidBrush(Color.FromArgb((int)(opacity * 255), bgColor));
         if (secondColor != string.Empty)
@@ -479,18 +478,18 @@ public class NotifyIconsService(IpcConnectionService ipc)
                 LinearGradientMode.Horizontal);
         }
 
-        // Рисуем фон иконки в зависимости от формы
+        // Drawing shape
         switch (iconShape)
         {
-            case 0: // Куб
+            case 0: // Cube
                 g.FillRectangle(bgBrush, 0, 0, 32, 32);
                 break;
-            case 1: // Скруглённый куб
+            case 1: // Round cube
                 path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
                 g.FillPath(bgBrush, path);
 
                 break;
-            case 2: // Круг
+            case 2: // Circle
                 g.FillEllipse(bgBrush, 0, 0, 32, 32);
                 break;
             default:
@@ -498,16 +497,16 @@ public class NotifyIconsService(IpcConnectionService ipc)
                 break;
         }
 
-        // Определение позиции текста
+        // Update text position
         var textBrush = new SolidBrush(GetContrastColor(newColor, secondColor != string.Empty ? secondColor : null));
         var textPosition = GetTextPosition(newText, fontSize, out var fontSizeT, out var newTextT);
         var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, useBold ? FontStyle.Bold : FontStyle.Regular,
             GraphicsUnit.Pixel);
 
-        // Рисуем текст
+        // Draw text
         g.DrawString(newTextT, font, textBrush, textPosition);
 
-        // Создание иконки из Bitmap и освобождение ресурсов
+        // Create icon from Bitmap and cleanup resources
         try
         {
             return Icon.FromHandle(bitmap.GetHicon());
@@ -516,14 +515,14 @@ public class NotifyIconsService(IpcConnectionService ipc)
         {
             LogHelper.LogError($"Ошибка создания иконки: {ex.Message}");
 
-            // Освобождаем Handle в случае ошибки
+            // Cleanup Handle if error
             if (hIcon != IntPtr.Zero) DestroyIcon(hIcon);
 
             return null;
         }
         finally
         {
-            // Освобождаем все ресурсы в правильном порядке
+            // Cleanup Resources
             path?.Dispose();
             font.Dispose();
             textBrush.Dispose();
@@ -533,20 +532,19 @@ public class NotifyIconsService(IpcConnectionService ipc)
         }
     }
 
-    ///<summary> Метод для освобождения ресурсов, используемый после GetHicon() </summary>
+    ///<summary> Cleanup Resources method, after GetHicon() </summary>
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool DestroyIcon(IntPtr hIcon);
 
     /// <summary>
-    ///     Получить позицию текста и доработанный текст, на основе предугадывания позиции и готовых функций на основе
-    ///     датасета всех возможных вариантов размера шрифта
+    ///     Get text position
     /// </summary>
     private static PointF GetTextPosition(string? newText, float fontSize, out float newFontSize,
         out string? newFixedText)
     {
         var yPosition =
             -1.475f * fontSize +
-            16.2f; // Готовая "скомпилированная" функция, основанная на массиве данных, собранные на всех возможных размерах шрифта
+            16.2f; // Premade "compiled" function based on a dataset collected across all possible font sizes
         newFixedText = newText;
         var xPos = 20f;
         if (!newText!.Contains('.')) newText += ".0";
@@ -556,7 +554,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
             var parts = newText.Split('.');
             var wholePartLength = parts[0].Length;
             switch
-                (wholePartLength) // TrayMon© - Разработка от Erruar, поэтому вам не стоит разбираться в том, как она работает. Все значения были скомпилированы в функции при помощи NumPy
+                (wholePartLength) // TrayMon© - developed by Erruar, so you don't need to figure out how it works. All values were compiled into functions using NumPy
             {
                 case 1:
                     var offset1 = (int)fontSize switch
@@ -606,7 +604,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
         return position;
     }
 
-    /// <summary> Функция для определения яркости цвета</summary>
+    /// <summary>Get color brightness</summary>
     private static double GetBrightness(string color)
     {
         var valuestring = color.TrimStart('#');
@@ -616,7 +614,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
         return 0.299 * r + 0.587 * g + 0.114 * b;
     }
 
-    /// <summary> Функция для определения контрастного цвета текста по фону текста</summary>
+    /// <summary>Get contrast color for background</summary>
     private static Color GetContrastColor(string color1, string? color2 = null)
     {
         var brightness1 = GetBrightness(color1);
@@ -624,12 +622,12 @@ public class NotifyIconsService(IpcConnectionService ipc)
         double? brightness2 = null;
         if (!string.IsNullOrEmpty(color2)) brightness2 = GetBrightness(color2);
 
-        // Определяем среднюю яркость
+        // Get average color brightness
         var averageBrightness = brightness2 == null
             ? brightness1
             : (brightness1 + brightness2.Value) / 2;
 
-        // Возвращаем цвет текста на основе средней яркости
+        // Restoring the text color based on average brightness
         return averageBrightness < 128 ? Color.White : Color.Black;
     }
 }

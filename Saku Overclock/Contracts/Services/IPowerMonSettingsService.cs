@@ -3,12 +3,12 @@
 public interface IPowerMonSettingsService
 {
     /// <summary>
-    ///     Загрузка настроек
+    ///     Load PowerMon user settings
     /// </summary>
     void LoadSettings();
     
     /// <summary>
-    ///     Настройки пользователя
+    ///     PowerMon user settings
     /// </summary>
     List<string> Notelist { get; }
 }

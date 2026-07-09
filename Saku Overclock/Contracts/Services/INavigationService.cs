@@ -6,12 +6,12 @@ namespace Saku_Overclock.Contracts.Services;
 public interface INavigationService
 {
     /// <summary>
-    ///     Событие навигации на страницу
+    ///     Page navigation changed event
     /// </summary>
     event NavigatedEventHandler Navigated;
 
     /// <summary>
-    ///     Флаг возможности вернуться на прошлую страницу
+    ///     Ability return back flag
     /// </summary>
     bool CanGoBack
     {
@@ -19,7 +19,7 @@ public interface INavigationService
     }
 
     /// <summary>
-    ///     Текущая страница
+    ///     Current opened page
     /// </summary>
     Frame? Frame
     {
@@ -28,22 +28,22 @@ public interface INavigationService
     }
 
     /// <summary>
-    ///     Перейти на страницу
+    ///     Navigate to page
     /// </summary>
-    /// <param name="pageKey">Имя ViewModel страницы</param>
-    /// <param name="parameter">Параметр навигации</param>
-    /// <param name="clearNavigation">Перейти без анимации</param>
+    /// <param name="pageKey">Page ViewModel name</param>
+    /// <param name="parameter">Navigation option</param>
+    /// <param name="clearNavigation">Navigate without animation</param>
     void NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false);
 
     /// <summary>
-    ///     Перезагрузить страницу
+    ///     Reload opened page
     /// </summary>
-    /// <param name="from">Имя ViewModel страницы</param>
+    /// <param name="from">Page ViewModel name</param>
     void ReloadPage(string from);
 
     /// <summary>
-    ///     Вернуться назад
+    ///     Return back
     /// </summary>
-    /// <returns>true - Удалось, false - Не удалось</returns>
+    /// <returns>true - success, false - failed</returns>
     bool GoBack();
 }

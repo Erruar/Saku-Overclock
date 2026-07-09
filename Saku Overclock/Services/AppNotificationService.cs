@@ -54,7 +54,7 @@ public class AppNotificationService : IAppNotificationService
     {
         // TODO: Handle notification invocations when your app is already running.
 
-        // Обработка специальных параметров уведомления
+        // Handling specific notification events
         if (ParseArguments(args.Argument)["action"] == "Settings")
         {
             App.MainWindow.BringToFront();

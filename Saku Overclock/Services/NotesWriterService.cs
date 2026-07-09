@@ -11,6 +11,9 @@ using Saku_Overclock.Contracts.Services;
 
 namespace Saku_Overclock.Services;
 
+/// <summary>
+///     Text to MD-text class
+/// </summary>
 public partial class NotesWriterService(
     IUpdateCheckerService updateChecker)
     : INotesWriterService
@@ -101,12 +104,12 @@ public partial class NotesWriterService(
 
             if (string.IsNullOrWhiteSpace(trimmedLine))
             {
-                // Пустая строка - отмечаем, но не добавляем сразу
+                // Flagging empty string
                 previousWasEmpty = true;
                 continue;
             }
 
-            // Если предыдущая строка была пустой, добавляем небольшой отступ
+            // If previous string was empty - adding margin
             var topMargin = previousWasEmpty ? 4.0 : 0.0;
             previousWasEmpty = false;
 
@@ -164,7 +167,7 @@ public partial class NotesWriterService(
             LineHeight = 1
         };
 
-        // Добавляем вертикальную линию через Border (нужен InlineUIContainer)
+        // Adding vertical line with Border (for ">")
         var border = new Border
         {
             Margin = new Thickness(-10, 0, 0, 0),
@@ -246,7 +249,7 @@ public partial class NotesWriterService(
             Child = spoilerButton
         };
 
-        // Hack: устанавливаем ширину контейнера равной ширине RichTextBlock
+        // Set container width same as RichTextBlock
         richTextBlock.SizeChanged += (s, _) =>
         {
             if (s is RichTextBlock rtb)
@@ -265,13 +268,13 @@ public partial class NotesWriterService(
     {
         var paragraph = new Paragraph { Margin = new Thickness(0, topMargin, 0, 0) };
 
-        // Простой парсинг URL в тексте
+        // URL parsing
         var urlPattern = @"(https?://[^\s]+)";
         var matches = Regex.Matches(text, urlPattern);
 
         if (matches.Count == 0)
         {
-            // Нет ссылок, добавляем как обычный текст
+            // URLs not found - assume usual text
             AddFormattedParagraph(richTextBlock, text);
             return;
         }
@@ -279,14 +282,14 @@ public partial class NotesWriterService(
         var lastPos = 0;
         foreach (Match match in matches)
         {
-            // Текст до ссылки
+            // Text before URL
             if (match.Index > lastPos)
             {
                 var beforeText = text[lastPos..match.Index];
                 AddInlineFormatting(paragraph, beforeText);
             }
 
-            // Сама ссылка
+            // URL
             var url = match.Value;
             var hyperlink = new Hyperlink
             {
@@ -298,7 +301,7 @@ public partial class NotesWriterService(
             lastPos = match.Index + match.Length;
         }
 
-        // Текст после последней ссылки
+        // Text after URL
         if (lastPos < text.Length)
         {
             var remainingText = text[lastPos..];
@@ -349,14 +352,14 @@ public partial class NotesWriterService(
 
         foreach (Match match in matches)
         {
-            // Добавляем текст до жирного
+            // Text before bold
             if (match.Index > lastPos)
             {
                 var beforeText = text[lastPos..match.Index];
                 paragraph.Inlines.Add(new Run { Text = beforeText });
             }
 
-            // Добавляем жирный текст
+            // Bold text
             var boldText = match.Groups[1].Value;
             var boldRun = new Run
             {
@@ -369,7 +372,7 @@ public partial class NotesWriterService(
             lastPos = match.Index + match.Length;
         }
 
-        // Добавляем оставшийся текст
+        // Text after bold
         if (lastPos < text.Length)
         {
             var remainingText = text[lastPos..];

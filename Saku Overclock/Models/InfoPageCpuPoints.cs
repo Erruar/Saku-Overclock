@@ -3,7 +3,7 @@
 public class InfoPageCpuPoints
 {
     /// <summary>
-    ///     Время (от 0 до 60)
+    ///     Time from 0 to 60
     /// </summary>
     public int X
     {
@@ -12,7 +12,7 @@ public class InfoPageCpuPoints
     }
 
     /// <summary>
-    ///     Инвертированное значение
+    ///     Inverted sensor values
     /// </summary>
     public int Y
     {

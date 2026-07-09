@@ -79,7 +79,7 @@ public sealed class IpcConnectionService : IDisposable
                 }
             }
         }
-        catch { /* соединение упало, EnsureConnection переподключится при следующем вызове */ }
+        catch { /* Connection closed */ }
         finally { ResetConnection(); }
     }
 

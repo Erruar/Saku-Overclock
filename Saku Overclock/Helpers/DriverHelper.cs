@@ -2,14 +2,11 @@
 
 namespace Saku_Overclock.Helpers;
 
-/* This is refractored DriverHelper from ZenTimings (GPL-v3)
- * Its author is https://github.com/irusanov 
- * optimized to work with Saku Overclock by Sakurazhima Serzhik
- * there you can see the source files in detail https://github.com/irusanov/ZenTimings/blob/dev/WPF/DriverHelper.cs
- */
-
 internal static class DriverHelper
 {
+    /// <summary>
+    ///     Install PawnIO driver (Need rework)
+    /// </summary>
     public static void InstallPawnIo()
     {
         var path = ExtractPawnIo();
@@ -22,6 +19,10 @@ internal static class DriverHelper
         }
     }
 
+    /// <summary>
+    ///     Extract PawnIO from embedded resources
+    /// </summary>
+    /// <returns>Destination path</returns>
     private static string? ExtractPawnIo()
     {
         var destination = Path.Combine(Directory.GetCurrentDirectory(), "PawnIO_setup.exe");

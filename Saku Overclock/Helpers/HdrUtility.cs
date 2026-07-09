@@ -8,6 +8,9 @@ public static class HdrUtility
 {
     private static DisplayInformation? _displayInfo;
 
+    /// <summary>
+    ///     Register display HDR change
+    /// </summary>
     public static void RegisterHdrChange()
     {
         if (_displayInfo != null)
@@ -19,6 +22,9 @@ public static class HdrUtility
         _displayInfo.AdvancedColorInfoChanged += OnAdvancedColorInfoChanged;
     }
 
+    /// <summary>
+    ///     HDR state changed event
+    /// </summary>
     private static void OnAdvancedColorInfoChanged(DisplayInformation sender, object args)
     {
         DisplayInformationChanged?.Invoke(sender, args);
@@ -26,9 +32,16 @@ public static class HdrUtility
 
     public static event TypedEventHandler<DisplayInformation, object>? DisplayInformationChanged;
 
+    /// <summary>
+    ///     Color info (HDR or not)
+    /// </summary>
     private static DisplayAdvancedColorInfo? ColorInfo =>
         _displayInfo?.GetAdvancedColorInfo();
 
+    /// <summary>
+    ///     Is HDR supported in system displays
+    /// </summary>
+    /// <returns>Supported</returns>
     public static bool IsHdrSupported()
     {
         if (_displayInfo == null)
@@ -41,6 +54,10 @@ public static class HdrUtility
                info.IsAdvancedColorKindAvailable(DisplayAdvancedColorKind.HighDynamicRange);
     }
 
+    /// <summary>
+    ///     Is HDR enabled on current display
+    /// </summary>
+    /// <returns>HDR Enabled</returns>
     public static bool IsHdrEnabled()
     {
         if (_displayInfo == null)

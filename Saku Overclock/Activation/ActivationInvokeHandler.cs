@@ -4,6 +4,34 @@ namespace Saku_Overclock.Activation;
 
 internal static class ActivationInvokeHandler
 {
+    #region Public window state voids
+
+    /// <summary>
+    ///     Focus on current window
+    /// </summary>
+    public static void BringToFrontWindow(IntPtr hWnd) => SetForegroundWindow(hWnd);
+
+    /// <summary>
+    ///     Show current window instead of opening new ones
+    /// </summary>
+    public static void ChangeWindowState(IntPtr hWnd, int command) => ShowWindowAsync(hWnd, command);
+
+    /// <summary>
+    ///     Show all current windows
+    /// </summary>
+    public static void ChangeAllWindowState(IntPtr hWnd, int command) => ShowWindow(hWnd, command);
+
+    /// <summary>
+    ///     Searching for window
+    /// </summary>
+    /// <returns>Required window IntPtr</returns>
+    public static IntPtr FindMainWindowHwnd(string? lpClassName, string lpWindowName) =>
+        FindWindow(lpClassName, lpWindowName);
+
+    public static void SwitchToMainWindow(IntPtr hWnd, bool fAltTab) => SwitchToThisWindow(hWnd, fAltTab);
+
+    #endregion
+    
     #region DLL usings
 
     [DllImport("User32")]
@@ -20,34 +48,6 @@ internal static class ActivationInvokeHandler
 
     [DllImport("user32.dll")]
     private static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
-
-    #endregion
-
-    #region Public window state voids
-
-    /// <summary>
-    ///     Сфокусироваться на текущем окне
-    /// </summary>
-    public static void BringToFrontWindow(IntPtr hWnd) => SetForegroundWindow(hWnd);
-
-    /// <summary>
-    ///     Показать текущее окно, вместо открытия второго экземпляра программы
-    /// </summary>
-    public static void ChangeWindowState(IntPtr hWnd, int command) => ShowWindowAsync(hWnd, command);
-
-    /// <summary>
-    ///     Второй метод для того, чтобы показать вообще все окна
-    /// </summary>
-    public static void ChangeAllWindowState(IntPtr hWnd, int command) => ShowWindow(hWnd, command);
-
-    /// <summary>
-    ///     Метод для нахождения окна программы
-    /// </summary>
-    /// <returns>IntPtr главного окна</returns>
-    public static IntPtr FindMainWindowHwnd(string? lpClassName, string lpWindowName) =>
-        FindWindow(lpClassName, lpWindowName);
-
-    public static void SwitchToMainWindow(IntPtr hWnd, bool fAltTab) => SwitchToThisWindow(hWnd, fAltTab);
 
     #endregion
 }

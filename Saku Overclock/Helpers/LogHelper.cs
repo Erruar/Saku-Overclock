@@ -13,13 +13,104 @@ internal static class LogHelper
     private static readonly SemaphoreSlim LogSemaphore = new(1, 1);
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
 
+    /// <summary>
+    ///     Show Error message in dialog
+    /// </summary>
+    /// <param name="ex">Exception</param>
+    /// <param name="xamlRoot">Page root</param>
     public static async Task ShowErrorMessageAndLog(Exception ex, XamlRoot xamlRoot)
     {
         var errorMessage = $"{ex.Message}\nStack Trace: {ex.StackTrace}";
 
-        await LogError(errorMessage); // Логируем ошибку
-        await ShowErrorDialog(errorMessage, xamlRoot); // Показываем диалог с ошибкой
+        await LogError(errorMessage); // Log error
+        await ShowErrorDialog(errorMessage, xamlRoot); // Show error dialog
     }
+    
+    /// <summary>
+    ///     Log error and show in UI
+    /// </summary>
+    /// <param name="error">Error sting</param>
+    /// <returns>Task result</returns>
+    public static Task TraceIt_TraceError(string error)
+    {
+        _ = Task.Run(async () => 
+        {
+            await LogError(error);
+            if (error != string.Empty)
+            {
+                NotificationsService.ShowNotification("TraceIt_Error".GetLocalized(),
+                    error,
+                    InfoBarSeverity.Error);
+            }
+        }); 
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    ///     Log error and show in UI
+    /// </summary>
+    /// <param name="exception">Exception</param>
+    /// <returns>Task result</returns>
+    public static Task TraceIt_TraceError(Exception exception)
+    {
+        var error = exception.ToString();
+        return TraceIt_TraceError(error);
+    }
+
+    /// <summary>
+    ///     Log info
+    /// </summary>
+    /// <param name="message">Information message</param>
+    /// <returns>Task result</returns>
+    public static Task Log(string message) => LogToFile($"[DEBUG] {message}", "Logs");
+
+    /// <summary>
+    ///     Log warning
+    /// </summary>
+    /// <param name="message">Warning message</param>
+    /// <returns>Task result</returns>
+    public static Task LogWarn(string message) => LogToFile($"[WARNING] {message}", "Logs");
+    
+    /// <summary>
+    ///     Log warning
+    /// </summary>
+    /// <param name="exception">Exception</param>
+    /// <returns>Task result</returns>
+    public static Task LogWarn(Exception exception) => 
+        LogToFile(
+            "[WARNING] exception: " + exception +
+            (
+                exception.InnerException != null &&
+                !string.IsNullOrWhiteSpace(exception.InnerException.Message)
+                    ? "\ninner exception: " + exception.InnerException.Message
+                    : string.Empty
+            ),
+            "Logs"
+        );
+
+    /// <summary>
+    ///     Log error
+    /// </summary>
+    /// <param name="message">Error message</param>
+    /// <returns>Task result</returns>
+    public static Task LogError(string message) => LogToFile($"[ERROR] {message}", "Logs");
+    
+    /// <summary>
+    ///     Log error
+    /// </summary>
+    /// <param name="exception">Exception</param>
+    /// <returns>Task result</returns>
+    public static Task LogError(Exception exception) =>
+        LogToFile(
+            "[ERROR] exception: " + exception +
+            (
+                exception.InnerException != null &&
+                !string.IsNullOrWhiteSpace(exception.InnerException.Message)
+                    ? "\ninner exception: " + exception.InnerException.Message
+                    : string.Empty
+            ),
+            "Logs"
+        );
 
     private static async Task ShowErrorDialog(string errorMessage, XamlRoot xamlRoot)
     {
@@ -54,11 +145,10 @@ internal static class LogHelper
     {
         try
         {
-            // Получаем путь к папке для логов
             var personalFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             var logFolderPath = Path.Combine(personalFolder, "SakuOverclock");
 
-            // Создаём папку, если её нет
+            // If log folder not exist - create it
             var logFolder = await StorageFolder.GetFolderFromPathAsync(logFolderPath).AsTask()
                 .ContinueWith(async t =>
                 {
@@ -68,7 +158,6 @@ internal static class LogHelper
                     }
                     catch
                     {
-                        // Если папка не существует, создаём её
                         return await StorageFolder.GetFolderFromPathAsync(personalFolder).AsTask()
                             .ContinueWith(async parentFolderTask =>
                             {
@@ -79,7 +168,7 @@ internal static class LogHelper
                     }
                 }).Unwrap();
 
-            // Создаём файл лога
+            // Create log file
             return await logFolder.CreateFileAsync(fileName, CreationCollisionOption.OpenIfExists);
         }
         catch
@@ -107,7 +196,7 @@ internal static class LogHelper
             {
                 using var stream = await logFile.OpenAsync(FileAccessMode.ReadWrite).AsTask().ConfigureAwait(false);
                 using var outputStream = stream.GetOutputStreamAt(stream.Size);
-                using var writer = new StreamWriter(outputStream.AsStreamForWrite(), new UTF8Encoding(false));
+                await using var writer = new StreamWriter(outputStream.AsStreamForWrite(), new UTF8Encoding(false));
 
                 await writer.WriteLineAsync($"{DateTime.Now:T}: {message}").ConfigureAwait(false);
                 await writer.FlushAsync().ConfigureAwait(false);
@@ -115,18 +204,15 @@ internal static class LogHelper
                 await stream.FlushAsync().AsTask().ConfigureAwait(false);
             }
             catch (Exception ex) when (
-                ex is ObjectDisposedException ||
-                ex is UnauthorizedAccessException ||
-                ex is IOException ||
-                ex is TaskCanceledException)
+                ex is ObjectDisposedException 
+                    or UnauthorizedAccessException 
+                    or IOException or TaskCanceledException)
             {
-                // Игнорируем ошибки записи — логирование не должно ломать приложение
                 Debug.WriteLine($"[LOG WRITE FAILED] {ex.Message}");
             }
         }
         catch (Exception ex)
         {
-            // Даже ошибка получения файла — не должна ломать приложение
             Debug.WriteLine($"[LOG FAILED] {ex.Message}");
         }
         finally
@@ -134,54 +220,4 @@ internal static class LogHelper
             LogSemaphore.Release();
         }
     }
-
-    public static Task TraceIt_TraceError(string error)
-    {
-        _ = Task.Run(async () => 
-        {
-            await LogError(error);
-            if (error != string.Empty)
-            {
-                NotificationsService.ShowNotification("TraceIt_Error".GetLocalized(),
-                    error,
-                    InfoBarSeverity.Error);
-            }
-        }); 
-        return Task.CompletedTask;
-    }
-
-    public static Task TraceIt_TraceError(Exception exception)
-    {
-        var error = exception.ToString();
-        return TraceIt_TraceError(error);
-    }
-
-    public static Task Log(string message) => LogToFile($"[DEBUG] {message}", "Logs");
-
-    public static Task LogWarn(string message) => LogToFile($"[WARNING] {message}", "Logs");
-    public static Task LogWarn(Exception exception) => 
-    LogToFile(
-        "[WARNING] exception: " + exception +
-        (
-            exception.InnerException != null &&
-            !string.IsNullOrWhiteSpace(exception.InnerException.Message)
-                ? "\ninner exception: " + exception.InnerException.Message
-                : string.Empty
-        ),
-        "Logs"
-    );
-
-    public static Task LogError(string message) => LogToFile($"[ERROR] {message}", "Logs");
-    public static Task LogError(Exception exception) =>
-    LogToFile(
-        "[ERROR] exception: " + exception +
-        (
-            exception.InnerException != null &&
-            !string.IsNullOrWhiteSpace(exception.InnerException.Message)
-                ? "\ninner exception: " + exception.InnerException.Message
-                : string.Empty
-        ),
-        "Logs"
-    );
-
 }

@@ -3,9 +3,9 @@
 public interface IPageService
 {
     /// <summary>
-    ///     Получает тип страницы по имени ViewModel
+    ///     Get page type by ViewModel name
     /// </summary>
-    /// <param name="key">Имя ViewModel страницы</param>
-    /// <returns>Тип страницы</returns>
+    /// <param name="key">Page ViewModel name</param>
+    /// <returns>Page type</returns>
     Type GetPageType(string key);
 }

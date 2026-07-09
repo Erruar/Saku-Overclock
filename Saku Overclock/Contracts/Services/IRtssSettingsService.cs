@@ -5,12 +5,12 @@ namespace Saku_Overclock.Contracts.Services;
 public interface IRtssSettingsService
 {
     /// <summary>
-    ///     Загрузить настройки Rtss
+    ///     Load rtss overlay settings
     /// </summary>
     void LoadSettings();
 
     /// <summary>
-    ///     Коллекция элементов Rtss для отображения
+    ///     Rtss elements settings
     /// </summary>
     List<RtssElementsClass> RtssElements
     {
@@ -18,7 +18,7 @@ public interface IRtssSettingsService
     }
 
     /// <summary>
-    ///     Включен ли редактор кода оверлея Rtss
+    ///     Rtss advanced code editor enabled flag
     /// </summary>
     bool IsAdvancedCodeEditorEnabled
     {
@@ -27,7 +27,7 @@ public interface IRtssSettingsService
     }
 
     /// <summary>
-    ///     Строка кода оверлея Rtss (используется для отрисовки оверлея)
+    ///     Rtss code line (used to draw overlay)
     /// </summary>
     string AdvancedCodeEditor
     {
@@ -36,7 +36,7 @@ public interface IRtssSettingsService
     }
     
     /// <summary>
-    ///     Был ли RTSS обновлён
+    ///     Is rtss overlay updated
     /// </summary>
     public bool IsRtssUpdated
     {
@@ -45,10 +45,10 @@ public interface IRtssSettingsService
     }
 
     /// <summary>
-    ///     Обновление отображаемых параметров оверлея
+    ///     Update rtss overlay metrics
     /// </summary>
-    /// <param name="sensorsInformation">Данные сенсоров</param>
-    /// <param name="appliedPreset">Выбранный пресет</param>
-    /// <param name="coreCount">Количество ядер</param>
+    /// <param name="sensorsInformation">Sensors data</param>
+    /// <param name="appliedPreset">Selected preset</param>
+    /// <param name="coreCount">Core count</param>
     public void UpdateRtssMetrics(SensorsInformation sensorsInformation, string? appliedPreset, int? coreCount);
 }

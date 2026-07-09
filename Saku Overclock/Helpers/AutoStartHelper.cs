@@ -5,9 +5,6 @@ using Saku_Overclock.Contracts.Services;
 
 namespace Saku_Overclock.Helpers;
 
-/// <summary>
-/// Вспомогательный класс для управления автозапуском приложения Saku Overclock через планировщик заданий Windows
-/// </summary>
 internal abstract class AutoStartHelper
 {
     private const string TaskName = "Saku Overclock";
@@ -17,8 +14,7 @@ internal abstract class AutoStartHelper
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
 
     /// <summary>
-    /// Проверяет наличие задачи автозапуска и исправляет её при необходимости.
-    /// Создаёт новую задачу, если требуется автозапуск, или удаляет существующую, если автозапуск отключен.
+    ///     Check autostart task and fix it if needed
     /// </summary>
     public static void AutoStartCheckAndFix()
     {
@@ -31,40 +27,33 @@ internal abstract class AutoStartHelper
 
             if (IsTaskValid(existingTask, executablePath))
             {
-                return; // Задача корректна, ничего не делаем
+                return; // Task valid
             }
 
-            // Удаляем старую задачу, если она существует
             RemoveTaskIfExists(taskService, TaskName);
-
-            // Создаём новую задачу с правильными настройками
             CreateStartupTask(taskService, executablePath);
         }
         else
         {
-            // Автозапуск отключен - удаляем задачу, если она существует
+            // If autostart disabled - just remove existing task
             RemoveTaskIfExists(taskService, TaskName);
         }
     }
 
     /// <summary>
-    /// Создаёт задачу автозапуска приложения в планировщике заданий Windows.
-    /// Задача запускается при входе пользователя в систему с максимальными правами.
+    ///     Create autostart task in task service
     /// </summary>
     public static void SetStartupTask()
     {
         using var taskService = new TaskService();
         var executablePath = GetExecutablePath();
 
-        // Удаляем старую задачу, если она существует
         RemoveTaskIfExists(taskService, TaskName);
-
-        // Создаём новую задачу
         CreateStartupTask(taskService, executablePath);
     }
 
     /// <summary>
-    /// Удаляет задачу автозапуска из планировщика заданий Windows, если она существует
+    ///     Remove autostart task from task service
     /// </summary>
     public static void RemoveStartupTask()
     {
@@ -73,18 +62,18 @@ internal abstract class AutoStartHelper
     }
 
     /// <summary>
-    /// Получает полный путь к исполняемому файлу приложения
+    ///     Get installed app path
     /// </summary>
-    /// <returns>Полный путь к Saku Overclock.exe</returns>
+    /// <returns>Path to Saku Overclock.exe</returns>
     private static string GetExecutablePath()
     {
         return Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "SakuOverclock.exe");
     }
 
     /// <summary>
-    /// Проверяет, является ли существующая задача валидной и актуальной
+    ///     Validate task in task service
     /// </summary>
-    /// <returns>True, если задача валидна; иначе False</returns>
+    /// <returns>Validation result</returns>
     private static bool IsTaskValid(Microsoft.Win32.TaskScheduler.Task? task, string expectedPath)
     {
         if (task == null)
@@ -92,7 +81,7 @@ internal abstract class AutoStartHelper
             return false;
         }
 
-        // Проверяем путь к исполняемому файлу
+        // Check file path
         if (task.Definition.Actions.Count == 0 ||
             task.Definition.Actions[0] is not ExecAction execAction)
         {
@@ -103,49 +92,49 @@ internal abstract class AutoStartHelper
     }
 
     /// <summary>
-    /// Создаёт новую задачу автозапуска в планировщике заданий с оптимальными настройками
+    ///     Create autostart task in task service
     /// </summary>
     private static void CreateStartupTask(TaskService taskService, string executablePath)
     {
         var taskDefinition = taskService.NewTask();
 
-        // Основная информация о задаче
+        // Main task info
         taskDefinition.RegistrationInfo.Description = TaskDescription;
         taskDefinition.RegistrationInfo.Author = TaskAuthor;
         taskDefinition.RegistrationInfo.Version = new Version("1.0.0");
 
-        // Запуск с правами администратора
+        // Run rights
         taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
 
-        // Триггер: запуск при входе пользователя в систему
+        // Trigger: when any user logon system
         taskDefinition.Triggers.Add(new LogonTrigger { Enabled = true });
 
-        // Действие: запуск исполняемого файла
+        // Action: start executable
         taskDefinition.Actions.Add(new ExecAction(executablePath));
 
-        // Дополнительные настройки
-        taskDefinition.Settings.DisallowStartIfOnBatteries = false;  // Разрешить запуск от батареи
-        taskDefinition.Settings.StopIfGoingOnBatteries = false;      // НЕ останавливать при переходе на батарею
-        taskDefinition.Settings.AllowDemandStart = true;             // Разрешить ручной запуск
-        taskDefinition.Settings.StartWhenAvailable = true;           // Запустить при первой возможности
-        taskDefinition.Settings.AllowHardTerminate = false;          // Не убивать задачу принудительно
-        taskDefinition.Settings.MultipleInstances = TaskInstancesPolicy.IgnoreNew; // Не запускать дубликаты
-        taskDefinition.Settings.ExecutionTimeLimit = TimeSpan.Zero;  // Без ограничения времени выполнения
-        taskDefinition.Settings.Priority = ProcessPriorityClass.Normal; // Нормальный приоритет
+        // Advanced settings
+        taskDefinition.Settings.DisallowStartIfOnBatteries = false; // Allow start from battery (fix for old bug)
+        taskDefinition.Settings.StopIfGoingOnBatteries = false;
+        taskDefinition.Settings.AllowDemandStart = true;
+        taskDefinition.Settings.StartWhenAvailable = true;
+        taskDefinition.Settings.AllowHardTerminate = false;
+        taskDefinition.Settings.MultipleInstances = TaskInstancesPolicy.IgnoreNew;
+        taskDefinition.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+        taskDefinition.Settings.Priority = ProcessPriorityClass.Normal;
 
-        // Регистрируем задачу
+        // Register task
         taskService.RootFolder.RegisterTaskDefinition(
             TaskName,
             taskDefinition,
-            TaskCreation.CreateOrUpdate, // Создать или обновить
-            null, // Использовать текущего пользователя
+            TaskCreation.CreateOrUpdate,
+            null, // Use current user
             null,
-            TaskLogonType.InteractiveToken // Интерактивный токен для GUI приложений
+            TaskLogonType.InteractiveToken
         );
     }
 
     /// <summary>
-    /// Безопасно удаляет задачу из планировщика, если она существует
+    ///     Remove autostart task from task service
     /// </summary>
     private static void RemoveTaskIfExists(TaskService taskService, string taskName)
     {
@@ -157,9 +146,9 @@ internal abstract class AutoStartHelper
                 taskService.RootFolder.DeleteTask(taskName, false);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Игнорируем ошибки при удалении (задача может не существовать или нет прав доступа)
+            LogHelper.LogError(ex);
         }
     }
 }

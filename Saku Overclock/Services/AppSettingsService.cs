@@ -32,10 +32,8 @@ public partial class AppSettingsService : IAppSettingsService, IDisposable
         if (name != "AppSettingsChanged") return;
         var updated = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.AppSettings);
         if (updated != null) lock (_lock) _cache = updated;
-        // тут же можно дёрнуть событие для UI (PropertyChanged/WeakReferenceMessenger), если правки пришли не от нас
     }
 
-    // паттерн для каждого свойства: читаем из кэша сразу, пишем в кэш сразу (отзывчивый UI) + debounce-сохранение
     public bool FixedTitleBar
     {
         get { lock (_lock) return _cache.FixedTitleBar; } 
@@ -149,7 +147,6 @@ public partial class AppSettingsService : IAppSettingsService, IDisposable
         get { lock (_lock) return _cache.AppFirstRun; }
         set { lock (_lock) _cache.AppFirstRun = value; ScheduleSave(); }
     }
-    // ... остальные свойства аналогично
 
     private void ScheduleSave()
     {

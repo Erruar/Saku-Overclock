@@ -8,7 +8,7 @@ namespace Saku_Overclock.Contracts.Services;
 public interface IThemeSelectorService
 {
     /// <summary>
-    ///     Коллекция кастомных тем приложения
+    ///     Application themes collection
     /// </summary>
     List<ThemeClass> Themes
     {
@@ -16,37 +16,35 @@ public interface IThemeSelectorService
     }
 
     /// <summary>
-    ///     Инициализация тем приложения
+    ///     Theme initialization
     /// </summary>
     void Initialize();
 
     /// <summary>
-    ///     Установить тип темы приложения (светлая или тёмная)
+    ///     Set theme type (light or dark)
     /// </summary>
-    /// <param name="theme">Тип темы приложения</param>
-    /// <returns>Результат выполнения задачи</returns>
+    /// <param name="theme">Theme type</param>
     void SetThemeAsync(ElementTheme theme);
 
     /// <summary>
-    ///     Установить тип темы приложения (светлая или тёмная)
+    ///     Set requested theme type
     /// </summary>
-    /// <returns>Результат выполнения задачи</returns>
     void SetRequestedThemeAsync();
 
     /// <summary>
-    ///     Применяет тему приложения (включая кастомные)
+    ///     Apply application theme
     /// </summary>
-    /// <param name="themeType">Индекс применяемой темы</param>
+    /// <param name="themeType">Theme index</param>
     /// <returns>
     ///     ThemeApplyResult:
-    ///     Фон темы,
-    ///     Интенсивность цвета,
-    ///     Прозрачность маски
+    ///     Theme background,
+    ///     Color intensity,
+    ///     Background mask opacity
     /// </returns>
     ThemeApplyResult UpdateAppliedTheme(int themeType);
 
     /// <summary>
-    ///     Сохранить темы приложения
+    ///     Save application themes
     /// </summary>
     void SaveThemeInSettings();
 }

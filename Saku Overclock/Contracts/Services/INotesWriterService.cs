@@ -6,24 +6,24 @@ namespace Saku_Overclock.Contracts.Services;
 public interface INotesWriterService
 {
     /// <summary>
-    ///     Создать список изменений программы (выполнять только в UI-потоке)
+    ///     Create application update notes (run only in UI-thread)
     /// </summary>
-    /// <param name="stackPanel">Элемент куда разместить список изменений</param>
-    /// <returns>Результат выполнения задачи</returns>
+    /// <param name="stackPanel">StackPanel to place notes</param>
+    /// <returns>Task result</returns>
     Task GenerateFormattedReleaseNotes(StackPanel stackPanel);
 
     /// <summary>
-    ///     Форматировать MD-текст как элементы RichTextBlock (выполнять только в UI-потоке)
+    ///     Format MD-text as RichTextBlock elements (run only in UI-thread)
     /// </summary>
-    /// <param name="releaseNotes">MD-текст</param>
-    /// <returns>RichTextBlock с форматированным MD-текстом</returns>
+    /// <param name="releaseNotes">MD-text</param>
+    /// <returns>RichTextBlock with formatted MD-text</returns>
     RichTextBlock FormatReleaseNotesAsRichText(string? releaseNotes);
 
     /// <summary>
-    ///     Обновить кисти для правильного создания элементов
+    ///     Update colors for correct element displaying
     /// </summary>
-    /// <param name="accent">Акцентная кисть</param>
-    /// <param name="secondary">Дополнительный цвет текста</param>
-    /// <param name="strong">Строгий цвет текста</param>
+    /// <param name="accent">Accent color</param>
+    /// <param name="secondary">Secondary text color</param>
+    /// <param name="strong">Strong text color</param>
     void UpdateReleaseNotesBrushes(Brush accent, Brush secondary, Brush strong);
 }

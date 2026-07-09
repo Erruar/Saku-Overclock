@@ -8,8 +8,6 @@ using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Services;
 
-// For more information on navigation between pages see
-// https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
 public class NavigationService(IPageService pageService) : INavigationService
 {
     private object? _lastParameterUsed;

@@ -5,7 +5,7 @@ namespace Saku_Overclock.Contracts.Services;
 public interface INavigationViewService
 {
     /// <summary>
-    ///     Элементы навигации
+    ///     Navigation elements
     /// </summary>
     IList<object>? MenuItems
     {
@@ -13,7 +13,7 @@ public interface INavigationViewService
     }
 
     /// <summary>
-    ///     Элемент настроек приложения
+    ///     Settings item
     /// </summary>
     object? SettingsItem
     {
@@ -21,20 +21,19 @@ public interface INavigationViewService
     }
 
     /// <summary>
-    ///     Инициализировать систему навигации страниц
+    ///     Initialize navigation system
     /// </summary>
-    /// <param name="navigationView"></param>
     void Initialize(NavigationView navigationView);
 
     /// <summary>
-    ///     Деинициализировать систему навигации страниц
+    ///     Uninitialize navigation system
     /// </summary>
     void UnregisterEvents();
 
     /// <summary>
-    ///     Получить выбранную страницу
+    ///     Get opened page
     /// </summary>
-    /// <param name="pageType">Тип страницы</param>
-    /// <returns>Выбранный элемент навигации</returns>
+    /// <param name="pageType">Page type</param>
+    /// <returns>Selected navigation element</returns>
     NavigationViewItem? GetSelectedItem(Type pageType);
 }

@@ -7,21 +7,15 @@ using WinRT.Interop;
 
 namespace Saku_Overclock.Helpers;
 
-// Helper class to workaround custom title bar bugs.
-// DISCLAIMER: The resource key names and color values used below are subject to change. Do not depend on them.
-// https://github.com/microsoft/TemplateStudio/issues/4516
+/// <summary>
+///     Helper class to workaround custom title bar bugs.
+/// </summary>
 internal abstract class TitleBarHelper
 {
-    private const int WaInactive = 0x00;
-    private const int WaActive = 0x01;
-    private const int WmActivate = 0x0006;
-
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetActiveWindow();
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
-
+    /// <summary>
+    ///     Update title bar theme
+    /// </summary>
+    /// <param name="theme">Current theme</param>
     public static void UpdateTitleBar(ElementTheme theme)
     {
         if (App.MainWindow.ExtendsContentIntoTitleBar)
@@ -78,6 +72,9 @@ internal abstract class TitleBarHelper
         }
     }
 
+    /// <summary>
+    ///     Update title bar buttons colors
+    /// </summary>
     public static void ApplySystemThemeToCaptionButtons()
     {
         var frame = App.AppTitlebar as FrameworkElement;
@@ -86,4 +83,14 @@ internal abstract class TitleBarHelper
             UpdateTitleBar(frame.ActualTheme);
         }
     }
+    
+    private const int WaInactive = 0x00;
+    private const int WaActive = 0x01;
+    private const int WmActivate = 0x0006;
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetActiveWindow();
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 }

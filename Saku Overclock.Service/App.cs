@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts;
 using Saku_Overclock.Core.Services;
 

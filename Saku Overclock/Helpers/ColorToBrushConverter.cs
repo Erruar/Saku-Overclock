@@ -6,6 +6,9 @@ namespace Saku_Overclock.Helpers;
 
 public partial class ColorToBrushConverter : IValueConverter
 {
+    /// <summary>
+    ///     Convert color to brush
+    /// </summary>
     public object? Convert(object value, Type targetType, object parameter, string language)
     {
         if (value is Color color)
@@ -16,6 +19,9 @@ public partial class ColorToBrushConverter : IValueConverter
         return null;
     }
 
+    /// <summary>
+    ///     Convert brush to color
+    /// </summary>
     public object? ConvertBack(object value, Type targetType, object parameter, string language)
     {
         if (value is SolidColorBrush brush)

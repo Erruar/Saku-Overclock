@@ -5,22 +5,22 @@ namespace Saku_Overclock.Contracts.Services;
 public interface IKeyboardHotkeysService : IDisposable
 {
     /// <summary>
-    ///     Инициализировать сервис горячих клавиш
+    ///     Initialize hotkeys service
     /// </summary>
     void Initialize();
 
     /// <summary>
-    ///     Включить сервис горячих клавиш
+    ///     Enable hotkeys service
     /// </summary>
     void Enable();
 
     /// <summary>
-    ///     Выключить сервис горячих клавиш
+    ///     Disable hotkeys service
     /// </summary>
     void Disable();
 
     /// <summary>
-    ///     Событие смены пресета
+    ///     Preset changed event
     /// </summary>
     event EventHandler<PresetId> PresetChanged;
 }

@@ -22,36 +22,36 @@ public class ActivationService(
     public async Task ActivateAsync(object activationArgs)
     {
         await coreGateway.WarmupAsync();
-        // 1. Загрузка настроек приложения
+        // 1. Load app settings
         await appSettingsService.LoadSettingsAsync();
         
-        // 2. Загрузка пресетов пользователя
+        // 2. Load user presets
         await presetManagerService.LoadSettingsAsync();
         
-        // Выполняется перед активацией
+        // Run before activation
         Initialize();
 
-        // Установить контент для MainWindow
+        // Set MainWindow context
         if (App.MainWindow.Content == null)
         {
             _shell = App.GetService<ShellPage>();
             App.MainWindow.Content = _shell ?? new Frame();
         }
 
-        // Выполнить активацию
+        // Handle activation
         await HandleActivationAsync(activationArgs);
 
-        // Активировать MainWindow.
+        // Activate MainWindow
         App.MainWindow.Activate();
 
-        // Задачи после активации
+        // Tasks after activation
         await StartupAsync();
     }
 
     /// <summary>
-    ///     Установка обработчика запуска приложения
+    ///     Activation handler
     /// </summary>
-    /// <param name="activationArgs"></param>
+    /// <param name="activationArgs">Activation args</param>
     private async Task HandleActivationAsync(object activationArgs)
     {
         var activationHandler = activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
@@ -68,29 +68,29 @@ public class ActivationService(
     }
 
     /// <summary>
-    ///     Действия перед активацией приложения
+    ///     Before activation
     /// </summary>
     private void Initialize()
     {
-        // 4. Инициализация тем
+        // 4. Initializing themes
         themeSelectorService.Initialize();
 
-        // 5. Состояние окна и его скрытие в трей
+        // 5. Window state and hiding to tray
         windowStateManager.Initialize();
     }
 
     /// <summary>
-    ///     Загрузка тем и сервисов приложения
+    ///     On startup behaviour
     /// </summary>
     private async Task StartupAsync()
     {
-        // 1. Установка выбранной темы приложения
+        // 1. Set required app theme
         themeSelectorService.SetRequestedThemeAsync();
 
-        // 3. Трей иконка и меню
+        // 3. Tray icon and menu
         trayMenuService.Initialize();
 
-        // 4. Проверка наличия обновлений
+        // 4. Update checking
         await updateCheckerService.CheckForUpdates();
     }
 }

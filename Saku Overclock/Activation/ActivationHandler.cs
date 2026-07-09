@@ -1,17 +1,31 @@
 ﻿namespace Saku_Overclock.Activation;
 
-// Extend this class to implement new ActivationHandlers. See DefaultActivationHandler for an example.
-// https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/activation.md
 public abstract class ActivationHandler<T> : IActivationHandler
     where T : class
 {
-    // Override this method to add the logic for whether to handle the activation.
+    /// <summary>
+    ///     Internal handling supported
+    /// </summary>
+    /// <returns>Boolean</returns>
     protected virtual bool CanHandleInternal() => true;
 
-    // Override this method to add the logic for your activation handler.
+    /// <summary>
+    ///     Internal code for handling
+    /// </summary>
+    /// <param name="args">Task arguments</param>
+    /// <returns>Task result</returns>
     protected abstract Task HandleInternalAsync(T args);
 
+    /// <summary>
+    ///     Handling supported
+    /// </summary>
+    /// <param name="args">Handling args</param>
+    /// <returns>Boolean</returns>
     public bool CanHandle(object args) => args is T && CanHandleInternal();
 
+    /// <summary>
+    ///     Handle event
+    /// </summary>
+    /// <param name="args">Handling args</param>
     public async Task HandleAsync(object args) => await HandleInternalAsync((args as T)!);
 }

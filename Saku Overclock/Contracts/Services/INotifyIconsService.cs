@@ -6,12 +6,12 @@ namespace Saku_Overclock.Contracts.Services;
 public interface INotifyIconsService
 {
     /// <summary>
-    ///     Загрузка настроек
+    ///     Loading TrayMon settings
     /// </summary>
     void LoadSettings();
     
     /// <summary>
-    ///     Настройки пользователя
+    ///     TrayMon elements
     /// </summary>
     public List<NiIconsElements> Elements
     {
@@ -20,28 +20,28 @@ public interface INotifyIconsService
     }
 
     /// <summary>
-    ///     Создаёт трей иконки
+    ///     Creating all enabled tray icons
     /// </summary>
     public void CreateNotifyIcons();
     
     /// <summary>
-    ///     Обновить состояние иконок со стороны страницы
+    ///     Update icons appearance (use from pages)
     /// </summary>
     void UpdateTrayMonIcons();
 
     /// <summary>
-    ///     Обновить данные в иконках
+    ///     Update icons data
     /// </summary>
-    /// <param name="sensorsInformation">Данные сенсоров</param>
+    /// <param name="sensorsInformation">Sensors data</param>
     public void UpdateNotifyIcons(SensorsInformation sensorsInformation);
 
     /// <summary>
-    ///     Уничтожит все активные иконки
+    ///     Destroy all active icons
     /// </summary>
     public void DisposeAllNotifyIcons();
 
     /// <summary>
-    ///     Были ли созданы иконки
+    ///     Are icons created flag
     /// </summary>
     public bool IsIconsCreated
     {
@@ -51,7 +51,7 @@ public interface INotifyIconsService
     
     
     /// <summary>
-    ///     Были ли обновлены иконки
+    ///     Are icons updated flag
     /// </summary>
     public bool IsIconsUpdated
     {

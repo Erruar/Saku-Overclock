@@ -6,6 +6,9 @@ namespace Saku_Overclock.Helpers;
 
 internal partial class HexColorInverterConverter : IValueConverter
 {
+    /// <summary>
+    ///     Invert color
+    /// </summary>
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         try
@@ -33,13 +36,13 @@ internal partial class HexColorInverterConverter : IValueConverter
 
             if (!string.IsNullOrEmpty(newColor))
             {
-                // Убираем символ #, если он присутствует
-                var valuestring = newColor.TrimStart('#');
+                // Remove # if exist
+                var trimStart = newColor.TrimStart('#');
 
-                // Парсим цветовые компоненты
-                r = System.Convert.ToInt32(valuestring[..2], 16);
-                g = System.Convert.ToInt32(valuestring.Substring(2, 2), 16);
-                b = System.Convert.ToInt32(valuestring.Substring(4, 2), 16);
+                // Parsing color components
+                r = System.Convert.ToInt32(trimStart[..2], 16);
+                g = System.Convert.ToInt32(trimStart.Substring(2, 2), 16);
+                b = System.Convert.ToInt32(trimStart.Substring(4, 2), 16);
             }
 
             r = 255 - r;
@@ -55,6 +58,9 @@ internal partial class HexColorInverterConverter : IValueConverter
         }
     }
 
+    /// <summary>
+    ///     Invert color
+    /// </summary>
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         Convert(value, targetType, parameter, language);
 }

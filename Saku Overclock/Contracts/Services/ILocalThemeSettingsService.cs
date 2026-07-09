@@ -7,20 +7,20 @@ namespace Saku_Overclock.Contracts.Services;
 public interface ILocalThemeSettingsService
 {
     /// <summary>
-    ///     Загрузить параметры тем приложения
+    ///     Load application theme settings
     /// </summary>
-    /// <returns></returns>
+    /// <returns>LocalThemeSettingsOptions themes</returns>
     LocalThemeSettingsOptions? LoadThemeSettings();
 
     /// <summary>
-    ///     Сохранить темы приложения
+    ///     Save application theme settings
     /// </summary>
-    /// <param name="themeSettings">Темы приложения</param>
+    /// <param name="themeSettings">LocalThemeSettingsOptions themes</param>
     void SaveThemeSettings(LocalThemeSettingsOptions themeSettings);
 
     /// <summary>
-    ///     Возвращает дефолтные темы приложения
+    ///     Return default themes
     /// </summary>
-    /// <returns>Дефолтные темы приложения</returns>
+    /// <returns>Default application themes</returns>
     List<ThemeClass> GetDefaultThemes();
 }

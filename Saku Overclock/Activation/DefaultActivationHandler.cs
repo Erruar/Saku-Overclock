@@ -13,7 +13,7 @@ public class DefaultActivationHandler(INavigationService navigationService)
         return navigationService.Frame?.Content == null;
     }
 
-    protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
+    protected override async Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
         navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, args.Arguments);
 

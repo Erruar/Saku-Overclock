@@ -4,13 +4,14 @@ namespace Saku_Overclock.Helpers;
 
 public static class FrameExtensions
 {
+    /// <summary>
+    ///     Get page viewmodel
+    /// </summary>
+    /// <param name="frame">Page</param>
+    /// <returns>Page viewmodel</returns>
     public static object? GetPageViewModel(this Frame frame)
     {
         if (frame.Content == null) return null;
-
-        // Используем паттерн-поиск по динамическому типу, который триммер понимает,
-        // либо если у тебя у всех ViewModels есть свойство, можно пометить вызывающий тип атрибутом.
-        // Но самый простой способ заткнуть триммер здесь, если не хочется городить интерфейсы:
         return GetViewModelReflective(frame.Content);
     }
 

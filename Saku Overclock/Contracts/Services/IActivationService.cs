@@ -3,9 +3,9 @@
 public interface IActivationService
 {
     /// <summary>
-    /// Активировать сервисы приложения
+    ///     Activate client services
     /// </summary>
-    /// <param name="activationArgs">Аргументы при запуске программы</param>
-    /// <returns>Результат выполнения задачи</returns>
+    /// <param name="activationArgs">Activation args</param>
+    /// <returns>Task result</returns>
     Task ActivateAsync(object activationArgs);
 }
