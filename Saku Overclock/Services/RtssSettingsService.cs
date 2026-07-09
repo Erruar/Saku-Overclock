@@ -15,7 +15,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
 {
     public List<RtssElementsClass> RtssElements
     {
-        get => Get(s => s.RtssElements);
+        get => Get(s => s.RtssElements.ToList());
         set => Set(cache => cache.RtssElements = value);
     }
 

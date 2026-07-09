@@ -13,7 +13,7 @@ public class PresetManagerService : IPresetManagerService, IDisposable
     private Preset[] _cache = [];
     private readonly Lock _lock = new();
 
-    // дебаунс отдельно на каждый индекс, чтобы слайдеры на разных пресетах не мешали друг другу
+    // Ожидание отдельно на каждый индекс, чтобы слайдеры на разных пресетах не мешали друг другу
     private readonly ConcurrentDictionary<int, CancellationTokenSource> _pendingSaves = new();
 
     public event Action? PresetsUpdated; // для UI (ObservableCollection и т.п.)

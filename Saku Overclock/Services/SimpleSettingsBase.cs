@@ -3,31 +3,40 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace Saku_Overclock.Services;
 
-public abstract class SimpleIpcSettingsBase<T>(IpcConnectionService ipc, string entityName, JsonTypeInfo<T> typeInfo)
+public abstract class SimpleIpcSettingsBase<T>
     : IDisposable where T : new()
 {
-    protected T Cache;
+    private T _cache;
     private readonly Lock _lock = new();
     private CancellationTokenSource? _debounce;
 
-    protected SimpleIpcSettingsBase(IpcConnectionService ipc, string entityName, JsonTypeInfo<T> typeInfo, T initial)
-        : this(ipc, entityName, typeInfo) => Cache = initial;
+    private readonly IpcConnectionService _ipc;
+    private readonly string _entityName;
+    private readonly JsonTypeInfo<T> _typeInfo;
 
-    private void Ctor() => ipc.OnEvent += OnIpcEvent;
-
-    public async Task LoadSettingsAsync()
+    protected SimpleIpcSettingsBase(IpcConnectionService ipc, string entityName, JsonTypeInfo<T> typeInfo, T? initial = default)
     {
-        var json = await ipc.SendCommandAsync($"Get_{entityName}");
+        _ipc = ipc;
+        _entityName = entityName;
+        _typeInfo = typeInfo;
+        _cache = initial ?? new T();
+
+        _ipc.OnEvent += OnIpcEvent;
+    }
+
+    protected async Task LoadSettingsAsync()
+    {
+        var json = await _ipc.SendCommandAsync($"Get_{_entityName}");
         if (string.IsNullOrEmpty(json)) return;
-        var loaded = JsonSerializer.Deserialize(json, typeInfo);
-        if (loaded != null) lock (_lock) Cache = loaded;
+        var loaded = JsonSerializer.Deserialize(json, _typeInfo);
+        if (loaded != null) lock (_lock) _cache = loaded;
     }
 
     private void OnIpcEvent(string name, string payload)
     {
-        if (name != $"{entityName}Changed") return;
-        var updated = JsonSerializer.Deserialize(payload, typeInfo);
-        if (updated != null) lock (_lock) Cache = updated;
+        if (name != $"{_entityName}Changed") return;
+        var updated = JsonSerializer.Deserialize(payload, _typeInfo);
+        if (updated != null) lock (_lock) _cache = updated;
         OnExternalUpdate();
     }
 
@@ -35,12 +44,12 @@ public abstract class SimpleIpcSettingsBase<T>(IpcConnectionService ipc, string 
 
     protected TValue Get<TValue>(Func<T, TValue> selector)
     {
-        lock (_lock) return selector(Cache);
+        lock (_lock) return selector(_cache);
     }
 
     protected void Set(Action<T> mutate)
     {
-        lock (_lock) mutate(Cache);
+        lock (_lock) mutate(_cache);
         ScheduleSend();
     }
 
@@ -56,11 +65,11 @@ public abstract class SimpleIpcSettingsBase<T>(IpcConnectionService ipc, string 
             catch (TaskCanceledException) { return; }
 
             T snapshot;
-            lock (_lock) snapshot = Cache;
-            var json = JsonSerializer.Serialize(snapshot, typeInfo);
-            await ipc.SendCommandAsync($"Set_{entityName}", json);
+            lock (_lock) snapshot = _cache;
+            var json = JsonSerializer.Serialize(snapshot, _typeInfo);
+            await _ipc.SendCommandAsync($"Set_{_entityName}", json, token);
         }, token);
     }
 
-    public void Dispose() => ipc.OnEvent -= OnIpcEvent;
+    public void Dispose() => _ipc.OnEvent -= OnIpcEvent;
 }

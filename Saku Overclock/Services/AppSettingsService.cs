@@ -5,7 +5,7 @@ using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Services;
 
-public class AppSettingsService : IAppSettingsService, IDisposable
+public partial class AppSettingsService : IAppSettingsService, IDisposable
 {
     private readonly IpcConnectionService _ipc;
     private AppSettings _cache = new();

@@ -2,11 +2,9 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using System.Text.Json.Serialization;
 using H.NotifyIcon;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.Views;
@@ -29,7 +27,7 @@ public class NotifyIconsService(IpcConnectionService ipc)
     public bool IsIconsCreated { get; set; }
     public bool IsIconsUpdated { get; set; }
 
-    private readonly List<ИнформацияPage.MinMax> _niiconsMinMaxValues =
+    private readonly List<ИнформацияPage.MinMax> _iconsMinMaxValues =
     [
         new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
     ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
@@ -88,8 +86,8 @@ public class NotifyIconsService(IpcConnectionService ipc)
                 sensorsInformation.RamUsagePercent
             };
 
-            for (var i = 0; i < sensorValues.Length && i < _niiconsMinMaxValues.Count; i++)
-                UpdateMinMaxValues(_niiconsMinMaxValues, i,
+            for (var i = 0; i < sensorValues.Length && i < _iconsMinMaxValues.Count; i++)
+                UpdateMinMaxValues(_iconsMinMaxValues, i,
                     sensorValues[i]); // Вносит новые минимальные и максимальные значения в переменные
 
             // UI обновления только в UI потоке
@@ -109,31 +107,31 @@ public class NotifyIconsService(IpcConnectionService ipc)
             // Группируем все обновления UI в один метод
             var iconUpdates = new[]
             {
-                ("Settings_ni_Values_STAPM", sensorsInformation.CpuStapmValue, "W", _niiconsMinMaxValues[0],
+                ("Settings_ni_Values_STAPM", sensorsInformation.CpuStapmValue, "W", _iconsMinMaxValues[0],
                     _stapmText),
-                ("Settings_ni_Values_Fast", sensorsInformation.CpuFastValue, "W", _niiconsMinMaxValues[1], _fastText),
-                ("Settings_ni_Values_Slow", sensorsInformation.CpuSlowValue, "W", _niiconsMinMaxValues[2], _slowText),
-                ("Settings_ni_Values_VRMEDC", sensorsInformation.VrmEdcValue, "A", _niiconsMinMaxValues[3],
+                ("Settings_ni_Values_Fast", sensorsInformation.CpuFastValue, "W", _iconsMinMaxValues[1], _fastText),
+                ("Settings_ni_Values_Slow", sensorsInformation.CpuSlowValue, "W", _iconsMinMaxValues[2], _slowText),
+                ("Settings_ni_Values_VRMEDC", sensorsInformation.VrmEdcValue, "A", _iconsMinMaxValues[3],
                     _vrmEdcText),
-                ("Settings_ni_Values_CPUTEMP", sensorsInformation.CpuTempValue, "C", _niiconsMinMaxValues[4],
+                ("Settings_ni_Values_CPUTEMP", sensorsInformation.CpuTempValue, "C", _iconsMinMaxValues[4],
                     _cpuTempText),
-                ("Settings_ni_Values_CPUUsage", sensorsInformation.CpuUsage, "%", _niiconsMinMaxValues[5],
+                ("Settings_ni_Values_CPUUsage", sensorsInformation.CpuUsage, "%", _iconsMinMaxValues[5],
                     _cpuUsageText),
-                ("Settings_ni_Values_AVGCPUCLK", sensorsInformation.CpuFrequency, "GHz", _niiconsMinMaxValues[6],
+                ("Settings_ni_Values_AVGCPUCLK", sensorsInformation.CpuFrequency, "GHz", _iconsMinMaxValues[6],
                     _cpuFreqText),
-                ("Settings_ni_Values_AVGCPUVOLT", sensorsInformation.CpuVoltage, "V", _niiconsMinMaxValues[7],
+                ("Settings_ni_Values_AVGCPUVOLT", sensorsInformation.CpuVoltage, "V", _iconsMinMaxValues[7],
                     _cpuVoltText),
-                ("Settings_ni_Values_GFXCLK", sensorsInformation.ApuFrequency, "MHz", _niiconsMinMaxValues[8],
+                ("Settings_ni_Values_GFXCLK", sensorsInformation.ApuFrequency, "MHz", _iconsMinMaxValues[8],
                     _gfxFreqText),
-                ("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTempValue, "C", _niiconsMinMaxValues[9],
+                ("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTempValue, "C", _iconsMinMaxValues[9],
                     _gfxTempText),
-                ("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V", _niiconsMinMaxValues[10],
+                ("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V", _iconsMinMaxValues[10],
                     _gfxVoltText),
-                ("Settings_ni_Values_DgpuFreq", sensorsInformation.NvidiaGpuFrequency, "GHz", _niiconsMinMaxValues[11],
+                ("Settings_ni_Values_DgpuFreq", sensorsInformation.NvidiaGpuFrequency, "GHz", _iconsMinMaxValues[11],
                     _dGpuFreqText),
-                ("Settings_ni_Values_DgpuTemp", sensorsInformation.NvidiaGpuTemperature, "C", _niiconsMinMaxValues[12],
+                ("Settings_ni_Values_DgpuTemp", sensorsInformation.NvidiaGpuTemperature, "C", _iconsMinMaxValues[12],
                     _dGpuTempText),
-                ("Settings_ni_Values_RamUsage", sensorsInformation.RamUsagePercent, "%", _niiconsMinMaxValues[13],
+                ("Settings_ni_Values_RamUsage", sensorsInformation.RamUsagePercent, "%", _iconsMinMaxValues[13],
                     _ramUsageText)
             };
 

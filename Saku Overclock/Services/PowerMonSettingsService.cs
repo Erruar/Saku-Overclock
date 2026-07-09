@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
+﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Shared;
 
 namespace Saku_Overclock.Services;
@@ -11,7 +9,7 @@ public class PowerMonSettingsService(IpcConnectionService ipc)
 {
     public List<string> Notelist
     {
-        get => Get(s => s);
+        get => Get(s => s.ToList());
         set => Set(cache => { cache.Clear(); cache.AddRange(value); });
     }
 
