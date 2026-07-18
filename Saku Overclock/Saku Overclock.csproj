@@ -152,7 +152,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Saku Overclock.Shared\Saku Overclock.Shared\Saku Overclock.Shared.csproj" />
+    <ProjectReference Include="..\Saku Overclock.Shared\Saku Overclock.Shared\Saku Overclock.Shared.csproj" Properties="TargetFramework=net10.0-windows10.0.19041.0" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
@@ -174,13 +174,22 @@
     <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\x64\$(Configuration)\net10.0-windows\win-x64\native\Saku Overclock.Service.exe</_ServicePublishExe>
   </PropertyGroup>
 
-  <Target Name="BuildCrashHandlerPreBuild">
+  <Target Name="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\Saku Overclock.Shared\Saku Overclock.Shared\Saku Overclock.Shared.csproj"
+             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\ZenStates.Core\ZenStates-Core.csproj"
+             Properties="Configuration=$(Configuration);Platform=AnyCPU;TargetFramework=net8.0-windows" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\Saku Overclock.Core\Saku Overclock.Core\Saku Overclock.Core.csproj"
+             Properties="Configuration=$(Configuration);Platform=AnyCPU;TargetFramework=net10.0-windows" />
+  </Target>
+  
+  <Target Name="BuildCrashHandlerPreBuild" DependsOnTargets="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
     <MSBuild Projects="$(_CrashHandlerProject)"
              Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows;RuntimeIdentifier=win-x64"
              BuildInParallel="false" />
   </Target>
 
-  <Target Name="BuildServicePreBuild" DependsOnTargets="BuildCrashHandlerPreBuild">
+  <Target Name="BuildServicePreBuild" DependsOnTargets="BuildCrashHandlerPreBuild" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
     <MSBuild Projects="$(_ServiceProject)"
              Targets="Publish"
              Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishAot=true;TargetFramework=net10.0-windows;PublishTrimmed=true;IsAotCompatible=true;PublishSingleFile=true"
