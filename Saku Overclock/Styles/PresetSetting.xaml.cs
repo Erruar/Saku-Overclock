@@ -16,32 +16,32 @@ public partial class PresetSetting : UserControl
 
     #region Dependency Properties
 
-    // Текст заголовка
+    // Header text
     public static readonly DependencyProperty TextProperty =
         DependencyProperty.Register(nameof(Text), typeof(string), typeof(PresetSetting), new PropertyMetadata(string.Empty));
     public string Text { get => (string)GetValue(TextProperty); set => SetValue(TextProperty, value); }
     
-    // Видимость чекбокса
+    // Checkbox visibility
     public static readonly DependencyProperty CheckBoxVisibilityProperty =
         DependencyProperty.Register(nameof(CheckBoxVisibility), typeof(Visibility), typeof(PresetSetting), new PropertyMetadata(Visibility.Visible));
     public Visibility CheckBoxVisibility { get => (Visibility)GetValue(CheckBoxVisibilityProperty); set => SetValue(CheckBoxVisibilityProperty, value); }
 
-    // Минумум
+    // Minimum limit
     public static readonly DependencyProperty MinimumProperty =
         DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(PresetSetting), new PropertyMetadata(0.0));
     public double Minimum { get => (double)GetValue(MinimumProperty); set => SetValue(MinimumProperty, value); }
 
-    // Жесткий максимум (по умолчанию не ограничен)
+    // Maximum limit
     public static readonly DependencyProperty MaximumProperty =
         DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(PresetSetting), new PropertyMetadata(double.MaxValue, OnMaximumChanged));
     public double Maximum { get => (double)GetValue(MaximumProperty); set => SetValue(MaximumProperty, value); }
 
-    // Текущий максимум слайдера (может расширяться динамически)
+    // Current slider maximum (not limited)
     public static readonly DependencyProperty SliderMaximumProperty =
         DependencyProperty.Register(nameof(SliderMaximum), typeof(double), typeof(PresetSetting), new PropertyMetadata(100.0));
     public double SliderMaximum { get => (double)GetValue(SliderMaximumProperty); set => SetValue(SliderMaximumProperty, value); }
 
-    // Основное значение-объект
+    // Preset Option to display
     public static readonly DependencyProperty ValueProperty =
         DependencyProperty.Register(nameof(Value), typeof(PresetOption<double>), typeof(PresetSetting), new PropertyMetadata(null, OnValueChanged));
     
@@ -72,7 +72,7 @@ public partial class PresetSetting : UserControl
     public PresetSetting()
     {
         InitializeComponent();
-        // Инициализируем таймер задержки
+        // Initialize delay timer
         _debounceTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(350) 
@@ -101,12 +101,13 @@ public partial class PresetSetting : UserControl
     
     private void UpdateUi(PresetOption<double>? value)
     {
-        // Если данные пришли до загрузки UI элементов — игнорируем, Loaded сам всё вызовет
+        // If data arrives before the UI elements have loaded, ignore it
+        // `Loaded` event will handle it
         if (!_isLoaded || SettingCheck == null || value == null) return;
 
         _isUpdatingUi = true;
         
-        // Расширяем слайдер под пришедшее значение, если оно выходит за дефолтные рамки
+        // Expand slider to accommodate the received value if it falls outside the default limits
         if (value.Value > SliderMaximum && value.Value <= Maximum)
         {
             SliderMaximum = FromValueToUpperFive(value.Value);
@@ -118,7 +119,7 @@ public partial class PresetSetting : UserControl
         _isUpdatingUi = false;
     }
 
-    // Чекбокс должен срабатывать мгновенно (immediate: true)
+    // Checkbox should react immediately (immediate: true)
     private void SettingComponent_Changed(object sender, RoutedEventArgs e) => ChangeSetting(immediate: true);
     
     private void SettingSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e) => ChangeSetting(immediate: false);
@@ -130,7 +131,7 @@ public partial class PresetSetting : UserControl
         bool isEnabled = SettingCheck.IsChecked == true;
         double val = SettingSlider.Value;
 
-        // Проверяем, изменилось ли что-то на самом деле
+        // Check if value was changed
         if (Value?.IsEnabled != isEnabled || (int)Value.Value != (int)val)
         {
             Value?.IsEnabled = isEnabled;
@@ -139,7 +140,7 @@ public partial class PresetSetting : UserControl
             _debounceTimer.Stop();
             if (immediate)
             {
-                // Если кликнули чекбокс — гасим таймер слайдера (если он тикал) и сохраняем прямо сейчас
+                // If checkbox is clicked, stop the slider timer (if it was running) and save immediately
                 if (Value != null) ValueChanged?.Invoke(Value);
             }
             else

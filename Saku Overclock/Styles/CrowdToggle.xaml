@@ -9,9 +9,9 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
-            <!-- Разделение ресурсов по темам -->
+            <!-- Categorizing resources by theme -->
             <ResourceDictionary.ThemeDictionaries>
-                <!-- Светлая тема -->
+                <!-- Light theme -->
                 <ResourceDictionary x:Key="Light">
                     <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="ControlStrokeColorSecondaryBrush" />
                     <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver"
@@ -19,7 +19,7 @@
                     <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="SmokeFillColorDefaultBrush" />
                 </ResourceDictionary>
 
-                <!-- Тёмная тема (Default используется как базовая тёмная) -->
+                <!-- Dark theme (Default used as dark) -->
                 <ResourceDictionary x:Key="Default">
                     <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="ControlFillColorSecondaryBrush" />
                     <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver"
@@ -27,7 +27,6 @@
                     <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="ControlFillColorDefaultBrush" />
                 </ResourceDictionary>
 
-                <!-- На всякий случай дублируем для Dark, если переопределение темы идёт явно -->
                 <ResourceDictionary x:Key="Dark">
                     <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="ControlFillColorSecondaryBrush" />
                     <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver"
@@ -36,11 +35,11 @@
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
 
-            <!-- Общие ресурсы, которые одинаковы для всех тем -->
+            <!-- Common resources -->
             <double:BooleanToFontWeightConverter x:Key="BooleanToWeight" />
             <double:BooleanToFontSizeConverter x:Key="BooleanToFontSize" />
 
-            <!-- 1. Состояние "НЕ ВЫДЕЛЕН" -> Полностью прозрачный -->
+            <!-- 1. State "Unchecked" -> Transparent -->
             <StaticResource x:Key="ToggleButtonBackground" ResourceKey="ControlFillColorTransparentBrush" />
             <StaticResource x:Key="ToggleButtonBackgroundPressed" ResourceKey="ControlFillColorTransparentBrush" />
 
@@ -48,7 +47,7 @@
             <StaticResource x:Key="ToggleButtonBorderBrushPointerOver" ResourceKey="ControlElevationBorderBrush" />
             <StaticResource x:Key="ToggleButtonBorderBrushPressed" ResourceKey="ControlFillColorTransparentBrush" />
 
-            <!-- 2. Состояние "ВЫДЕЛЕН" (Checked) -> Остальные состояния кнопки -->
+            <!-- 2. State "Checked" -> Usual button states -->
             <StaticResource x:Key="ToggleButtonBackgroundCheckedPressed" ResourceKey="ControlFillColorTertiaryBrush" />
             <StaticResource x:Key="ToggleButtonBackgroundCheckedDisabled" ResourceKey="ControlFillColorDisabledBrush" />
 
@@ -62,7 +61,7 @@
             <StaticResource x:Key="ToggleButtonBorderBrushCheckedPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
             <StaticResource x:Key="ToggleButtonBorderBrushCheckedDisabled" ResourceKey="ControlStrokeColorDefaultBrush" />
 
-            <!-- Неявный стиль оставляем только для задания геометрии кнопок -->
+            <!-- Button geometry fix -->
             <Style TargetType="ToggleButton">
                 <Setter Property="CornerRadius" Value="10" />
                 <Setter Property="MinHeight" Value="27" />

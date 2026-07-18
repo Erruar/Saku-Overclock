@@ -127,26 +127,25 @@ public class WindowStateManagerService(
         _dispatcherQueue?.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    // Тип автостарта: 0 - выкл, 1 - автостарт с системой, 2 - автостарт и трей
+    // Auto-start type: 0 - off, 1 - enabled, 2 - enabled and launch hidden in tray
     private const int AutoStartWithHideToTray = 2;
 
     /// <summary>
-    ///     Приложение активировано и загрузило UI
+    ///     App activated and loaded UI
     /// </summary>
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        // Отписаться от события, чтобы не вызвать его повторно
+        // Remove event
         App.MainWindow.Activated -= MainWindow_Activated;
 
-        // Перенести пользователя на страницу первоначальной настройки приложения
-        // при первом запуске программы
+        // Redirect the user to the app's initial setup page upon the first launch
         if (settingsService.AppFirstRun)
         {
             var navigationService = App.GetService<INavigationService>();
             navigationService.NavigateTo(typeof(ViewModels.ОбучениеViewModel).FullName!);
         }
 
-        // Скрыть приложение при запуске, если это включено в настройках
+        // Hide app to tray
         if (settingsService.AutostartType ==
             AutoStartWithHideToTray)
         {
@@ -155,19 +154,19 @@ public class WindowStateManagerService(
     }
 
     /// <summary>
-    ///     Останавливает обновление значений сенсоров или отменяет закрытие (скрытие в трей)
+    ///     Cancels closing (minimizing to tray)
     /// </summary>
     private void AppWindow_Closing(AppWindow sender, AppWindowClosingEventArgs args)
     {
         if (settingsService.HideToTray)
         {
-            args.Cancel = true; // Отменяем закрытие
-            App.MainWindow.Hide(); // Скрываем в трей
+            args.Cancel = true; // Cancel close
+            App.MainWindow.Hide(); // Hide to tray
         }
     }
 
     /// <summary>
-    ///     Удаляет трей иконку, закрывает все дополнительные окна
+    ///     Removes tray icon and closes all additional windows
     /// </summary>
     private void MainWindow_Closed(object sender, WindowEventArgs args)
     {

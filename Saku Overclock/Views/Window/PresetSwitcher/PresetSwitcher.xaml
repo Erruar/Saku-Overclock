@@ -10,7 +10,7 @@
         <winuiex:TransparentTintBackdrop />
     </Window.SystemBackdrop>
     <Grid x:Name="DpWindow" Background="Transparent" Padding="0" Margin="0">
-        <!-- Прозрачный фон для контента -->
+        <!-- Transparent background -->
         <Border Background="{ThemeResource PostAcrylicBrush}" CornerRadius="28" Padding="0" Margin="0,0,0,0"> 
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid x:Name="MainThemeGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -20,7 +20,7 @@
                 </Grid>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.0" Background="{ThemeResource BackgroundImageMaskAcrylicBrush}" x:Name="MainOpacity"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <!-- Кнопка с иконкой -->
+                    <!-- Button with icon -->
                     <ToggleButton 
         FocusVisualPrimaryThickness="0" 
         FocusVisualSecondaryThickness="0" 
@@ -34,7 +34,7 @@
         BorderThickness="0">
                         <FontIcon FontSize="20" x:Name="PresetIcon" Glyph="&#xE718;" Foreground="White" Margin="3,0,3,0"/>
                     </ToggleButton>
-                    <!-- Текстовые элементы -->
+                    <!-- Text elements -->
                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
                         <TextBlock 
             x:Name="PresetText" 

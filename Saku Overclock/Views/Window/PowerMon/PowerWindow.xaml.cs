@@ -13,9 +13,9 @@ internal partial class PowerWindow : IDisposable
     private static readonly IPowerMonSettingsService SettingsService = App.GetService<IPowerMonSettingsService>();
     private ObservableCollection<PowerMonitorItem>? _powerGridItems;
     private bool _isInitialized;
-    private float[]? _rawData; // Сырые данные
+    private float[]? _rawData;
     private int _currentPage;
-    private const int PageSize = 50; // Показываем только 50 элементов за раз
+    private const int PageSize = 50;
     private int _totalItems;
     private bool _isLoading;
 
@@ -25,11 +25,11 @@ internal partial class PowerWindow : IDisposable
         InitializeWindowProperties();
         InitializeTimer();
 
-        // Быстрая синхронная инициализация
+        // Fast synchronous initialization
         _powerGridItems = [];
         PowerGridView.ItemsSource = _powerGridItems;
 
-        // Загружаем первую страницу
+        // Loading first page
         LoadInitialData();
     }
 
@@ -55,10 +55,10 @@ internal partial class PowerWindow : IDisposable
     {
         try
         {
-            // Быстрая загрузка заметок
+            // Fast notes loading
             SettingsService.LoadSettings();
 
-            // Получаем данные
+            // Data receiving
             // TODO: Implement Data Updater
             _rawData = null; //_dataProvider?.GetPowerTable();
             if (_rawData == null)
@@ -68,13 +68,13 @@ internal partial class PowerWindow : IDisposable
 
             _totalItems = _rawData.Length;
 
-            // Загружаем первую страницу
+            // Load first page
             LoadPage(0);
 
             _isInitialized = true;
             _powerCfgTimer.Start();
 
-            // Обновляем индикатор
+            // Update indicator
             UpdatePageInfo();
         }
         catch (Exception e)
@@ -102,7 +102,7 @@ internal partial class PowerWindow : IDisposable
 
             for (var i = startIndex; i < endIndex; i++)
             {
-                // Убеждаемся что у нас есть заметка
+                // Determine if note was added
                 while (SettingsService?.Notelist.Count <= i)
                 {
                     SettingsService.Notelist.Add(" ");
@@ -114,7 +114,7 @@ internal partial class PowerWindow : IDisposable
                     Offset = $"0x{i * 4:X4}",
                     Value = $"{_rawData[i]:F6}",
                     Note = SettingsService?.Notelist[i] ?? " ",
-                    RealIndex = i // Сохраняем реальный индекс
+                    RealIndex = i // Save real index
                 };
 
                 _powerGridItems?.Add(item);
@@ -222,7 +222,7 @@ internal partial class PowerWindow : IDisposable
     {
         try
         {
-            if (e.IsIntermediate) // Проверяем, что прокрутка завершена
+            if (e.IsIntermediate) // Check for scroll to be ended
             {
                 return;
             }
@@ -230,7 +230,7 @@ internal partial class PowerWindow : IDisposable
             var scrollViewer = sender as ScrollViewer;
             var totalPages = (_totalItems + PageSize - 1) / PageSize;
 
-            // Если долистали до самого низа и есть следующая страница
+            // If user scrolled to the end and next page is available
             if (scrollViewer == null)
             {
                 return;
@@ -252,7 +252,7 @@ internal partial class PowerWindow : IDisposable
                     scrollViewer.ChangeView(null, 1, null);
                     await Task.Delay(190);
                     var page = totalPages;
-                    page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Конвертировать в правильный индекс
+                    page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Convert to correct index
 
                     if (page != _currentPage)
                     {
@@ -264,19 +264,19 @@ internal partial class PowerWindow : IDisposable
                 {
                     LoadPage(_currentPage + 1);
                     UpdatePageInfo();
-                    // Перемещаем к началу новой страницы
+                    // Move to new page start
                     scrollViewer.ChangeView(null, 1, null);
                 }
             }
-            // Если долистали до самого верха и есть предыдущая страница
+            // If user scrolled to the top and previous page is available
             else if (scrollViewer.VerticalOffset <= 0 &&
                      _currentPage > 0 &&
                      totalPages - 1 !=
-                     _currentPage) // Конвертировать в правильный индекс, если страница не последняя
+                     _currentPage) // Convert to correct index if page is not last
             {
                 LoadPage(_currentPage - 1);
                 UpdatePageInfo();
-                // Перемещаем к концу предыдущей страницы
+                // Move to previous page end
                 scrollViewer.ChangeView(null, scrollViewer.ScrollableHeight - 1, null);
             }
         }
@@ -291,7 +291,7 @@ internal partial class PowerWindow : IDisposable
         if (int.TryParse(PageInput.Text, out var page))
         {
             var totalPages = (_totalItems + PageSize - 1) / PageSize;
-            page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Конвертировать в правильный индекс
+            page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Convert to correct index
 
             if (page != _currentPage)
             {
@@ -374,7 +374,7 @@ internal partial class PowerWindow : IDisposable
             return;
         }
 
-        // Получаем новые данные
+        // Receive data
         // TODO: Implement Data Updater
         var newData = Array.Empty<float>(); //_dataProvider?.GetPowerTable();
         if (newData == null)
@@ -384,7 +384,7 @@ internal partial class PowerWindow : IDisposable
 
         _rawData = newData;
 
-        // Обновляем только видимые элементы
+        // Update only visible elements
         for (var i = 0; i < _powerGridItems!.Count; i++)
         {
             var item = _powerGridItems[i];
@@ -398,7 +398,7 @@ internal partial class PowerWindow : IDisposable
                     item.Value = newValue;
                 }
 
-                // Сохраняем заметки если изменились
+                // Save notes if changed
                 if (item.Note != SettingsService.Notelist[realIndex]
                     && realIndex < SettingsService.Notelist.Count)
                 {

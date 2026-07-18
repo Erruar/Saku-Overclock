@@ -5,15 +5,14 @@ namespace Saku_Overclock.Services;
 
 public partial class TrayCommandCollection : ITrayCommandCollection
 {
-    // Внутренняя коллекция для хранения команд.
+    // Internal commands collection
     private readonly Dictionary<string, Action> _commands = [];
 
     /// <summary>
-    /// Добавляет новую команду в коллекцию.
-    /// Этот метод необходим для работы синтаксиса инициализации коллекции: new TrayCommandCollection { { "Name", Action }, ... }
+    /// Add new command to collection
     /// </summary>
-    /// <param name="commandName">Уникальное имя команды.</param>
-    /// <param name="action">Действие (метод) для выполнения.</param>
+    /// <param name="commandName">Name</param>
+    /// <param name="action">Action</param>
     public void Add(string commandName, Action action)
     {
         _commands.Add(commandName, action);

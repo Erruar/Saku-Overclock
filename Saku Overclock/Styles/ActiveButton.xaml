@@ -21,7 +21,7 @@
 
                         <VisualStateManager.VisualStateGroups>
 
-                            <!-- Общие состояния -->
+                            <!-- Common states -->
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal">
                                     <VisualState.Setters>
@@ -48,7 +48,7 @@
                                 </VisualState>
                             </VisualStateGroup>
 
-                            <!-- Состояния выбора -->
+                            <!-- Selected states -->
                             <VisualStateGroup x:Name="CheckStates">
                                 <VisualState x:Name="Unchecked">
                                     <VisualState.Setters>

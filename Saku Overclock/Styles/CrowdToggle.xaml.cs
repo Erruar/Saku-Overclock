@@ -11,7 +11,7 @@ public partial class CrowdToggle : UserControl
 
     public event Action<BandCrowdStates>? OnClick;
 
-    // Текст главного выбора
+    // Selected block text
     public static readonly DependencyProperty PrimaryTextProperty =
         DependencyProperty.Register(
             nameof(PrimaryText), 

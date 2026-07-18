@@ -101,7 +101,7 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
             themeOpacity = Themes[themeType].ThemeOpacity;
             themeMaskOpacity = Themes[themeType].ThemeMaskOpacity;
             
-            // Исправление некорректного отображения теней в приложении на HDR дисплеях
+            // Fixing incorrect shadow rendering on HDR displays
             if (themeType is 0 or 2)
             {
                 var background = _uiSettings.GetColorValue(UIColorType.Background);

@@ -14,13 +14,13 @@
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <!-- Колонка 0: Включение настройки -->
+            <!-- Setting enablement -->
             <CheckBox Grid.Column="0" x:Name="SettingCheck" Visibility="{x:Bind CheckBoxVisibility, Mode=OneWay}"
                       Checked="SettingComponent_Changed" 
                       Unchecked="SettingComponent_Changed" 
                       Margin="17,0,0,0" VerticalAlignment="Center"/>
 
-            <!-- Колонка 1: Название (Привязываемся к новому свойству Text) -->
+            <!-- Setting name -->
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="9,0,0,0"
                        Text="{x:Bind Text, Mode=OneWay}"/>
         </Grid>

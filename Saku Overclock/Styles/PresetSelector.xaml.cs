@@ -90,7 +90,7 @@ public sealed partial class PresetSelector : UserControl
         var newCount = (int)(containerWidth / itemWidth);
         if (newCount < 1) newCount = 1;
 
-        // Вызываем тяжелый UpdateView ТОЛЬКО если реально изменилось количество колонок на странице
+        // Invoke only if page changed
         if (_visibleCount != newCount)
         {
             _visibleCount = newCount;

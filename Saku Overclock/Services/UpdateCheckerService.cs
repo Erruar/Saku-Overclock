@@ -37,7 +37,7 @@ public class UpdateCheckerService(
     #region Updater
 
     /// <summary>
-    ///     Проверяет наличие обновлений программы, при наличии переключает активную страницу на страницу обновления
+    ///     Checks for program updates and switches active page to update page
     /// </summary>
     public async Task CheckForUpdates()
     {
@@ -71,7 +71,7 @@ public class UpdateCheckerService(
             return;
         }
 
-        // Выбираем релиз с самой высокой версией
+        // Select latest release
         var latestRelease = releases
             .Select(r => new { Release = r, Version = ParseVersion(r.TagName) })
             .OrderByDescending(r => r.Version)
@@ -100,26 +100,26 @@ public class UpdateCheckerService(
     }
 
     /// <summary>
-    ///     Возвращает релиз новой версии (включая название, когда он был опубликован, файлы, и т.д)
+    ///     Get new app version release (name, publication time, files, etc.)
     /// </summary>
     public Release? GetNewVersion() => _updateNewVersion;
 
     /// <summary>
-    ///     Возвращает строку с информацией об обновлении
+    ///     Get release notes for latest app version from update
     /// </summary>
     public string? GetGithubInfoString() => _githubInfoString;
 
     /// <summary>
-    /// Парсит последнюю версию приложения для обновления
+    ///     Parse latest app version from update
     /// </summary>
-    /// <returns>Последняя доступная версия приложения</returns>
+    /// <returns>New app version</returns>
     public Version ParseVersion()
     {
         return ParseVersion(_updateNewVersion?.TagName ?? "Null-null-0.0.0.0");
     }
 
     /// <summary>
-    ///     Скачивает новый релиз и возвращает текущий прогресс его загрузки (процент скачивания, оставшееся и прошедшее время)
+    ///    Download and run update, showing current progress (download percent, time spent, time left)
     /// </summary>
     public async Task DownloadAndUpdate(Release release,
         IProgress<(double percent, string elapsed, string left)> progress)
@@ -136,7 +136,6 @@ public class UpdateCheckerService(
 
         try
         {
-            // Скачивание файла в отдельном scope для гарантированного освобождения ресурсов
             {
                 using var client = new HttpClient();
                 using var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
@@ -158,14 +157,14 @@ public class UpdateCheckerService(
                         await fs.WriteAsync(buffer.AsMemory(0, bytesRead));
                         totalRead += bytesRead;
 
-                        // Обновление процентов скачивания
+                        // Updating download percent
                         var downloadPercent = totalBytes > 0 ? (double)totalRead / totalBytes * 100 : 0;
 
-                        // Обновление времени загрузки
+                        // Updating time spent
                         var elapsed = stopwatch.Elapsed;
                         var timeElapsed = $"{elapsed.Minutes}:{elapsed.Seconds:D2}";
 
-                        // Оценка оставшегося времени
+                        // Updating time left
                         var timeLeft = "0:01";
                         if (totalRead > 0 && downloadPercent > 0)
                         {
@@ -179,15 +178,15 @@ public class UpdateCheckerService(
                     }
 
                     await fs.FlushAsync();
-                } // Гарантированное закрытие потоков здесь
+                }
 
                 stopwatch.Stop();
             }
 
-            // Дополнительная задержка для полного освобождения файла системой
+            // Delay between launching to fix incomplete download
             await Task.Delay(500);
 
-            // Запуск установщика после полного освобождения файла
+            // Launch installer
             await LaunchInstallerWithRetry(tempFilePath);
         }
         catch (Exception ex)
@@ -198,7 +197,7 @@ public class UpdateCheckerService(
     }
 
     /// <summary>
-    ///     Показывает уведомление о наличии обновления
+    ///     Show update available notification
     /// </summary>
     private void NotifyUpdate()
     {
@@ -208,7 +207,7 @@ public class UpdateCheckerService(
     }
 
     /// <summary>
-    ///     Запускает установку нового релиза, пропует перезапустить при ошибке
+    ///     Launch new release installing
     /// </summary>
     private async Task LaunchInstallerWithRetry(string filePath)
     {
@@ -223,10 +222,10 @@ public class UpdateCheckerService(
                     throw new FileNotFoundException("Installer file not found", filePath);
                 }
 
-                // Проверка доступности файла
+                // Check for file access
                 await using (File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    // Файл доступен
+                    // File accessible
                 }
 
                 Process.Start(new ProcessStartInfo
@@ -255,12 +254,12 @@ public class UpdateCheckerService(
     }
 
     /// <summary>
-    ///     Парсит версию программы по тегу релиза
+    ///    Parse app version by tag
     /// </summary>
-    /// <returns>Версия программы</returns>
+    /// <returns>App version</returns>
     private static Version ParseVersion(string tagName)
     {
-        // Пример тега: "Saku-Overclock-1.0.14.0-Release-Candidate-5"
+        // Tag example: "Saku-Overclock-1.0.14.0-Release-Candidate-5"
         var parts = tagName.Split('-');
         if (parts.Length > 2 && Version.TryParse(parts[2], out var version))
         {

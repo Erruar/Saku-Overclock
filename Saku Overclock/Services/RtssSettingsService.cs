@@ -64,7 +64,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
         var startIndex = editorText.IndexOf("$cpu_clock_cycle$", StringComparison.Ordinal);
         var endIndex = editorText.IndexOf("$cpu_clock_cycle_end$", StringComparison.Ordinal);
 
-        // Если теги отсутствуют или некорректны, обрабатываем простые плейсхолдеры
+        // If tags aren't correct display as text
         if (startIndex == -1 || endIndex == -1 || endIndex <= startIndex + 17)
         {
             ProcessSimpleTemplate(editorText, sensorsInformation);
@@ -112,19 +112,19 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
         {
             var currentPos = 0;
 
-            // Начало
+            // Start
             currentPos += ReplaceAllPlaceholders(
                 editorText.AsSpan(0, startIndex),
                 buffer.AsSpan(currentPos),
                 sensorsInformation);
 
-            // Середина - ядра процессора
+            // Middle - cpu cores
             currentPos += CalculateCoreMetricsToSpan(
                 buffer.AsSpan(currentPos),
                 sensorsInformation.CpuFrequencyPerCore,
                 sensorsInformation.CpuVoltagePerCore);
 
-            // Конец
+            // End
             currentPos += ReplaceAllPlaceholders(
                 editorText.AsSpan(endIndex + 21),
                 buffer.AsSpan(currentPos),
@@ -149,13 +149,13 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
             var dollarIndex = current.IndexOf('$');
             if (dollarIndex == -1)
             {
-                // Нет больше плейсхолдеров, копируем остаток
+                // No other placeholders, copy left part
                 current.CopyTo(output[outputPos..]);
                 outputPos += current.Length;
                 break;
             }
 
-            // Копируем текст до плейсхолдера
+            // Copy text before placeholder
             current[..dollarIndex].CopyTo(output[outputPos..]);
             outputPos += dollarIndex;
 
@@ -164,7 +164,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
 
             if (endDollarIndex == -1)
             {
-                // Нет закрывающего $, копируем остаток
+                // Copy left part without '$'
                 remaining.CopyTo(output[outputPos..]);
                 outputPos += remaining.Length;
                 break;
@@ -180,7 +180,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
             }
             else
             {
-                // Плейсхолдер не найден, копируем как есть
+                // Placeholder not found copy everything
                 placeholder.CopyTo(output[outputPos..]);
                 outputPos += placeholder.Length;
                 current = remaining[(endDollarIndex + 2)..];
@@ -190,19 +190,19 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
         return outputPos;
     }
 
-    private readonly string _cachedAppVersion = ГлавнаяViewModel.GetVersion(); // Кешированная версия приложения
+    private readonly string _cachedAppVersion = ГлавнаяViewModel.GetVersion();
 
     private int TryReplacePlaceholder(ReadOnlySpan<char> placeholder, Span<char> output,
         SensorsInformation sensorsInformation)
     {
-        // Быстрая проверка по первым символам для оптимизации
+        // Fast look-up for optimization
         if (placeholder.Length < 3) return 0;
 
         return placeholder switch
         {
             "$AppVersion$" => WriteToSpan(_cachedAppVersion, output),
             "$SelectedPreset$" => WriteTransliteratedPreset(output),
-            // Числовые значения с форматированием
+            // Placeholders with sensor values 
             "$stapm_value$" => WriteFormattedDouble(sensorsInformation.CpuStapmValue, output),
             "$stapm_limit$" => WriteFormattedDouble(sensorsInformation.CpuStapmLimit, output),
             "$fast_value$" => WriteFormattedDouble(sensorsInformation.CpuFastValue, output),
@@ -272,7 +272,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
         var compactSizing = "<Br><S0>е" + (template.Contains("<S1>") ? "<S1>" : string.Empty);
         var outputPos = 0;
 
-        // Начальный compactSizing для нормального отображения компактности
+        // Start compactSizing for correct compact mode
         outputPos += WriteToSpan(compactSizing, output[outputPos..]);
 
         for (uint f = 0; f < cores; f++)
@@ -305,7 +305,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
                 break;
             }
 
-            // Текст до плейсхолдера
+            // Text before placeholder
             templateSpan[..dollarIndex].CopyTo(output[outputPos..]);
             outputPos += dollarIndex;
 
@@ -327,7 +327,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
             }
             else
             {
-                // Неизвестный - копируем $
+                // Unknown - copy '$'
                 output[outputPos++] = '$';
                 templateSpan = remaining[1..];
             }
@@ -362,7 +362,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
         { 'ш', "sh" }, { 'щ', "sch" }, { 'ъ', "'" }, { 'ы', "i" }, { 'ь', "'" },
         { 'э', "e" }, { 'ю', "yu" }, { 'я', "ya" },
 
-        // Прописные буквы
+        // Uppercase letters
         { 'А', "A" }, { 'Б', "B" }, { 'В', "V" }, { 'Г', "G" }, { 'Д', "D" },
         { 'Е', "E" }, { 'Ё', "Yo" }, { 'Ж', "Zh" }, { 'З', "Z" }, { 'И', "I" },
         { 'Й', "Y" }, { 'К', "K" }, { 'Л', "L" }, { 'М', "M" }, { 'Н', "N" },
