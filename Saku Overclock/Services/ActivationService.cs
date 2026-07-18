@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Saku_Overclock.Activation;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Views;
 
 namespace Saku_Overclock.Services;

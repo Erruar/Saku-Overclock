@@ -52,6 +52,8 @@ public abstract class SimpleIpcSettingsBase<T>
         lock (_lock) mutate(_cache);
         ScheduleSend();
     }
+    
+    protected void Save() => ScheduleSend();
 
     private void ScheduleSend()
     {

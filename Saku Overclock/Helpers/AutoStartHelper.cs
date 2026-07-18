@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Win32.TaskScheduler;
-using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Shared.Contracts;
 
 namespace Saku_Overclock.Helpers;
 

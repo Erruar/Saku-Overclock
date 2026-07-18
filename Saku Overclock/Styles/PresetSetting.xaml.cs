@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Saku_Overclock.Models;
 using Saku_Overclock.Shared.Models.PresetSettings;
 
 namespace Saku_Overclock.Styles;

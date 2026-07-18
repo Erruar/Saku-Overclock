@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Services;

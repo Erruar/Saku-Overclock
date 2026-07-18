@@ -1,6 +1,4 @@
-﻿using Saku_Overclock.Models;
-using Saku_Overclock.Shared.Models;
-using static Saku_Overclock.Services.PresetManagerService;
+﻿using Saku_Overclock.Shared.Models;
 using PresetId = Saku_Overclock.Shared.Models.PresetId;
 
 namespace Saku_Overclock.Contracts.Services;
@@ -40,6 +38,16 @@ public interface IPresetManagerService
     ///     Update preset data
     /// </summary>
     void UpdatePreset(int index, Preset preset);
+    
+    /// <summary>
+    ///     Update preset data
+    /// </summary>
+    void UpdatePreset(int index);
+    
+    /// <summary>
+    ///     Update preset data
+    /// </summary>
+    void UpdatePreset();
 
     /// <summary>
     ///     Export preset by index

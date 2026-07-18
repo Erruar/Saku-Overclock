@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.Shared.Models.PresetSettings;
 using Saku_Overclock.ViewModels;
@@ -573,6 +574,7 @@ public sealed partial class ПараметрыPage
                 {
                     _presetManager.Presets = new Preset[1];
                     _presetManager.Presets[0] = new Preset();
+                    _presetManager.UpdatePreset(0);
                 }
             }
 
@@ -717,6 +719,7 @@ public sealed partial class ПараметрыPage
 
                 _presetManager.Presets = new Preset[1];
                 _presetManager.Presets[0] = new Preset();
+                _presetManager.UpdatePreset(0);
             }
 
             _presetChanging = false;
@@ -1095,6 +1098,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuMaximumTemperature.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.CpuMaximumTemperature.Value = C1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1108,6 +1112,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuSustainedPowerLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.CpuSustainedPowerLimit.Value = C2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1121,6 +1126,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.Value = C3V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1134,6 +1140,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.Value = C4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1147,6 +1154,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.Value = C5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1160,6 +1168,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.Value = C6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1174,6 +1183,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuEdcCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuEdcCurrentLimit.Value = V1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1187,6 +1197,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuTdcCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuTdcCurrentLimit.Value = V2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1200,6 +1211,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmSocEdcCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmSocEdcCurrentLimit.Value = V3V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1213,6 +1225,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmSocTdcCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmSocTdcCurrentLimit.Value = V4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1226,6 +1239,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveVddCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveVddCurrentLimit.Value = V5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1239,6 +1253,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveSocCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveSocCurrentLimit.Value = V6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1252,6 +1267,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuFrequencyRestoreTime.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuFrequencyRestoreTime.Value = V7V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1266,6 +1282,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumSocFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumSocFrequency.Value = G1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1279,6 +1296,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumSocFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumSocFrequency.Value = G2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1292,6 +1310,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumFabricFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumFabricFrequency.Value = G3V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1305,6 +1324,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumFabricFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumFabricFrequency.Value = G4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1318,6 +1338,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumVideoCodecFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumVideoCodecFrequency.Value = G5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1331,6 +1352,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumVideoCodecFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumVideoCodecFrequency.Value = G6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1344,6 +1366,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumDataLatchFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumDataLatchFrequency.Value = G7V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1357,6 +1380,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumDataLatchFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumDataLatchFrequency.Value = G8V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1372,6 +1396,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value =
                 G9V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1387,6 +1412,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value =
                 G10V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1401,6 +1427,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveCpuCurrentLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveCpuCurrentLimit.Value = A4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1425,6 +1452,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.IntegratedGpuMaximumTemperature.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.IntegratedGpuMaximumTemperature.Value = A6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1437,6 +1465,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.DiscreteGpuMaximumTemperature.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.DiscreteGpuMaximumTemperature.Value = A7V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1449,6 +1478,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.IntegratedGpuPowerLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.IntegratedGpuPowerLimit.Value = A8V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1461,6 +1491,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuSettings.LaptopPowerLimit.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuSettings.LaptopPowerLimit.Value = A9V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1473,6 +1504,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].FrequenciesSettings.IntegratedGraphicsFrequency.Value = A10V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1485,6 +1517,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuFrequency.IsEnabled = check;
             _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuFrequency.Value = A11V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1497,6 +1530,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuVoltage.IsEnabled = check;
             _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuVoltage.Value = A12V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1509,6 +1543,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuModesSettings.PreferredMode.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuModesSettings.PreferredMode.Value = A13M.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1524,6 +1559,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[15] =
                 Ccd28V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1538,6 +1574,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[14] =
                 Ccd27V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1552,6 +1589,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[13] =
                 Ccd26V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1566,6 +1604,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[12] =
                 Ccd25V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1580,6 +1619,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[11] =
                 Ccd24V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1594,6 +1634,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[10] =
                 Ccd23V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1607,6 +1648,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[9] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[9] =
                 Ccd22V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1620,6 +1662,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[8] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[8] =
                 Ccd21V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1633,6 +1676,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[7] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[7] =
                 Ccd18V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1646,6 +1690,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[6] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[6] =
                 Ccd17V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1659,6 +1704,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[5] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[5] =
                 Ccd16V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1672,6 +1718,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[4] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[4] =
                 Ccd15V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1685,6 +1732,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[3] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[3] =
                 Ccd14V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1698,6 +1746,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[2] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[2] =
                 Ccd13V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1711,6 +1760,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[1] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[1] =
                 Ccd12V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1724,6 +1774,7 @@ public sealed partial class ПараметрыPage
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.IsEnabled[0] = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[0] =
                 Ccd11V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1738,6 +1789,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.Value =
                 O1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1752,6 +1804,7 @@ public sealed partial class ПараметрыPage
                 .IsEnabled = check;
             _presetManager.Presets[_presetIndex].CurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel
                 .Value = O2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1771,6 +1824,7 @@ public sealed partial class ПараметрыPage
                 check;
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerPreferredMode.Value =
                 CcdCoMode.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -1781,7 +1835,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuMaximumTemperature.Value = C1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Лимит CPU (W)
@@ -1790,7 +1847,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuSettings.CpuSustainedPowerLimit.Value = C2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Реальный CPU (W)
@@ -1798,7 +1858,11 @@ public sealed partial class ПараметрыPage
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.Value = C3V.Value;
+        if (_presetIndex != -1) 
+        {
+            _presetManager.Presets[_presetIndex].CpuSettings.CpuActualPowerLimit.Value = C3V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Средний CPU(W)
@@ -1806,7 +1870,11 @@ public sealed partial class ПараметрыPage
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.Value = C4V.Value;
+        if (_presetIndex != -1)
+        {
+            _presetManager.Presets[_presetIndex].CpuSettings.CpuAveragePowerLimit.Value = C4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Тик быстрого разгона (S)
@@ -1814,7 +1882,11 @@ public sealed partial class ПараметрыPage
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.Value = C5V.Value;
+        if (_presetIndex != -1)
+        {
+            _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeSlow.Value = C5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Тик медленного разгона (S)
@@ -1822,7 +1894,11 @@ public sealed partial class ПараметрыPage
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.Value = C6V.Value;
+        if (_presetIndex != -1)
+        {
+            _presetManager.Presets[_presetIndex].CpuSettings.CpuBoostTimeFast.Value = C6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Параметры VRM
@@ -1831,7 +1907,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuEdcCurrentLimit.Value = V1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void V2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1839,7 +1918,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuTdcCurrentLimit.Value = V2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void V3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1847,7 +1929,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmSocEdcCurrentLimit.Value = V3V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void V4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1855,7 +1940,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmSocTdcCurrentLimit.Value = V4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void V5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1863,7 +1951,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveVddCurrentLimit.Value = V5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void V6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1871,7 +1962,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveSocCurrentLimit.Value = V6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void V7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1879,7 +1973,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmCpuFrequencyRestoreTime.Value = V7V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Параметры GPU
@@ -1888,7 +1985,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumSocFrequency.Value = G1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1896,7 +1996,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumSocFrequency.Value = G2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1904,7 +2007,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumFabricFrequency.Value = G3V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1912,7 +2018,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumFabricFrequency.Value = G4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1920,7 +2029,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumVideoCodecFrequency.Value = G5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1928,7 +2040,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumVideoCodecFrequency.Value = G6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1936,7 +2051,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumDataLatchFrequency.Value = G7V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1944,7 +2062,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumDataLatchFrequency.Value = G8V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1952,8 +2073,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value =
                 G9V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1961,8 +2085,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value =
                 G10V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Расширенные параметры
@@ -1972,7 +2099,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveCpuCurrentLimit.Value = A4V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1980,7 +2110,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].VrmSettings.VrmPowerSaveGpuCurrentLimit.Value = A5V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1988,7 +2121,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuSettings.IntegratedGpuMaximumTemperature.Value = A6V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1996,7 +2132,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuSettings.DiscreteGpuMaximumTemperature.Value = A7V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2004,14 +2143,21 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuSettings.IntegratedGpuPowerLimit.Value = A8V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].CpuSettings.LaptopPowerLimit.Value = A9V.Value;
+        if (_presetIndex != -1)
+        {
+            _presetManager.Presets[_presetIndex].CpuSettings.LaptopPowerLimit.Value = A9V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2019,7 +2165,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].FrequenciesSettings.IntegratedGraphicsFrequency.Value = A10V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2027,14 +2176,21 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuFrequency.Value = A11V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuVoltage.Value = A12V.Value;
+        if (_presetIndex != -1)
+        {
+            _presetManager.Presets[_presetIndex].FrequenciesSettings.CpuVoltage.Value = A12V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A13m_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
@@ -2042,7 +2198,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuModesSettings.PreferredMode.Value = A13M.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void G16_Checked(object sender, RoutedEventArgs e)
@@ -2054,6 +2213,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuModesSettings.CpuFrequency04Fix.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuModesSettings.CpuFrequency04Fix.Value = G16M.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -2062,7 +2222,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuModesSettings.CpuFrequency04Fix.Value = G16M.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A14_Checked(object sender, RoutedEventArgs e)
@@ -2074,6 +2237,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuModesSettings.OverclockMode.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuModesSettings.OverclockMode.Value = A14M.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -2082,7 +2246,10 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CpuModesSettings.OverclockMode.Value = A14M.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void A15_Checked(object sender, RoutedEventArgs e)
@@ -2094,6 +2261,7 @@ public sealed partial class ПараметрыPage
         {
             _presetManager.Presets[_presetIndex].CpuModesSettings.PboScalar.IsEnabled = check;
             _presetManager.Presets[_presetIndex].CpuModesSettings.PboScalar.Value = (int)A15V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
         }
     }
 
@@ -2101,7 +2269,11 @@ public sealed partial class ПараметрыPage
     {
         if (!_isLoaded || _presetChanging) return;
 
-        if (_presetIndex != -1) _presetManager.Presets[_presetIndex].CpuModesSettings.PboScalar.Value = (int)A15V.Value;
+        if (_presetIndex != -1)
+        {
+            _presetManager.Presets[_presetIndex].CpuModesSettings.PboScalar.Value = (int)A15V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Слайдеры из оптимизатора кривой 
@@ -2110,8 +2282,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel.Value =
                 O1V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void O2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2119,8 +2294,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerOptions.IntegratedGpuCurveOptimizerUndervoltingLevel
                 .Value = O2V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2128,8 +2306,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[0] =
                 Ccd11V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2137,8 +2318,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[1] =
                 Ccd12V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2146,8 +2330,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[2] =
                 Ccd13V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2155,8 +2342,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[3] =
                 Ccd14V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2164,8 +2354,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[4] =
                 Ccd15V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2173,8 +2366,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[5] =
                 Ccd16V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2182,8 +2378,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[6] =
                 Ccd17V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD1_8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2191,8 +2390,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[7] =
                 Ccd18V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2200,8 +2402,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[8] =
                 Ccd21V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2209,8 +2414,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[9] =
                 Ccd22V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2218,8 +2426,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[10] =
                 Ccd23V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2227,8 +2438,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[11] =
                 Ccd24V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2236,8 +2450,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[12] =
                 Ccd25V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2245,8 +2462,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[13] =
                 Ccd26V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2254,8 +2474,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[14] =
                 Ccd27V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD2_8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2263,8 +2486,11 @@ public sealed partial class ПараметрыPage
         if (!_isLoaded || _presetChanging) return;
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerCores.Value[15] =
                 Ccd28V.Value;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     private void CCD_CO_Mode_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2277,8 +2503,11 @@ public sealed partial class ПараметрыPage
             HideDisabledCurveOptimizedParameters(false); //Убрать параметры
 
         if (_presetIndex != -1)
+        {
             _presetManager.Presets[_presetIndex].CurveOptimizerAdvancedOptions.CurveOptimizerPreferredMode.Value =
                 CcdCoMode.SelectedIndex;
+            _presetManager.UpdatePreset(_presetIndex);
+        }
     }
 
     //Кнопка применить, итоговый выход
@@ -2369,6 +2598,8 @@ public sealed partial class ПараметрыPage
                 await Task.Delay(3000);
                 AddTooltipError.IsOpen = false;
             }
+            
+            _presetManager.UpdatePreset();
         }
         catch (Exception exception)
         {
@@ -2393,6 +2624,7 @@ public sealed partial class ПараметрыPage
                 else
                 {
                     _presetManager.Presets[_presetIndex].PresetName = EditPresetN.Text;
+                    _presetManager.UpdatePreset(_presetIndex);
                     _presetChanging = true;
                     PresetCom.Items.Clear();
                     PresetCom.Items.Add(new ComboBoxItem
@@ -2468,6 +2700,7 @@ public sealed partial class ПараметрыPage
                     PresetCom.Items.Remove(PresetCom.SelectedItem);
                     await _presetManager.RemovePresetAsync(_presetIndex);
                     _presetIndex = 0;
+                    _appSettings.Preset = 0;
                     _presetChanging = false;
 
                     PresetCom.SelectedIndex = PresetCom.Items.Count - 1;
@@ -2475,6 +2708,8 @@ public sealed partial class ПараметрыPage
                         "DeleteSuccessDesc".GetLocalized(),
                         InfoBarSeverity.Success);
                 }
+                
+                _presetManager.UpdatePreset();
             }
         }
         catch (Exception exception)

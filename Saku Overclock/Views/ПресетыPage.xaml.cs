@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.Shared.Models.PresetSettings;
 using Saku_Overclock.Styles;
@@ -138,6 +139,8 @@ public sealed partial class ПресетыPage
         if (NotReady) return;
 
         assignmentAction();
+        
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     #region JSON and Initialization
@@ -309,6 +312,7 @@ public sealed partial class ПресетыPage
 
             PresetManager.Presets = new Preset[1];
             PresetManager.Presets[0] = new Preset();
+            PresetManager.UpdatePreset(0);
         }
 
         _presetChanging = false;
@@ -480,25 +484,12 @@ public sealed partial class ПресетыPage
                 }
 
                 _presetChanging = true;
-                if (PresetManager.Presets.Length == 0)
+                await PresetManager.AddPresetAsync(new Preset
                 {
-                    PresetManager.Presets = new Preset[1];
-                    PresetManager.Presets[0] = new Preset
-                        { PresetName = presetName, PresetDesc = presetDesc, PresetIcon = glyph };
-                }
-                else
-                {
-                    var presetList = new List<Preset>(PresetManager.Presets)
-                    {
-                        new()
-                        {
-                            PresetName = presetName,
-                            PresetDesc = presetDesc,
-                            PresetIcon = glyph
-                        }
-                    };
-                    PresetManager.Presets = [.. presetList];
-                }
+                    PresetName = presetName,
+                    PresetDesc = presetDesc,
+                    PresetIcon = glyph
+                });
 
                 _presetChanging = false;
                 NotificationsService.ShowNotification("SaveSuccessTitle".GetLocalized(),
@@ -531,6 +522,7 @@ public sealed partial class ПресетыPage
                 PresetManager.Presets[_presetIndex].PresetName = presetName;
                 PresetManager.Presets[_presetIndex].PresetDesc = presetDesc;
                 PresetManager.Presets[_presetIndex].PresetIcon = glyph;
+                PresetManager.UpdatePreset(_presetIndex);
                 _presetChanging = true;
                 LoadPresets();
                 _presetChanging = false;
@@ -577,13 +569,8 @@ public sealed partial class ПресетыPage
                 await LogHelper.Log(
                     $"Showing delete preset dialog: deleting preset \"{PresetManager.Presets[indexPreset].PresetName}\"");
 
-
                 _presetChanging = true;
-
-                var presetList = new List<Preset>(PresetManager.Presets);
-                presetList.RemoveAt(indexPreset);
-                PresetManager.Presets = [.. presetList];
-
+                await PresetManager.RemovePresetAsync(indexPreset);
                 _presetChanging = false;
 
                 AppSettings.Preset = PresetManager.Presets.Length > 0 ? 0 : -1;
@@ -1112,6 +1099,7 @@ public sealed partial class ПресетыPage
                 CpuTemp.Value = CurrentCpuSettings.CpuMaximumTemperature;
                 break;
         }
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     private void AutoTdp_OnClick(BandCrowdStates state)
@@ -1136,6 +1124,7 @@ public sealed partial class ПресетыPage
                 CpuPowerLimit.Value = CurrentCpuSettings.CpuSustainedPowerLimit;
                 break;
         }
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     private void BetterTurbo_OnClick(BandCrowdStates state)
@@ -1159,6 +1148,7 @@ public sealed partial class ПресетыPage
                 CpuTurboSlowTime.Value = CurrentCpuSettings.CpuBoostTimeSlow;
                 break;
         }
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     private void FixedCpuFrequencyToggle_OnClick(BandCrowdStates state)
@@ -1176,6 +1166,7 @@ public sealed partial class ПресетыPage
                 FixedCpuFrequency.Value = CurrentFrequenciesSettings.CpuFrequency;
                 break;
         }
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     private void FixedIntegratedGpuFrequency_OnClick(BandCrowdStates state)
@@ -1207,6 +1198,7 @@ public sealed partial class ПресетыPage
 
                 break;
         }
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     private void UndervoltingToggle_OnClick(BandCrowdStates state)
@@ -1229,6 +1221,7 @@ public sealed partial class ПресетыPage
                 UndervoltingCpu.Value = CurrentCurveOptimizerOptions.CpuCurveOptimizerUndervoltingLevel;
                 break;
         }
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     private void CpuFrequency04Fix_OnClick(BandCrowdStates state)
@@ -1236,6 +1229,7 @@ public sealed partial class ПресетыPage
         if (NotReady) return;
 
         CurrentCpuModesSettings.CpuFrequency04Fix.IsEnabled = state == BandCrowdStates.Manual;
+        PresetManager.UpdatePreset(_presetIndex);
     }
 
     #endregion

@@ -3,6 +3,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Wrappers;
 using Windows.System;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 using WinRT.Interop;
 using WinUIEx.Messaging;

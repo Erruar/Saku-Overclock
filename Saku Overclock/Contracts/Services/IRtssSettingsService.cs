@@ -8,6 +8,11 @@ public interface IRtssSettingsService
     ///     Load rtss overlay settings
     /// </summary>
     void LoadSettings();
+    
+    /// <summary>
+    ///     Save rtss overlay settings
+    /// </summary>
+    void SaveSettings();
 
     /// <summary>
     ///     Rtss elements settings

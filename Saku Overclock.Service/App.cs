@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts;
 using Saku_Overclock.Core.Services;
+using Saku_Overclock.Shared.Contracts;
 
 namespace Saku_Overclock.Service;
 

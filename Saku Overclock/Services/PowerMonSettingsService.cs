@@ -14,4 +14,5 @@ public class PowerMonSettingsService(IpcConnectionService ipc)
     }
 
     public void LoadSettings() => _ = LoadSettingsAsync();
+    public void SaveSettings() => Save();
 }

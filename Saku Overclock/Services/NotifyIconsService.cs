@@ -24,6 +24,8 @@ public partial class NotifyIconsService(IpcConnectionService ipc)
 
     public void LoadSettings() => _ = LoadSettingsAsync();
 
+    public void SaveSettings() => Save();
+
     public bool IsIconsCreated { get; set; }
     public bool IsIconsUpdated { get; set; }
 

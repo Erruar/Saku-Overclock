@@ -403,6 +403,7 @@ internal partial class PowerWindow : IDisposable
                     && realIndex < SettingsService.Notelist.Count)
                 {
                     SettingsService.Notelist[realIndex] = item.Note ?? " ";
+                    Task.Run(SettingsService.SaveSettings).Wait();
                 }
             }
         }

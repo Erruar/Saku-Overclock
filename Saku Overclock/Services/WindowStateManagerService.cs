@@ -7,6 +7,7 @@ using Saku_Overclock.Helpers;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI.ViewManagement;
+using Saku_Overclock.Shared.Contracts;
 
 namespace Saku_Overclock.Services;
 

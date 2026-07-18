@@ -12,6 +12,7 @@ using Saku_Overclock.ViewModels;
 using ScottPlot.TickGenerators;
 using Windows.UI.Text;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;

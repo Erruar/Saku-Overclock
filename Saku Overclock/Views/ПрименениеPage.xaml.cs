@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models.PresetSettings;
 
 namespace Saku_Overclock.Views;

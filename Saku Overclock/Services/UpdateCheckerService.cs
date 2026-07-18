@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.ViewModels;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;

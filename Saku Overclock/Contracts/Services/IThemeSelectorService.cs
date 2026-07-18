@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Saku_Overclock.Shared.Models;
-using Saku_Overclock.Styles;
 using static Saku_Overclock.Services.ThemeSelectorService;
 
 namespace Saku_Overclock.Contracts.Services;

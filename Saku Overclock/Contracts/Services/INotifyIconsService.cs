@@ -1,5 +1,4 @@
-﻿using Saku_Overclock.Models;
-using Saku_Overclock.Shared.Models;
+﻿using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Contracts.Services;
 
@@ -9,6 +8,11 @@ public interface INotifyIconsService
     ///     Loading TrayMon settings
     /// </summary>
     void LoadSettings();
+    
+    /// <summary>
+    ///     Saving TrayMon settings
+    /// </summary>
+    void SaveSettings();
     
     /// <summary>
     ///     TrayMon elements

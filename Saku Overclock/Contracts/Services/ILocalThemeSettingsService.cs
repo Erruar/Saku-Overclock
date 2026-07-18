@@ -1,6 +1,4 @@
-﻿using Saku_Overclock.Models;
-using Saku_Overclock.Shared.Models;
-using Saku_Overclock.Styles;
+﻿using Saku_Overclock.Shared.Models;
 
 namespace Saku_Overclock.Contracts.Services;
 

@@ -32,6 +32,7 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
     }
 
     public void LoadSettings() => _ = LoadSettingsAsync();
+    public void SaveSettings() => Save();
 
     public bool IsRtssUpdated { get; set; }
 

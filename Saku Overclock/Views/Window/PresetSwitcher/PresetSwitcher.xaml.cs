@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Wrappers;
 using WinRT.Interop;
 using Visual = Microsoft.UI.Composition.Visual;

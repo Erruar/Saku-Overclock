@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Shared;
+using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Ipc;
 using Saku_Overclock.Shared.Models;
 
@@ -10,15 +11,17 @@ namespace Saku_Overclock.Services;
 public class PresetManagerService : IPresetManagerService, IDisposable
 {
     private readonly IpcConnectionService _ipc;
+    private readonly IAppSettingsService _appSettings;
     private Preset[] _cache = [];
     private readonly Lock _lock = new();
     private readonly ConcurrentDictionary<int, CancellationTokenSource> _pendingSaves = new();
 
     public event Action? PresetsUpdated; // Event for UI
 
-    public PresetManagerService(IpcConnectionService ipc)
+    public PresetManagerService(IpcConnectionService ipc, IAppSettingsService appSettings)
     {
         _ipc = ipc;
+        _appSettings = appSettings;
         _ipc.OnEvent += OnIpcEvent;
     }
 
@@ -72,6 +75,20 @@ public class PresetManagerService : IPresetManagerService, IDisposable
         }
         PresetsUpdated?.Invoke();
         ScheduleSend(index, preset);
+    }
+    
+    public void UpdatePreset(int index)
+    {
+        PresetsUpdated?.Invoke();
+        ScheduleSend(index, _cache[index]);
+    }
+    
+    public void UpdatePreset()
+    {
+        var index = _appSettings.Preset;
+        if (index < 0 || index >= _cache.Length) return;
+        PresetsUpdated?.Invoke();
+        ScheduleSend(index, _cache[index]);
     }
 
     private void ScheduleSend(int index, Preset preset)
