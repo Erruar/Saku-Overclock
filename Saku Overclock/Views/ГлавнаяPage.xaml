@@ -104,9 +104,24 @@
                                 </TextBlock>
                             </StackPanel>
                             <Grid Grid.Row="1">
-                                <scott:WinUIPlot x:Name="TemperaturePlot" 
-                         Margin="-25,-40,-25,0" 
-                         Background="Transparent"/>
+                                <Grid Margin="0,-45,-25,0" >
+                                    <Grid.Resources>
+                                        <LinearGradientBrush x:Key="AreaGradient" StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#3e4c76" Offset="0.0" />
+                                            <GradientStop Color="#3b4664" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                    </Grid.Resources>
+
+                                    <Path x:Name="FillPathChart"
+                                          Fill="{StaticResource AreaGradient}" />
+
+                                    <Path x:Name="LinePathChart"
+                                          Stroke="#1e7af5" 
+                                          StrokeThickness="6" 
+                                          StrokeLineJoin="Round" 
+                                          StrokeEndLineCap="Round" 
+                                          StrokeStartLineCap="Round" />
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Grid Grid.Column="2">

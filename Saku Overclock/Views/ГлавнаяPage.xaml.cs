@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml.Media;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
-using ScottPlot.TickGenerators;
 using Windows.UI.Text;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Contracts;
@@ -87,8 +86,6 @@ public sealed partial class ГлавнаяPage
         Loaded += ГлавнаяPage_Loaded;
 
         App.MainWindow.WindowStateChanged += OnVisibilityChanged;
-
-        InitializeChart();
     }
 
     private void PresetChanged(object? sender, PresetId e)
@@ -447,85 +444,15 @@ public sealed partial class ГлавнаяPage
                 break;
         }
     }
-
-    private ScottPlot.Plottables.DataStreamer? _streamer;
-    private bool _isFirstLoad = true;
-    private const int Capacity = 11;
-
-    private void InitializeChart()
-    {
-        var plot = TemperaturePlot.Plot;
-
-        _streamer = plot.Add.DataStreamer(Capacity);
-        _streamer.ViewScrollLeft();
-
-        // Стиль линии
-        _streamer.LineColor = ScottPlot.Color.FromHex("#1e7af5");
-        _streamer.LineWidth = 6;
-
-        // Заливка (прозрачный фон под графиком)
-        _streamer.FillY = true;
-        _streamer.FillYBelowColor = ScottPlot.Color.FromHex("#FE3e4c76");
-        TemperaturePlot.Menu = null;
-        plot.Axes.Frame(false);
-        TemperaturePlot.UserInputProcessor.Disable();
-        // УБИВАЕМ ШТРИХИ (AXES)
-        // Самое важное: заменяем автоматический генератор на пустой ручной.
-        // Это предотвращает создание объектов Tick[] и LabelStyle при каждом рендере.
-
-        // Левая ось (Y)
-        var leftAxis = plot.Axes.Left;
-        leftAxis.TickGenerator = new NumericManual(); // Отключаем расчет тиков
-        leftAxis.MajorTickStyle.Length = 0;           // Убираем длину штрихов
-        leftAxis.MinorTickStyle.Length = 0;
-        leftAxis.FrameLineStyle.IsVisible = false;    // Убираем вертикальную линию оси
-
-        // Нижняя ось (X)
-        var bottomAxis = plot.Axes.Bottom;
-        bottomAxis.TickGenerator = new NumericManual(); // Отключаем расчет тиков
-        bottomAxis.MajorTickStyle.Length = 0;
-        bottomAxis.MinorTickStyle.Length = 0;
-        bottomAxis.FrameLineStyle.IsVisible = false;  // Убираем горизонтальную линию оси
-
-        // Убираем сетку
-        plot.Grid.IsVisible = false;
-
-        // ОПТИМИЗАЦИЯ LAYOUT (предотвращает аллокации при пересчете размеров)
-        // Убираем все отступы вокруг графика
-        plot.Axes.Margins(0, 0);
-        // Фиксируем Layout, чтобы не пересчитывать его каждый кадр
-        plot.Layout.Fixed(new ScottPlot.PixelPadding(0));
-
-        plot.FigureBackground.Color = ScottPlot.Colors.Transparent;
-        plot.DataBackground.Color = ScottPlot.Colors.Transparent;
-
-        plot.Axes.SetLimitsY(0, 100);
-    }
+    
+    private readonly TemperatureChartGenerator _chartGen = new(215, 150);
 
     private void UpdateTemperatureChartPointPosition(int temperature)
     {
-        // Не создаем замыканий и лишних объектов здесь
-        double val = Math.Clamp(temperature, 0, 100);
+        var (line, fill) = _chartGen.AddNewPoint(temperature);
 
-        TemperaturePlot.DispatcherQueue.TryEnqueue(() =>
-        {
-            // При первой загрузке
-            if (_isFirstLoad)
-            {
-                var initialData = new double[Capacity];
-                Array.Fill(initialData, val);
-                _streamer?.AddRange(initialData);
-                _isFirstLoad = false;
-            }
-            else
-            {
-                // Добавляем точку. DataStreamer работает по принципу кольцевого буфера,
-                // память не выделяется.
-                _streamer?.Add(val);
-            }
-
-            TemperaturePlot.Refresh();
-        });
+        LinePathChart.Data = line;
+        FillPathChart.Data = fill;
     }
 
     #endregion
