@@ -134,7 +134,7 @@ public partial class CoreGatewayService : IApplyerGateService
                 {
                     outString = TryLocalize(setting.ParameterName);
                 }
-                if (!setting.IsSuccess)
+                else if (!setting.IsSuccess)
                 {
                     var status = StatusCommandParser(setting.SmuStatusCode);
 

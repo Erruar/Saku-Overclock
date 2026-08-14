@@ -28,6 +28,7 @@ public sealed partial class ГлавнаяPage
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
+    private static readonly IBackgroundDataReceiver DataUpdater = App.GetService<IBackgroundDataReceiver>(); 
     private static readonly ICpuGateService CpuService = App.GetService<ICpuGateService>(); 
     private static readonly IApplyerGateService Applyer = App.GetService<IApplyerGateService>(); 
     private static readonly IAppNotificationService
@@ -77,8 +78,7 @@ public sealed partial class ГлавнаяPage
     {
         InitializeComponent();
 
-        // TODO: Implement Data Updater
-        //_dataUpdater.DataUpdated += OnDataUpdated;
+        DataUpdater.DataUpdated += OnDataUpdated;
 
         _hotkeysService.PresetChanged += PresetChanged;
 
@@ -124,6 +124,7 @@ public sealed partial class ГлавнаяPage
     {
         try
         {
+            Applyer.OnStringSettingsApplied += OnPresetApplied;
             LoadPresetsToPivot();
 
             InfoCpuName.Text = CpuService.CpuName;
@@ -158,10 +159,10 @@ public sealed partial class ГлавнаяPage
     private void ГлавнаяPage_Unloaded(object sender, RoutedEventArgs e)
     {
         // Отписка от всех событий для предотвращения утечек памяти
-        // TODO: Implement Data Updater
-        //_dataUpdater.DataUpdated -= OnDataUpdated;
+        DataUpdater.DataUpdated -= OnDataUpdated;
 
         _hotkeysService.PresetChanged -= PresetChanged;
+        Applyer.OnStringSettingsApplied -= OnPresetApplied;
 
         App.MainWindow.WindowStateChanged -= OnVisibilityChanged;
 
@@ -445,7 +446,7 @@ public sealed partial class ГлавнаяPage
         }
     }
     
-    private readonly TemperatureChartGenerator _chartGen = new(215, 150);
+    private readonly TemperatureChartGenerator _chartGen = new(215);
 
     private void UpdateTemperatureChartPointPosition(int temperature)
     {
@@ -562,6 +563,50 @@ public sealed partial class ГлавнаяPage
         }
     }
 
+    private void OnPresetApplied(string result)
+    {
+        var timer = 1000;
+        if (result != string.Empty) timer *= result.Split('\n').Length + 1;
+
+        DispatcherQueue.TryEnqueue(async void () =>
+        {
+            try
+            {
+                ApplyTeach.Target = ApplyButton;
+                ApplyTeach.Title = "Apply_Success".GetLocalized();
+                ApplyTeach.Subtitle = "";
+                ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                ApplyTeach.IsOpen = true;
+                var infoSet = Shared.Models.InfoBarSeverity.Success;
+                if (result != string.Empty)
+                {
+                    await LogHelper.Log(result);
+                    ApplyTeach.Title = "Apply_Warn".GetLocalized();
+                    ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + result;
+                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                    await Task.Delay(timer);
+                    ApplyTeach.IsOpen = false;
+                    infoSet = Shared.Models.InfoBarSeverity.Warning;
+                }
+                else
+                {
+                    await Task.Delay(3000);
+                    ApplyTeach.IsOpen = false;
+                }
+
+                NotificationsService.ShowNotification(ApplyTeach.Title,
+                    ApplyTeach.Subtitle +
+                    (result != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                    (InfoBarSeverity)infoSet,
+                    true);
+            }
+            catch (Exception ex)
+            {
+                await LogHelper.LogError(ex);
+            }
+        });
+    }
+
     /// <summary>
     ///     Обработка применения пресета
     /// </summary>
@@ -649,44 +694,7 @@ public sealed partial class ГлавнаяPage
                         return;
                     }
 
-                    ПараметрыPage.ApplyInfo = string.Empty;
                     await Applyer.ApplyPreset(requiredPreset, true);
-
-                    await Task.Delay(1000);
-                    var timer = 1000;
-                    var applyInfo = ПараметрыPage.ApplyInfo;
-                    if (applyInfo != string.Empty)
-                    {
-                        timer *= applyInfo.Split('\n').Length + 1;
-                    }
-
-                    ApplyTeach.Target = ApplyButton;
-                    ApplyTeach.Title = "Apply_Success".GetLocalized();
-                    ApplyTeach.Subtitle = "";
-                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                    ApplyTeach.IsOpen = true;
-                    var infoSet = Shared.Models.InfoBarSeverity.Success;
-                    if (applyInfo != string.Empty)
-                    {
-                        await LogHelper.Log(applyInfo);
-                        ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                        ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
-                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                        await Task.Delay(timer);
-                        ApplyTeach.IsOpen = false;
-                        infoSet = Shared.Models.InfoBarSeverity.Warning;
-                    }
-                    else
-                    {
-                        await Task.Delay(3000);
-                        ApplyTeach.IsOpen = false;
-                    }
-
-                    NotificationsService.ShowNotification(ApplyTeach.Title,
-                        ApplyTeach.Subtitle +
-                        (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                        (InfoBarSeverity)infoSet,
-                        true);
                 }
             }
         }

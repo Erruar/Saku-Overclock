@@ -2930,8 +2930,7 @@ All results are saved in notifications</value>
     <value>Command</value>
   </data>
   <data name="Preset_ApplyFailed" xml:space="preserve">
-    <value>Preset not applied
-Core is not loaded or an internal error occurred</value>
+    <value> Core is not loaded or an internal error occurred</value>
   </data>
   <data name="Preset_SavedPresets.Text" xml:space="preserve">
     <value>Saved presets</value>

@@ -44,8 +44,6 @@ public sealed partial class ПараметрыPage
     private readonly bool
         _isPremadePresetApplied; // Флаг применённого готового пресета для его восстановления после покидания страницы Разгон
 
-    public static string ApplyInfo { get; set; } = "";
-
     public ПараметрыPage()
     {
         InitializeComponent();
@@ -2522,40 +2520,48 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private async void OnPresetApplied(string result)
+    private void OnPresetApplied(string result)
     {
-        ApplyInfo = result;
         var timer = 1000;
-        if (ApplyInfo != string.Empty) timer *= ApplyInfo.Split('\n').Length + 1;
+        if (result != string.Empty) timer *= result.Split('\n').Length + 1;
 
-
-        ApplyTooltip.Title = "Apply_Success".GetLocalized();
-        ApplyTooltip.Subtitle = "";
-
-        ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-        ApplyTooltip.IsOpen = true;
-        var infoSet = InfoBarSeverity.Success;
-        if (ApplyInfo != string.Empty)
+        DispatcherQueue.TryEnqueue(async void () =>
         {
-            await LogHelper.Log(ApplyInfo);
-            ApplyTooltip.Title = "Apply_Warn".GetLocalized();
-            ApplyTooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo;
-            ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-            await Task.Delay(timer);
-            ApplyTooltip.IsOpen = false;
-            infoSet = InfoBarSeverity.Warning;
-        }
-        else
-        {
-            await Task.Delay(3000);
-            ApplyTooltip.IsOpen = false;
-        }
+            try
+            {
+                ApplyTooltip.Title = "Apply_Success".GetLocalized();
+                ApplyTooltip.Subtitle = "";
 
-        _notificationsService.ShowNotification(ApplyTooltip.Title,
-            ApplyTooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) +
-            (ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-            infoSet,
-            true);
+                ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                ApplyTooltip.IsOpen = true;
+                var infoSet = InfoBarSeverity.Success;
+                if (result != string.Empty)
+                {
+                    await LogHelper.Log(result);
+                    ApplyTooltip.Title = "Apply_Warn".GetLocalized();
+                    ApplyTooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + result;
+                    ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                    await Task.Delay(timer);
+                    ApplyTooltip.IsOpen = false;
+                    infoSet = InfoBarSeverity.Warning;
+                }
+                else
+                {
+                    await Task.Delay(3000);
+                    ApplyTooltip.IsOpen = false;
+                }
+
+                _notificationsService.ShowNotification(ApplyTooltip.Title,
+                    ApplyTooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) +
+                    (result != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                    infoSet,
+                    true);
+            }
+            catch (Exception ex)
+            {
+                await LogHelper.LogError(ex);
+            }
+        });
     }
 
     private async void Save_Click(object sender, RoutedEventArgs e)

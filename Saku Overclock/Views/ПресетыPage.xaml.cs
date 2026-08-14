@@ -24,6 +24,7 @@ public sealed partial class ПресетыPage
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
     private static readonly IApplyerGateService Applyer = App.GetService<IApplyerGateService>();
+    private static readonly IBackgroundDataReceiver DataUpdater = App.GetService<IBackgroundDataReceiver>();
     private static readonly IOcFinderGateService OcFinder = App.GetService<IOcFinderGateService>();
     private static readonly ICpuGateService Cpu = App.GetService<ICpuGateService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
@@ -43,8 +44,7 @@ public sealed partial class ПресетыPage
     {
         InitializeComponent();
 
-        // TODO: Implement Data Updater
-        //_dataUpdater.DataUpdated += OnDataUpdated;
+        DataUpdater.DataUpdated += OnDataUpdated;
 
         Unloaded += ПресетыPage_Unloaded;
         Loaded += ПресетыPage_Loaded;
@@ -52,8 +52,9 @@ public sealed partial class ПресетыPage
 
     private void ПресетыPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        //_dataUpdater.DataUpdated -= OnDataUpdated;
-
+        DataUpdater.DataUpdated -= OnDataUpdated;
+        Applyer.OnStringSettingsApplied -= OnPresetApplied;
+        
         Unloaded -= ПресетыPage_Unloaded;
         Loaded -= ПресетыPage_Loaded;
     }
@@ -64,6 +65,7 @@ public sealed partial class ПресетыPage
         {
             _presetIndex = AppSettings.Preset;
             _presetChanging = false;
+            Applyer.OnStringSettingsApplied += OnPresetApplied;
             SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
             LoadPresets();
@@ -985,6 +987,49 @@ public sealed partial class ПресетыPage
             LogHelper.LogWarn(ex);
         }
     }
+    
+    private void OnPresetApplied(string result)
+    {
+        var timer = 1000;
+        if (result != string.Empty) timer *= result.Split('\n').Length + 1;
+
+        DispatcherQueue.TryEnqueue(async void () =>
+        {
+            try
+            {
+                ApplyTeach.Target = ApplyButton;
+                ApplyTeach.Title = "Apply_Success".GetLocalized();
+                ApplyTeach.Subtitle = "";
+                ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                ApplyTeach.IsOpen = true;
+                var infoSet = InfoBarSeverity.Success;
+                if (result != string.Empty)
+                {
+                    await LogHelper.Log(result);
+                    ApplyTeach.Title = "Apply_Warn".GetLocalized();
+                    ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + result;
+                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                    await Task.Delay(timer);
+                    ApplyTeach.IsOpen = false;
+                    infoSet = InfoBarSeverity.Warning;
+                }
+                else
+                {
+                    await Task.Delay(3000);
+                    ApplyTeach.IsOpen = false;
+                }
+
+                NotificationsService.ShowNotification(ApplyTeach.Title,
+                    ApplyTeach.Subtitle + (result != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                    infoSet,
+                    true);
+            }
+            catch (Exception ex)
+            {
+                await LogHelper.LogError(ex);
+            }
+        });
+    }
 
     private async void ApplyButton_Click(object? sender, RoutedEventArgs? e)
     {
@@ -1026,50 +1071,7 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            ПараметрыPage.ApplyInfo = string.Empty;
             if (requiredPreset != null) await Applyer.ApplyPreset(requiredPreset, true);
-
-            await Task.Delay(1000);
-            var timer = 1000;
-            var applyInfo = ПараметрыPage.ApplyInfo;
-            if (applyInfo != string.Empty) timer *= applyInfo.Split('\n').Length + 1;
-
-            DispatcherQueue.TryEnqueue(async void () =>
-            {
-                try
-                {
-                    ApplyTeach.Target = ApplyButton;
-                    ApplyTeach.Title = "Apply_Success".GetLocalized();
-                    ApplyTeach.Subtitle = "";
-                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                    ApplyTeach.IsOpen = true;
-                    var infoSet = InfoBarSeverity.Success;
-                    if (applyInfo != string.Empty)
-                    {
-                        await LogHelper.Log(applyInfo);
-                        ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                        ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
-                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                        await Task.Delay(timer);
-                        ApplyTeach.IsOpen = false;
-                        infoSet = InfoBarSeverity.Warning;
-                    }
-                    else
-                    {
-                        await Task.Delay(3000);
-                        ApplyTeach.IsOpen = false;
-                    }
-
-                    NotificationsService.ShowNotification(ApplyTeach.Title,
-                        ApplyTeach.Subtitle + (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                        infoSet,
-                        true);
-                }
-                catch (Exception ex)
-                {
-                    await LogHelper.LogError(ex);
-                }
-            });
         }
         catch (Exception ex)
         {

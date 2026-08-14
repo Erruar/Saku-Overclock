@@ -10,6 +10,7 @@ using Saku_Overclock.Wrappers;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
@@ -31,6 +32,7 @@ public sealed partial class ИнформацияPage
 
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private readonly ICpuGateService _cpu = App.GetService<ICpuGateService>();
+    private readonly IBackgroundDataReceiver _dataUpdater = App.GetService<IBackgroundDataReceiver>();
     private readonly IPstateGateService _pstates = App.GetService<IPstateGateService>();
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
@@ -125,11 +127,7 @@ public sealed partial class ИнформацияPage
     {
         InitializeComponent();
 
-        // TODO: Implement Data Updater
-        /*if (_dataUpdater != null)
-        {
-            _dataUpdater.DataUpdated += OnDataUpdated;
-        }*/
+        _dataUpdater.DataUpdated += OnDataUpdated;
 
         Loaded += ИнформацияPage_Loaded;
         Unloaded += ИнформацияPage_Unloaded;
@@ -484,11 +482,7 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        // TODO: Implement Data Updater
-        /*if (_dataUpdater != null)
-        {
-            _dataUpdater.DataUpdated -= OnDataUpdated;
-        }*/
+        _dataUpdater.DataUpdated -= OnDataUpdated;
 
         Unloaded -= ИнформацияPage_Unloaded;
         App.MainWindow.VisibilityChanged -= Window_VisibilityChanged;

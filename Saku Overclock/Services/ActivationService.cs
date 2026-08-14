@@ -14,6 +14,7 @@ public class ActivationService(
     IAppSettingsService appSettingsService,
     IUpdateCheckerService updateCheckerService,
     IWindowStateManagerService windowStateManager,
+    IBackgroundDataReceiver dataReceiver,
     CoreGatewayService coreGateway,
     ITrayMenuService trayMenuService,
     IPresetManagerService presetManagerService)
@@ -73,6 +74,8 @@ public class ActivationService(
     /// </summary>
     private void Initialize()
     {
+        dataReceiver.StartAsync(CancellationToken.None);
+        
         // 4. Initializing themes
         themeSelectorService.Initialize();
 
