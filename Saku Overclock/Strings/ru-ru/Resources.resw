@@ -2929,6 +2929,10 @@ Asus. Может не поддерживаться на
   <data name="Param_DeveloperOptions_SmuCommand" xml:space="preserve">
     <value>Команда</value>
   </data>
+  <data name="Preset_ApplyFailed" xml:space="preserve">
+    <value>Пресет не применён
+Ядро не загружено или возникла внутренняя ошибка</value>
+  </data>
   <data name="Preset_SavedPresets.Text" xml:space="preserve">
     <value>Сохранённые пресеты</value>
   </data>

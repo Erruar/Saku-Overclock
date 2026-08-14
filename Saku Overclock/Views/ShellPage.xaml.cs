@@ -288,10 +288,6 @@ public sealed partial class ShellPage
                             var commandActions = new Dictionary<string, Action>
                             {
                                 {
-                                    "Param_SMU_Func_Text/Text".GetLocalized(),
-                                    () => presets[AppSettings.Preset].SmuFeaturesSettings.SmuFeaturesOverride = false
-                                },
-                                {
                                     "Param_CPU_c2/Text".GetLocalized(),
                                     () => presets[AppSettings.Preset].CpuSettings.CpuSustainedPowerLimit.IsEnabled = false
                                 },

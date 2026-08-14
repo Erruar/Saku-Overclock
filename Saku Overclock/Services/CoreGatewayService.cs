@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Ipc;
 using Saku_Overclock.Shared.Models;
@@ -104,6 +105,7 @@ public partial class CoreGatewayService : IOcFinderGateService
 public partial class CoreGatewayService : IApplyerGateService
 {
     public event Action<List<ApplyResult>>? OnSettingsApplied;
+    public event Action<string>? OnStringSettingsApplied;
 
     public async Task ApplyPreset(Preset preset, bool saveInfo = false)
     {
@@ -121,7 +123,65 @@ public partial class CoreGatewayService : IApplyerGateService
     private void OnPresetApplied(string payload)
     {
         var results = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.ListApplyResult);
-        if (results != null) OnSettingsApplied?.Invoke(results);
+        if (results != null)
+        {
+            OnSettingsApplied?.Invoke(results);
+            
+            var outString = string.Empty;
+            foreach (var setting in results)
+            {
+                if (setting.ParameterName.Contains("Preset_ApplyFailed"))
+                {
+                    outString = TryLocalize(setting.ParameterName);
+                }
+                if (!setting.IsSuccess)
+                {
+                    var status = StatusCommandParser(setting.SmuStatusCode);
+
+                    outString += TryLocalize(setting.ParameterName) + " " + status + "\n";
+
+                    if (setting.AffectedParameters?.Length > 0)
+                    {
+                        foreach (var parameter in setting.AffectedParameters)
+                        {
+                            outString += TryLocalize(parameter) + " " + status + "\n";
+                        }
+                    }
+                }
+            }
+            OnStringSettingsApplied?.Invoke(outString);
+        }
+    }
+
+    private string TryLocalize(string key)
+    {
+        var str = string.Empty;
+        try
+        {
+            str = key.GetLocalized();
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
+        
+        return str;
+    }
+    
+    /// <summary>
+    ///     Parse Smu Status to text
+    /// </summary>
+    private static string StatusCommandParser(SmuStatus? status)
+    {
+        return status switch
+        {
+            null => "\"" + "SMUErrorPlatformDesc".GetLocalized() + "\"",
+            SmuStatus.CmdRejectedPrereq => "\"" + "SMUErrorPrereqDesc".GetLocalized() + "\"",
+            SmuStatus.CmdRejectedBusy => "\"" + "SMUErrorBusyDesc".GetLocalized() + "\"",
+            SmuStatus.Failed => "\"" + "SMUErrorFailedDesc".GetLocalized() + "\"",
+            SmuStatus.UnknownCmd => "\"" + "SMUErrorUnknownDesc".GetLocalized() + "\"",
+            _ => "\"" + "SMUErrorStatusDesc".GetLocalized() + "\""
+        };
     }
 }
 

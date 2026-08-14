@@ -41,14 +41,10 @@ public sealed partial class ПараметрыPage
     private bool
         _presetChanging = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета
 
-    private bool _commandReturnedValue; // Флаг если команда вернула значение
-
     private readonly bool
         _isPremadePresetApplied; // Флаг применённого готового пресета для его восстановления после покидания страницы Разгон
 
     public static string ApplyInfo { get; set; } = "";
-
-    private bool _settingsApplied;
 
     public ПараметрыPage()
     {
@@ -74,6 +70,7 @@ public sealed partial class ПараметрыPage
         try
         {
             _isLoaded = true;
+            _applyer.OnStringSettingsApplied += OnPresetApplied;
             CollectSearchItems();
             SlidersInit();
             await RecommendationsInit();
@@ -87,7 +84,8 @@ public sealed partial class ПараметрыPage
     private void ПараметрыPage_Unloaded(object sender, RoutedEventArgs e)
     {
         _hotkeysService.PresetChanged -= PresetChanged;
-
+        _applyer.OnStringSettingsApplied -= OnPresetApplied;
+        
         Loaded -= ПараметрыPage_Loaded;
         Unloaded -= ПараметрыPage_Unloaded;
     }
@@ -2515,59 +2513,49 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            _settingsApplied = false;
-
-            ApplyInfo = "";
             await _applyer.ApplyPreset(_presetManager.Presets[_presetIndex],
                 true);
-
-            var timerCounter = 0;
-            while (!_settingsApplied)
-            {
-                await Task.Delay(50);
-
-                timerCounter++;
-                if (timerCounter == 140) break;
-            }
-
-            var timer = 1000;
-            if (ApplyInfo != string.Empty) timer *= ApplyInfo.Split('\n').Length + 1;
-
-
-            ApplyTooltip.Title = "Apply_Success".GetLocalized();
-            ApplyTooltip.Subtitle = "";
-
-            ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-            ApplyTooltip.IsOpen = true;
-            var infoSet = InfoBarSeverity.Success;
-            if (ApplyInfo != string.Empty && !_commandReturnedValue)
-            {
-                await LogHelper.Log(ApplyInfo);
-                ApplyTooltip.Title = "Apply_Warn".GetLocalized();
-                ApplyTooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo;
-                ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                await Task.Delay(timer);
-                ApplyTooltip.IsOpen = false;
-                infoSet = InfoBarSeverity.Warning;
-            }
-            else
-            {
-                if (_commandReturnedValue) ApplyTooltip.Subtitle = ApplyInfo;
-                await Task.Delay(3000);
-                ApplyTooltip.IsOpen = false;
-            }
-
-            _notificationsService.ShowNotification(ApplyTooltip.Title,
-                ApplyTooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) +
-                (ApplyInfo != string.Empty && !_commandReturnedValue ? "DELETEUNAVAILABLE" : ""),
-                infoSet,
-                true);
-            _commandReturnedValue = false;
         }
         catch (Exception exception)
         {
             await LogHelper.TraceIt_TraceError(exception);
         }
+    }
+
+    private async void OnPresetApplied(string result)
+    {
+        ApplyInfo = result;
+        var timer = 1000;
+        if (ApplyInfo != string.Empty) timer *= ApplyInfo.Split('\n').Length + 1;
+
+
+        ApplyTooltip.Title = "Apply_Success".GetLocalized();
+        ApplyTooltip.Subtitle = "";
+
+        ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+        ApplyTooltip.IsOpen = true;
+        var infoSet = InfoBarSeverity.Success;
+        if (ApplyInfo != string.Empty)
+        {
+            await LogHelper.Log(ApplyInfo);
+            ApplyTooltip.Title = "Apply_Warn".GetLocalized();
+            ApplyTooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo;
+            ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+            await Task.Delay(timer);
+            ApplyTooltip.IsOpen = false;
+            infoSet = InfoBarSeverity.Warning;
+        }
+        else
+        {
+            await Task.Delay(3000);
+            ApplyTooltip.IsOpen = false;
+        }
+
+        _notificationsService.ShowNotification(ApplyTooltip.Title,
+            ApplyTooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) +
+            (ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+            infoSet,
+            true);
     }
 
     private async void Save_Click(object sender, RoutedEventArgs e)
