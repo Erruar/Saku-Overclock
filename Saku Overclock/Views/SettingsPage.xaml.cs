@@ -1493,7 +1493,8 @@ public sealed partial class SettingsPage
         // Финальная строка присваивается в AdvancedCodeEditor
         _rtssSettings.AdvancedCodeEditor = advancedCodeEditor.ToString();
         LoadAndFormatAdvancedCodeEditor(_rtssSettings.AdvancedCodeEditor);
-        RtssHandler.ChangeOsdText(_rtssSettings.AdvancedCodeEditor);
+        // TODO: Implement changing rtss
+        //RtssHandler.ChangeOsdText(_rtssSettings.AdvancedCodeEditor);
         _rtssSettings.SaveSettings();
         return;
 

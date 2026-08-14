@@ -144,7 +144,8 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
         settingsService.RtssMetricsEnabled = !settingsService.RtssMetricsEnabled;
         if (!settingsService.RtssMetricsEnabled)
         {
-            RtssHandler.ResetOsdText();
+            // TODO: impement reset rtss
+            //RtssHandler.ResetOsdText();
         }
 
         App.MainWindow.DispatcherQueue.TryEnqueue(async void () =>

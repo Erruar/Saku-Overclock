@@ -1744,7 +1744,8 @@ public sealed partial class ИнформацияPage
         {
             if (RtssButton.IsChecked == false)
             {
-                RtssHandler.ResetOsdText();
+                // TODO: impement reset rtss
+                //RtssHandler.ResetOsdText();
             }
             else
             {
