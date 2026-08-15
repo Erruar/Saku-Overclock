@@ -1742,12 +1742,7 @@ public sealed partial class ИнформацияPage
     {
         try
         {
-            if (RtssButton.IsChecked == false)
-            {
-                // TODO: impement reset rtss
-                //RtssHandler.ResetOsdText();
-            }
-            else
+            if (RtssButton.IsChecked == true)
             {
                 RtssTeacherTip.IsOpen = true;
                 await Task.Delay(3000);

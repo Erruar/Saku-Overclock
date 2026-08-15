@@ -13,6 +13,8 @@ public class ActivationService(
     IThemeSelectorService themeSelectorService,
     IAppSettingsService appSettingsService,
     IUpdateCheckerService updateCheckerService,
+    INotifyIconsService notifyIconsService,
+    IRtssSettingsService rtssSettingsService,
     IWindowStateManagerService windowStateManager,
     IBackgroundDataReceiver dataReceiver,
     CoreGatewayService coreGateway,
@@ -29,6 +31,12 @@ public class ActivationService(
         
         // 2. Load user presets
         await presetManagerService.LoadSettingsAsync();
+        
+        // 3. Load Ni Icons settings
+        notifyIconsService.LoadSettings();
+        
+        // 4. Load Rtss settings
+        rtssSettingsService.LoadSettings();
         
         // Run before activation
         Initialize();

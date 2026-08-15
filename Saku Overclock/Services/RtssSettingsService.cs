@@ -37,6 +37,6 @@ public partial class RtssSettingsService(IpcConnectionService ipc)
     public bool IsRtssUpdated { get; set; }
     public void UpdateRtssMetrics(SensorsInformation sensorsInformation, string? appliedPreset, int? coreCount)
     {
-        throw new NotImplementedException();
+        throw new InvalidCastException();
     }
 }
