@@ -18,6 +18,7 @@ public class AppActivationWorker(
     IPstateService powerStateService,
     IOcFinderService ocFinderService,
     IApplyerService applyerService,
+    IRawSharedMemoryWriterService rawSharedMemoryWriterService,
     IBackgroundDataUpdater backgroundDataUpdater,
     IHostApplicationLifetime lifetime,
     ILogger<AppActivationWorker> logger)
@@ -55,12 +56,15 @@ public class AppActivationWorker(
         ipcHandlers.RegisterIpcHandlers();
         
         // 8. Обновление данных
+        rawSharedMemoryWriterService.RegisterIpcHandlers();
+        
+        // 9. Обновление данных
         backgroundDataUpdater.StartAsync(_globalCts.Token);
         
-        // 9. Создание пресетов под конкретное железо
+        // 10. Создание пресетов под конкретное железо
         ocFinderService.LazyInitTdp();
         
-        // 10. Загрузка методов изменения Power States
+        // 11. Загрузка методов изменения Power States
         powerStateService.Initialize();
         
         await Task.CompletedTask;

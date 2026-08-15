@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Ipc;
@@ -59,6 +60,7 @@ public partial class CoreGatewayService : ICpuGateService
     public string CpuCodeName => _hwSnapshot?.CpuCodeName ?? string.Empty;
     public string SmuVersion => _hwSnapshot?.SmuVersion ?? string.Empty;
     public uint PowerTableVersion => _hwSnapshot?.PowerTableVersion ?? 0;
+    public uint PowerTableSize => _hwSnapshot?.PowerTableSize ?? 0;
 
     public CodenameGeneration GetCodenameGeneration() => _hwSnapshot?.CodenameGeneration ?? default;
     public MemoryConfig GetMemoryConfig() => _hwSnapshot?.MemoryConfig ?? new MemoryConfig();

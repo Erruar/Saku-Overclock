@@ -81,6 +81,7 @@ public partial class App
                     services.AddSingleton<IApplyerGateService>(sp => sp.GetRequiredService<CoreGatewayService>());
                     services.AddSingleton<IOcFinderGateService>(sp => sp.GetRequiredService<CoreGatewayService>());
                     services.AddSingleton<IBackgroundDataReceiver, BackgroundDataReceiver>();
+                    services.AddSingleton<IRawSharedMemoryReaderService, RawSharedMemoryReaderService>();
                     services.AddSingleton<IFileService, LocalFileService>();
                     services.AddSingleton<IAppSettingsService, AppSettingsService>();
                     services.AddSingleton<IPresetManagerService, PresetManagerService>();

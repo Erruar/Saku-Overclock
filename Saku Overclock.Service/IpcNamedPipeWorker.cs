@@ -61,7 +61,6 @@ public sealed partial class IpcNamedPipeWorker(
         var id = Guid.NewGuid();
         var conn = new PipeConnection(pipe);
 
-        // тут твой ValidateClientSignature/identity-check как раньше, один раз при коннекте
         if (!securityService.ValidateClientSignature(pipe))
         {
             logger.LogWarning("Access Denied: Unauthorized client process.");

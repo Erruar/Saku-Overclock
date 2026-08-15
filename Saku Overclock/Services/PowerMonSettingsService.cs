@@ -9,7 +9,7 @@ public class PowerMonSettingsService(IpcConnectionService ipc)
 {
     public List<string> Notelist
     {
-        get => Get(s => s.ToList());
+        get => Get(s => s);
         set => Set(cache => { cache.Clear(); cache.AddRange(value); });
     }
 

@@ -11,6 +11,7 @@ namespace Saku_Overclock.Views.Window.PowerMon;
 internal partial class PowerWindow : IDisposable
 {
     private static readonly IPowerMonSettingsService SettingsService = App.GetService<IPowerMonSettingsService>();
+    private static readonly IRawSharedMemoryReaderService RawSharedMemory = App.GetService<IRawSharedMemoryReaderService>();
     private ObservableCollection<PowerMonitorItem>? _powerGridItems;
     private bool _isInitialized;
     private float[]? _rawData;
@@ -30,7 +31,7 @@ internal partial class PowerWindow : IDisposable
         PowerGridView.ItemsSource = _powerGridItems;
 
         // Loading first page
-        LoadInitialData();
+        _ = LoadInitialData();
     }
 
     private void InitializeWindowProperties()
@@ -51,20 +52,17 @@ internal partial class PowerWindow : IDisposable
         _powerCfgTimer.Tick += PowerCfgTimer_Tick;
     }
 
-    private void LoadInitialData()
+    private async Task LoadInitialData()
     {
         try
         {
             // Fast notes loading
             SettingsService.LoadSettings();
+            
+            await RawSharedMemory.StartUpdate();
 
-            // Data receiving
-            // TODO: Implement Data Updater
-            _rawData = null; //_dataProvider?.GetPowerTable();
-            if (_rawData == null)
-            {
-                return;
-            }
+            _rawData = RawSharedMemory.GetRawData();
+            if (_rawData == null) return;
 
             _totalItems = _rawData.Length;
 
@@ -79,7 +77,7 @@ internal partial class PowerWindow : IDisposable
         }
         catch (Exception e)
         {
-            throw new Exception("Unable to initialize PowerMon data: " + e.Message);
+            await LogHelper.LogError("Unable to initialize PowerMon data: " + e.Message);
         }
     }
 
@@ -151,7 +149,8 @@ internal partial class PowerWindow : IDisposable
         _powerGridItems = null;
         _rawData = null;
         PowerGridView.ItemsSource = null;
-
+        RawSharedMemory.StopUpdate();
+        
         _ = Garbage.Garbage_Collect();
         Dispose();
     }
@@ -374,9 +373,7 @@ internal partial class PowerWindow : IDisposable
             return;
         }
 
-        // Receive data
-        // TODO: Implement Data Updater
-        var newData = Array.Empty<float>(); //_dataProvider?.GetPowerTable();
+        var newData = RawSharedMemory.GetRawData();
         if (newData == null)
         {
             return;
@@ -403,7 +400,7 @@ internal partial class PowerWindow : IDisposable
                     && realIndex < SettingsService.Notelist.Count)
                 {
                     SettingsService.Notelist[realIndex] = item.Note ?? " ";
-                    Task.Run(SettingsService.SaveSettings).Wait();
+                    _ = Task.Run(SettingsService.SaveSettings);
                 }
             }
         }

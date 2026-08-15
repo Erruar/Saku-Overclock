@@ -17,6 +17,7 @@ public class ActivationService(
     IRtssSettingsService rtssSettingsService,
     IWindowStateManagerService windowStateManager,
     IBackgroundDataReceiver dataReceiver,
+    IRawSharedMemoryReaderService rawSharedMemoryReaderService,
     CoreGatewayService coreGateway,
     ITrayMenuService trayMenuService,
     IPresetManagerService presetManagerService)
@@ -25,17 +26,19 @@ public class ActivationService(
     private UIElement? _shell;
     public async Task ActivateAsync(object activationArgs)
     {
+        // 1. Warm-up cpu info cache
         await coreGateway.WarmupAsync();
-        // 1. Load app settings
+        
+        // 2. Load app settings
         await appSettingsService.LoadSettingsAsync();
         
-        // 2. Load user presets
+        // 3. Load user presets
         await presetManagerService.LoadSettingsAsync();
         
-        // 3. Load Ni Icons settings
+        // 4. Load Ni Icons settings
         notifyIconsService.LoadSettings();
         
-        // 4. Load Rtss settings
+        // 5. Load Rtss settings
         rtssSettingsService.LoadSettings();
         
         // Run before activation
