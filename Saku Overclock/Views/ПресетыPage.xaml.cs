@@ -29,7 +29,7 @@ public sealed partial class ПресетыPage
     private static readonly ICpuGateService Cpu = App.GetService<ICpuGateService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool NotReady => !_isLoaded || _presetChanging || AppSettings.Preset < 0;
-
+    private bool _isApplying = false;
     private bool
         _presetChanging = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
 
@@ -69,19 +69,7 @@ public sealed partial class ПресетыPage
             SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
             LoadPresets();
-
-            var coAvailable = await OcFinder.IsUndervoltingAvailableAsync();
-
-            if (coAvailable || true)
-            {
-                CurveOptimizerCustomGrid.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                UndervoltingToggle.State = BandCrowdStates.Off;
-                CurveOptimizerCustomGrid.Visibility = Visibility.Collapsed;
-            }
-
+            await CheckPlatformConditions();
             SetCallbacks();
 
             _isLoaded = true;
@@ -126,6 +114,13 @@ public sealed partial class ПресетыPage
         if (IsRavenFamily())
             FixedGpuFrequency.ValueChanged += val =>
                 UpdatePresetSetting(() => CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency = val);
+        else if (IsBristolFamily())
+            FixedGpuFrequency.ValueChanged += val =>
+                UpdatePresetSetting(() =>
+                {
+                    CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency = val;
+                    CurrentSubsystemsSettings.MaximumIntegratedGraphicsFrequency = val;
+                });
         else
             FixedGpuFrequency.ValueChanged += val =>
                 UpdatePresetSetting(() => CurrentFrequenciesSettings.IntegratedGraphicsFrequency = val);
@@ -197,19 +192,9 @@ public sealed partial class ПресетыPage
                 // Обход отсутствия описания, при помощи записывания имени пресета в описание. Чтобы не отображать два раза одну и ту же строку, описание пресета скрывается (так как его нет)
                 SelectedPresetDescription.Text = item.Description != item.Text ? item.Description : string.Empty;
                 if (item.Description == item.Text)
-                {
                     SelectedPresetDescription.Visibility = Visibility.Collapsed;
-                    EditCurrentButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
-                    EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
-                    SelectedPresetTextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
-                }
                 else
-                {
                     SelectedPresetDescription.Visibility = Visibility.Visible;
-                    EditCurrentButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
-                    EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
-                    SelectedPresetTextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
-                }
             }
 
         InitializeCustomPresetSettings(AppSettings.Preset);
@@ -284,10 +269,27 @@ public sealed partial class ПресетыPage
                 : BandCrowdStates.Off;
 
             // Частота встроенной графики 
-            FixedGpuFrequency.Value = IsRavenFamily()
-                ? sub.MinimumIntegratedGraphicsFrequency
-                : preset.FrequenciesSettings.IntegratedGraphicsFrequency;
-
+            if (IsRavenFamily())
+            {
+                FixedGpuFrequency.Value = sub.MinimumIntegratedGraphicsFrequency;
+            }
+            else if (IsBristolFamily())
+            {
+                if ((int)sub.MinimumIntegratedGraphicsFrequency.Value > 7)
+                    sub.MinimumIntegratedGraphicsFrequency.Value = 7;
+                if ((int)sub.MaximumIntegratedGraphicsFrequency.Value > 7)
+                    sub.MaximumIntegratedGraphicsFrequency.Value = 7;
+                
+                FixedGpuFrequency.Minimum = 0;
+                FixedGpuFrequency.Maximum = 7;
+                FixedGpuFrequency.SliderMaximum = 7;
+                FixedGpuFrequency.Value = sub.MinimumIntegratedGraphicsFrequency;
+            }
+            else
+            {
+                FixedGpuFrequency.Value = preset.FrequenciesSettings.IntegratedGraphicsFrequency;
+            }
+            
             FixedIntegratedGpuFrequency.State = sub.MaximumIntegratedGraphicsFrequency.IsEnabled ||
                                                 sub.MinimumIntegratedGraphicsFrequency.IsEnabled ||
                                                 preset.FrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled
@@ -320,6 +322,67 @@ public sealed partial class ПресетыPage
         _presetChanging = false;
     }
 
+    private async Task CheckPlatformConditions()
+    {
+        var coAvailable = await OcFinder.IsUndervoltingAvailableAsync();
+
+        if (coAvailable)
+        {
+            CurveOptimizerCustomGrid.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            UndervoltingToggle.State = BandCrowdStates.Off;
+            CurveOptimizerCustomGrid.RemoveFromParent();
+            UndervoltingCpu.RemoveFromParent();
+            UndervoltingGpu.RemoveFromParent();
+        }
+
+        var codenameGeneration = Cpu.GetCodenameGeneration();
+        switch (codenameGeneration)
+        {
+            case CodenameGeneration.Am4V1:
+                GpuTemp.RemoveFromParent();
+                CpuPowerLimit.RemoveFromParent();
+                GpuPowerLimit.RemoveFromParent();
+                CpuAveragePower.RemoveFromParent();
+                CpuTurboSlowTime.RemoveFromParent();
+                CpuTurboFastTime.RemoveFromParent();
+                FixedCpuFrequencyGrid.RemoveFromParent();
+                FixedCpuFrequency.RemoveFromParent();
+                FixedGpuFrequencyGrid.RemoveFromParent();
+                FixedGpuFrequency.RemoveFromParent();
+                UndervoltingGpu.RemoveFromParent();
+                break;
+            case CodenameGeneration.Am4V2:
+                GpuTemp.RemoveFromParent();
+                CpuPowerLimit.RemoveFromParent();
+                GpuPowerLimit.RemoveFromParent();
+                CpuAveragePower.RemoveFromParent();
+                CpuTurboSlowTime.RemoveFromParent();
+                CpuTurboFastTime.RemoveFromParent();
+                FixedGpuFrequencyGrid.RemoveFromParent();
+                FixedGpuFrequency.RemoveFromParent();
+                UndervoltingGpu.RemoveFromParent();
+                break;
+            case CodenameGeneration.Fp4:
+                GpuTemp.RemoveFromParent();
+                GpuPowerLimit.RemoveFromParent();
+                CpuTurboFastTime.RemoveFromParent();
+                CpuFrequency04FixGrid.RemoveFromParent();
+                FixedCpuFrequencyGrid.RemoveFromParent();
+                FixedCpuFrequency.RemoveFromParent();
+                FixedGpuFrequency.Text = "Param_ADV_a10_Bristol/Text".GetLocalized();
+                break;
+            case CodenameGeneration.Fp5:
+                GpuTemp.RemoveFromParent();
+                GpuPowerLimit.RemoveFromParent();
+                FixedCpuFrequencyGrid.RemoveFromParent();
+                FixedCpuFrequency.RemoveFromParent();
+                break;
+        }
+    }
+    
     private void OnDataUpdated(object? sender, SensorsInformation info)
     {
         DispatcherQueue.TryEnqueue(() =>
@@ -351,6 +414,11 @@ public sealed partial class ПресетыPage
     private static bool IsRavenFamily()
     {
         return Cpu.GetCodenameGeneration() == CodenameGeneration.Fp5;
+    }
+    
+    private static bool IsBristolFamily()
+    {
+        return Cpu.GetCodenameGeneration() == CodenameGeneration.Fp4;
     }
 
     private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
@@ -640,6 +708,7 @@ public sealed partial class ПресетыPage
             Text = presetDesc,
             PlaceholderText = "Param_Preset_New_Desc_Add/PlaceholderText".GetLocalized(),
             CornerRadius = new CornerRadius(9),
+            MaxLength = 120,
             Width = 280,
             Margin = new Thickness(0, 6, 0, 0),
             Shadow = (ThemeShadow)Resources["SharedShadow"],
@@ -937,17 +1006,13 @@ public sealed partial class ПресетыPage
 
             if (selectedItem.Description == selectedItem.Text)
             {
+                SelectedPresetName.FontSize = 16;
                 SelectedPresetDescription.Visibility = Visibility.Collapsed;
-                EditCurrentButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
-                EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
-                SelectedPresetTextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
             }
             else
             {
+                SelectedPresetName.FontSize = 14;
                 SelectedPresetDescription.Visibility = Visibility.Visible;
-                EditCurrentButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
-                EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
-                SelectedPresetTextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
             }
 
 
@@ -988,37 +1053,22 @@ public sealed partial class ПресетыPage
         }
     }
     
-    private void OnPresetApplied(string result)
+    private async void OnPresetApplied(string result)
     {
         var timer = 1000;
-        if (result != string.Empty) timer *= result.Split('\n').Length + 1;
+        if (result != string.Empty) timer *= result.Split('\n').Length + 1; //
 
-        DispatcherQueue.TryEnqueue(async void () =>
+        DispatcherQueue.TryEnqueue(() =>
         {
             try
             {
                 ApplyTeach.Target = ApplyButton;
-                ApplyTeach.Title = "Apply_Success".GetLocalized();
-                ApplyTeach.Subtitle = "";
-                ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                ApplyTeach.Title = result != string.Empty ? "Apply_Warn".GetLocalized() : "Apply_Success".GetLocalized();
+                ApplyTeach.Subtitle = result != string.Empty ? "Apply_Warn_Desc".GetLocalized() + result : "";
+                ApplyTeach.IconSource = new SymbolIconSource { Symbol = result != string.Empty ? Symbol.ReportHacked : Symbol.Accept };
                 ApplyTeach.IsOpen = true;
-                var infoSet = InfoBarSeverity.Success;
-                if (result != string.Empty)
-                {
-                    await LogHelper.Log(result);
-                    ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                    ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + result;
-                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                    await Task.Delay(timer);
-                    ApplyTeach.IsOpen = false;
-                    infoSet = InfoBarSeverity.Warning;
-                }
-                else
-                {
-                    await Task.Delay(3000);
-                    ApplyTeach.IsOpen = false;
-                }
 
+                var infoSet = result != string.Empty ? InfoBarSeverity.Warning : InfoBarSeverity.Success;
                 NotificationsService.ShowNotification(ApplyTeach.Title,
                     ApplyTeach.Subtitle + (result != string.Empty ? "DELETEUNAVAILABLE" : ""),
                     infoSet,
@@ -1026,7 +1076,26 @@ public sealed partial class ПресетыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.LogError(ex);
+                LogHelper.LogError(ex).ConfigureAwait(false);
+            }
+        });
+
+        if (result != string.Empty)
+        {
+            await LogHelper.Log(result);
+        }
+
+        await Task.Delay(result != string.Empty ? timer : 3000);
+
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            try
+            {
+                if (ApplyTeach != null) ApplyTeach.IsOpen = false;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError(ex).ConfigureAwait(false);
             }
         });
     }
@@ -1035,47 +1104,23 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            var selectedItem = PresetsControl.SelectedItem;
-            var selectedIndex = PresetsControl.SelectedIndex;
-
-            var name = selectedItem.Text;
-            var desc = selectedItem.Description;
-            var icon = selectedItem.IconGlyph;
-            Preset? requiredPreset = null;
-            if (selectedIndex > -1 && selectedIndex < PresetManager.Presets.Length &&
-                selectedItem.Text == PresetManager.Presets[selectedIndex].PresetName)
+            if (_isApplying) return;
+            _isApplying = true;
+            
+            if (_presetIndex > -1 && _presetIndex < PresetManager.Presets.Length)
             {
-                requiredPreset = PresetManager.Presets[selectedIndex];
-                AppSettings.Preset = selectedIndex;
+                var requiredPreset = PresetManager.Presets[_presetIndex];
+                AppSettings.Preset = _presetIndex;
+                await Applyer.ApplyPreset(requiredPreset, true);
             }
-            else
-            {
-                for (var presetIndex = 0; presetIndex < PresetManager.Presets.Length; presetIndex++)
-                {
-                    var preset = PresetManager.Presets[presetIndex];
-                    var presetName = preset.PresetName;
-                    var presetDesc = preset.PresetDesc;
-                    if (presetName.Contains("Preset_")) presetName = ГлавнаяPage.TryLocalize(presetName);
-
-                    if (presetDesc.Contains("Preset_")) presetDesc = ГлавнаяPage.TryLocalize(presetDesc);
-
-                    if (presetName == name &&
-                        (presetDesc == desc || presetName == desc) &&
-                        (preset.PresetIcon == icon ||
-                         preset.PresetIcon == "\uE718"))
-                    {
-                        AppSettings.Preset = presetIndex;
-                        requiredPreset = preset;
-                        break;
-                    }
-                }
-            }
-
-            if (requiredPreset != null) await Applyer.ApplyPreset(requiredPreset, true);
         }
         catch (Exception ex)
         {
             await LogHelper.LogWarn(ex);
+        }
+        finally
+        {
+            _isApplying = false;
         }
     }
 
@@ -1178,7 +1223,7 @@ public sealed partial class ПресетыPage
         switch (state)
         {
             case BandCrowdStates.Off:
-                if (IsRavenFamily())
+                if (IsRavenFamily() || IsBristolFamily())
                     CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = false;
                 else
                     CurrentFrequenciesSettings.IntegratedGraphicsFrequency.IsEnabled = false;
@@ -1189,6 +1234,15 @@ public sealed partial class ПресетыPage
                 {
                     CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
                     FixedGpuFrequency.Value = null;
+                    FixedGpuFrequency.Value = CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency;
+                }
+                else if (IsBristolFamily())
+                {
+                    CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.IsEnabled = true;
+                    FixedGpuFrequency.Value = null;
+                    if (CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value > 7)
+                        CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = 7;
+                    
                     FixedGpuFrequency.Value = CurrentSubsystemsSettings.MinimumIntegratedGraphicsFrequency;
                 }
                 else
