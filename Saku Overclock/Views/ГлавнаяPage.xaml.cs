@@ -372,7 +372,7 @@ public sealed partial class ГлавнаяPage
         switch (_currentMode)
         {
             case 2:
-                MainAdditionalInfo1Name.Text = IndicatorsTemp.Text;
+                MainAdditionalInfo1Name.Text = IndicatorsTemp.Text + "C";
                 MainAdditionalInfo2Name.Text = $"{Math.Round(100 - info.CpuTempValue, 1):F1}C";
                 MainAdditionalInfo3Name.Text = info.ApuTempValue == 0
                     ? _batteryUnavailable
@@ -380,11 +380,11 @@ public sealed partial class ГлавнаяPage
                 break;
 
             case 3:
-                MainAdditionalInfo1Name.Text = IndicatorsBusy.Text;
+                MainAdditionalInfo1Name.Text = IndicatorsBusy.Text + "%";
                 break;
 
             case 4:
-                MainAdditionalInfo1Name.Text = IndicatorsFreq.Text;
+                MainAdditionalInfo1Name.Text = IndicatorsFreq.Text + " " + _ghzInfo;
                 MainAdditionalInfo2Name.Text = $"{Math.Round(_maxCpuFreq, 1):F1} {_ghzInfo}";
                 MainAdditionalInfo3Name.Text = info.CpuVoltage == 0
                     ? _batteryUnavailable
@@ -398,8 +398,9 @@ public sealed partial class ГлавнаяPage
                 break;
 
             case 6:
-                MainAdditionalInfo1Name.Text = IndicatorsFast.Text;
-                MainAdditionalInfo2Name.Text = info.CpuStapmValue == 0
+                MainAdditionalInfo1Name.Text = IndicatorsFast.Text + "W";
+                MainAdditionalInfo2Name.Text = info.CpuStapmValue == 0 || 
+                (CpuService.GetCodenameGeneration() == CodenameGeneration.Fp4 && (int)info.CpuStapmLimit == 100)
                     ? _powerSumDisabled
                     : $"{Math.Round(info.CpuStapmValue, 1):F1}W";
                 MainAdditionalInfo3Name.Text = info.CpuSlowValue == 0
