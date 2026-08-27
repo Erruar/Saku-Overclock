@@ -18,29 +18,6 @@ internal class GetSystemInfo
 
     #region Battery Information
 
-    public static string? GetBatteryName()
-    {
-        try
-        {
-            var wmi = new ManagementClass("Win32_Battery");
-            var allBatteries = wmi.GetInstances();
-            var batteryName = "Battery not found";
-            foreach (var battery in allBatteries)
-            {
-                if (battery["Name"] != null)
-                {
-                    batteryName = battery["Name"].ToString();
-                    break;
-                }
-            }
-            return batteryName;
-        }
-        catch
-        {
-            return string.Empty;
-        }
-    }
-
     public enum BatteryStatus : ushort
     {
         Discharging = 1,
@@ -54,31 +31,6 @@ internal class GetSystemInfo
         ChargingAndCritical,
         Undefined,
         PartiallyCharged
-    }
-
-    public static BatteryStatus GetBatteryStatus()
-    {
-        try
-        {
-            var wmi = new ManagementClass("Win32_Battery");
-            var allBatteries = wmi.GetInstances();
-            var status = BatteryStatus.Undefined;
-
-            foreach (var battery in allBatteries)
-            {
-                var pData = battery.Properties["BatteryStatus"];
-
-                if (pData is { Value: not null } && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
-                {
-                    status = (BatteryStatus)pData.Value;
-                }
-            }
-            return status;
-        }
-        catch
-        {
-            return BatteryStatus.Undefined;
-        }
     }
 
     public static decimal GetBatteryHealth()
@@ -98,42 +50,6 @@ internal class GetSystemInfo
         }
     }
 
-    public static decimal GetBatteryRate()
-    {
-        if (!HasBattery())
-        {
-            _doNotTrackBattery = true;
-            return 0;
-        }
-
-        try
-        {
-            using var searcher = new ManagementObjectSearcher("root\\WMI", "SELECT ChargeRate, DischargeRate FROM BatteryStatus");
-            using var results = searcher.Get();
-
-            foreach (var obj in results.OfType<ManagementObject>())
-            {
-                var chargeRate = Convert.ToUInt32(obj["ChargeRate"]);
-                var dischargeRate = Convert.ToUInt32(obj["DischargeRate"]);
-
-                if (chargeRate > 0)
-                {
-                    return chargeRate;
-                }
-
-                if (dischargeRate > 0)
-                {
-                    return -dischargeRate;
-                }
-            }
-
-            return 0; // Батареи нет
-        }
-        catch
-        {
-            return 0;
-        }
-    }
     public static bool HasBattery()
     {
         if (GetSystemPowerStatus(out var status))
@@ -223,31 +139,6 @@ internal class GetSystemInfo
         return _designCapacity;
     }
 
-    public static int GetBatteryCycle()
-    {
-        if (_doNotTrackBattery)
-        {
-            return 0;
-        }
-
-        try
-        {
-            var searcher =
-                new ManagementObjectSearcher("root\\WMI",
-                "SELECT * FROM BatteryCycleCount");
-
-            foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-            {
-                return Convert.ToInt32(queryObj["CycleCount"]);
-            }
-            return 0;
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
     [DllImport("kernel32.dll")]
     private static extern bool GetSystemPowerStatus(out SystemPowerStatus sps);
 
@@ -269,28 +160,6 @@ internal class GetSystemInfo
             if (GetSystemPowerStatus(out var sps))
             {
                 return sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
-            }
-            return 0;
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    public static int GetBatteryLifeTime()
-    {
-        try
-        {
-            if (GetSystemPowerStatus(out var sps))
-            {
-                // Проверяем, подключено ли устройство к сети
-                if (sps.ACLineStatus == 1)
-                {
-                    return -1; // От сети
-                }
-
-                return sps.BatteryLifeTime; // Возвращаем оставшееся время работы от батареи в секундах
             }
             return 0;
         }
@@ -322,58 +191,7 @@ internal class GetSystemInfo
     }
 
     #endregion
-
-    #region OS Information
-
-    public static string? GetOsVersion()
-    {
-        try
-        {
-            var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
-            var sCpuSerialNumber = "";
-            foreach (var naming in searcher.Get().Cast<ManagementObject>())
-            {
-                sCpuSerialNumber = naming["Name"].ToString()?.Trim();
-            }
-            var endString = sCpuSerialNumber?.Split("Windows");
-            if (endString != null && endString.Length > 1)
-            {
-                return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length)).Trim());
-            }
-
-            return "Windows 10";
-        }
-        catch
-        {
-            return "Windows 10";
-        }
-    }
-    public static string GetBiosVersion()
-    {
-        try
-        {
-            var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS");
-            var biosVersion = string.Empty;
-            foreach (var bios in searcher.Get())
-            {
-                biosVersion = bios["SMBIOSBIOSVersion"]?.ToString()?.Trim();
-                break; // Выход из цикла после первого найденного объекта
-            }
-            return string.IsNullOrEmpty(biosVersion) ? "BIOS: Unknown" : $"BIOS: {biosVersion}";
-        }
-        catch
-        {
-            return "BIOS: Unknown";
-        }
-    }
-    public static string? GetWindowsEdition()
-    {
-        using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
-        return key?.GetValue("EditionID")?.ToString();
-    }
-
-    #endregion
-
+    
     #region Motherboard and GPU Information
 
     /// <summary>
@@ -465,77 +283,55 @@ internal class GetSystemInfo
     }
 
     public static string? GetIntegratedGpuName() => GetGpuNames()
-                .FirstOrDefault(key => key.StartsWith("AMD"));
+        .Where(n => n.Contains("AMD", StringComparison.OrdinalIgnoreCase) || n.Contains("Radeon", StringComparison.OrdinalIgnoreCase))
+        .OrderBy(n => n.Count(char.IsDigit))
+        .FirstOrDefault();
 
     public static string? GetDiscreteGpuName() => GetGpuNames()
-                .FirstOrDefault(key => key.StartsWith("nvidia", 
-                    StringComparison.CurrentCultureIgnoreCase));
+        .FirstOrDefault(key => key.StartsWith("nvidia",
+            StringComparison.CurrentCultureIgnoreCase));
 
-    public static (string, string) GetRegistryGpuDriverInformation(string gpuName, bool isNvidia = false)
+    public static (string MemorySize, string DriverVersion) GetRegistryGpuDriverInformation(string gpuName,
+        bool isNvidia = false)
     {
         try
         {
-            using var videoKey = Registry.LocalMachine.OpenSubKey(
-                @"SYSTEM\ControlSet001\Control\Video");
+            using var videoKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Video");
+            if (videoKey == null) return ("-GB", "Unknown");
 
-            if (videoKey == null)
+            foreach (var provName in videoKey.GetSubKeyNames())
             {
-                LogHelper.LogError("[GetSystemInfo+GetRegistryGpuDriverInformation]@ videoKey is Null. Skipping");
-                return ("-GB", "Unknown");
-            }
-
-            foreach (var providerKey in videoKey.GetSubKeyNames())
-            {
-                using var providerSubKey = videoKey.OpenSubKey(providerKey);
-                if (providerSubKey == null)
+                using var provKey = videoKey.OpenSubKey(provName);
+                foreach (var gpuKeyName in provKey?.GetSubKeyNames() ?? Array.Empty<string>())
                 {
-                    LogHelper.LogError("[GetSystemInfo+GetRegistryGpuDriverInformation]@ providerSubKey is Null. Skipping");
-                    continue;
-                }
+                    using var gpuKey = provKey!.OpenSubKey(gpuKeyName);
+                    var regName =
+                        gpuKey?.GetValue(isNvidia ? "HardwareInformation.AdapterString" : "DriverDesc") as string;
 
-                foreach (var gpuKey in providerSubKey.GetSubKeyNames())
-                {
-                    using var gpuSubKey = providerSubKey.OpenSubKey(gpuKey);
-                    if (gpuSubKey == null)
-                    {
-                        LogHelper.LogError("[GetSystemInfo+GetRegistryGpuDriverInformation]@ gpuSubKey is Null. Skipping");
+                    if (string.IsNullOrWhiteSpace(regName) ||
+                        !regName.Contains(gpuName, StringComparison.OrdinalIgnoreCase))
                         continue;
-                    }
 
-                    var registryGpuName = gpuSubKey.GetValue(isNvidia 
-                        ? "HardwareInformation.AdapterString" : "DriverDesc");
-                    if (registryGpuName as string == gpuName)
+                    var rawDriver = gpuKey!.GetValue(isNvidia ? "DriverVersion" : "RadeonSoftwareVersion")
+                                    ?? gpuKey.GetValue("DriverVersion");
+                    var driver = rawDriver?.ToString() ?? "Unknown";
+
+                    if (isNvidia && driver != "Unknown") driver = ParseNvidiaDriverVersion(driver);
+
+                    var rawMem = gpuKey.GetValue("HardwareInformation.qwMemorySize") ??
+                                 gpuKey.GetValue("HardwareInformation.MemorySize");
+                    var memBytes = rawMem switch
                     {
-                        var driverVersion = gpuSubKey.GetValue(isNvidia ? "DriverVersion" : "RadeonSoftwareVersion") as string;
-                        var memorySizeValue = gpuSubKey.GetValue("HardwareInformation.qwMemorySize");
-                        if (!string.IsNullOrEmpty(driverVersion))
-                        {
-                            var memorySize = "-GB";
-                            if (memorySizeValue is long memorySizeBytes)
-                            {
-                                if (memorySizeBytes > 0)
-                                {
-                                    // Делим на 1024 три раза для перевода в гигабайты
-                                    memorySize = (memorySizeBytes / 1024.0 / 1024.0 / 1024.0) + "GB";
-                                }
-                            }
-                            else
-                            {
-                                LogHelper.LogWarn("[GetSystemInfo+GetRegistryGpuDriverInformation]@ memorySizeValue is not a long type");
-                                if (int.TryParse(memorySizeValue as string, out var memorySizeFromString))
-                                {
-                                    memorySize = (memorySizeFromString / 1024.0 / 1024.0 / 1024.0) + "GB";
-                                }
-                            }
+                        long l => l,
+                        int i => i,
+                        byte[] { Length: 8 } b => BitConverter.ToInt64(b, 0),
+                        byte[] { Length: 4 } b => BitConverter.ToUInt32(b, 0),
+                        string s when long.TryParse(s, out var p) => p,
+                        _ => 0
+                    };
 
-                            if (isNvidia)
-                            {
-                                driverVersion = ParseNvidiaDriverVersion(driverVersion);
-                            }
-
-                            return (memorySize, driverVersion);
-                        }
-                    }
+                    var vram = memBytes > 0 ? $"{Math.Round(memBytes / 1073741824.0, 1)}GB" : "-GB";
+                    return (vram, driver);
                 }
             }
         }
@@ -546,115 +342,7 @@ internal class GetSystemInfo
 
         return ("-GB", "Unknown");
     }
-
-    public static string GetAmdGpuDriverVersion(string gpuName)
-    {
-        try
-        {
-            using var videoKey = Registry.LocalMachine.OpenSubKey(
-                @"SYSTEM\ControlSet001\Control\Video");
-
-            if (videoKey == null)
-            {
-                return "Unknown";
-            }
-
-            foreach (var providerKey in videoKey.GetSubKeyNames())
-            {
-                using var providerSubKey = videoKey.OpenSubKey(providerKey);
-                if (providerSubKey == null)
-                {
-                    continue;
-                }
-
-                foreach (var gpuKey in providerSubKey.GetSubKeyNames())
-                {
-                    using var gpuSubKey = providerSubKey.OpenSubKey(gpuKey);
-                    if (gpuSubKey == null)
-                    {
-                        continue;
-                    }
-
-                    var registryGpuName = gpuSubKey.GetValue("DriverDesc");
-                    if (registryGpuName as string == gpuName)
-                    {
-                        var driverVersion = gpuSubKey.GetValue("RadeonSoftwareVersion") as string;
-                        if (!string.IsNullOrEmpty(driverVersion))
-                        {
-                            return driverVersion;
-                        }
-                    }
-                }
-            }
-        }
-        catch
-        {
-            // Игнорируем ошибки реестра
-        }
-
-        return "Unknown";
-    }
-
-    public static double GetGpuVramSize(string gpuName)
-    {
-        try
-        {
-            using var videoKey = Registry.LocalMachine.OpenSubKey(
-                @"SYSTEM\ControlSet001\Control\Video");
-
-            if (videoKey == null)
-            {
-                LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ videoKey is Null. Skipping");
-                return 0;
-            }
-
-            foreach (var providerKey in videoKey.GetSubKeyNames())
-            {
-                using var providerSubKey = videoKey.OpenSubKey(providerKey);
-                if (providerSubKey == null)
-                {
-                    LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ providerSubKey is Null. Skipping");
-                    continue;
-                }
-
-                foreach (var gpuKey in providerSubKey.GetSubKeyNames())
-                {
-                    using var gpuSubKey = providerSubKey.OpenSubKey(gpuKey);
-                    if (gpuSubKey == null)
-                    {
-                        LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ gpuSubKey is Null. Skipping");
-                        continue;
-                    }
-
-                    var registryGpuName = gpuSubKey.GetValue("HardwareInformation.AdapterString");
-                    LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ gpuSubKey = " + registryGpuName + "\nRequired GPU: " + gpuName);
-                    if (registryGpuName as string == gpuName)
-                    {
-                        var memorySizeValue = gpuSubKey.GetValue("HardwareInformation.qwMemorySize");
-                        if (memorySizeValue != null && memorySizeValue is long memorySizeBytes)
-                        {
-                            if (memorySizeBytes > 0)
-                            {
-                                // Делим на 1024 три раза для перевода в гигабайты
-                                return memorySizeBytes / 1024.0 / 1024.0 / 1024.0;
-                            }
-                        }
-                        if (memorySizeValue != null)
-                        {
-                            LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ memorySizeValue is not long");
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex) 
-        {
-            LogHelper.LogError(ex);
-        }
-
-        return 0;
-    }
-
+    
     public static string ParseNvidiaDriverVersion(string version)
     {
         if (string.IsNullOrWhiteSpace(version))
@@ -683,27 +371,6 @@ internal class GetSystemInfo
         var minor = dddd % 100;
 
         return $"{major}.{minor:D2}";
-    }
-
-
-
-    public static string? Product
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in ComputerSsystemInfo.Get().Cast<ManagementObject>())
-                {
-                    return queryObj["Name"].ToString();
-                }
-                return "";
-            }
-            catch
-            {
-                return "";
-            }
-        }
     }
 
     #endregion
@@ -790,12 +457,10 @@ internal class GetSystemInfo
     {
         try
         {
-            if (!avxAvailable)
-            {
-                return false;
-            }
+            if (!avxAvailable)return false;
+            const int pfAvx512FInstructionsAvailable = 49;
 
-            return NativeMethods.IsProcessorFeaturePresent(49 /*PF_AVX512F_INSTRUCTIONS_AVAILABLE*/ );
+            return NativeMethods.IsProcessorFeaturePresent(pfAvx512FInstructionsAvailable);
         }
         catch
         {
@@ -881,7 +546,7 @@ public static partial class NativeMethods
     }
 }
 
-internal partial class Garbage
+internal static partial class Garbage
 {
     [LibraryImport("psapi.dll")]
     public static partial int EmptyWorkingSet(IntPtr hwProc);
@@ -897,7 +562,7 @@ internal partial class Garbage
         }
         catch
         {
-
+            // ignored
         }
     }
 }
