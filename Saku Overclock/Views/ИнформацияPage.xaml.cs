@@ -37,6 +37,7 @@ public sealed partial class ИнформацияPage
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
+    private static bool _isBristol; // Если процессор Bristol 
     private bool _doNotTrackBattery; // Флаг не использования батареи 
     private bool _isBatteryInformationLoaded; // Флаг обновления информации о батарее
     private bool _isDiscreteGpuInformationLoaded; // Флаг обновления информации о дискретной видеокарте
@@ -182,9 +183,7 @@ public sealed partial class ИнформацияPage
 
                 _isIntegratedGpuPresent = true;
                 if (GpuBannerButton.Visibility == Visibility.Collapsed)
-                {
                     GpuBannerButton.Visibility = Visibility.Visible;
-                }
             }
 
             IntegratedVramType.Text = _cachedMemoryType.ToUpper();
@@ -234,11 +233,12 @@ public sealed partial class ИнформацияPage
                 }
 
                 CpuCodename.Text = _cpu.CpuCodeName;
+                _isBristol = _cpu.GetCodenameGeneration() == CodenameGeneration.Fp4;
                 SmuVersion.Text = _cpu.SmuVersion + " / " + _cpu.PowerTableVersion.ToString("X");
             }
             else
             {
-                _numberOfCores = _numberOfLogicalProcessors / 2;
+                _numberOfCores = _numberOfLogicalProcessors;
             }
 
             InfoCpuSectionGridBuilder();
@@ -320,6 +320,7 @@ public sealed partial class ИнформацияPage
                         memoryTimings)
                     = GetSystemInfo.GetMemoryInformation(memoryConfig);
 
+                if (_isBristol) InfinityFabricSign.Text = "NB-CLK";
                 _ramName = ramName;
                 RamFrequency.Text = ramFrequency;
                 RamProducer.Text = producer;
@@ -630,7 +631,7 @@ public sealed partial class ИнформацияPage
                 }
             }
 
-            if (_sensorsInformation.CpuStapmLimit == 0)
+            if (_sensorsInformation.CpuStapmLimit == 0 || ((int)_sensorsInformation.CpuStapmLimit == 100 && _isBristol))
             {
                 StapmPowerLimit.Text = PowerDisabled;
                 StapmLimitBar.ShowError = true;
@@ -687,6 +688,11 @@ public sealed partial class ИнформацияPage
             SetBarMaxValueHelper(SocPowerBar, _sensorsInformation.SocPower);
             SetBarMaxValueHelper(MemoryFrequencyBar, _sensorsInformation.MemFrequency);
             SetBarMaxValueHelper(InfinityFabricBar, _sensorsInformation.FabricFrequency);
+            if (_sensorsInformation.FabricFrequency == 0 && !InfinityFabricBar.ShowError)
+            {
+                InfinityFabricBar.ShowError = true;
+                InfinityFabricClock.Text = "";
+            }
 
             // Инициализация переменных для накопления данных
             var totalFrequency = 0d;
@@ -711,10 +717,11 @@ public sealed partial class ИнформацияPage
                 }
 
                 // Получение значения в зависимости от выбранной секции
+                // Always use CU0 to get voltage, since there's no more sensors
                 var currentValue = selectedSection switch
                 {
                     SectionFrequency => coreFrequency,
-                    SectionVoltage => GetCoreValue(_sensorsInformation.CpuVoltagePerCore, coreIndex),
+                    SectionVoltage => GetCoreValue(_sensorsInformation.CpuVoltagePerCore, _isBristol ? 0 : coreIndex),
                     SectionPower => GetCoreValue(_sensorsInformation.CpuPowerPerCore, coreIndex),
                     SectionTemperature => GetCoreValue(_sensorsInformation.CpuTemperaturePerCore, coreIndex),
                     _ => coreFrequency
@@ -1549,11 +1556,13 @@ public sealed partial class ИнформацияPage
             var coreCounter = _selectedGroup switch
             {
                 // Секция процессора или P-States
-                GroupCpu or GroupCpuPst => _numberOfCores > 2
-                    ? _numberOfCores // Если ядер больше 2, используем количество ядер
-                    : CpuSectionComboBox.SelectedIndex == 0
-                        ? _numberOfLogicalProcessors // Если выбрано отображение частоты, используем логические процессоры
-                        : _numberOfCores, // Иначе используем количество ядер
+                GroupCpu or GroupCpuPst => _isBristol 
+                    ? _numberOfCores / 2 : // Делим ядра на Compute Units
+                    _numberOfCores > 2
+                        ? _numberOfCores // Если ядер больше 2, используем количество ядер
+                        : CpuSectionComboBox.SelectedIndex == 0
+                            ? _numberOfLogicalProcessors // Если выбрано отображение частоты, используем логические процессоры
+                            : _numberOfCores, // Иначе используем количество ядер
                 // Секция GFX
                 GroupGpu => gpuCounter, // Используем количество видеокарт
                 // Секция RAM
@@ -1593,7 +1602,9 @@ public sealed partial class ИнформацияPage
                     var currCore = _selectedGroup switch
                     {
                         // Секция процессора или PStates
-                        GroupCpu or GroupCpuPst => _numberOfCores > 2
+                        GroupCpu or GroupCpuPst => _isBristol
+                        ? _numberOfCores / 2 - coreCounter // Индексируем CU
+                        : _numberOfCores > 2
                             ? _numberOfCores - coreCounter // Если ядер больше 2, используем оставшиеся ядра
                             : CpuSectionComboBox.SelectedIndex == 0
                                 ? _numberOfLogicalProcessors -
@@ -1679,9 +1690,11 @@ public sealed partial class ИнформацияPage
                                 Text = selectedGroup switch
                                 {
                                     // Секция процессора или PStates
-                                    GroupCpu or GroupCpuPst => currCore < numberOfCores
-                                        ? "InfoCPUCore".GetLocalized() // Если это ядро, используем "Ядро"
-                                        : "InfoCPUThread".GetLocalized(), // Иначе используем "Поток"
+                                    GroupCpu or GroupCpuPst => _isBristol 
+                                        ? "InfoCPUCoreUnit".GetLocalized() 
+                                        : currCore < numberOfCores 
+                                            ? "InfoCPUCore".GetLocalized() // Ядро
+                                            : "InfoCPUThread".GetLocalized(), // Поток
                                     // Секция GFX
                                     GroupGpu => "InfoGPUName".GetLocalized(), // Используем "Видеокарта"
                                     // Секция RAM
