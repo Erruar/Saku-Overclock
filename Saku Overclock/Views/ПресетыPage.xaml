@@ -117,95 +117,108 @@
                                       HorizontalAlignment="Stretch" />
             </Grid>
             <Grid Grid.Column="1" VerticalAlignment="Top" Margin="-3,0,21,7">
-                <Grid CornerRadius="28" Height="110"
+                <Grid CornerRadius="28"
+                      Height="110"
+                      Padding="17,11,14,10"
                       Shadow="{ThemeResource SharedShadow}"
-                      Translation="0,0,20" VerticalAlignment="Stretch"
+                      Translation="0,0,20"
+                      VerticalAlignment="Stretch"
                       Background="{ThemeResource ControlStrokeColorDefaultBrush}"
                       BorderBrush="{ThemeResource CircleElevationBorderBrush}"
                       BorderThickness="1">
-                    <Grid Margin="17,11,14,10" VerticalAlignment="Top">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" VerticalAlignment="Top" Orientation="Vertical">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel x:Name="SelectedPresetTextsStackPanel" Grid.Column="0"
-                                            VerticalAlignment="Top" Orientation="Vertical">
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top"
-                                               TextWrapping="Wrap" x:Name="SelectedPresetName"
-                                               FontWeight="Medium" />
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top"
-                                               TextWrapping="Wrap" x:Name="SelectedPresetDescription"
-                                               FontSize="14" Foreground="{ThemeResource TextFillColorSecondary}" />
-                                    <StackPanel Margin="0,5,0,-5" Padding="3,0,3,0" Orientation="Horizontal">
-                                        <Grid Background="{ThemeResource AccentColor}"
-                                              CornerRadius="9" HorizontalAlignment="Left">
-                                            <TextBlock Margin="5,0,5,0"
-                                                       VerticalAlignment="Center"
-                                                       FontSize="13"
-                                                       FontWeight="Bold"
-                                                       Foreground="{ThemeResource DefaultFGColorAccentBrush}">
-                                                dynPower
-                                            </TextBlock>
-                                        </Grid>
-                                        <Border Margin="8,0,8,0"
-                                                Background="{ThemeResource CircleElevationBorderBrush}"
-                                                Width="1" Height="19" />
-                                        <TextBlock FontWeight="SemiBold">
-                                            <Run>TDP</Run>
-                                            <Run Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                                 x:Name="TdpValueSensorText">
-                                                18
-                                            </Run>
-                                            <Run>/</Run>
-                                            <Run x:Name="TdpLimitSensorText"
-                                                 Text="20W" />
-                                        </TextBlock>
 
-                                        <TextBlock FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Top">
-                                            <Run Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                                 x:Name="CpuFreqSensorText" Text="5.5" />
-                                        </TextBlock>
-                                        <TextBlock Margin="10,0,0,0" FontWeight="SemiBold">
-                                            <Run>CPU </Run>
-                                            <Run x:Name="CpuTempSensorText"
-                                                 Text="44C"
-                                                 Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                                        </TextBlock>
-                                        <TextBlock Margin="10,0,0,0" x:Name="GpuTempSensorStackPanel"
-                                                   FontWeight="SemiBold">
-                                            <Run>GPU </Run>
-                                            <Run x:Name="GpuTempSensorText" Text="37C"
-                                                 Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                                        </TextBlock>
-                                    </StackPanel>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="0,0,-13,-10"
-                                            x:Name="EditCurrentButtonsStackPanel" HorizontalAlignment="Right"
-                                            Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button x:Name="EditPresetButton" Click="EditPresetButton_Click_1"
-                                            BorderBrush="Transparent" Background="Transparent"
-                                            VerticalAlignment="Center"
-                                            CornerRadius="16" HorizontalAlignment="Right" Width="40" Height="40"
-                                            HorizontalContentAlignment="Stretch">
-                                        <Button.RenderTransform>
-                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                        </Button.RenderTransform>
-                                        <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch"
-                                              VerticalAlignment="Stretch">
-                                            <FontIcon Margin="3,0,0,0" Glyph="&#xE70F;" HorizontalAlignment="Left"
-                                                      VerticalAlignment="Center" />
-                                        </Grid>
-                                    </Button>
-                                </StackPanel>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Левая часть с текстами и сенсорами -->
+                    <StackPanel Grid.Column="0" Margin="0,-2,0,0"
+                                VerticalAlignment="Center"
+                                Orientation="Vertical">
+
+                        <StackPanel.ChildrenTransitions>
+                            <TransitionCollection>
+                                <RepositionThemeTransition />
+                            </TransitionCollection>
+                        </StackPanel.ChildrenTransitions>
+
+                        <TextBlock x:Name="SelectedPresetName"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   FontWeight="Medium" />
+
+                        <TextBlock x:Name="SelectedPresetDescription"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   FontSize="14"
+                                   Foreground="{ThemeResource TextFillColorSecondary}" />
+
+                        <!-- Блок с показателями (сенсоры) -->
+                        <StackPanel Margin="0,5,0,-5" Padding="3,0,3,0" Orientation="Horizontal">
+                            <Grid Background="{ThemeResource AccentColor}" CornerRadius="9" HorizontalAlignment="Left">
+                                <TextBlock Margin="5,0,5,0" VerticalAlignment="Center" FontSize="13" FontWeight="Bold"
+                                           Foreground="{ThemeResource DefaultFGColorAccentBrush}">
+                                    dynPower
+                                </TextBlock>
                             </Grid>
+
+                            <Border Margin="8,0,8,0" Background="{ThemeResource CircleElevationBorderBrush}" Width="1"
+                                    Height="19" />
+
+                            <TextBlock FontWeight="SemiBold">
+                                <Run>TDP</Run>
+                                <Run x:Name="TdpValueSensorText"
+                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}">
+                                    18
+                                </Run>
+                                <Run>/</Run>
+                                <Run x:Name="TdpLimitSensorText" Text="20W" />
+                            </TextBlock>
+
+                            <TextBlock FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Top">
+                                <Run x:Name="CpuFreqSensorText"
+                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}" Text="5.5" />
+                            </TextBlock>
+
+                            <TextBlock Margin="10,0,0,0" FontWeight="SemiBold">
+                                <Run>CPU </Run>
+                                <Run x:Name="CpuTempSensorText" Text="44C"
+                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            </TextBlock>
+
+                            <TextBlock x:Name="GpuTempSensorStackPanel" Margin="10,0,0,0" FontWeight="SemiBold">
+                                <Run>GPU </Run>
+                                <Run x:Name="GpuTempSensorText" Text="37C"
+                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            </TextBlock>
                         </StackPanel>
-                    </Grid>
+                    </StackPanel>
+
+                    <!-- Правая часть с кнопкой редактирования -->
+                    <Button Grid.Column="1"
+                            x:Name="EditPresetButton"
+                            Click="EditPresetButton_Click_1"
+                            Margin="0,0,-4,0"
+                            BorderBrush="Transparent"
+                            Background="Transparent"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            CornerRadius="16"
+                            Width="40" Height="40"
+                            RenderTransformOrigin="0.5,0.5">
+
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                        </Button.RenderTransform>
+
+                        <!-- Внутренний Grid с отрицательными маржинами тоже убрали, FontIcon отлично центрируется сам -->
+                        <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
+                            <FontIcon Margin="0,0,0,0" Glyph="&#xE70F;" HorizontalAlignment="Left"
+                                      VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
                 </Grid>
             </Grid>
         </Grid>
@@ -290,7 +303,7 @@
                                              Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
                         <local:PresetSetting x:Name="CpuFreqRestoreTime" Text="Время восстановления частоты" x:Uid="Param_VRM_v7" Minimum="0" SliderMaximum="100"
                                              Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
-                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch" x:Name="CpuFrequency04FixGrid"
                               Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
@@ -308,7 +321,7 @@
                                 
                             <local:CrowdToggle x:Name="CpuFrequency04Fix" x:Uid="BandCrowdToggle_Fix04" OnClick="CpuFrequency04Fix_OnClick"/>
                         </Grid>
-                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch" x:Name="FixedCpuFrequencyGrid"
                               Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
@@ -328,7 +341,7 @@
                         </Grid>
                         <local:PresetSetting CheckBoxVisibility="Collapsed" x:Name="FixedCpuFrequency" Text="Зафиксировать частоту CPU" x:Uid="Param_ADV_a11" Minimum="400" SliderMaximum="5000"
                                              Visibility="{x:Bind FixedCpuFrequencyToggle.IsManual, Mode=OneWay}"/>
-                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch" x:Name="FixedGpuFrequencyGrid"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                                 <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
                                     <Grid.RowDefinitions>
