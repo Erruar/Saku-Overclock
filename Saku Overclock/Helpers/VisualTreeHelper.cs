@@ -77,4 +77,40 @@ internal static class VisualTreeHelper
             stackPanel.Visibility = visibility;
         }
     }
+    
+    /// <summary>
+    ///     Completely remove child element from control (Grid, StackPanel, Border, ContentControl etc.)
+    /// </summary>
+    public static bool RemoveFromParent(this FrameworkElement? element)
+    {
+        if (element == null) return false;
+
+        var parent = element.Parent ?? Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(element);
+
+        switch (parent)
+        {
+            // Grid, StackPanel, Canvas, RelativePanel, VariableSizedWrapGrid
+            case Panel panel:
+                return panel.Children.Remove(element);
+
+            // Button, Frame, ScrollViewer, UserControl, Expander, NavigationViewItem
+            case ContentControl contentControl when ReferenceEquals(contentControl.Content, element):
+                contentControl.Content = null;
+                return true;
+
+            case Border border when ReferenceEquals(border.Child, element):
+                border.Child = null;
+                return true;
+
+            case Viewbox viewbox when ReferenceEquals(viewbox.Child, element):
+                viewbox.Child = null;
+                return true;
+
+            case ItemsControl itemsControl:
+                return itemsControl.Items.Remove(element);
+
+            default:
+                return false;
+        }
+    }
 }
