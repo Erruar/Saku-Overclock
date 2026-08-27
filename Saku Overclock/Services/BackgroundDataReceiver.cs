@@ -16,6 +16,10 @@ public class BackgroundDataReceiver(ILogger<BackgroundDataReceiver> logger) : IB
     private MemoryMappedViewAccessor? _accessor;
     private bool _isMemoryInitialized;
     private bool _isStaticDataInitialized; // Parse static strings only once
+    
+    private double _lastRamBusy = -1;
+    private double _lastRamTotal = -1;
+    private string _lastRamUsageString = string.Empty;
 
     public void StartAsync(CancellationToken cancellationToken)
     {
@@ -68,7 +72,7 @@ public class BackgroundDataReceiver(ILogger<BackgroundDataReceiver> logger) : IB
         if (_accessor != null) return;
         
         _mmf = MemoryMappedFile.OpenExisting(@"Global\SakuOverclock_Sensors", MemoryMappedFileRights.Read);
-        int size = Unsafe.SizeOf<SensorsInformationShared>();
+        var size = Unsafe.SizeOf<SensorsInformationShared>();
         _accessor = _mmf.CreateViewAccessor(0, size, MemoryMappedFileAccess.Read);
         _isMemoryInitialized = true;
     }
@@ -85,6 +89,11 @@ public class BackgroundDataReceiver(ILogger<BackgroundDataReceiver> logger) : IB
             if (startIteration % 2 != 0) return false; 
             
             _accessor.Read(0, out localCopy);
+            
+            if (startIteration != localCopy.IterationEnd)
+            {
+                Thread.Yield(); 
+            }
 
         } while (startIteration != localCopy.IterationEnd);
 
@@ -145,7 +154,13 @@ public class BackgroundDataReceiver(ILogger<BackgroundDataReceiver> logger) : IB
         _sensorsInformation.RamBusy = data.RamBusy;
         _sensorsInformation.RamUsagePercent = data.RamUsagePercent;
         
-        _sensorsInformation.RamUsage = $"{data.RamUsagePercent}%\n{data.RamBusy:F1}/{data.RamTotal:F1}GB";
+        if (Math.Abs(_lastRamBusy - data.RamBusy) > 0.01f || Math.Abs(_lastRamTotal - data.RamTotal) > 0.01f)
+        {
+            _lastRamBusy = data.RamBusy;
+            _lastRamTotal = data.RamTotal;
+            _lastRamUsageString = $"{data.RamUsagePercent}%\n{data.RamBusy:F1}/{data.RamTotal:F1}GB";
+        }
+        _sensorsInformation.RamUsage = _lastRamUsageString;
 
         _sensorsInformation.IsNvidiaGpuAvailable = data.IsNvidiaGpuAvailable;
         _sensorsInformation.NvidiaVramFrequency = data.NvidiaVramFrequency;
@@ -154,7 +169,7 @@ public class BackgroundDataReceiver(ILogger<BackgroundDataReceiver> logger) : IB
         _sensorsInformation.NvidiaGpuTemperature = data.NvidiaGpuTemperature;
 
         // Arrays
-        for (int i = 0; i < 32; i++)
+        for (var i = 0; i < 32; i++)
         {
             _sensorsInformation.CpuFrequencyPerCore![i] = data.CpuFrequencyPerCore[i];
             _sensorsInformation.CpuVoltagePerCore![i] = data.CpuVoltagePerCore[i];
@@ -163,32 +178,31 @@ public class BackgroundDataReceiver(ILogger<BackgroundDataReceiver> logger) : IB
         }
 
         // Static data
-        if (!_isStaticDataInitialized)
-        {
-            _sensorsInformation.CpuFamily = ParseSafeString16(data.CpuCodeName);
-            _sensorsInformation.BatteryName = ParseSafeString32(data.BatteryName);
-            _sensorsInformation.BatteryHealth = ParseSafeString16(data.BatteryHealth);
-            _sensorsInformation.BatteryCycles = ParseSafeString32(data.BatteryCycles);
-            _sensorsInformation.BatteryCapacity = ParseSafeString32(data.BatteryCapacity);
-            _sensorsInformation.NvidiaDriverVersion = ParseSafeString16(data.NvidiaDriverVersion);
-            _sensorsInformation.NvidiaVramSize = ParseSafeString16(data.NvidiaVramSize);
-            _sensorsInformation.NvidiaVramType = ParseSafeString16(data.NvidiaVramType);
-            _sensorsInformation.NvidiaVramWidth = ParseSafeString16(data.NvidiaVramWidth);
+        if (_isStaticDataInitialized) return;
 
-            _isStaticDataInitialized = true;
-        }
+        _sensorsInformation.CpuFamily = ParseSafeString16(data.CpuCodeName);
+        _sensorsInformation.BatteryName = ParseSafeString32(data.BatteryName);
+        _sensorsInformation.BatteryHealth = ParseSafeString16(data.BatteryHealth);
+        _sensorsInformation.BatteryCycles = ParseSafeString32(data.BatteryCycles);
+        _sensorsInformation.BatteryCapacity = ParseSafeString32(data.BatteryCapacity);
+        _sensorsInformation.NvidiaDriverVersion = ParseSafeString16(data.NvidiaDriverVersion);
+        _sensorsInformation.NvidiaVramSize = ParseSafeString16(data.NvidiaVramSize);
+        _sensorsInformation.NvidiaVramType = ParseSafeString16(data.NvidiaVramType);
+        _sensorsInformation.NvidiaVramWidth = ParseSafeString16(data.NvidiaVramWidth);
+
+        _isStaticDataInitialized = true;
     }
 
     private static string ParseSafeString16(ReadOnlySpan<char> span)
     {
-        int nullIndex = span.IndexOf('\0');
-        return new string(nullIndex == -1 ? span : span.Slice(0, nullIndex));
+        var nullIndex = span.IndexOf('\0');
+        return new string(nullIndex == -1 ? span : span[..nullIndex]);
     }
 
     private static string ParseSafeString32(ReadOnlySpan<char> span)
     {
-        int nullIndex = span.IndexOf('\0');
-        return new string(nullIndex == -1 ? span : span.Slice(0, nullIndex));
+        var nullIndex = span.IndexOf('\0');
+        return new string(nullIndex == -1 ? span : span[..nullIndex]);
     }
 
     public void Dispose()
