@@ -17,7 +17,6 @@ public class ActivationService(
     IRtssSettingsService rtssSettingsService,
     IWindowStateManagerService windowStateManager,
     IBackgroundDataReceiver dataReceiver,
-    IRawSharedMemoryReaderService rawSharedMemoryReaderService,
     CoreGatewayService coreGateway,
     ITrayMenuService trayMenuService,
     IPresetManagerService presetManagerService)
