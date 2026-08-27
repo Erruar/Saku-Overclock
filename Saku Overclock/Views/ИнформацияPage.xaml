@@ -806,7 +806,7 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Margin="11,3,0,3" TextWrapping="Wrap"
                                                        Foreground="{ThemeResource TextFillColorSecondary}"
-                                                       x:Uid="infoARAMInfFabric" VerticalAlignment="Center">
+                                                       x:Uid="infoARAMInfFabric" x:Name="InfinityFabricSign" VerticalAlignment="Center">
                                                 Infinity Fabric
                                             </TextBlock>
                                             <ProgressBar CornerRadius="8" Maximum="0.1" MinHeight="16"
