@@ -210,6 +210,8 @@ public sealed partial class ПараметрыPage
         AdvLaptopIGpuLimitDesc.Visibility = Visibility.Collapsed;
         AdvLaptopAplusALimit.Visibility = Visibility.Collapsed;
         AdvLaptopAplusALimitDesc.Visibility = Visibility.Collapsed;
+        CurveOptimizerIGpu.Visibility = Visibility.Collapsed;
+        CurveOptimizerIGpuDesc.Visibility = Visibility.Collapsed;
         DesktopCpu_AM5_HideUnavailableParameters();
     }
 
@@ -289,32 +291,79 @@ public sealed partial class ПараметрыPage
                 {
                     LaptopCpu_FP5_HideUnavailableParameters();
 
-                    LaptopsAvgWattage.Visibility = Visibility.Collapsed;
-                    LaptopsAvgWattageDesc.Visibility = Visibility.Collapsed;
                     LaptopsSlowSpeed.Visibility = Visibility.Collapsed;
                     LaptopsSlowSpeedDesc.Visibility = Visibility.Collapsed;
                     AdvLaptopFix04.Visibility = Visibility.Collapsed;
                     AdvLaptopFix04Desc.Visibility = Visibility.Collapsed;
-                    AdvLaptopOcMode.Visibility = Visibility.Collapsed;
-                    AdvLaptopOcModeDesc.Visibility = Visibility.Collapsed;
                     AdvLaptopPboScalar.Visibility = Visibility.Collapsed;
                     AdvLaptopPboScalarDesc.Visibility = Visibility.Collapsed;
                     AdvancedFreqOptionsGrid.Visibility = Visibility.Collapsed;
-                    CoExpander.Visibility = Visibility.Collapsed;
                     Ccd1Expander.Visibility = Visibility.Collapsed;
                     Ccd2Expander.Visibility = Visibility.Collapsed;
-                    ActionButtonMon.Visibility = Visibility.Collapsed;
 
+                    _isLoaded = false;
+                    foreach (var numberBox in VisualTreeHelper.FindVisualChildren<NumberBox>(IGpuSubsystemsContent))
+                    {
+                        numberBox.Minimum = 0;
+                        numberBox.Maximum = 7;
+                    }
+                    
+                    if (_presetManager.Presets[index].SubsystemsSettings.MinimumSocFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MinimumSocFrequency.Value = 0;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MaximumSocFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MaximumSocFrequency.Value = 7;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MinimumFabricFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MinimumFabricFrequency.Value = 0;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MaximumFabricFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MaximumFabricFrequency.Value = 7;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MinimumVideoCodecFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MinimumVideoCodecFrequency.Value = 0;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MaximumVideoCodecFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MaximumVideoCodecFrequency.Value = 7;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MinimumDataLatchFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MinimumDataLatchFrequency.Value = 0;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MaximumDataLatchFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MaximumDataLatchFrequency.Value = 7;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MinimumIntegratedGraphicsFrequency.Value = 0;
+                    if (_presetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value > 7)
+                        _presetManager.Presets[index].SubsystemsSettings.MaximumIntegratedGraphicsFrequency.Value = 7;
+                    G1V.Minimum = 0;
+                    G1V.Maximum = 7;
+                    G2V.Minimum = 0;
+                    G2V.Maximum = 7;
+                    G3V.Minimum = 0;
+                    G3V.Maximum = 7;
+                    G4V.Minimum = 0;
+                    G4V.Maximum = 7;
+                    G5V.Minimum = 0;
+                    G5V.Maximum = 7;
+                    G6V.Minimum = 0;
+                    G6V.Maximum = 7;
+                    G7V.Minimum = 0;
+                    G7V.Maximum = 7;
+                    G8V.Minimum = 0;
+                    G8V.Maximum = 7;
+                    G9V.Minimum = 0;
+                    G9V.Maximum = 7;
+                    G10V.Minimum = 0;
+                    G10V.Maximum = 7;
+                    _isLoaded = true;
+                    SubsystemSocMinFreq.Visibility = Visibility.Collapsed;
+                    SubsystemSocMinFreqDesc.Visibility = Visibility.Collapsed;
+                    SubsystemSocMaxFreq.Visibility = Visibility.Collapsed;
+                    SubsystemSocMaxFreqDesc.Visibility = Visibility.Collapsed;
                     ParamAdvParametersBlock.Text = "Param_ADV_DescriptionBristol".GetLocalized();
-
-                    var elements = VisualTreeHelper.FindVisualChildren<TextBlock>(VrmOptionsGrid);
-                    foreach (var element in elements) element.Text = element.Text.Replace("SoC", "NB");
+                    foreach (var textBlock in VisualTreeHelper.FindVisualChildren<TextBlock>(IGpuSubsystemsContent))
+                    {
+                        textBlock.Text = textBlock.Text.Replace("ая частота", "ое состояние").Replace("clock", "state").Replace("Infinity Fabric", "NB CLK");
+                    }
                 }
 
                 /*                 F P 5    C P U                    */
                 if (codenameGen == CodenameGeneration.Fp5)
                     LaptopCpu_FP5_HideUnavailableParameters();
-                else
+                else if (codenameGen != CodenameGeneration.Fp4)
                     IGpuSubsystems.Visibility = Visibility.Collapsed;
 
                 /*                 F P 6    C P U                    */
@@ -355,7 +404,6 @@ public sealed partial class ПараметрыPage
                 {
                     Ccd1Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
                     Ccd2Expander.Visibility = Visibility.Collapsed;
-                    CoExpander.Visibility = Visibility.Collapsed;
                     DesktopCpu_AM4_HideUnavailableParameters();
                 }
 
