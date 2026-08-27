@@ -755,6 +755,9 @@ power output</value>
   <data name="Param_ADV_a10.Text" xml:space="preserve">
     <value>Fixed iGPU frequency</value>
   </data>
+  <data name="Param_ADV_a10_Bristol.Text" xml:space="preserve">
+    <value>Fixed iGPU state</value>
+  </data>
   <data name="Param_ADV_a11.Text" xml:space="preserve">
     <value>Fixed CPU frequency</value>
   </data>
@@ -1887,6 +1890,9 @@ to be installed and running</value>
   </data>
   <data name="InfoCPUCore" xml:space="preserve">
     <value>Core</value>
+  </data>
+  <data name="InfoCPUCoreUnit" xml:space="preserve">
+    <value>Unit</value>
   </data>
   <data name="InfoCPUThread" xml:space="preserve">
     <value>Thread</value>

@@ -764,6 +764,9 @@
   <data name="Param_ADV_a10.Text" xml:space="preserve">
     <value>Зафиксировать частоту iGPU</value>
   </data>
+  <data name="Param_ADV_a10_Bristol.Text" xml:space="preserve">
+    <value>Зафиксировать состояние iGPU</value>
+  </data>
   <data name="Param_ADV_a11.Text" xml:space="preserve">
     <value>Зафиксировать частоту CPU</value>
   </data>
@@ -1925,6 +1928,9 @@ Overclock будут проигнорированы,
   </data>
   <data name="InfoCPUCore" xml:space="preserve">
     <value>Ядро</value>
+  </data>
+  <data name="InfoCPUCoreUnit" xml:space="preserve">
+    <value>Блок</value>
   </data>
   <data name="InfoCPUThread" xml:space="preserve">
     <value>Поток</value>
