@@ -259,6 +259,9 @@
   <data name="Param_CPU_c2.Text" xml:space="preserve">
     <value>Sustained Power Limit</value>
   </data>
+  <data name="Param_CPU_c2_Bristol.Text" xml:space="preserve">
+    <value>Sustained Power Scalar</value>
+  </data>
   <data name="Param_CPU_c3.Text" xml:space="preserve">
     <value>Actual Power Limit</value>
   </data>
@@ -499,6 +502,14 @@ the processor by the heat package to the value
 that you have set. Above this
 value, it will not warm up and
 accelerate</value>
+  </data>
+  <data name="Param_c2_Help_Bristol.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Sustained Power Scalar (%)
+Specifies percentage by which the processor can exceed its base power limit.
+This provides a short-term burst of power to prevent the system from slowing down during heavy tasks, and also affects the integrated graphics frequency. This parameter
+only sets the maximum percentage. Current over/underload percentage is calculated dynamically by the system.
+
+STAPM Power Limit (W) = Actual Power (W) × Sustained Power Scalar (%)</value>
   </data>
   <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Actual Power Limit (W)

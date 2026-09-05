@@ -259,6 +259,9 @@
   <data name="Param_CPU_c2.Text" xml:space="preserve">
     <value>Лимит мощности STAPM</value>
   </data>
+  <data name="Param_CPU_c2_Bristol.Text" xml:space="preserve">
+    <value>Множитель мощности STAPM</value>
+  </data>
   <data name="Param_CPU_c3.Text" xml:space="preserve">
     <value>Реальная мощность</value>
   </data>
@@ -495,12 +498,22 @@
 будет начинаться троттлинг</value>
   </data>
   <data name="Param_c2_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Лимит потребления (W)
+    <value>Лимит мощности STAPM (W)
 Это значение ограничит процессор
 по теплопакету на то значение
 которое вы установили. Выше этого
 значения он не будет греться и
 разгоняться</value>
+  </data>
+  <data name="Param_c2_Help_Bristol.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Множитель мощности STAPM (%)
+Задает процент, на который процессор может превысить свой базовый лимит питания. 
+Это дает кратковременный рывок мощности, чтобы система не тормозила в тяжелых 
+задачах, а также влияет на частоту встроенной графики. Этот параметр 
+устанавливает только максимальный процент, текущий процент 
+превышения/недогрузки вычисляется динамически самой системой.
+
+Лимит мощности STAPM (W) = Реальная мощность (W) × Множитель мощности STAPM (%)</value>
   </data>
   <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Реальное потребление (W)
