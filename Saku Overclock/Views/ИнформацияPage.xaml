@@ -1465,7 +1465,7 @@
                                                 <ColumnDefinition Width="220" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0"
+                                            <TextBlock Grid.Column="0" x:Name="FastFrequencyRiseTimeDesc"
                                                        Margin="11,3,0,3"
                                                        Foreground="{ThemeResource TextFillColorSecondary}"
                                                        x:Uid="infoAFast" TextWrapping="Wrap"

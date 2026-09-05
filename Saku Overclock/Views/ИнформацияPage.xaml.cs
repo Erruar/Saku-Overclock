@@ -262,6 +262,11 @@ public sealed partial class ИнформацияPage
             L3Cache.Text = $"{l3Cache:0.##} MB";
             Instructions.Text = instructionsSet;
             Caption.Text = cpuCaption;
+
+            if (_isBristol)
+            {
+                FastFrequencyRiseTimeDesc.Text = "Param_CPU_c2_Bristol/Text".GetLocalized();
+            }
         }
         catch (Exception ex)
         {
@@ -631,7 +636,7 @@ public sealed partial class ИнформацияPage
                 }
             }
 
-            if (_sensorsInformation.CpuStapmLimit == 0 || ((int)_sensorsInformation.CpuStapmLimit == 100 && _isBristol))
+            if (_sensorsInformation.CpuStapmLimit == 0)
             {
                 StapmPowerLimit.Text = PowerDisabled;
                 StapmLimitBar.ShowError = true;
@@ -651,13 +656,22 @@ public sealed partial class ИнформацияPage
             SetBarMaxValueHelper(ActualLimitBar, _sensorsInformation.CpuFastValue, false,
                 _sensorsInformation.CpuFastLimit);
 
-            AveragePowerLimit.Text = _sensorsInformation.CpuSlowLimit == 0
-                ? PowerDisabled
-                : $"{_sensorsInformation.CpuSlowValue:0.###}W/{_sensorsInformation.CpuSlowLimit:0}W";
-            SetBarMaxValueHelper(AverageLimitBar, _sensorsInformation.CpuSlowValue, false,
-                _sensorsInformation.CpuSlowLimit);
+            if (_sensorsInformation.CpuSlowLimit == 0 || _sensorsInformation.CpuSlowValue == 0)
+            {
+                AveragePowerLimit.Text = PowerDisabled;
+                AverageLimitBar.ShowError = true;
+                AverageLimitBar.IsIndeterminate = true;
+            }
+            else
+            {
+                AveragePowerLimit.Text =$"{_sensorsInformation.CpuSlowValue:0.###}W/{_sensorsInformation.CpuSlowLimit:0}W";
+                SetBarMaxValueHelper(AverageLimitBar, _sensorsInformation.CpuSlowValue, false,
+                    _sensorsInformation.CpuSlowLimit);
+            }
 
-            FastFrequencyRiseTime.Text = $"{_sensorsInformation.CpuSlowTimeValue:0.###}s";
+            FastFrequencyRiseTime.Text = !_isBristol 
+                ? $"{_sensorsInformation.CpuSlowTimeValue:0.###}%" 
+                : $"{_sensorsInformation.CpuSlowTimeValue:0.###}s";
             SlowFrequencyRiseTime.Text = $"{_sensorsInformation.CpuStapmTimeValue:0.###}s";
 
             UpdateVrmTimingsDisplay(_sensorsInformation.CpuSlowTimeValue, _sensorsInformation.CpuStapmTimeValue);
