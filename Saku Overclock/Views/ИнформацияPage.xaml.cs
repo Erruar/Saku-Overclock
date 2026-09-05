@@ -670,8 +670,8 @@ public sealed partial class ИнформацияPage
             }
 
             FastFrequencyRiseTime.Text = !_isBristol 
-                ? $"{_sensorsInformation.CpuSlowTimeValue:0.###}%" 
-                : $"{_sensorsInformation.CpuSlowTimeValue:0.###}s";
+                ? $"{_sensorsInformation.CpuSlowTimeValue:0.###}s" 
+                : $"{_sensorsInformation.CpuSlowTimeValue:0.###}%";
             SlowFrequencyRiseTime.Text = $"{_sensorsInformation.CpuStapmTimeValue:0.###}s";
 
             UpdateVrmTimingsDisplay(_sensorsInformation.CpuSlowTimeValue, _sensorsInformation.CpuStapmTimeValue);
