@@ -348,6 +348,10 @@ public sealed partial class ПараметрыPage
                     G9V.Maximum = 7;
                     G10V.Minimum = 0;
                     G10V.Maximum = 7;
+                    C2V.Minimum = 0;
+                    C2V.Maximum = 125;
+                    StapmTitle.Text = "Param_CPU_c2_Bristol/Text".GetLocalized();
+                    ToolTipService.SetToolTip(StapmDesc, "Param_c2_Help_Bristol/ToolTipService/ToolTip".GetLocalized());
                     _isLoaded = true;
                     SubsystemSocMinFreq.Visibility = Visibility.Collapsed;
                     SubsystemSocMinFreqDesc.Visibility = Visibility.Collapsed;

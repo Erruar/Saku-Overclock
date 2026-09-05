@@ -366,6 +366,9 @@ public sealed partial class ПресетыPage
                 UndervoltingGpu.RemoveFromParent();
                 break;
             case CodenameGeneration.Fp4:
+                CpuPowerLimit.Text = "Param_CPU_c2_Bristol/Text".GetLocalized();
+                CpuPowerLimit.Minimum = 0;
+                CpuPowerLimit.SliderMaximum = 125;
                 GpuTemp.RemoveFromParent();
                 GpuPowerLimit.RemoveFromParent();
                 CpuTurboFastTime.RemoveFromParent();

@@ -328,9 +328,9 @@
                                                     </LinearGradientBrush>
                                                 </Border.Background>
                                             </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит мощности CPU"
+                                            <TextBlock x:Name="StapmTitle" Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит мощности CPU"
                                                        FontSize="15" />
-                                            <FontIcon Margin="5,4,0,-4" x:Uid="Param_c2_Help"
+                                            <FontIcon x:Name="StapmDesc" Margin="5,4,0,-4" x:Uid="Param_c2_Help"
                                                       HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                 <FontIcon.RenderTransform>
                                                     <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
