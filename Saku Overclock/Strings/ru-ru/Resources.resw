@@ -1958,7 +1958,10 @@ Overclock будут проигнорированы,
     <value>ГП</value>
   </data>
   <data name="InfoPSTState" xml:space="preserve">
-    <value>-Состояние</value>
+    <value> Состояние</value>
+  </data>
+  <data name="InfoOtherState" xml:space="preserve">
+    <value>Другое</value>
   </data>
   <data name="InfoRAM.Text" xml:space="preserve">
     <value>ОЗУ</value>

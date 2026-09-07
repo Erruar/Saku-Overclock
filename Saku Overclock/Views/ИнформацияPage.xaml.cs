@@ -80,6 +80,7 @@ public sealed partial class ИнформацияPage
     private static readonly string MhzFreq = "InfoFreqBoundsMHZ".GetLocalized(); // Частота МГц
     private static readonly string GhzFreq = "infoAGHZ".GetLocalized(); // Частота ГГц
     private static readonly string Pstate = "InfoPSTState".GetLocalized(); // P-State
+    private static readonly string OtherState = "InfoOtherState".GetLocalized(); // Other
     private static readonly string PowerDisabled = "Info_PowerSumInfo_Disabled".GetLocalized(); // Отключен
     private bool _vrmTimingsDetected; // Флаг инициализации типа изменения таймингов VRM
     private double _prevSlow; // Динамическое изменение таймингов VRM
@@ -1366,21 +1367,23 @@ public sealed partial class ИнформацияPage
     ///     Форматирование значений тока VRM
     /// </summary>
     private static string FormatCurrentLimit(double? value, double? limit) => $"{value:0.###}A/{limit:0.###}A";
+    
+    private const double FrequencyToleranceMHz = 25.0;
 
     // Определение текущего P-state на основе частоты
     private int DeterminePState(double frequency)
     {
-        if (frequency >= _pstatesList[0])
+        if (frequency >= _pstatesList[0] - FrequencyToleranceMHz)
         {
             return 3; // P0
         }
 
-        if (frequency >= _pstatesList[1])
+        if (frequency >= _pstatesList[1] - FrequencyToleranceMHz)
         {
             return 2; // P1
         }
 
-        if (frequency >= _pstatesList[2])
+        if (frequency >= _pstatesList[2] - FrequencyToleranceMHz)
         {
             return 1; // P2
         }
@@ -1398,7 +1401,7 @@ public sealed partial class ИнформацияPage
             3 => "P0",
             2 => "P1",
             1 => "P2",
-            _ => "C1"
+            _ => OtherState
         };
 
         PowerState.Text = PstUsageBannerPolygonText.Text = PstUsageBigBannerPolygonText.Text = pstateText;

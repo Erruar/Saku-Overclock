@@ -32,6 +32,7 @@ public static class App
         builder.Services.AddSingleton<INotifyIconsService, NotifyIconsService>();
         builder.Services.AddSingleton<IPowerMonSettingsService, PowerMonSettingsService>();
         builder.Services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
+        builder.Services.AddSingleton<IPstateStrategy, BristolPstateStrategy>();
         builder.Services.AddSingleton<IPstateStrategy, Zen4PstateStrategy>();
         builder.Services.AddSingleton<IPstateStrategy, Zen5PstateStrategy>();
         builder.Services.AddSingleton<IPstateService, PstateService>();

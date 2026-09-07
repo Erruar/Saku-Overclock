@@ -1918,7 +1918,10 @@ to be installed and running</value>
     <value>GPU</value>
   </data>
   <data name="InfoPSTState" xml:space="preserve">
-    <value>-State</value>
+    <value> State</value>
+  </data>
+  <data name="InfoOtherState" xml:space="preserve">
+    <value>Other</value>
   </data>
   <data name="InfoRAM.Text" xml:space="preserve">
     <value>RAM</value>
