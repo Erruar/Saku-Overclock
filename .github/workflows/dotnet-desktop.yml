@@ -17,13 +17,8 @@ on:
           - full
           - none
 
-env:
-  SIGNPATH_ORG_ID: ${{ secrets.SIGNPATH_ORG_ID }}
-  SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
-  SIGNPATH_PROJECT_SLUG: 'Saku_Overclock'
-  SIGNING_POLICY: 'Saku_Overclock_Unpacked_Test'
-
 jobs:
+
   check-commit:
     runs-on: ubuntu-latest
     outputs:
@@ -46,9 +41,9 @@ jobs:
 
           echo "Message: $MSG"
 
-          if [[ "$MSG" == *"build-ss"* ]]; then
+          if [[ "$MSG" == *"build-ss" ]]; then
             echo "build_mode=full" >> "$GITHUB_OUTPUT"
-          elif [[ "$MSG" == *"build-is"* ]]; then
+          elif [[ "$MSG" == *"build-is" ]]; then
             echo "build_mode=installer" >> "$GITHUB_OUTPUT"
           else
             echo "build_mode=none" >> "$GITHUB_OUTPUT"
@@ -78,9 +73,50 @@ jobs:
 
     - name: Restore Solution (win-x64)
       shell: powershell
-      run: dotnet restore "Saku Overclock.sln" -r win-x64
+      run: |
+        dotnet restore "Saku Overclock.sln" -r win-x64
 
-    # ---------- Сборка бинарников ----------
+    - name: Decode and Import Production Certificate
+      shell: powershell
+      env:
+        CERT_BASE64: ${{ secrets.SIGNING_CERT_BASE64 }}
+        CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+      run: |
+        if (-not $env:CERT_BASE64) {
+            Write-Error "CRITICAL: SIGNING_CERT_BASE64 secret is missing in GitHub Secrets!"
+            exit 1
+        }
+
+        $cleanBase64 = $env:CERT_BASE64.Trim()
+        $certBytes = [System.Convert]::FromBase64String($cleanBase64)
+        $certPath = "${{ github.workspace }}\CI_SigningCert.pfx"
+        [System.IO.File]::WriteAllBytes($certPath, $certBytes)
+
+        $cleanPass = $env:CERT_PASS.Trim()
+        $password = ConvertTo-SecureString $cleanPass -AsPlainText -Force
+
+        try {
+            Import-PfxCertificate -FilePath $certPath -CertStoreLocation "Cert:\CurrentUser\My" -Password $password
+            Write-Output "Production certificate successfully imported into Windows Store."
+        } catch {
+            Write-Error "Failed to import certificate. Error details: $_"
+            exit 1
+        }
+
+    - name: Locate SignTool
+      id: signtool
+      shell: powershell
+      run: |
+        $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "signtool.exe" -Recurse | Where-Object { $_.DirectoryName -like "*x64*" } | Select-Object -First 1).FullName
+        if (-not $signtool) {
+            Write-Error "CRITICAL: signtool.exe not found!"
+            exit 1
+        }
+        Write-Output "Found signtool at: $signtool"
+        echo "path=$signtool" >> $env:GITHUB_OUTPUT
+
+    # ---------- Публикация основного приложения (win-x64) ----------
+
     - name: Publish App (Release win-x64)
       shell: powershell
       run: |
@@ -90,55 +126,87 @@ jobs:
           -p:Platform=x64 `
           -p:TargetFramework=net10.0-windows10.0.19041.0
 
-    # ---------- ЭТАП 1: Подпись внутренних бинарников (Inner Sign) ----------
-    - name: Stage Binaries for Stage 1
+    - name: Sign App Binaries
       shell: powershell
+      env:
+        CERT_PASS: ${{ secrets.CERT_PASSWORD }}
       run: |
-        New-Item -ItemType Directory -Force -Path "Stage1_Unsigned" | Out-Null
-        Copy-Item "$env:PUBLISH_DIR\Saku Overclock.exe" "Stage1_Unsigned\"
-        Copy-Item "$env:PUBLISH_DIR\Saku Overclock.Service.exe" "Stage1_Unsigned\"
-        # Если нужно подписать DLL, раскомментируй следующую строку:
-        # Copy-Item "$env:PUBLISH_DIR\*.dll" "Stage1_Unsigned\"
+        $signtool = "${{ steps.signtool.outputs.path }}"
+        $pfx = "${{ github.workspace }}\CI_SigningCert.pfx"
 
-    - name: Upload Unsigned Binaries
-      id: upload_stage1
-      uses: actions/upload-artifact@v4
-      with:
-        name: Stage1-Unsigned-Binaries
-        path: Stage1_Unsigned
-        compression-level: 9
+        $files = @(
+            "$env:PUBLISH_DIR\Saku Overclock.exe",
+            "$env:PUBLISH_DIR\Saku Overclock.Service.exe"
+        )
 
-    - name: SignPath Stage 1 (fp_start)
-      uses: signpath/github-action-submit-signing-request@v1.3
-      with:
-        api-token: '${{ env.SIGNPATH_API_TOKEN }}'
-        organization-id: '${{ env.SIGNPATH_ORG_ID }}'
-        project-slug: '${{ env.SIGNPATH_PROJECT_SLUG }}'
-        signing-policy-slug: '${{ env.SIGNING_POLICY }}'
-        github-artifact-id: '${{ steps.upload_stage1.outputs.artifact-id }}'
-        artifact-configuration-slug: 'fp_start'
-        wait-for-completion: true
-        output-artifact-directory: '${{ github.workspace }}\Stage1_Signed'
+        foreach ($f in $files) {
+            if (-not (Test-Path $f)) {
+                Write-Error "CRITICAL: File not found for signing: $f"
+                exit 1
+            }
+            Write-Output "Signing: $f"
+            & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $pfx /p "$env:CERT_PASS" $f
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+        }
 
-    - name: Inject Signed Binaries back to Publish Dir
-      shell: powershell
-      run: |
-        Write-Output "Replacing unsigned binaries with signed ones..."
-        Copy-Item "Stage1_Signed\*" "$env:PUBLISH_DIR\" -Force -Recurse
+    # ---------- Сборка установщика (Bundle EXE + MSI) ----------
 
-    # ---------- Сборка установщиков ----------
     - name: Build Installer (WiX Bundle + MSI)
       shell: powershell
       run: |
-        # WiX подхватит уже подписанные exe/dll из PUBLISH_DIR
         dotnet build "Setup\SakuBundle\SakuBundle.wixproj" -c Release
 
-    - name: Compile and Package MSIX
+    - name: Sign Installer Files
+      shell: powershell
+      env:
+        CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+      run: |
+        $signtool = "${{ steps.signtool.outputs.path }}"
+        $pfx = "${{ github.workspace }}\CI_SigningCert.pfx"
+
+        $files = @(
+            "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe",
+            "Setup\SakuMsi\bin\Release\SakuOverclock.msi"
+        )
+
+        foreach ($f in $files) {
+            if (-not (Test-Path $f)) {
+                Write-Error "CRITICAL: File not found for signing: $f"
+                exit 1
+            }
+            Write-Output "Signing: $f"
+            & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $pfx /p "$env:CERT_PASS" $f
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+        }
+
+    - name: Stage Installer Artifacts
+      shell: powershell
+      run: |
+        New-Item -ItemType Directory -Force -Path "BuildArtifacts\Installer" | Out-Null
+        New-Item -ItemType Directory -Force -Path "BuildArtifacts\OEM" | Out-Null
+        Copy-Item "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe" "BuildArtifacts\Installer\"
+        Copy-Item "Setup\SakuMsi\bin\Release\SakuOverclock.msi" "BuildArtifacts\OEM\"
+
+    - name: Upload Installer Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Saku-Overclock-Installer
+        path: BuildArtifacts\Installer\SakuOverclock-Setup.exe
+        if-no-files-found: error
+
+    - name: Upload OEM (MSI) Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Saku-Overclock-OEM-MSI
+        path: BuildArtifacts\OEM\SakuOverclock.msi
+        if-no-files-found: error
+
+    # ---------- MSIX (только если build-ss / full) ----------
+
+    - name: Compile and Package MSIX (Release x64)
       if: env.BUILD_MODE == 'full'
       shell: powershell
       run: |
-        # Собираем MSIX. Неважно, что он сгенерирует файлы заново, 
-        # SignPath проникнет внутрь пакета на Этапе 2 и переподпишет их.
         msbuild "Saku Overclock\Saku Overclock.csproj" `
           /p:Configuration=Release `
           /p:Platform=x64 `
@@ -148,77 +216,30 @@ jobs:
           /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\MSIX\" `
           /p:AppxBundle=Never
 
-    # ---------- ЭТАП 2: Подпись релизных пакетов (Outer Sign) ----------
-    - name: Stage Installers for Stage 2
+    - name: Sign MSIX Package
+      if: env.BUILD_MODE == 'full'
       shell: powershell
+      env:
+        CERT_PASS: ${{ secrets.CERT_PASSWORD }}
       run: |
-        New-Item -ItemType Directory -Force -Path "Stage2_Unsigned" | Out-Null
-        Copy-Item "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe" "Stage2_Unsigned\"
-        Copy-Item "Setup\SakuMsi\bin\Release\SakuOverclock.msi" "Stage2_Unsigned\"
-        
-        if ($env:BUILD_MODE -eq 'full') {
-            $msixFile = (Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts\MSIX" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
-            if ($msixFile) {
-                Copy-Item $msixFile "Stage2_Unsigned\"
-            }
-        }
+        $signtool = "${{ steps.signtool.outputs.path }}"
+        $pfx = "${{ github.workspace }}\CI_SigningCert.pfx"
 
-    - name: Upload Unsigned Installers
-      id: upload_stage2
-      uses: actions/upload-artifact@v4
-      with:
-        name: Stage2-Unsigned-Installers
-        path: Stage2_Unsigned
-        compression-level: 9
+        $msixFile = (Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts\MSIX" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
 
-    - name: SignPath Stage 2 (pp_end)
-      uses: signpath/github-action-submit-signing-request@v1.3
-      with:
-        api-token: '${{ env.SIGNPATH_API_TOKEN }}'
-        organization-id: '${{ env.SIGNPATH_ORG_ID }}'
-        project-slug: '${{ env.SIGNPATH_PROJECT_SLUG }}'
-        signing-policy-slug: '${{ env.SIGNING_POLICY }}'
-        github-artifact-id: '${{ steps.upload_stage2.outputs.artifact-id }}'
-        artifact-configuration-slug: 'pp_end'
-        wait-for-completion: true
-        output-artifact-directory: '${{ github.workspace }}\Stage2_Signed'
-
-    # ---------- Финализация ----------
-    - name: Verify Final Signatures
-      shell: powershell
-      run: |
-        $files = Get-ChildItem -Path "${{ github.workspace }}\Stage2_Signed" -Include "*.exe","*.msi","*.msix" -Recurse
-        foreach ($file in $files) {
-          $signature = Get-AuthenticodeSignature $file.FullName
-          if ($signature.Status -ne "Valid") {
-            Write-Error "Invalid signature on $($file.Name): $($signature.Status)"
+        if (-not $msixFile) {
+            Write-Error "CRITICAL: MSIX file was not found!"
             exit 1
-          } else {
-            Write-Host "::notice::✓ $($file.Name): $($signature.SignerCertificate.Subject)"
-          }
         }
 
-    - name: Upload Signed Installer (Bundle EXE)
-      uses: actions/upload-artifact@v4
-      with:
-        name: Saku-Overclock-Signed-Installer
-        # Ищем exe бандл в распакованной папке от SignPath
-        path: Stage2_Signed/**/*-Setup.exe 
-        if-no-files-found: error
+        Write-Output "Signing package: $msixFile"
+        & $signtool sign /v /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $pfx /p "$env:CERT_PASS" $msixFile
+        if ($LASTEXITCODE -ne 0) { exit 1 }
 
-    - name: Upload Signed OEM (MSI)
-      uses: actions/upload-artifact@v4
-      with:
-        name: Saku-Overclock-Signed-OEM-MSI
-        # Ищем msi
-        path: Stage2_Signed/**/*.msi
-        if-no-files-found: error
-
-    - name: Upload Signed MSIX Package
+    - name: Upload MSIX Artifact
       if: env.BUILD_MODE == 'full'
       uses: actions/upload-artifact@v4
       with:
-        name: Saku-Overclock-Signed-MSIX
-        # Ищем msix
-        path: Stage2_Signed/**/*.msix
+        name: Saku-Overclock-MSIX-Package
+        path: BuildArtifacts\MSIX\**\*.msix
         if-no-files-found: error
