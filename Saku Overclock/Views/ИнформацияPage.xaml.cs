@@ -1368,22 +1368,22 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private static string FormatCurrentLimit(double? value, double? limit) => $"{value:0.###}A/{limit:0.###}A";
     
-    private const double FrequencyToleranceMHz = 25.0;
+    private const double FrequencyTolerance = 0.25;
 
     // Определение текущего P-state на основе частоты
     private int DeterminePState(double frequency)
     {
-        if (frequency >= _pstatesList[0] - FrequencyToleranceMHz)
+        if (frequency >= _pstatesList[0] - FrequencyTolerance)
         {
             return 3; // P0
         }
 
-        if (frequency >= _pstatesList[1] - FrequencyToleranceMHz)
+        if (frequency >= _pstatesList[1] - FrequencyTolerance)
         {
             return 2; // P1
         }
 
-        if (frequency >= _pstatesList[2] - FrequencyToleranceMHz)
+        if (frequency >= _pstatesList[2] - FrequencyTolerance)
         {
             return 1; // P2
         }
