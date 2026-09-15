@@ -27,6 +27,7 @@ public static class App
         builder.Services.AddSingleton<ISharedMemoryWriterService, SharedMemoryWriterService>();
         builder.Services.AddSingleton<IRawSharedMemoryWriterService, RawSharedMemoryWriterService>();
         builder.Services.AddSingleton<IAppSettingsService, AppSettingsService>();
+        builder.Services.AddSingleton<ISafeGuardsService, SafeGuardsService>();
         builder.Services.AddSingleton<IPresetManagerService, PresetManagerService>();
         builder.Services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
         builder.Services.AddSingleton<INotifyIconsService, NotifyIconsService>();

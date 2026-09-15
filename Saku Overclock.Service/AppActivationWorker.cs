@@ -20,6 +20,7 @@ public class AppActivationWorker(
     IApplyerService applyerService,
     IRawSharedMemoryWriterService rawSharedMemoryWriterService,
     IBackgroundDataUpdater backgroundDataUpdater,
+    ISafeGuardsService safeGuardsService,
     IHostApplicationLifetime lifetime,
     ILogger<AppActivationWorker> logger)
     : IHostedService
@@ -80,7 +81,10 @@ public class AppActivationWorker(
             // 1. Создание готовых пресетов (если не были созданы)
             premadePresetsService.Initialize();
             
-            // 2. Восстановление предыдущих настроек разгона
+            // 2. Обнаружение краша до применения настроек
+            safeGuardsService.EnsureInitialized();
+            
+            // 3. Восстановление предыдущих настроек разгона
             await applyerService.RestoreAppliedSettings();
         }
         catch (Exception ex)
