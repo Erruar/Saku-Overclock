@@ -1368,7 +1368,7 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private static string FormatCurrentLimit(double? value, double? limit) => $"{value:0.###}A/{limit:0.###}A";
     
-    private const double FrequencyTolerance = 0.25;
+    private const double FrequencyTolerance = 0.025;
 
     // Определение текущего P-state на основе частоты
     private int DeterminePState(double frequency)
