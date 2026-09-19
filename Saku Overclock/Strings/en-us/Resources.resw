@@ -2992,7 +2992,7 @@ All results are saved in notifications</value>
     <value>Manual</value>
   </data>
   <data name="BandCrowdToggle_Fixed.PrimaryText" xml:space="preserve">
-    <value>Fixed freq</value>
+    <value>Limited</value>
   </data>
   <data name="BandCrowdToggle_Fix04.PrimaryText" xml:space="preserve">
     <value>Enforced</value>
@@ -3040,13 +3040,13 @@ All results are saved in notifications</value>
     <value>Prevents the CPU from getting stuck at the minimal 0.4 GHz power state, restoring normal system performance</value>
   </data>
   <data name="Preset_CpuOptimization.Text" xml:space="preserve">
-    <value>CPU Fixed frequency</value>
+    <value>CPU frequency limit</value>
   </data>
   <data name="Preset_CpuOptimizationDesc.Text" xml:space="preserve">
     <value>Eliminates performance spikes and ensures consistent system response under variable workloads</value>
   </data>
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
-    <value>iGPU Fixed frequency</value>
+    <value>iGPU frequency limit</value>
   </data>
   <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
     <value>Prevents sudden FPS drops by maintaining consistent graphics core throughput</value>

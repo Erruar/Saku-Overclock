@@ -80,7 +80,7 @@
             VerticalAlignment="Stretch">
         <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal"
                     HorizontalAlignment="Left">
-            <ToggleButton MinWidth="54" Click="Crowd_OnClick" x:Name="CrowdDisabled" IsChecked="True" Margin="1,0,0,0">
+            <ToggleButton MinWidth="57" Click="Crowd_OnClick" x:Name="CrowdDisabled" IsChecked="True" Margin="1,0,0,0">
                 <TextBlock Margin="0,-2,0,-2" Text="Выкл"
                            x:Uid="BandCrowdToggle_Disabled"
                            FontSize="{Binding ElementName=CrowdDisabled, 
@@ -90,7 +90,7 @@
                                                    Path=IsChecked, Converter={StaticResource BooleanToWeight}, 
                                                    Mode=OneWay, FallbackValue=Medium}" />
             </ToggleButton>
-            <ToggleButton MinWidth="126" Click="Crowd_OnClick" x:Name="CrowdManual" Margin="4,0,0,0">
+            <ToggleButton MinWidth="123" Click="Crowd_OnClick" x:Name="CrowdManual" Margin="4,0,0,0">
                 <TextBlock Margin="0,-2,0,-2" Text="{x:Bind PrimaryText, Mode=OneWay}"
                            FontSize="{Binding ElementName=CrowdManual, 
                                                    Path=IsChecked, Converter={StaticResource BooleanToFontSize}, 

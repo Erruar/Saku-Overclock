@@ -2994,7 +2994,7 @@ Asus. Может не поддерживаться на
     <value>Ручное</value>
   </data>
   <data name="BandCrowdToggle_Fixed.PrimaryText" xml:space="preserve">
-    <value>Фиксированная</value>
+    <value>Ограничение</value>
   </data>
   <data name="BandCrowdToggle_Fix04.PrimaryText" xml:space="preserve">
     <value>Исправление</value>
@@ -3042,13 +3042,13 @@ Asus. Может не поддерживаться на
     <value>Блокирует зависание процессора на минимальной частоте, возвращая системе изначальную производительность</value>
   </data>
   <data name="Preset_CpuOptimization.Text" xml:space="preserve">
-    <value>Фиксированная частота CPU</value>
+    <value>Ограничение частоты CPU</value>
   </data>
   <data name="Preset_CpuOptimizationDesc.Text" xml:space="preserve">
     <value>Устраняет скачки производительности и обеспечивает стабильный отклик системы под переменной нагрузкой</value>
   </data>
   <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
-    <value>Фиксированная частота iGPU</value>
+    <value>Ограничение частоты iGPU</value>
   </data>
   <data name="Preset_IgpuOptimizationDesc.Text" xml:space="preserve">
     <value>Предотвращает резкие просадки FPS, удерживая стабильную мощность графического ядра в играх</value>
