@@ -9,6 +9,7 @@ namespace Saku_Overclock.Service;
 public class AppActivationWorker(
     IAppSettingsService appSettings,
     IPresetManagerService presetManager,
+    OverlayProcessManager overlayProcessManager,
     IPremadePresetManagementService premadePresetsService,
     ILocalThemeSettingsService localThemeSettingsService,
     INotifyIconsService notifyIconsService,
@@ -34,6 +35,10 @@ public class AppActivationWorker(
             // Логика, которая должна выполниться СРАЗУ ПОСЛЕ запуска всех сервисов
             Task.Run(async () => await OnApplicationStartedAsync(), cancellationToken);
         });
+        
+        // 0. Запустить процесс оверлея для сессии пользователя
+        foreach (var sessionId in OverlayProcessManager.GetActiveConsoleSessionIds())
+            overlayProcessManager.StartForSession(sessionId);
 
         // 1. Загрузка настроек приложения
         await appSettings.LoadSettingsAsync();

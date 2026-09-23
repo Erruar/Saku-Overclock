@@ -23,6 +23,7 @@ public static class App
         // Core Services
         builder.Services.AddSingleton<IpcHub>();
         builder.Services.AddSingleton<CoreIpcHandlers>();
+        builder.Services.AddSingleton<OverlayProcessManager>();
         builder.Services.AddSingleton<IFileService, FileService>();
         builder.Services.AddSingleton<ISharedMemoryWriterService, SharedMemoryWriterService>();
         builder.Services.AddSingleton<IRawSharedMemoryWriterService, RawSharedMemoryWriterService>();
