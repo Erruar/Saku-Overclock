@@ -14,3 +14,6 @@
 [submodule "Setup"]
 	path = Setup
 	url = https://github.com/Erruar/Setup
+[submodule "Saku Overclock.Overlay"]
+	path = Saku Overclock.Overlay
+	url = https://github.com/Erruar/Saku-Overclock.Overlay.git
