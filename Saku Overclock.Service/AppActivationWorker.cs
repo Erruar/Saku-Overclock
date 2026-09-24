@@ -104,10 +104,13 @@ public class AppActivationWorker(
     /// <param name="cancellationToken">Токен отмены</param>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        // 1. Сохранение пользовательских настроек
+        // 1. Остановить оверлей
+        overlayProcessManager.StopAll();
+        
+        // 2. Сохранение пользовательских настроек
         presetManager.SaveSettings();
         
-        // 2. Остановка обновления данных
+        // 3. Остановка обновления данных
         backgroundDataUpdater.Stop();
         await Task.CompletedTask;
     }

@@ -171,6 +171,9 @@
 
     <_ServiceProject>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\Saku Overclock.Service.csproj</_ServiceProject>
     <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\x64\$(Configuration)\net10.0-windows\win-x64\native\Saku Overclock.Service.exe</_ServicePublishExe>
+
+    <_OverlayProject>$(MSBuildThisFileDirectory)..\Saku Overclock.Overlay\Saku Overclock.Overlay.csproj</_OverlayProject>
+    <_OverlayPublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Overlay\bin\x64\$(Configuration)\net10.0-windows\win-x64\native\Saku Overclock.Overlay.exe</_OverlayPublishExe>
   </PropertyGroup>
 
   <Target Name="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
@@ -195,8 +198,15 @@
              BuildInParallel="false" />
   </Target>
 
+  <Target Name="BuildOverlayPreBuild" DependsOnTargets="BuildServicePreBuild" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
+    <MSBuild Projects="$(_OverlayProject)"
+             Targets="Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishAot=true;TargetFramework=net10.0-windows;PublishTrimmed=true;IsAotCompatible=true;PublishSingleFile=true"
+             BuildInParallel="false" />
+  </Target>
+
   <Target Name="IncludeSatellitesInOutput"
-          DependsOnTargets="BuildServicePreBuild"
+          DependsOnTargets="BuildOverlayPreBuild"
           BeforeTargets="GetCopyToOutputDirectoryItems;AssignTargetPaths">
 
     <ItemGroup>
@@ -218,6 +228,9 @@
       <Content Include="$(_ServicePublishExe)">
         <Link>Saku Overclock.Service.exe</Link> <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <Content Include="$(_OverlayPublishExe)">
+        <Link>Saku Overclock.Overlay.exe</Link> <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
   </Target>
 
@@ -228,6 +241,11 @@
           DestinationFiles="$(PublishDir)Saku Overclock.Service.exe"
           SkipUnchangedFiles="true"
           Condition="Exists('$(_ServicePublishExe)')" />
+    
+    <Copy SourceFiles="$(_OverlayPublishExe)"
+          DestinationFiles="$(PublishDir)Saku Overclock.Overlay.exe"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(_OverlayPublishExe)')" />
 
     <ItemGroup>
       <_CrashHandlerPublishFiles Include="$(_CrashHandlerBinDir)CrashHandler.exe" />

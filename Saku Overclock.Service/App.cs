@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.WindowsServices;
 using Saku_Overclock.Core.Contracts;
 using Saku_Overclock.Core.Services;
 using Saku_Overclock.Shared.Contracts;
@@ -18,6 +19,8 @@ public static class App
         });
         
         // Internal Services
+        if (WindowsServiceHelpers.IsWindowsService())
+            builder.Services.AddSingleton<IHostLifetime, SessionAwareWindowsServiceLifetime>();
         builder.Services.AddSingleton<IIpcSecurityService, IpcSecurityService>();
         
         // Core Services

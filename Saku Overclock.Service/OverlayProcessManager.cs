@@ -1,26 +1,25 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
 namespace Saku_Overclock.Service;
 
-/// <summary>
-///     Owns the lifetime of the per-session "Saku Overclock.Overlay" companion
-///     process. One instance is launched per interactive session, running as
-///     that session's logged-on user token, never elevated.
-/// </summary>
 public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager> logger)
 {
     private readonly Dictionary<uint, nint> _processHandlesBySession = new();
+    private readonly Dictionary<uint, Process> _fallbackProcesses = new();
 
     public void StartForSession(uint sessionId)
     {
-        if (_processHandlesBySession.ContainsKey(sessionId))
-            return; // already running for this session
+        if (_processHandlesBySession.ContainsKey(sessionId) || _fallbackProcesses.ContainsKey(sessionId))
+            return;
 
         if (!WtsQueryUserToken(sessionId, out var userToken))
         {
             logger.LogWarning("WTSQueryUserToken failed for session {SessionId}: {Error}",
                 sessionId, Marshal.GetLastWin32Error());
+            
+            StartFallback(sessionId);
             return;
         }
 
@@ -86,18 +85,84 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
             CloseHandle(userToken);
         }
     }
+    
+    private void StartFallback(uint sessionId)
+    {
+        var overlayPath = Path.Combine(AppContext.BaseDirectory, "Saku Overclock.Overlay.exe");
+        if (!File.Exists(overlayPath))
+        {
+            logger.LogError("Overlay executable not found at {Path}", overlayPath);
+            return;
+        }
+
+        try
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = overlayPath,
+                    UseShellExecute = false,
+                    // Примечание: в этом режиме процесс унаследует права администратора.
+                    // Это нормально для локальной разработки и тестирования.
+                }
+            };
+
+            if (process.Start())
+            {
+                _fallbackProcesses[sessionId] = process;
+                logger.LogInformation("Overlay started (fallback mode) for session {SessionId}, pid {Pid}",
+                    sessionId, process.Id);
+            }
+            else
+            {
+                logger.LogWarning("Fallback Process.Start returned false for session {SessionId}", sessionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Fallback process start failed for session {SessionId}", sessionId);
+        }
+    }
+
 
     public void StopForSession(uint sessionId)
     {
-        if (!_processHandlesBySession.Remove(sessionId, out var handle))
+        if (_processHandlesBySession.Remove(sessionId, out var handle))
+        {
+            // TODO: Add exit IPC message
+            // no graceful-shutdown IPC message yet, terminate for now.
+            // swap this in future to "please exit" pipe message once that contract exists,
+            // it avoids re-paying process/tray/D3D init cost on every lock cycle.
+            TerminateProcess(handle, 0);
+            CloseHandle(handle);
+            logger.LogInformation("Overlay stopped for session {SessionId}", sessionId);
             return;
+        }
 
-        // no graceful-shutdown IPC message yet, terminate for now.
-        // swap this in future to "please exit" pipe message once that contract exists,
-        // it avoids re-paying process/tray/D3D init cost on every lock cycle.
-        TerminateProcess(handle, 0);
-        CloseHandle(handle);
-        logger.LogInformation("Overlay stopped for session {SessionId}", sessionId);
+        if (_fallbackProcesses.Remove(sessionId, out var fallbackProcess))
+        {
+            try
+            {
+                if (!fallbackProcess.HasExited)
+                    fallbackProcess.Kill();
+                fallbackProcess.Dispose();
+                logger.LogInformation("Overlay (fallback) stopped for session {SessionId}", sessionId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to stop fallback overlay for session {SessionId}", sessionId);
+            }
+        }
+    }
+    
+    public void StopAll()
+    {
+        foreach (var sessionId in _processHandlesBySession.Keys.ToArray())
+            StopForSession(sessionId);
+        
+        foreach (var sessionId in _fallbackProcesses.Keys.ToArray())
+            StopForSession(sessionId);
     }
     
     #region Native methods
@@ -147,7 +212,7 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
         public int State; // WTS_CONNECTSTATE_CLASS -- 0 == WTSActive
     }
 
-    [LibraryImport(Wtsapi32, SetLastError = true)]
+    [LibraryImport(Wtsapi32, EntryPoint = "WTSQueryUserToken", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool WtsQueryUserToken(uint sessionId, out nint token);
 
@@ -182,12 +247,12 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool TerminateProcess(nint hProcess, uint uExitCode);
 
-    [LibraryImport(Wtsapi32, SetLastError = true)]
+    [LibraryImport(Wtsapi32, EntryPoint = "WTSEnumerateSessionsW", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool WtsEnumerateSessionsW(
         nint hServer, uint reserved, uint version, out nint ppSessionInfo, out uint pCount);
 
-    [LibraryImport(Wtsapi32)]
+    [LibraryImport(Wtsapi32, EntryPoint = "WTSFreeMemory")]
     internal static partial void WTSFreeMemory(nint pMemory);
 
     internal static IEnumerable<uint> GetActiveConsoleSessionIds()
