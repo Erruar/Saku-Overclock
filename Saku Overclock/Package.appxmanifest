@@ -77,6 +77,16 @@
                 </desktop6:Extension>
             </Extensions>
         </Application>
+        <Application Id="Overlay"
+                     Executable="Saku Overclock.Overlay.exe"
+                     EntryPoint="Windows.FullTrustApplication">
+            <uap:VisualElements
+                    DisplayName="Saku Overclock Overlay"
+                    Description="Companion overlay process"
+                    BackgroundColor="transparent"
+                    Square150x150Logo="Assets\Square150x150Logo.png"
+                    Square44x44Logo="Assets\Square44x44Logo.png" />
+        </Application>
     </Applications>
 
     <Capabilities>
