@@ -20,9 +20,17 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
             var overlayName = $"{pfn}!Overlay";
             try
             {
-                var activationManager = new ApplicationActivationManager() as IApplicationActivationManager;
-                activationManager!.ActivateApplication(overlayName, string.Empty, 0, out uint pid);
-                _processHandlesBySession[sessionId] = Process.GetProcessById((int)pid).Handle;
+                var activationManager = CreateActivationManager();
+                if (activationManager != null)
+                {
+                    var hr = activationManager.ActivateApplication(overlayName, string.Empty, ActivateOptions.None, out uint pid);
+                    if (hr >= 0)
+                    {
+                        _processHandlesBySession[sessionId] = Process.GetProcessById((int)pid).Handle;
+                        return;
+                    }
+                    logger.LogWarning("ActivateApplication failed: 0x{Hr:X8}", hr);
+                }
 
                 return;
             }
@@ -461,6 +469,44 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
         [PreserveSig]
         int ActivateForProtocol([In] string appUserModelId, [In] IntPtr itemArray,
             [Out] out uint processId);
+    }
+    
+    [DllImport("ole32.dll")]
+    private static extern int CoCreateInstance(
+        ref Guid rclsid,
+        IntPtr pUnkOuter,
+        uint dwClsContext,
+        ref Guid riid,
+        out IntPtr ppv);
+
+    private const uint ClsctxLocalServer = 4;
+
+    private static readonly Guid ClsidApplicationActivationManager =
+        new("45BA127D-10A8-46EA-8AB7-56EA9078943C");
+
+    private static readonly Guid IidApplicationActivationManager =
+        new("2E941141-7F97-4756-BA1D-9DECDE894A3D");
+
+    private IApplicationActivationManager? CreateActivationManager()
+    {
+        var clsid = ClsidApplicationActivationManager;
+        var iid = IidApplicationActivationManager;
+
+        var hr = CoCreateInstance(ref clsid, IntPtr.Zero, ClsctxLocalServer, ref iid, out var ptr);
+        if (hr < 0)
+        {
+            logger.LogWarning("CoCreateInstance(ApplicationActivationManager) failed: 0x{Hr:X8}", hr);
+            return null;
+        }
+
+        try
+        {
+            return (IApplicationActivationManager)Marshal.GetObjectForIUnknown(ptr);
+        }
+        finally
+        {
+            Marshal.Release(ptr);
+        }
     }
 
     #endregion
