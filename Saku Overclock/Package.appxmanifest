@@ -84,6 +84,7 @@
                     DisplayName="Saku Overclock Overlay"
                     Description="Companion overlay process"
                     BackgroundColor="transparent"
+                    AppListEntry="none"
                     Square150x150Logo="Assets\Square150x150Logo.png"
                     Square44x44Logo="Assets\Square44x44Logo.png" />
         </Application>

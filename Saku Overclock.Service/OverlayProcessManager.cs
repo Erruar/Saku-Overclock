@@ -14,78 +14,207 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
         if (_processHandlesBySession.ContainsKey(sessionId) || _fallbackProcesses.ContainsKey(sessionId))
             return;
 
-        if (!WtsQueryUserToken(sessionId, out var userToken))
+        var pfn = GetPackageFamilyName();
+        if (!string.IsNullOrEmpty(pfn))
         {
-            logger.LogWarning("WTSQueryUserToken failed for session {SessionId}: {Error}",
-                sessionId, Marshal.GetLastWin32Error());
-            
+            var overlayName = $"{pfn}!Overlay";
+            try
+            {
+                var activationManager = new ApplicationActivationManager() as IApplicationActivationManager;
+                activationManager!.ActivateApplication(overlayName, string.Empty, 0, out uint pid);
+                _processHandlesBySession[sessionId] = Process.GetProcessById((int)pid).Handle;
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("AUMID activation failed: {Error}. trying normal start.", ex.Message);
+            }
+        }
+
+        StartUnpackaged(sessionId);
+    }
+
+    private void StartUnpackaged(uint sessionId)
+    {
+        // Primary path: LocalSystem services running as plain Win32 hold
+        // SE_TCB_NAME and can use WTSQueryUserToken directly. Inside an
+        // MSIX/AppContainer that privilege is stripped, so we transparently
+        // fall back to duplicating explorer.exe's token (only needs
+        // SE_DEBUG_NAME, which LocalSystem retains even in packaged mode).
+        if (!TryGetPrimaryTokenForSession(sessionId, out var primaryToken, out var usedExplorerFallback))
+        {
+            logger.LogWarning("No user token available for session {SessionId}, using Process.Start fallback", sessionId);
             StartFallback(sessionId);
             return;
         }
 
         try
         {
-            if (!DuplicateTokenEx(
-                    userToken, TokenAllAccess, 0,
-                    SecurityImpersonationLevel.SecurityImpersonation,
-                    TokenType.TokenPrimary,
-                    out var primaryToken))
+            CreateEnvironmentBlock(out var envBlock, primaryToken, false);
+
+            var startupInfo = new Startupinfow
             {
-                logger.LogWarning("DuplicateTokenEx failed for session {SessionId}: {Error}",
+                cb = (uint)Marshal.SizeOf<Startupinfow>(),
+                lpDesktop = "winsta0\\default"
+            };
+
+            const uint createUnicodeEnvironment = 0x00000400;
+            const uint createNoWindow = 0x08000000;
+
+            // TODO: pass an IPC endpoint name as argv[0] once the overlay's
+            // pipe client is wired up, e.g. via lpCommandLine below.
+            var overlayPath = Path.Combine(AppContext.BaseDirectory, "Saku Overclock.Overlay.exe");
+
+            var ok = CreateProcessAsUser(
+                primaryToken, overlayPath, null,
+                0, 0, false,
+                createUnicodeEnvironment | createNoWindow,
+                envBlock, null,
+                ref startupInfo, out var processInfo);
+
+            if (envBlock != 0) DestroyEnvironmentBlock(envBlock);
+
+            if (!ok)
+            {
+                logger.LogError("CreateProcessAsUser failed for session {SessionId}: {Error}",
                     sessionId, Marshal.GetLastWin32Error());
                 return;
             }
 
+            CloseHandle(processInfo.hThread);
+            _processHandlesBySession[sessionId] = processInfo.hProcess;
+            logger.LogInformation("Overlay started ({Mode}) for session {SessionId}, pid {Pid}",
+                usedExplorerFallback ? "explorer-token" : "WTSQueryUserToken",
+                sessionId, processInfo.dwProcessId);
+        }
+        finally
+        {
+            CloseHandle(primaryToken);
+        }
+    }
+
+    /// <summary>
+    ///     Acquires a primary user token for the target session.
+    ///     Tries WTSQueryUserToken first (works for LocalSystem Win32 services),
+    ///     then falls back to duplicating the token of a process already
+    ///     running inside that session (explorer.exe). The explorer path only
+    ///     requires SE_DEBUG_NAME, which LocalSystem holds even inside an
+    ///     MSIX/AppContainer, so it works for packaged deployments too.
+    /// </summary>
+    private bool TryGetPrimaryTokenForSession(uint sessionId, out nint primaryToken, out bool usedExplorerFallback)
+    {
+        primaryToken = 0;
+        usedExplorerFallback = false;
+
+        if (WtsQueryUserToken(sessionId, out var userToken))
+        {
             try
             {
-                CreateEnvironmentBlock(out var envBlock, primaryToken, false);
-
-                var startupInfo = new Startupinfow
+                if (DuplicateTokenEx(
+                        userToken, TokenAllAccess, 0,
+                        SecurityImpersonationLevel.SecurityImpersonation,
+                        TokenType.TokenPrimary,
+                        out primaryToken))
                 {
-                    cb = (uint)Marshal.SizeOf<Startupinfow>(),
-                    lpDesktop = "winsta0\\default"
-                };
-
-                const uint createUnicodeEnvironment = 0x00000400;
-                const uint createNoWindow = 0x08000000;
-
-                // TODO: pass an IPC endpoint name as argv[0] once the overlay's
-                // pipe client is wired up, e.g. via lpCommandLine below.
-                var overlayPath = Path.Combine(AppContext.BaseDirectory, "Saku Overclock.Overlay.exe");
-
-                var ok = CreateProcessAsUser(
-                    primaryToken, overlayPath, null,
-                    0, 0, false,
-                    createUnicodeEnvironment | createNoWindow,
-                    envBlock, null,
-                    ref startupInfo, out var processInfo);
-
-                if (envBlock != 0)
-                    DestroyEnvironmentBlock(envBlock);
-
-                if (!ok)
-                {
-                    logger.LogError("CreateProcessAsUser failed for session {SessionId}: {Error}",
-                        sessionId, Marshal.GetLastWin32Error());
-                    return;
+                    return true;
                 }
 
-                CloseHandle(processInfo.hThread);
-                _processHandlesBySession[sessionId] = processInfo.hProcess;
-                logger.LogInformation("Overlay started for session {SessionId}, pid {Pid}",
-                    sessionId, processInfo.dwProcessId);
+                logger.LogWarning("DuplicateTokenEx failed for session {SessionId}: {Error}",
+                    sessionId, Marshal.GetLastWin32Error());
             }
             finally
             {
-                CloseHandle(primaryToken);
+                CloseHandle(userToken);
+            }
+        }
+        else
+        {
+            logger.LogWarning("WTSQueryUserToken failed for session {SessionId}: {Error}. Trying explorer.exe token.",
+                sessionId, Marshal.GetLastWin32Error());
+        }
+
+        // Fallback: steal the token from explorer.exe running in the same
+        // session. We pick explorer specifically because:
+        //  - it always runs in the interactive user session,
+        //  - its token is a non-elevated primary user token,
+        //  - opening it only requires SE_DEBUG_NAME (LocalSystem has it).
+        // This bypasses the SE_TCB_NAME requirement entirely, which is what
+        // makes it work inside MSIX/AppContainer.
+        if (TryGetPrimaryTokenFromExplorer(sessionId, out primaryToken))
+        {
+            usedExplorerFallback = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryGetPrimaryTokenFromExplorer(uint sessionId, out nint primaryToken)
+    {
+        primaryToken = 0;
+
+        Process? explorer;
+        try
+        {
+            explorer = Process.GetProcessesByName("explorer")
+                .FirstOrDefault(p => p.SessionId == (int)sessionId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to enumerate explorer processes for session {SessionId}", sessionId);
+            return false;
+        }
+
+        if (explorer == null)
+        {
+            logger.LogWarning("No explorer.exe found in session {SessionId}", sessionId);
+            return false;
+        }
+
+        var hProcess = OpenProcess(ProcessQueryInformation, false, (uint)explorer.Id);
+        if (hProcess == 0)
+        {
+            logger.LogWarning("OpenProcess(explorer.exe) failed for session {SessionId}: {Error}",
+                sessionId, Marshal.GetLastWin32Error());
+            return false;
+        }
+
+        try
+        {
+            if (!OpenProcessToken(hProcess, TokenDuplicate | TokenQuery, out var hToken))
+            {
+                logger.LogWarning("OpenProcessToken(explorer.exe) failed for session {SessionId}: {Error}",
+                    sessionId, Marshal.GetLastWin32Error());
+                return false;
+            }
+
+            try
+            {
+                if (!DuplicateTokenEx(
+                        hToken, TokenAllAccess, 0,
+                        SecurityImpersonationLevel.SecurityImpersonation,
+                        TokenType.TokenPrimary,
+                        out primaryToken))
+                {
+                    logger.LogWarning("DuplicateTokenEx(explorer token) failed for session {SessionId}: {Error}",
+                        sessionId, Marshal.GetLastWin32Error());
+                    return false;
+                }
+
+                return true;
+            }
+            finally
+            {
+                CloseHandle(hToken);
             }
         }
         finally
         {
-            CloseHandle(userToken);
+            CloseHandle(hProcess);
         }
     }
-    
+
     private void StartFallback(uint sessionId)
     {
         var overlayPath = Path.Combine(AppContext.BaseDirectory, "Saku Overclock.Overlay.exe");
@@ -103,8 +232,6 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
                 {
                     FileName = overlayPath,
                     UseShellExecute = false,
-                    // Примечание: в этом режиме процесс унаследует права администратора.
-                    // Это нормально для локальной разработки и тестирования.
                 }
             };
 
@@ -130,7 +257,6 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
     {
         if (_processHandlesBySession.Remove(sessionId, out var handle))
         {
-            // TODO: Add exit IPC message
             // no graceful-shutdown IPC message yet, terminate for now.
             // swap this in future to "please exit" pipe message once that contract exists,
             // it avoids re-paying process/tray/D3D init cost on every lock cycle.
@@ -155,24 +281,52 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
             }
         }
     }
-    
+
     public void StopAll()
     {
         foreach (var sessionId in _processHandlesBySession.Keys.ToArray())
             StopForSession(sessionId);
-        
+
         foreach (var sessionId in _fallbackProcesses.Keys.ToArray())
             StopForSession(sessionId);
     }
-    
+
+    private string GetPackageFamilyName()
+    {
+        try
+        {
+            var dirName = Path.GetFileName(AppContext.BaseDirectory.TrimEnd('\\', '/'));
+            // Saku-Overclock-App_1.1.29.0_x64__8fghyvnsg2qm8
+            var parts = dirName.Split("__");
+            if (parts.Length == 2)
+            {
+                var firstUnderscore = parts[0].IndexOf('_');
+                if (firstUnderscore > 0)
+                {
+                    var name = parts[0][..firstUnderscore];
+                    return $"{name}_{parts[1]}"; // Ret Saku-Overclock-App_8fghyvnsg2qm8
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get package family name");
+        }
+        return string.Empty;
+    }
+
+
     #region Native methods
-    
+
     private const string Wtsapi32 = "wtsapi32.dll";
     private const string Advapi32 = "advapi32.dll";
     private const string Userenv = "userenv.dll";
     private const string Kernel32 = "kernel32.dll";
 
     private const uint TokenAllAccess = 0x000F01FF;
+    private const uint TokenDuplicate = 0x0002;
+    private const uint TokenQuery = 0x0008;
+    private const uint ProcessQueryInformation = 0x0400;
 
     internal enum SecurityImpersonationLevel
     {
@@ -247,6 +401,17 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool TerminateProcess(nint hProcess, uint uExitCode);
 
+    [LibraryImport(Kernel32, SetLastError = true)]
+    internal static partial nint OpenProcess(
+        uint dwDesiredAccess,
+        [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle,
+        uint dwProcessId);
+
+    [LibraryImport(Advapi32, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool OpenProcessToken(
+        nint processHandle, uint desiredAccess, out nint tokenHandle);
+
     [LibraryImport(Wtsapi32, EntryPoint = "WTSEnumerateSessionsW", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool WtsEnumerateSessionsW(
@@ -276,6 +441,27 @@ public sealed partial class OverlayProcessManager(ILogger<OverlayProcessManager>
             WTSFreeMemory(pSessionInfo);
         }
     }
-    
+
+    [ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]
+    private class ApplicationActivationManager { }
+
+    internal enum ActivateOptions { None = 0, DesignMode = 1, NoErrorUi = 2, NoSplashScreen = 4 }
+
+    [ComImport, Guid("2E941141-7F97-4756-BA1D-9DECDE894A3D"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    internal interface IApplicationActivationManager
+    {
+        [PreserveSig]
+        int ActivateApplication([In] string appUserModelId, [In] string arguments,
+            [In] ActivateOptions options, [Out] out uint processId);
+
+        [PreserveSig]
+        int ActivateForFile([In] string appUserModelId, [In] IntPtr itemArray,
+            [In] string verb, [Out] out uint processId);
+
+        [PreserveSig]
+        int ActivateForProtocol([In] string appUserModelId, [In] IntPtr itemArray,
+            [Out] out uint processId);
+    }
+
     #endregion
 }
