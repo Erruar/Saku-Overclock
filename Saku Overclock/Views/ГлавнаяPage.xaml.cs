@@ -299,9 +299,16 @@ public sealed partial class ГлавнаяPage
         DispatcherQueue.TryEnqueue(() =>
         {
             // Не обновляем UI если окно скрыто/минимизировано
-            if (!_isWindowVisible || !App.MainWindow.Visible)
+            try
             {
-                return;
+                if (!_isWindowVisible || !App.MainWindow.Visible)
+                {
+                    return;
+                }
+            }
+            catch (System.Runtime.InteropServices.COMException)
+            {
+                return; // Fix crash when app is closing
             }
 
             try

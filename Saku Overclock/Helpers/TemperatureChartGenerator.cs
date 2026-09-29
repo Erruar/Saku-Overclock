@@ -3,38 +3,27 @@ using Microsoft.UI.Xaml.Media;
 
 namespace Saku_Overclock.Helpers;
 
-public class TemperatureChartGenerator
+public class TemperatureChartGenerator(
+    double width = 150,
+    double height = 150,
+    double minTemp = 0,
+    double maxTemp = 100)
 {
     private readonly Queue<double> _points = new();
     private const int MaxPoints = 10;
-    
-    private readonly double _width;
-    private readonly double _height;
-    private readonly double _minTemp;
-    private readonly double _maxTemp;
-
-    public TemperatureChartGenerator(double width = 150, double height = 150, double minTemp = 0, double maxTemp = 100)
-    {
-        _width = width;
-        _height = height;
-        _minTemp = minTemp;
-        _maxTemp = maxTemp;
-
-        // Заполняем начальным состоянием (например, 40 градусов)
-        for (var i = 0; i < MaxPoints; i++)
-        {
-            _points.Enqueue(40);
-        }
-    }
 
     public (Geometry LineGeometry, Geometry FillGeometry) AddNewPoint(double newTemp)
     {
+        if (_points.Count == 0)
+            for (var i = 0; i < MaxPoints - 1; i++)
+                _points.Enqueue(newTemp);
+        
         if (_points.Count >= MaxPoints)
         {
             _points.Dequeue();
         }
 
-        _points.Enqueue(Math.Clamp(newTemp, _minTemp, _maxTemp));
+        _points.Enqueue(Math.Clamp(newTemp, minTemp, maxTemp));
 
         return BuildGeometries();
     }
@@ -43,14 +32,14 @@ public class TemperatureChartGenerator
     {
         var temps = _points.ToArray();
         List<Point> coords = new(MaxPoints);
-        var stepX = _width / (MaxPoints - 1);
+        var stepX = width / (MaxPoints - 1);
 
         // Рассчитываем физические координаты
         for (var i = 0; i < temps.Length; i++)
         {
             var x = i * stepX;
-            var normalizedY = (temps[i] - _minTemp) / (_maxTemp - _minTemp);
-            var y = _height - (normalizedY * _height); 
+            var normalizedY = (temps[i] - minTemp) / (maxTemp - minTemp);
+            var y = height - (normalizedY * height); 
             coords.Add(new Point(x, y));
         }
 
@@ -82,8 +71,8 @@ public class TemperatureChartGenerator
         }
 
         // Для заливки уводим линию в правый нижний угол, затем в левый нижний
-        fillFigure.Segments.Add(new LineSegment { Point = new Point(_width, _height) });
-        fillFigure.Segments.Add(new LineSegment { Point = new Point(0, _height) });
+        fillFigure.Segments.Add(new LineSegment { Point = new Point(width, height) });
+        fillFigure.Segments.Add(new LineSegment { Point = new Point(0, height) });
 
         var lineGeometry = new PathGeometry();
         lineGeometry.Figures.Add(lineFigure);
