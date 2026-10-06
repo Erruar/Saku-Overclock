@@ -19,14 +19,11 @@ public static class App
         });
         
         // Internal Services
-        if (WindowsServiceHelpers.IsWindowsService())
-            builder.Services.AddSingleton<IHostLifetime, SessionAwareWindowsServiceLifetime>();
         builder.Services.AddSingleton<IIpcSecurityService, IpcSecurityService>();
         
         // Core Services
         builder.Services.AddSingleton<IpcHub>();
         builder.Services.AddSingleton<CoreIpcHandlers>();
-        builder.Services.AddSingleton<OverlayProcessManager>();
         builder.Services.AddSingleton<IFileService, FileService>();
         builder.Services.AddSingleton<ISharedMemoryWriterService, SharedMemoryWriterService>();
         builder.Services.AddSingleton<IRawSharedMemoryWriterService, RawSharedMemoryWriterService>();
