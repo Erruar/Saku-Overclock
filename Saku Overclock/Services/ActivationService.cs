@@ -10,6 +10,7 @@ namespace Saku_Overclock.Services;
 public class ActivationService(
     ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
     IEnumerable<IActivationHandler> activationHandlers,
+    IPackagedOverlayStarterService overlayStarterService,
     IThemeSelectorService themeSelectorService,
     IAppSettingsService appSettingsService,
     IUpdateCheckerService updateCheckerService,
@@ -84,12 +85,16 @@ public class ActivationService(
     /// </summary>
     private void Initialize()
     {
+        // 1. Ensure overlay running on packaged configuration
+        overlayStarterService.EnsureOverlayRunning();
+        
+        // 2. Start sensor data receiver
         dataReceiver.StartAsync(CancellationToken.None);
         
-        // 4. Initializing themes
+        // 3. Initializing themes
         themeSelectorService.Initialize();
 
-        // 5. Window state and hiding to tray
+        // 4. Window state and hiding to tray
         windowStateManager.Initialize();
     }
 

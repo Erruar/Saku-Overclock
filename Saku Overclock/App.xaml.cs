@@ -83,6 +83,7 @@ public partial class App
                     services.AddSingleton<IBackgroundDataReceiver, BackgroundDataReceiver>();
                     services.AddSingleton<IRawSharedMemoryReaderService, RawSharedMemoryReaderService>();
                     services.AddSingleton<IFileService, LocalFileService>();
+                    services.AddSingleton<IPackagedOverlayStarterService, PackagedOverlayStarterService>();
                     services.AddSingleton<IAppSettingsService, AppSettingsService>();
                     services.AddSingleton<IPresetManagerService, PresetManagerService>();
                     services.AddSingleton<IPowerMonSettingsService, PowerMonSettingsService>();

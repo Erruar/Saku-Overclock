@@ -87,6 +87,15 @@
                     AppListEntry="none"
                     Square150x150Logo="Assets\Square150x150Logo.png"
                     Square44x44Logo="Assets\Square44x44Logo.png" />
+            <Extensions>
+                <desktop:Extension Category="windows.startupTask"
+                                   Executable="Saku Overclock.Overlay.exe"
+                                   EntryPoint="Windows.FullTrustApplication">
+                    <desktop:StartupTask TaskId="SakuOverclockOverlayStartup"
+                                         Enabled="true"
+                                         DisplayName="Saku Overclock Overlay" />
+                </desktop:Extension>
+            </Extensions>
         </Application>
     </Applications>
 
