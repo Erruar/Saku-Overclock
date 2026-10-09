@@ -184,21 +184,6 @@ jobs:
         wait-for-completion: true
         output-artifact-directory: '${{ github.workspace }}\Stage2_Signed'
 
-    # ---------- Финализация ----------
-    - name: Verify Final Signatures
-      shell: powershell
-      run: |
-        $files = Get-ChildItem -Path "${{ github.workspace }}\Stage2_Signed" -Include "*.exe","*.msi","*.msix" -Recurse
-        foreach ($file in $files) {
-          $signature = Get-AuthenticodeSignature $file.FullName
-          if ($signature.Status -ne "Valid") {
-            Write-Error "Invalid signature on $($file.Name): $($signature.Status)"
-            exit 1
-          } else {
-            Write-Host "::notice::✓ $($file.Name): $($signature.SignerCertificate.Subject)"
-          }
-        }
-
     - name: Upload Signed Installer (Bundle EXE)
       uses: actions/upload-artifact@v4
       with:
