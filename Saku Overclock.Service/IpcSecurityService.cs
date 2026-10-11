@@ -173,7 +173,14 @@ public class IpcSecurityService(ILogger<IpcSecurityService> logger) : IIpcSecuri
 
         // 2. Базовая проверка имени — дополнительный фильтр, не основная защита
         var fileName = Path.GetFileName(clientPath);
-        if (!string.Equals(fileName, "Saku Overclock.exe", StringComparison.OrdinalIgnoreCase))
+
+        var allowedNames = new[]
+        {
+            "Saku Overclock.exe",
+            "Saku Overclock.Overlay.exe"
+        };
+
+        if (!allowedNames.Any(n => string.Equals(fileName, n, StringComparison.OrdinalIgnoreCase)))
         {
             logger.LogWarning("Unexpected client process name: {Name}", fileName);
             return false;
