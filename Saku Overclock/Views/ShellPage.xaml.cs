@@ -1,16 +1,11 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Text;
 using Windows.UI.ViewManagement;
-using Microsoft.Graphics.Canvas.Effects;
-using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -32,7 +27,6 @@ public sealed partial class ShellPage
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
 
-    private static readonly IKeyboardHotkeysService KeyboardHotkeys = App.GetService<IKeyboardHotkeysService>();
     private static readonly IUpdateCheckerService UpdateChecker = App.GetService<IUpdateCheckerService>();
 
     private static readonly IWindowStateManagerService
@@ -46,7 +40,7 @@ public sealed partial class ShellPage
 
     private readonly IApplyerGateService _applyer = App.GetService<IApplyerGateService>();
     private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>();
-    private List<ApplyResult> _applyResults = new();
+    private readonly List<ApplyResult> _applyResults = new();
     private UISettings? _settings;
 
     public ShellViewModel ViewModel // ViewModel, установка нужной модели для UI страницы
@@ -92,7 +86,6 @@ public sealed partial class ShellPage
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         //KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-        KeyboardHotkeys.Initialize();
 
         App.AppTitlebar = VersionNumberIndicator;
         AppTitleBar.Loaded += AppTitleBar_Loaded;

@@ -21,7 +21,6 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ГлавнаяPage
 {
-    private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Сервис горячих клавиш
     private readonly INavigationService _navigationService = App.GetService<INavigationService>(); // Навигация в приложении
 
     private static readonly IAppSettingsService
@@ -80,7 +79,7 @@ public sealed partial class ГлавнаяPage
 
         DataUpdater.DataUpdated += OnDataUpdated;
 
-        _hotkeysService.PresetChanged += PresetChanged;
+        Applyer.PresetChanged += PresetChanged;
 
         Unloaded += ГлавнаяPage_Unloaded;
         Loaded += ГлавнаяPage_Loaded;
@@ -88,28 +87,29 @@ public sealed partial class ГлавнаяPage
         App.MainWindow.WindowStateChanged += OnVisibilityChanged;
     }
 
-    private void PresetChanged(object? sender, PresetId e)
+    private void PresetChanged(Preset preset)
     {
+        var targetIndex = Array.FindIndex(PresetManager.Presets, p => p.Equals(preset));
+        if (targetIndex < 0) return;
+
         _userSwitchPreset = true;
-
-        var buttons = VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot);
-        var checkedThickness = new Thickness(2);
-        var uncheckedThickness = new Thickness(1);
-
-        foreach (var button in buttons)
+        try
         {
-            var isChecked = button.Tag is int index && index == e.PresetIndex;
+            var checkedThickness = new Thickness(2);
+            var uncheckedThickness = new Thickness(1);
 
-            button.IsChecked = isChecked;
-            button.BorderThickness = isChecked ? checkedThickness : uncheckedThickness;
-
-            VisualStateManager.GoToState(
-                button,
-                isChecked ? "Checked" : "Unchecked",
-                true);
+            foreach (var button in VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot))
+            {
+                var isChecked = button.Tag is int index && index == targetIndex;
+                button.IsChecked = isChecked;
+                button.BorderThickness = isChecked ? checkedThickness : uncheckedThickness;
+                VisualStateManager.GoToState(button, isChecked ? "Checked" : "Unchecked", true);
+            }
         }
-
-        _userSwitchPreset = false;
+        finally
+        {
+            _userSwitchPreset = false;
+        }
     }
 
 
@@ -161,7 +161,7 @@ public sealed partial class ГлавнаяPage
         // Отписка от всех событий для предотвращения утечек памяти
         DataUpdater.DataUpdated -= OnDataUpdated;
 
-        _hotkeysService.PresetChanged -= PresetChanged;
+        Applyer.PresetChanged -= PresetChanged;
         Applyer.OnStringSettingsApplied -= OnPresetApplied;
 
         App.MainWindow.WindowStateChanged -= OnVisibilityChanged;

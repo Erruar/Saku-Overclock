@@ -22,7 +22,6 @@ public sealed partial class ПараметрыPage
     private readonly IAppNotificationService
         _notificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
-    private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>();
     private int _presetIndex; // Выбранный пресет
 
     private readonly IAppSettingsService
@@ -50,7 +49,7 @@ public sealed partial class ПараметрыPage
 
         _presetIndex = _appSettings.Preset;
 
-        _hotkeysService.PresetChanged += PresetChanged;
+        _applyer.PresetChanged += PresetChanged;
 
         if (_appSettings.Preset == -1) _isPremadePresetApplied = true;
 
@@ -81,7 +80,7 @@ public sealed partial class ПараметрыPage
 
     private void ПараметрыPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        _hotkeysService.PresetChanged -= PresetChanged;
+        _applyer.PresetChanged -= PresetChanged;
         _applyer.OnStringSettingsApplied -= OnPresetApplied;
         
         Loaded -= ПараметрыPage_Loaded;
@@ -1090,16 +1089,18 @@ public sealed partial class ПараметрыPage
 
     #region Event Handlers and Custom Preset voids
 
-    private void PresetChanged(object? sender, PresetId e)
+    private void PresetChanged(Preset preset)
     {
+        var targetIndex = Array.FindIndex(_presetManager.Presets, p => p.Equals(preset));
+        if (targetIndex < 0) return;
+        
         _presetChanging = true;
-        var index = e.PresetIndex;
-        _appSettings.Preset = index;
+        _appSettings.Preset = targetIndex;
 
-        _presetIndex = index;
-        PresetCom.SelectedIndex = index + 1;
+        _presetIndex = targetIndex;
+        PresetCom.SelectedIndex = targetIndex + 1;
         _presetChanging = false;
-        MainInit(index);
+        MainInit(targetIndex);
     }
 
     private void PresetCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)

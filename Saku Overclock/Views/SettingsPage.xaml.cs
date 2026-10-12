@@ -14,7 +14,6 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
-using Saku_Overclock.Wrappers;
 using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
@@ -39,9 +38,6 @@ public sealed partial class SettingsPage
 
     private readonly IRtssSettingsService _rtssSettings = App.GetService<IRtssSettingsService>(); // Настройки RTSS
     private readonly INotifyIconsService _notifyIcons = App.GetService<INotifyIconsService>(); // Настройки RTSS
-
-    private readonly IKeyboardHotkeysService
-        _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Горячие клавиши
 
     private bool _isLoaded; // Флаг загрузки страницы
 
@@ -267,27 +263,10 @@ public sealed partial class SettingsPage
     private void EnableKeybinds_Toggled(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded) return;
-
-        //SettingsKeybindingsTooltip.IsOpen = true;
-
-        var hotkeysDisabled = !_appSettings.HotkeysEnabled;
-
         _appSettings.HotkeysEnabled = EnableKeybindingsSetting.IsOn;
 
         EnableKeybindingsSettingGrid.CornerRadius =
             _appSettings.HotkeysEnabled ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
-
-        if (_appSettings.HotkeysEnabled && hotkeysDisabled)
-        {
-            ExpandStoryboard.Begin();
-            _hotkeysService.Enable();
-        }
-
-        if (!_appSettings.HotkeysEnabled)
-        {
-            CollapseStoryboard.Begin();
-            _hotkeysService.Disable();
-        }
     }
 
     /// <summary>
@@ -385,7 +364,6 @@ public sealed partial class SettingsPage
     /// </summary>
     private void InitializeTrayMonIcons()
     {
-        _notifyIcons.LoadSettings();
         try
         {
             TrayMonIconsEnabled.IsOn = _appSettings.NiIconsEnabled;
@@ -880,7 +858,7 @@ public sealed partial class SettingsPage
                                     Name = ((ComboBoxItem)niIconSelectedComboBox.SelectedItem).Name!
                                 });
                                 newNiIcon.Flyout.Hide();
-                                niAddIconDialog.Hide();
+                                niAddIconDialog.Hide(); 
                                 _notifyIcons.SaveSettings();
                                 InitializeTrayMonIcons();
                             }

@@ -41,6 +41,7 @@ public partial class CoreGatewayService : IDisposable
         switch (name)
         {
             case "PresetApplied": OnPresetApplied(payload); break;
+            case "PresetChanged": OnPresetChanged(payload); break;
         }
     }
 
@@ -106,6 +107,7 @@ public partial class CoreGatewayService : IOcFinderGateService
 
 public partial class CoreGatewayService : IApplyerGateService
 {
+    public event Action<Preset>? PresetChanged;
     public event Action<List<ApplyResult>>? OnSettingsApplied;
     public event Action<string>? OnStringSettingsApplied;
 
@@ -155,6 +157,15 @@ public partial class CoreGatewayService : IApplyerGateService
         }
     }
 
+    private void OnPresetChanged(string payload)
+    {
+        var results = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.Preset);
+        if (results != null)
+        {
+            PresetChanged?.Invoke(results);
+        }
+    }
+    
     private string TryLocalize(string key)
     {
         var str = string.Empty;

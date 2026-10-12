@@ -90,7 +90,6 @@ public partial class App
                     services.AddSingleton<INotifyIconsService, NotifyIconsService>();
                     services.AddSingleton<IUpdateCheckerService, UpdateCheckerService>();
                     services.AddSingleton<INotesWriterService, NotesWriterService>();
-                    services.AddSingleton<IKeyboardHotkeysService, KeyboardHotkeysService>();
                     services.AddSingleton<ITrayMenuService, TrayMenuService>();
                     services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
                     services.AddSingleton<IRtssSettingsService, RtssSettingsService>();

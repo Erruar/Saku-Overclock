@@ -22,44 +22,9 @@ public interface INotifyIconsService
         get;
         set;
     }
-
-    /// <summary>
-    ///     Creating all enabled tray icons
-    /// </summary>
-    public void CreateNotifyIcons();
     
     /// <summary>
-    ///     Update icons appearance (use from pages)
+    ///     Request for updating icons
     /// </summary>
     void UpdateTrayMonIcons();
-
-    /// <summary>
-    ///     Update icons data
-    /// </summary>
-    /// <param name="sensorsInformation">Sensors data</param>
-    public void UpdateNotifyIcons(SensorsInformation sensorsInformation);
-
-    /// <summary>
-    ///     Destroy all active icons
-    /// </summary>
-    public void DisposeAllNotifyIcons();
-
-    /// <summary>
-    ///     Are icons created flag
-    /// </summary>
-    public bool IsIconsCreated
-    {
-        get; 
-        set;
-    }
-    
-    
-    /// <summary>
-    ///     Are icons updated flag
-    /// </summary>
-    public bool IsIconsUpdated
-    {
-        get;
-        set;
-    }
 }
