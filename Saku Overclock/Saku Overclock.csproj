@@ -46,9 +46,6 @@
 
   <ItemGroup>
     <TrimmerRootAssembly Include="Octokit" />
-    <TrimmerRootAssembly Include="ScottPlot" />
-    <TrimmerRootAssembly Include="ScottPlot.WinUI" />
-    <TrimmerRootAssembly Include="SkiaSharp" />
     <TrimmerRootAssembly Include="Microsoft.Win32.TaskScheduler" />
     <TrimmerRootAssembly Include="System.Management" />
     <TrimmerRootAssembly Include="WinUIEx" />
