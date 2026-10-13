@@ -168,46 +168,43 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <UnusedDlls Include="$(OutputPath)onnxruntime.dll" />
-    <UnusedDlls Include="$(OutputPath)DirectML.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.MachineLearning.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentSafety.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Foundation.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Imaging.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Text.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Video.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Asg.SemanticIndex.AiFabric.Compatibility.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.AICapabilities.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentModerationInternal.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentSafety.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentSafety.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Foundation.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.FoundationInternal.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.GenerativeInternal.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Imaging.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Imaging.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Search.Experimental.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Text.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Text.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Video.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Video.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.Internal.AI.ContentModeration.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.Internal.AI.Generative.winmd" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.MachineLearning.Projection.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Web.WebView2.Core.dll" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Web.WebView2.Wpf.dll" />
-    <UnusedDlls Include="$(OutputPath)WebView2Loader.dll" />
-    <UnusedDlls Include="$(OutputPath)SakuRTSSCLI.pdb" />
-    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.Search.dll" />
+    <UnusedDlls Include="onnxruntime.dll" />
+    <UnusedDlls Include="DirectML.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.MachineLearning.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.ContentSafety.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Foundation.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Imaging.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Text.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Video.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Asg.SemanticIndex.AiFabric.Compatibility.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.AICapabilities.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.ContentModerationInternal.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.ContentSafety.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.ContentSafety.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Foundation.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.FoundationInternal.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.GenerativeInternal.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Imaging.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Imaging.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Search.Experimental.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Text.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Text.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Video.dll" />
+    <UnusedDlls Include="Microsoft.Windows.AI.Video.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.Internal.AI.ContentModeration.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.Internal.AI.Generative.winmd" />
+    <UnusedDlls Include="Microsoft.Windows.AI.MachineLearning.Projection.dll" />
+    <UnusedDlls Include="Microsoft.Web.WebView2.Core.dll" />
+    <UnusedDlls Include="Microsoft.Web.WebView2.Wpf.dll" />
+    <UnusedDlls Include="WebView2Loader.dll" />
+    <UnusedDlls Include="SakuRTSSCLI.pdb" />
+    <UnusedDlls Include="Microsoft.Windows.Search.dll" />
   </ItemGroup>
 
   <Target Name="RemoveUnusedNativeDllsFromBin" AfterTargets="Build">
-    <Delete Files="@(UnusedDlls->'$(MSBuildProjectDirectory)\')" />
-    <Message
-            Importance="High"
-            Text="Removing: @(UnusedDlls->'$(MSBuildProjectDirectory)\')" />
+    <Delete Files="@(UnusedDlls->'$(TargetDir)%(Identity)')" />
   </Target>
 
   <Target Name="RemoveUnusedNativeDllsFromPublish" AfterTargets="Publish">
