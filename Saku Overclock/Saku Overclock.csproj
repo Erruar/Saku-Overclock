@@ -54,10 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\PawnIO\PawnIO_setup.exe" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Lottie" Version="8.2.250604" />
@@ -114,9 +110,6 @@
     <None Update="Assets\discord.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\PawnIO\PawnIO.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Assets\powermon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -151,6 +144,10 @@
     <ProjectReference Include="..\Saku Overclock.Shared\Saku Overclock.Shared\Saku Overclock.Shared.csproj" Properties="TargetFramework=net10.0-windows10.0.19041.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Remove="Views\Window\PresetSwitcher\PresetSwitcher.xaml" />
+  </ItemGroup>
+
   <PropertyGroup Label="Globals">
     <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
   </PropertyGroup>
@@ -163,9 +160,6 @@
     <NoWarn>$(NoWarn);MSB3277;CS0612</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
-    <_CrashHandlerProject>$(MSBuildThisFileDirectory)..\Saku Overclock.CrashHandler\CrashHandler\CrashHandler.csproj</_CrashHandlerProject>
-    <_CrashHandlerBinDir>$(MSBuildThisFileDirectory)..\Saku Overclock.CrashHandler\CrashHandler\bin\x64\$(Configuration)\net10.0-windows\win-x64\</_CrashHandlerBinDir>
-
     <_ServiceProject>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\Saku Overclock.Service.csproj</_ServiceProject>
     <_ServicePublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Service\bin\x64\$(Configuration)\net10.0-windows\win-x64\native\Saku Overclock.Service.exe</_ServicePublishExe>
 
@@ -173,22 +167,63 @@
     <_OverlayPublishExe>$(MSBuildThisFileDirectory)..\Saku Overclock.Overlay\bin\x64\$(Configuration)\net10.0-windows\win-x64\native\Saku Overclock.Overlay.exe</_OverlayPublishExe>
   </PropertyGroup>
 
+  <ItemGroup>
+    <UnusedDlls Include="$(OutputPath)onnxruntime.dll" />
+    <UnusedDlls Include="$(OutputPath)DirectML.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.MachineLearning.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentSafety.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Foundation.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Imaging.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Text.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Video.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Asg.SemanticIndex.AiFabric.Compatibility.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.AICapabilities.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentModerationInternal.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentSafety.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.ContentSafety.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Foundation.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.FoundationInternal.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.GenerativeInternal.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Imaging.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Imaging.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Search.Experimental.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Text.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Text.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Video.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.Video.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.Internal.AI.ContentModeration.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.Internal.AI.Generative.winmd" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.AI.MachineLearning.Projection.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Web.WebView2.Core.dll" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Web.WebView2.Wpf.dll" />
+    <UnusedDlls Include="$(OutputPath)WebView2Loader.dll" />
+    <UnusedDlls Include="$(OutputPath)SakuRTSSCLI.pdb" />
+    <UnusedDlls Include="$(OutputPath)Microsoft.Windows.Search.dll" />
+  </ItemGroup>
+
+  <Target Name="RemoveUnusedNativeDllsFromBin" AfterTargets="Build">
+    <Delete Files="@(UnusedDlls->'$(MSBuildProjectDirectory)\')" />
+    <Message
+            Importance="High"
+            Text="Removing: @(UnusedDlls->'$(MSBuildProjectDirectory)\')" />
+  </Target>
+
+  <Target Name="RemoveUnusedNativeDllsFromPublish" AfterTargets="Publish">
+    <Delete Files="@(UnusedDlls->'$(PublishDir)%(Identity)')" />
+  </Target>
+
   <Target Name="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
     <MSBuild Projects="$(MSBuildThisFileDirectory)..\Saku Overclock.Shared\Saku Overclock.Shared\Saku Overclock.Shared.csproj"
              Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)..\ZenStates.Core\ZenStates-Core.csproj"
-             Properties="Configuration=$(Configuration);Platform=AnyCPU;TargetFramework=net8.0-windows" />
+             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net8.0-windows" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)..\Saku Overclock.Core\Saku Overclock.Core\Saku Overclock.Core.csproj"
-             Properties="Configuration=$(Configuration);Platform=AnyCPU;TargetFramework=net10.0-windows" />
+             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows" />
   </Target>
   
-  <Target Name="BuildCrashHandlerPreBuild" DependsOnTargets="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
-    <MSBuild Projects="$(_CrashHandlerProject)"
-             Properties="Configuration=$(Configuration);Platform=x64;TargetFramework=net10.0-windows;RuntimeIdentifier=win-x64"
-             BuildInParallel="false" />
-  </Target>
-
-  <Target Name="BuildServicePreBuild" DependsOnTargets="BuildCrashHandlerPreBuild" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
+  <Target Name="BuildServicePreBuild" DependsOnTargets="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
     <MSBuild Projects="$(_ServiceProject)"
              Targets="Publish"
              Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishAot=true;TargetFramework=net10.0-windows;PublishTrimmed=true;IsAotCompatible=true;PublishSingleFile=true"
@@ -205,21 +240,6 @@
   <Target Name="IncludeSatellitesInOutput"
           DependsOnTargets="BuildOverlayPreBuild"
           BeforeTargets="GetCopyToOutputDirectoryItems;AssignTargetPaths">
-
-    <ItemGroup>
-      <Content Include="$(_CrashHandlerBinDir)CrashHandler.exe">
-        <Link>CrashHandler.exe</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="$(_CrashHandlerBinDir)CrashHandler.dll">
-        <Link>CrashHandler.dll</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="$(_CrashHandlerBinDir)CrashHandler.runtimeconfig.json">
-        <Link>CrashHandler.runtimeconfig.json</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
 
     <ItemGroup>
       <Content Include="$(_ServicePublishExe)">
@@ -243,14 +263,5 @@
           DestinationFiles="$(PublishDir)Saku Overclock.Overlay.exe"
           SkipUnchangedFiles="true"
           Condition="Exists('$(_OverlayPublishExe)')" />
-
-    <ItemGroup>
-      <_CrashHandlerPublishFiles Include="$(_CrashHandlerBinDir)CrashHandler.exe" />
-      <_CrashHandlerPublishFiles Include="$(_CrashHandlerBinDir)CrashHandler.dll" />
-      <_CrashHandlerPublishFiles Include="$(_CrashHandlerBinDir)CrashHandler.runtimeconfig.json" />
-    </ItemGroup>
-    <Copy SourceFiles="@(_CrashHandlerPublishFiles)"
-          DestinationFolder="$(PublishDir)"
-          SkipUnchangedFiles="true" />
   </Target>
 </Project>

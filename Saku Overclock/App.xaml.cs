@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.UI.Xaml;
 using Saku_Overclock.Activation;
 using Saku_Overclock.Contracts.Services;
@@ -54,7 +56,9 @@ public partial class App
     public static WindowEx MainWindow { get; } = new MainWindow();
 
     public static UIElement? AppTitlebar { get; set; }
-
+    
+    private static ILogger<App>? _logger = NullLogger<App>.Instance;
+    
     public App()
     {
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
@@ -65,6 +69,16 @@ public partial class App
         try
         {
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Information);
+                    logging.AddEventLog(new EventLogSettings
+                    {
+                        SourceName = "Saku Overclock",
+                        LogName = "Application"
+                    });
+                })
                 .ConfigureServices((context, services) =>
                 {
                     // Default Activation Handler
@@ -145,6 +159,8 @@ public partial class App
                 AppContext.BaseDirectory));
 
             await GetService<IActivationService>().ActivateAsync(args);
+            
+            _logger = Host!.Services.GetRequiredService<ILogger<App>>();
 
             await Task.Delay(1500);
             await Task.Run(() =>
@@ -158,23 +174,13 @@ public partial class App
         }
     }
 
-    /// <summary>
-    ///     Обработка критической ошибки приложения
-    /// </summary>
-    private static void HandleCriticalError(Exception e)
+    private static void HandleCriticalError(Exception ex)
     {
-        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-        var sakuLogo = Path.Combine(pathToProgramDirectory!, "Assets/WindowIcon.ico");
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "CrashHandler.exe",
-            Arguments =
-                $"\"{e.Message} {e.StackTrace} {e.InnerException?.StackTrace}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
-            Verb = "runas"
-        });
+        if (_logger is not null)
+            _logger.LogCritical(ex, "A critical application error occurred.");
+        else Debug.WriteLine(ex);
     }
-
+    
     /// <summary>
     ///     Проверка на отсутствие других запущенных экземпляров приложения
     /// </summary>

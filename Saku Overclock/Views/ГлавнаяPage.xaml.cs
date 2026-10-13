@@ -10,6 +10,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Text;
+using Microsoft.Extensions.Logging;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
@@ -26,6 +27,7 @@ public sealed partial class ГлавнаяPage
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
+    private static readonly ILogger<ГлавнаяPage> Logger = App.GetService<ILogger<ГлавнаяPage>>();
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
     private static readonly IBackgroundDataReceiver DataUpdater = App.GetService<IBackgroundDataReceiver>(); 
     private static readonly ICpuGateService CpuService = App.GetService<ICpuGateService>(); 
@@ -143,7 +145,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            LogHelper.LogError(ex);
+            Logger.LogError("Page load failed {ex}", ex);
         }
     }
 
@@ -261,7 +263,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            LogHelper.LogError(ex);
+            Logger.LogError("Localize resource not found {ex}", ex);
         }
         return input;
     }
@@ -318,7 +320,7 @@ public sealed partial class ГлавнаяPage
             }
             catch (Exception ex)
             {
-                LogHelper.LogError(ex);
+                Logger.LogError("Data update indicators failed {ex}", ex);
             }
         });
     }
@@ -567,7 +569,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            Logger.LogError("Preset switch toggle failed {ex}", ex);
         }
     }
 
@@ -588,7 +590,7 @@ public sealed partial class ГлавнаяPage
                 var infoSet = Shared.Models.InfoBarSeverity.Success;
                 if (result != string.Empty)
                 {
-                    await LogHelper.Log(result);
+                    Logger.LogInformation("Preset applied with warnings {result}",result);
                     ApplyTeach.Title = "Apply_Warn".GetLocalized();
                     ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + result;
                     ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
@@ -610,7 +612,7 @@ public sealed partial class ГлавнаяPage
             }
             catch (Exception ex)
             {
-                await LogHelper.LogError(ex);
+                Logger.LogError("OnPresetApplied error occured {ex}", ex);
             }
         });
     }
@@ -708,7 +710,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            Logger.LogError("Preset apply failed {ex}", ex);
         }
     }
 
@@ -766,7 +768,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            Logger.LogError("Tip placement failed {ex}", ex);
         }
     }
 
@@ -795,7 +797,7 @@ public sealed partial class ГлавнаяPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.LogError(ex);
+                    Logger.LogError("Get motherboard info failed {ex}", ex);
                 }
 
                 break;
@@ -826,7 +828,7 @@ public sealed partial class ГлавнаяPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.LogError(ex);
+                    Logger.LogError("Get cpu information failed {ex}", ex);
                 }
 
                 break;

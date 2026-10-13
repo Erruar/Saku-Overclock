@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenStates-Core", "ZenStates
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saku Overclock.Core", "Saku Overclock.Core\Saku Overclock.Core\Saku Overclock.Core.csproj", "{1A47B534-1A31-41B6-921E-914792A80919}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrashHandler", "Saku Overclock.CrashHandler\CrashHandler\CrashHandler.csproj", "{F85DF5F0-68CB-444C-B89B-0B28D371C071}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SakuBA", "Setup\SakuBA\SakuBA.csproj", "{B51BA533-A592-4C61-9700-9080C2B2AD12}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saku Overclock.Overlay", "Saku Overclock.Overlay\Saku Overclock.Overlay.csproj", "{C917E7AE-B909-4488-9E8C-5B4E88A245BB}"
@@ -119,22 +117,6 @@ Global
 		{1A47B534-1A31-41B6-921E-914792A80919}.Release|x64.Build.0 = Release|Any CPU
 		{1A47B534-1A31-41B6-921E-914792A80919}.Release|x86.ActiveCfg = Release|Any CPU
 		{1A47B534-1A31-41B6-921E-914792A80919}.Release|x86.Build.0 = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|arm64.Build.0 = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|x64.Build.0 = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Debug|x86.Build.0 = Debug|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|arm64.ActiveCfg = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|arm64.Build.0 = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|x64.ActiveCfg = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|x64.Build.0 = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|x86.ActiveCfg = Release|Any CPU
-		{F85DF5F0-68CB-444C-B89B-0B28D371C071}.Release|x86.Build.0 = Release|Any CPU
 		{B51BA533-A592-4C61-9700-9080C2B2AD12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B51BA533-A592-4C61-9700-9080C2B2AD12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B51BA533-A592-4C61-9700-9080C2B2AD12}.Debug|arm64.ActiveCfg = Debug|Any CPU
