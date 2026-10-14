@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Ipc;
@@ -40,8 +39,8 @@ public partial class CoreGatewayService : IDisposable
     {
         switch (name)
         {
-            case "PresetApplied": OnPresetApplied(payload); break;
-            case "PresetChanged": OnPresetChanged(payload); break;
+            case "Apply_PresetApplied": OnPresetApplied(payload); break;
+            case "Apply_PresetChanged": OnPresetChanged(payload); break;
         }
     }
 

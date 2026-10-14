@@ -44,13 +44,13 @@ public class PresetManagerService : IPresetManagerService, IDisposable
     {
         switch (name)
         {
-            case "PresetsChanged":
+            case "PresetManager_PresetsChanged":
                 var full = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.PresetArray);
                 if (full != null) lock (_lock) _cache = full;
                 PresetsUpdated?.Invoke();
                 break;
 
-            case "PresetChanged":
+            case "PresetManager_PresetChanged":
                 var msg = JsonSerializer.Deserialize(payload, IpcJsonContext.Default.PresetUpdateMessage);
                 if (msg != null)
                 {

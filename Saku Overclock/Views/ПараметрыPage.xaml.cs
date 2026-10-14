@@ -1091,7 +1091,7 @@ public sealed partial class ПараметрыPage
 
     private void PresetChanged(Preset preset)
     {
-        var targetIndex = Array.FindIndex(_presetManager.Presets, p => p.Equals(preset));
+        var targetIndex = Array.FindIndex(_presetManager.Presets, p => p.PresetId.Equals(preset.PresetId));
         if (targetIndex < 0) return;
         
         _presetChanging = true;

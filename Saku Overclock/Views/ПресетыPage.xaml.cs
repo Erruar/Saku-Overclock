@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Windows.Foundation.Metadata;
 using Windows.UI.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -27,9 +28,10 @@ public sealed partial class ПресетыPage
     private static readonly IBackgroundDataReceiver DataUpdater = App.GetService<IBackgroundDataReceiver>();
     private static readonly IOcFinderGateService OcFinder = App.GetService<IOcFinderGateService>();
     private static readonly ICpuGateService Cpu = App.GetService<ICpuGateService>();
+    private static readonly ILogger<ПресетыPage> Logger = App.GetService<ILogger<ПресетыPage>>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool NotReady => !_isLoaded || _presetChanging || AppSettings.Preset < 0;
-    private bool _isApplying = false;
+    private bool _isApplying;
     private bool
         _presetChanging = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
 
@@ -54,6 +56,7 @@ public sealed partial class ПресетыPage
     {
         DataUpdater.DataUpdated -= OnDataUpdated;
         Applyer.OnStringSettingsApplied -= OnPresetApplied;
+        Applyer.PresetChanged -= PresetChanged;
         
         Unloaded -= ПресетыPage_Unloaded;
         Loaded -= ПресетыPage_Loaded;
@@ -66,6 +69,7 @@ public sealed partial class ПресетыPage
             _presetIndex = AppSettings.Preset;
             _presetChanging = false;
             Applyer.OnStringSettingsApplied += OnPresetApplied;
+            Applyer.PresetChanged += PresetChanged;
             SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
             LoadPresets();
@@ -76,7 +80,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            Logger.LogError("Presets management page load failed {ex}", ex);
         }
     }
 
@@ -312,7 +316,7 @@ public sealed partial class ПресетыPage
         }
         catch
         {
-            LogHelper.LogError("Preset contains error. Creating new preset.");
+            Logger.LogError("Preset contains error. Creating new preset");
 
             PresetManager.Presets = new Preset[1];
             PresetManager.Presets[0] = new Preset();
@@ -440,9 +444,9 @@ public sealed partial class ПресетыPage
         {
             await OpenAddPresetDialogAsync();
         }
-        catch (Exception exception)
+        catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(exception);
+            Logger.LogError("Add preset failed {ex}", ex);
         }
     }
 
@@ -546,8 +550,6 @@ public sealed partial class ПресетыPage
     {
         if (presetName != "")
         {
-            await LogHelper.Log($"Adding new preset: \"{presetName}\"");
-
             try
             {
                 if (PresetManager.Presets.Length != 0)
@@ -588,8 +590,6 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            LogHelper.Log(
-                $"Editing preset name: From \"{PresetManager.Presets[_presetIndex].PresetName}\" To \"{presetName}\"");
             if (presetName != "")
             {
                 PresetManager.Presets[_presetIndex].PresetName = presetName;
@@ -610,9 +610,9 @@ public sealed partial class ПресетыPage
                     InfoBarSeverity.Error);
             }
         }
-        catch (Exception exception)
+        catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(exception);
+            Logger.LogError("Edit preset failed {ex}", ex);
         }
     }
 
@@ -620,7 +620,6 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            await LogHelper.Log("Showing delete preset dialog");
             var delDialog = new ContentDialog
             {
                 Title = "Param_DelPreset_Text".GetLocalized(),
@@ -639,9 +638,6 @@ public sealed partial class ПресетыPage
             {
                 var indexPreset = AppSettings.Preset > -1 ? AppSettings.Preset : 0;
 
-                await LogHelper.Log(
-                    $"Showing delete preset dialog: deleting preset \"{PresetManager.Presets[indexPreset].PresetName}\"");
-
                 _presetChanging = true;
                 await PresetManager.RemovePresetAsync(indexPreset);
                 _presetChanging = false;
@@ -656,9 +652,9 @@ public sealed partial class ПресетыPage
                 LoadPresets();
             }
         }
-        catch (Exception exception)
+        catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(exception);
+            Logger.LogError("Delete preset failed {ex}", ex);
         }
     }
 
@@ -677,7 +673,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogWarn(ex);
+            Logger.LogError("Edit preset failed {ex}", ex);
         }
     }
 
@@ -785,7 +781,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            Logger.LogError("Export preset failed {ex}", ex);
         }
     }
 
@@ -797,7 +793,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            Logger.LogError("Import preset failed {ex}", ex);
         }
     }
 
@@ -834,7 +830,7 @@ public sealed partial class ПресетыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.Log(ex.Message);
+                Logger.LogError("Export preset dialog failed {ex} \nfor preset {i}", ex, i);
             }
 
         var stackPanel = new StackPanel { Spacing = 10 };
@@ -901,7 +897,7 @@ public sealed partial class ПресетыPage
                 }
                 catch (Exception ex)
                 {
-                    await LogHelper.LogError(ex);
+                    Logger.LogError("Export preset dialog failed {ex}", ex);
                 }
             }
         }
@@ -968,7 +964,7 @@ public sealed partial class ПресетыPage
                 }
                 catch (Exception ex)
                 {
-                    await LogHelper.LogError(ex);
+                    Logger.LogError("Import preset dialog failed {ex}", ex);
                 }
             }
         }
@@ -1052,55 +1048,78 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            LogHelper.LogWarn(ex);
+            Logger.LogError("PresetsControl selection failed {ex}", ex);
         }
+    }
+    
+    private void PresetChanged(Preset preset)
+    {
+        var targetIndex = Array.FindIndex(PresetManager.Presets, p => p.PresetId.Equals(preset.PresetId));
+        if (targetIndex < 0) return;
+        
+        _presetChanging = true;
+        AppSettings.Preset = targetIndex;
+
+        _presetIndex = targetIndex;
+        foreach (var item in PresetsControl.Items)
+        {
+            if (item.IsSelected) item.IsSelected = false;
+        }
+        
+        if (PresetsControl.Items.Count > targetIndex)
+            PresetsControl.Items[targetIndex].IsSelected = true;
+        PresetsControl.UpdateView();
+        
+        _presetChanging = false;
     }
     
     private async void OnPresetApplied(string result)
     {
-        var timer = 1000;
-        if (result != string.Empty) timer *= result.Split('\n').Length + 1; //
-
-        DispatcherQueue.TryEnqueue(() =>
+        try
         {
-            try
-            {
-                ApplyTeach.Target = ApplyButton;
-                ApplyTeach.Title = result != string.Empty ? "Apply_Warn".GetLocalized() : "Apply_Success".GetLocalized();
-                ApplyTeach.Subtitle = result != string.Empty ? "Apply_Warn_Desc".GetLocalized() + result : "";
-                ApplyTeach.IconSource = new SymbolIconSource { Symbol = result != string.Empty ? Symbol.ReportHacked : Symbol.Accept };
-                ApplyTeach.IsOpen = true;
+            var timer = 1000;
+            if (result != string.Empty) timer *= result.Split('\n').Length + 1;
 
-                var infoSet = result != string.Empty ? InfoBarSeverity.Warning : InfoBarSeverity.Success;
-                NotificationsService.ShowNotification(ApplyTeach.Title,
-                    ApplyTeach.Subtitle + (result != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                    infoSet,
-                    true);
-            }
-            catch (Exception ex)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                LogHelper.LogError(ex).ConfigureAwait(false);
-            }
-        });
+                try
+                {
+                    ApplyTeach.Target = ApplyButton;
+                    ApplyTeach.Title = result != string.Empty ? "Apply_Warn".GetLocalized() : "Apply_Success".GetLocalized();
+                    ApplyTeach.Subtitle = result != string.Empty ? "Apply_Warn_Desc".GetLocalized() + result : "";
+                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = result != string.Empty ? Symbol.ReportHacked : Symbol.Accept };
+                    ApplyTeach.IsOpen = true;
 
-        if (result != string.Empty)
-        {
-            await LogHelper.Log(result);
+                    var infoSet = result != string.Empty ? InfoBarSeverity.Warning : InfoBarSeverity.Success;
+                    NotificationsService.ShowNotification(ApplyTeach.Title,
+                        ApplyTeach.Subtitle + (result != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                        infoSet,
+                        true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Failed to show preset apply tooltip {ex}", ex);
+                }
+            });
+
+            await Task.Delay(result != string.Empty ? timer : 3000);
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    if (ApplyTeach != null) ApplyTeach.IsOpen = false;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Failed to close preset applied tooltip {ex}", ex);
+                }
+            });
         }
-
-        await Task.Delay(result != string.Empty ? timer : 3000);
-
-        DispatcherQueue.TryEnqueue(() =>
+        catch (Exception e)
         {
-            try
-            {
-                if (ApplyTeach != null) ApplyTeach.IsOpen = false;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.LogError(ex).ConfigureAwait(false);
-            }
-        });
+            Logger.LogError("Failed to show preset apply tooltip {ex}", e);
+        }
     }
 
     private async void ApplyButton_Click(object? sender, RoutedEventArgs? e)
@@ -1119,7 +1138,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogWarn(ex);
+            Logger.LogError("Failed to apply preset {ex}", ex);
         }
         finally
         {

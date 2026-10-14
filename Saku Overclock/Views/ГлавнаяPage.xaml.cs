@@ -91,7 +91,7 @@ public sealed partial class ГлавнаяPage
 
     private void PresetChanged(Preset preset)
     {
-        var targetIndex = Array.FindIndex(PresetManager.Presets, p => p.Equals(preset));
+        var targetIndex = Array.FindIndex(PresetManager.Presets, p => p.PresetId.Equals(preset.PresetId));
         if (targetIndex < 0) return;
 
         _userSwitchPreset = true;
