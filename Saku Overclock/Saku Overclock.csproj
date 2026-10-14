@@ -168,47 +168,105 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <UnusedDlls Include="onnxruntime.dll" />
-    <UnusedDlls Include="DirectML.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.MachineLearning.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.ContentSafety.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Foundation.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Imaging.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Text.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Video.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Asg.SemanticIndex.AiFabric.Compatibility.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.AICapabilities.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.ContentModerationInternal.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.ContentSafety.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.ContentSafety.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Foundation.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.FoundationInternal.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.GenerativeInternal.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Imaging.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Imaging.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Search.Experimental.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Text.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Text.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Video.dll" />
-    <UnusedDlls Include="Microsoft.Windows.AI.Video.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.Internal.AI.ContentModeration.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.Internal.AI.Generative.winmd" />
-    <UnusedDlls Include="Microsoft.Windows.AI.MachineLearning.Projection.dll" />
-    <UnusedDlls Include="Microsoft.Web.WebView2.Core.dll" />
-    <UnusedDlls Include="Microsoft.Web.WebView2.Wpf.dll" />
-    <UnusedDlls Include="WebView2Loader.dll" />
-    <UnusedDlls Include="SakuRTSSCLI.pdb" />
-    <UnusedDlls Include="Microsoft.Windows.Search.dll" />
+    <UnusedDlls Include="Assets\Remove\onnxruntime.dll" />
+    <UnusedDlls Include="Assets\Remove\DirectML.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.ML.OnnxRuntime.dll" />
+    <UnusedDlls Include="Assets\Remove\onnxruntime_providers_shared.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.MachineLearning.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.ContentSafety.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Foundation.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Imaging.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Text.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Video.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Asg.SemanticIndex.AiFabric.Compatibility.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.AICapabilities.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.ContentModerationInternal.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.ContentSafety.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.ContentSafety.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Foundation.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.FoundationInternal.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.GenerativeInternal.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Imaging.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Imaging.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Search.Experimental.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Text.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Text.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Video.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.Video.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Internal.AI.ContentModeration.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Internal.AI.Generative.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.MachineLearning.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.AI.MachineLearning.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.Core.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.Core.xml" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.Wpf.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.Wpf.xml" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.WinForms.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.WinForms.xml" />
+    <UnusedDlls Include="Assets\Remove\WebView2Loader.dll" />
+    <UnusedDlls Include="Assets\Remove\SakuRTSSCLI.pdb" />
+    <!--<UnusedDlls Include="Assets\Remove\Saku Overclock.pdb" />
+    <UnusedDlls Include="Assets\Remove\Saku Overclock.Shared.pdb" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.DiaSymReader.Native.amd64.dll" />
+    <UnusedDlls Include="Assets\Remove\mscordaccore.dll" />
+    <UnusedDlls Include="Assets\Remove\mscordbi.dll" />
+    <UnusedDlls Include="Assets\Remove\mscorrc.dll" />
+    <UnusedDlls Include="Assets\Remove\mscordaccore_amd64_amd64_10.0.1026.32716.dll" />-->
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Search.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.SemanticSearch.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Vision.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.VisionInternal.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Internal.Vision.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Widgets.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Widgets.Projection.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Widgets.winmd" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Workloads.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Workloads.Resources.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Workloads.Resources_ec.dll" />
+    <UnusedDlls Include="Assets\Remove\Microsoft.Windows.Workloads.winmd" />
+    <UnusedDlls Include="Assets\Remove\workloads.365.json" />
+    <UnusedDlls Include="Assets\Remove\workloads.j32.json" />
+    <UnusedDlls Include="Assets\Remove\workloads.j32.json" />
+    <UnusedDlls Include="Assets\Remove\workloads.lnl.json" />
+    <UnusedDlls Include="Assets\Remove\workloads.qnn.json" />
+    <UnusedDlls Include="Assets\Remove\workloads.stx.json" />
+    <UnusedDlls Include="Assets\Remove\workloads.json" />
   </ItemGroup>
 
   <Target Name="RemoveUnusedNativeDllsFromBin" AfterTargets="Build">
-    <Delete Files="@(UnusedDlls->'$(TargetDir)%(Identity)')" />
+    <Delete Files="@(UnusedDlls->'$(TargetDir)%(Filename)%(Extension)')" />
   </Target>
 
   <Target Name="RemoveUnusedNativeDllsFromPublish" AfterTargets="Publish">
-    <Delete Files="@(UnusedDlls->'$(PublishDir)%(Identity)')" />
+    <Delete Files="@(UnusedDlls->'$(PublishDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="RemoveUnusedLanguageFolders" AfterTargets="Build" BeforeTargets="Pack">
+    <ItemGroup>
+      <_AllOutputDirs Include="$(OutputPath)*\" />
+
+      <_KeepDirs Include="$(OutputPath)Assets\" />
+      <_KeepDirs Include="$(OutputPath)en-us\" />
+      <_KeepDirs Include="$(OutputPath)Microsoft.UI.Xaml\" />
+      <_KeepDirs Include="$(OutputPath)Styles\" />
+      <_KeepDirs Include="$(OutputPath)Views\" />
+
+      <_LangDirsToRemove Include="@(_AllOutputDirs)"
+                         Condition="
+        $([System.Text.RegularExpressions.Regex]::IsMatch('%(Filename)',
+          '^[a-z]{2,3}(-[A-Za-z]{2,4})*$'))
+        And '%(FullPath)' != '$(OutputPath)en-us\'
+      " />
+    </ItemGroup>
+
+    <RemoveDir Directories="@(_LangDirsToRemove)" />
+
+    <Message Text="[LangDebloat] Удалено языковых папок: @(_LangDirsToRemove->Count())"
+             Importance="high" />
+    <Message Text="[LangDebloat] Список: @(_LangDirsToRemove)"
+             Importance="normal" />
   </Target>
 
   <Target Name="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
