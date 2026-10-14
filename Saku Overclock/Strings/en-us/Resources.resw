@@ -1263,17 +1263,7 @@ for the processor to keep</value>
   </data>
   <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Fix 0,4 GHz frequency 
-This setting helps with 0,4 GHz CPU stuck.
-It set CPU in it RAM-States, where CPU freq
-should be multiple of RAM freq, not only CPU,
-but his subsystems and iGPU too. Unfortunately it 
-is the only one fix this problem which on max
-performance state give you 2400 MHz on CPU and 
-1000 MHz on iGPU, it is a way better than 400 MHz.
-It is impossible to change RAM-States, because of
-this we can't adjust this freq more than 2400 MHz.
-To disable this option select Auto then apply. After
-that you can disable checkbox</value>
+This setting helps with 0,4 GHz CPU stuck. Manage Prochot state</value>
   </data>
   <data name="Param_GPU_g16.Text" xml:space="preserve">
     <value>Fix 0,4 GHz frequency </value>
@@ -3037,7 +3027,7 @@ All results are saved in notifications</value>
     <value>Import Presets</value>
   </data>
   <data name="Preset_CpuFix04Desc.Text" xml:space="preserve">
-    <value>Prevents the CPU from getting stuck at the minimal 0.4 GHz power state, restoring normal system performance</value>
+    <value>Prevents the CPU from getting stuck at the minimal frequency state, restoring normal system performance</value>
   </data>
   <data name="Preset_CpuOptimization.Text" xml:space="preserve">
     <value>CPU frequency limit</value>

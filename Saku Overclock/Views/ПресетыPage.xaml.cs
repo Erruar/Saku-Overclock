@@ -376,7 +376,8 @@ public sealed partial class ПресетыPage
                 GpuTemp.RemoveFromParent();
                 GpuPowerLimit.RemoveFromParent();
                 CpuTurboFastTime.RemoveFromParent();
-                CpuFrequency04FixGrid.RemoveFromParent();
+                CpuFrequency04FixText.Text = CpuFrequency04FixText.Text.Replace("0,4", "1,4");
+                CpuFrequency04FixDesc.Text = CpuFrequency04FixDesc.Text.Replace("0,4", "1,4");
                 FixedCpuFrequencyGrid.RemoveFromParent();
                 FixedCpuFrequency.RemoveFromParent();
                 FixedGpuFrequency.Text = "Param_ADV_a10_Bristol/Text".GetLocalized();

@@ -2087,9 +2087,9 @@
                                                     </LinearGradientBrush>
                                                 </Border.Background>
                                             </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g16"
+                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g16" x:Name="AdvLaptopFix04Text"
                                                        Text="Исправление 0,4 ГГц CPU (Состояние)" FontSize="15" />
-                                            <FontIcon x:Uid="Param_g16_Help" HorizontalAlignment="Left"
+                                            <FontIcon x:Uid="Param_g16_Help" x:Name="AdvLaptopFix04Tooltip" HorizontalAlignment="Left"
                                                       Margin="5,4,0,-4" Glyph="&#xe9ce;">
                                                 <FontIcon.RenderTransform>
                                                     <ScaleTransform ScaleX="0.7" ScaleY="0.7" />

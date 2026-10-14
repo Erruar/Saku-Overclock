@@ -303,7 +303,7 @@
                                              Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
                         <local:PresetSetting x:Name="CpuFreqRestoreTime" Text="Время восстановления частоты" x:Uid="Param_VRM_v7" Minimum="0" SliderMaximum="100"
                                              Visibility="{x:Bind BetterTurbo.IsManual, Mode=OneWay}"/>
-                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch" x:Name="CpuFrequency04FixGrid"
+                        <Grid Margin="0,2,0,0" Height="60" HorizontalAlignment="Stretch"
                               Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
@@ -313,8 +313,8 @@
                                 <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
                                           Glyph="&#xE785;" />
                                 <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
-                                           Text="Исправление 0,4 ГГц CPU" x:Uid="Param_GPU_g16" FontSize="14"/>
-                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Text="Исправление 0,4 ГГц CPU" x:Name="CpuFrequency04FixText" x:Uid="Param_GPU_g16" FontSize="14"/>
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12" x:Name="CpuFrequency04FixDesc"
                                            Foreground="{ThemeResource TextFillColorSecondary}"
                                            x:Uid="Preset_CpuFix04Desc"/>
                             </Grid>

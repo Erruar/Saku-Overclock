@@ -292,8 +292,8 @@ public sealed partial class ПараметрыPage
 
                     LaptopsSlowSpeed.Visibility = Visibility.Collapsed;
                     LaptopsSlowSpeedDesc.Visibility = Visibility.Collapsed;
-                    AdvLaptopFix04.Visibility = Visibility.Collapsed;
-                    AdvLaptopFix04Desc.Visibility = Visibility.Collapsed;
+                    AdvLaptopFix04Text.Text = AdvLaptopFix04Text.Text.Replace("0,4", "1,4");
+                    ToolTipService.SetToolTip(AdvLaptopFix04Tooltip, (ToolTipService.GetToolTip(AdvLaptopFix04Tooltip) as TextBlock)?.Text.Replace("0,4", "1,4"));
                     AdvLaptopPboScalar.Visibility = Visibility.Collapsed;
                     AdvLaptopPboScalarDesc.Visibility = Visibility.Collapsed;
                     AdvancedFreqOptionsGrid.Visibility = Visibility.Collapsed;
