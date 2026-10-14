@@ -128,9 +128,6 @@
     <None Update="SakuRTSSCLI.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SakuRTSSCLI.pdb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="SakuRTSSCLI.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -206,7 +203,6 @@
     <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.WinForms.dll" />
     <UnusedDlls Include="Assets\Remove\Microsoft.Web.WebView2.WinForms.xml" />
     <UnusedDlls Include="Assets\Remove\WebView2Loader.dll" />
-    <UnusedDlls Include="Assets\Remove\SakuRTSSCLI.pdb" />
     <!--<UnusedDlls Include="Assets\Remove\Saku Overclock.pdb" />
     <UnusedDlls Include="Assets\Remove\Saku Overclock.Shared.pdb" />
     <UnusedDlls Include="Assets\Remove\Microsoft.DiaSymReader.Native.amd64.dll" />
@@ -243,30 +239,48 @@
     <Delete Files="@(UnusedDlls->'$(PublishDir)%(Filename)%(Extension)')" />
   </Target>
 
-  <Target Name="RemoveUnusedLanguageFolders" AfterTargets="Build" BeforeTargets="Pack">
+  <Target Name="RemoveUnusedLanguageFoldersBin"
+          AfterTargets="Build"
+          Condition="Exists('$(TargetDir)')">
     <ItemGroup>
-      <_AllOutputDirs Include="$(OutputPath)*\" />
-
-      <_KeepDirs Include="$(OutputPath)Assets\" />
-      <_KeepDirs Include="$(OutputPath)en-us\" />
-      <_KeepDirs Include="$(OutputPath)Microsoft.UI.Xaml\" />
-      <_KeepDirs Include="$(OutputPath)Styles\" />
-      <_KeepDirs Include="$(OutputPath)Views\" />
-
-      <_LangDirsToRemove Include="@(_AllOutputDirs)"
-                         Condition="
-        $([System.Text.RegularExpressions.Regex]::IsMatch('%(Filename)',
-          '^[a-z]{2,3}(-[A-Za-z]{2,4})*$'))
-        And '%(FullPath)' != '$(OutputPath)en-us\'
-      " />
+      <_BinOutputDirs Include="$([System.IO.Directory]::GetDirectories('$(TargetDir)'))" />
+      <_BinDirsToRemove Include="@(_BinOutputDirs)" />
+      <_BinDirsToRemove Remove="$(TargetDir)Assets" />
+      <_BinDirsToRemove Remove="$(TargetDir)en-us" />
+      <_BinDirsToRemove Remove="$(TargetDir)Microsoft.UI.Xaml" />
+      <_BinDirsToRemove Remove="$(TargetDir)Styles" />
+      <_BinDirsToRemove Remove="$(TargetDir)Views" />
     </ItemGroup>
+    <RemoveDir Directories="@(_BinDirsToRemove)" />
+  </Target>
+  
+  <Target Name="RemoveUnusedLanguageFoldersPublish"
+          AfterTargets="Publish"
+          Condition="Exists('$(PublishDir)')">
+    <ItemGroup>
+      <_PublishOutputDirs Include="$([System.IO.Directory]::GetDirectories('$(PublishDir)'))" />
+      <_PublishDirsToRemove Include="@(_PublishOutputDirs)" />
+      <_PublishDirsToRemove Remove="$(PublishDir)Assets" />
+      <_PublishDirsToRemove Remove="$(PublishDir)en-us" />
+      <_PublishDirsToRemove Remove="$(PublishDir)Microsoft.UI.Xaml" />
+      <_PublishDirsToRemove Remove="$(PublishDir)Styles" />
+      <_PublishDirsToRemove Remove="$(PublishDir)Views" />
+    </ItemGroup>
+    <RemoveDir Directories="@(_PublishDirsToRemove)" />
+  </Target>
 
-    <RemoveDir Directories="@(_LangDirsToRemove)" />
-
-    <Message Text="[LangDebloat] Удалено языковых папок: @(_LangDirsToRemove->Count())"
-             Importance="high" />
-    <Message Text="[LangDebloat] Список: @(_LangDirsToRemove)"
-             Importance="normal" />
+  <Target Name="CleanMsixPayload"
+          AfterTargets="_ComputeAppxPackagePayload"
+          Condition="'$(AppxPackage)' == 'true'">
+    <ItemGroup>
+      <_MsixPayloadFoldersToRemove
+              Include="@(AppxPackagePayload)"
+              Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(AppxPackagePayload.TargetPath)', '(?i)^(?:(?:runtimes|NpuDetect)[\\/]|(?!en-us[\\/])[a-z]{2,3}(?:-[a-z0-9]{2,8})*[\\/])'))" />
+      <AppxPackagePayload Remove="@(_MsixPayloadFoldersToRemove)" />
+      <AppxPackagePayload Remove="@(UnusedDlls)"
+                          MatchOnMetadata="Filename;Extension"
+                          MatchOnMetadataOptions="CaseInsensitive" />
+    </ItemGroup>
   </Target>
 
   <Target Name="PrepareSatelliteDependencies" Condition="'$(DesignTimeBuild)' != 'true' And '$(BuildingProject)' == 'true'">
