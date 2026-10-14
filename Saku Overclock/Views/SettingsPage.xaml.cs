@@ -1525,7 +1525,6 @@ public sealed partial class SettingsPage
                 _rtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
                 _rtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
                 _rtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
-                _isLoaded = true;
             }
             else
             {
@@ -1537,125 +1536,79 @@ public sealed partial class SettingsPage
                                                  RtssAvgCpuClockVoltCompactToggle.IsChecked &
                                                  RtssApuClockVoltTempCompactToggle.IsChecked &
                                                  RtssFrameRateCompactToggle.IsChecked;
-                _isLoaded = true;
             }
+            _isLoaded = true;
 
-            if (toggleButton.Name == "RtssMainColorCompactToggle")
-                _rtssSettings.RtssElements[0].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssAllCompactToggle")
-                _rtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssSakuPresetCompactToggle")
-                _rtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssStapmFastSlowCompactToggle")
-                _rtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssEdcThermUsageCompactToggle")
-                _rtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssCpuClocksCompactToggle")
-                _rtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssAvgCpuClockVoltCompactToggle")
-                _rtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssApuClockVoltTempCompactToggle")
-                _rtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
-
-            if (toggleButton.Name == "RtssFrameRateCompactToggle")
-                _rtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
+            switch (toggleButton.Name)
+            {
+                case "RtssMainColorCompactToggle": _rtssSettings.RtssElements[0].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssAllCompactToggle": _rtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssSakuPresetCompactToggle": _rtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssStapmFastSlowCompactToggle": _rtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssEdcThermUsageCompactToggle": _rtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssCpuClocksCompactToggle": _rtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssAvgCpuClockVoltCompactToggle": _rtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssApuClockVoltTempCompactToggle": _rtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true; break;
+                case "RtssFrameRateCompactToggle": _rtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true; break;
+            }
         }
 
         if (s is CheckBox checkBox)
         {
-            if (checkBox.Name == "RtssMainColorCheckbox")
-                _rtssSettings.RtssElements[0].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssSecondColorCheckbox")
-                _rtssSettings.RtssElements[1].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssSakuOverclockPresetCheckbox")
-                _rtssSettings.RtssElements[2].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssStapmFastSlowCheckbox")
-                _rtssSettings.RtssElements[3].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssEdcThermUsageCheckbox")
-                _rtssSettings.RtssElements[4].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssCpuClocksCheckbox")
-                _rtssSettings.RtssElements[5].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssAvgCpuClockVoltCheckbox")
-                _rtssSettings.RtssElements[6].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssApuClockVoltTempCheckbox")
-                _rtssSettings.RtssElements[7].Enabled = checkBox.IsChecked == true;
-
-            if (checkBox.Name == "RtssFrameRateCheckbox")
-                _rtssSettings.RtssElements[8].Enabled = checkBox.IsChecked == true;
+            switch (checkBox.Name)
+            {
+                case "RtssMainColorCheckbox": _rtssSettings.RtssElements[0].Enabled = checkBox.IsChecked == true; break;
+                case "RtssSecondColorCheckbox": _rtssSettings.RtssElements[1].Enabled = checkBox.IsChecked == true; break;
+                case "RtssSakuOverclockPresetCheckbox": _rtssSettings.RtssElements[2].Enabled = checkBox.IsChecked == true; break;
+                case "RtssStapmFastSlowCheckbox": _rtssSettings.RtssElements[3].Enabled = checkBox.IsChecked == true; break;
+                case "RtssEdcThermUsageCheckbox": _rtssSettings.RtssElements[4].Enabled = checkBox.IsChecked == true; break;
+                case "RtssCpuClocksCheckbox": _rtssSettings.RtssElements[5].Enabled = checkBox.IsChecked == true; break;
+                case "RtssAvgCpuClockVoltCheckbox": _rtssSettings.RtssElements[6].Enabled = checkBox.IsChecked == true; break;
+                case "RtssApuClockVoltTempCheckbox": _rtssSettings.RtssElements[7].Enabled = checkBox.IsChecked == true; break;
+                case "RtssFrameRateCheckbox": _rtssSettings.RtssElements[8].Enabled = checkBox.IsChecked == true; break;
+            }
         }
 
         if (s is TextBox textBox)
         {
-            if (textBox.Name == "RtssSakuOverclockPresetTextBox") _rtssSettings.RtssElements[2].Name = textBox.Text;
-
-            if (textBox.Name == "RtssStapmFastSlowTextBox") _rtssSettings.RtssElements[3].Name = textBox.Text;
-
-            if (textBox.Name == "RtssEdcThermUsageTextBox") _rtssSettings.RtssElements[4].Name = textBox.Text;
-
-            if (textBox.Name == "RtssCpuClocksTextBox") _rtssSettings.RtssElements[5].Name = textBox.Text;
-
-            if (textBox.Name == "RtssAvgCpuClockVoltTextBox") _rtssSettings.RtssElements[6].Name = textBox.Text;
-
-            if (textBox.Name == "RtssApuClockVoltTempTextBox") _rtssSettings.RtssElements[7].Name = textBox.Text;
-
-            if (textBox.Name == "RtssFrameRateTextBox") _rtssSettings.RtssElements[8].Name = textBox.Text;
+            switch (textBox.Name)
+            {
+                case "RtssSakuOverclockPresetTextBox": _rtssSettings.RtssElements[2].Name = textBox.Text; break;
+                case "RtssStapmFastSlowTextBox": _rtssSettings.RtssElements[3].Name = textBox.Text; break;
+                case "RtssEdcThermUsageTextBox": _rtssSettings.RtssElements[4].Name = textBox.Text; break;
+                case "RtssCpuClocksTextBox": _rtssSettings.RtssElements[5].Name = textBox.Text; break;
+                case "RtssAvgCpuClockVoltTextBox": _rtssSettings.RtssElements[6].Name = textBox.Text; break;
+                case "RtssApuClockVoltTempTextBox": _rtssSettings.RtssElements[7].Name = textBox.Text; break;
+                case "RtssFrameRateTextBox": _rtssSettings.RtssElements[8].Name = textBox.Text; break;
+            }
         }
 
         if (s is ColorPicker colorPicker)
         {
-            if (colorPicker.Name == "RtssMainColorColorPicker")
-                _rtssSettings.RtssElements[0].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssSecondColorColorPicker")
-                _rtssSettings.RtssElements[1].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssSakuOverclockPresetColorPicker")
-                _rtssSettings.RtssElements[2].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssStapmFastSlowColorPicker")
-                _rtssSettings.RtssElements[3].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssEdcThermUsageColorPicker")
-                _rtssSettings.RtssElements[4].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssCpuClocksColorPicker")
-                _rtssSettings.RtssElements[5].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssAvgCpuClockVoltColorPicker")
-                _rtssSettings.RtssElements[6].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssApuClockVoltTempColorPicker")
-                _rtssSettings.RtssElements[7].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
-
-            if (colorPicker.Name == "RtssFrameRateColorPicker")
-                _rtssSettings.RtssElements[8].Color =
-                    $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
+            switch (colorPicker.Name)
+            {
+                case "RtssMainColorColorPicker": _rtssSettings.RtssElements[0].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssSecondColorColorPicker": _rtssSettings.RtssElements[1].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssSakuOverclockPresetColorPicker": _rtssSettings.RtssElements[2].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssStapmFastSlowColorPicker": _rtssSettings.RtssElements[3].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssEdcThermUsageColorPicker": _rtssSettings.RtssElements[4].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssCpuClocksColorPicker": _rtssSettings.RtssElements[5].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssAvgCpuClockVoltColorPicker": _rtssSettings.RtssElements[6].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssApuClockVoltTempColorPicker": _rtssSettings.RtssElements[7].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+                case "RtssFrameRateColorPicker": _rtssSettings.RtssElements[8].Color =
+                        $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; break;
+            }
         }
 
         GenerateAdvancedCodeEditor();
-        _rtssSettings.SaveSettings();
     }
 
     /// <summary>

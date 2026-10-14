@@ -39,21 +39,4 @@ public interface IRtssSettingsService
         get;
         set;
     }
-    
-    /// <summary>
-    ///     Is rtss overlay updated
-    /// </summary>
-    public bool IsRtssUpdated
-    {
-        get; 
-        set;
-    }
-
-    /// <summary>
-    ///     Update rtss overlay metrics
-    /// </summary>
-    /// <param name="sensorsInformation">Sensors data</param>
-    /// <param name="appliedPreset">Selected preset</param>
-    /// <param name="coreCount">Core count</param>
-    public void UpdateRtssMetrics(SensorsInformation sensorsInformation, string? appliedPreset, int? coreCount);
 }
