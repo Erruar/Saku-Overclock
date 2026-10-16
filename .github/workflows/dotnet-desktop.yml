@@ -8,200 +8,412 @@ on:
   workflow_dispatch:
     inputs:
       build_mode:
-        description: 'Build mode (manual start)'
+        description: 'Режим сборки (ручной запуск)'
         required: true
-        default: 'installer'
+        default: 'is'
         type: choice
         options:
-          - installer
-          - full
+          - is
+          - ss
+          - ip
+          - sp
           - none
 
+permissions:
+  contents: read
+
 env:
-  SIGNPATH_ORG_ID: ${{ secrets.SIGNPATH_ORG_ID }}
-  SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   SIGNPATH_PROJECT_SLUG: 'Saku-Overclock'
-  SIGNING_POLICY: 'test-signing'
+  SIGNPATH_POLICY: 'test-signing'
+  # Artifact configuration: 3 packages (exe + msi + msix) or only installer exe
+  SIGNPATH_CONFIG_ALL: 'initial'
+  SIGNPATH_CONFIG_EXE_ONLY: 'installer-only'
 
 jobs:
   check-commit:
     runs-on: ubuntu-latest
     outputs:
-      build_mode: ${{ steps.check.outputs.build_mode }}
+      mode: ${{ steps.check.outputs.mode }}
+      msix: ${{ steps.check.outputs.msix }}
+      signer: ${{ steps.check.outputs.signer }}
     steps:
       - name: Determine build mode
         id: check
         shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          DISPATCH_MODE: ${{ inputs.build_mode }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "build_mode=${{ inputs.build_mode }}" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            MSG="${{ github.event.pull_request.title }}"
+          MODE="none"
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            MODE="$DISPATCH_MODE"
           else
-            MSG="${{ github.event.head_commit.message }}"
+            if [ "$EVENT" = "pull_request" ]; then MSG="$PR_TITLE"; else MSG="$COMMIT_MSG"; fi
+            echo "Message: $MSG"
+            if [[ "$MSG" =~ build-(is|ss|ip|sp)([^[:alnum:]-]|$) ]]; then
+              MODE="${BASH_REMATCH[1]}"
+            fi
           fi
 
-          echo "Message: $MSG"
+          case "$MODE" in
+            is) MSIX=false; SIGNER=test ;;
+            ss) MSIX=true;  SIGNER=test ;;
+            ip) MSIX=false; SIGNER=signpath ;;
+            sp) MSIX=true;  SIGNER=signpath ;;
+            *)  MODE=none; MSIX=false; SIGNER=none ;;
+          esac
 
-          if [[ "$MSG" == *"build-ss"* ]]; then
-            echo "build_mode=full" >> "$GITHUB_OUTPUT"
-          elif [[ "$MSG" == *"build-is"* ]]; then
-            echo "build_mode=installer" >> "$GITHUB_OUTPUT"
-          else
-            echo "build_mode=none" >> "$GITHUB_OUTPUT"
-          fi
+          echo "Mode=$MODE msix=$MSIX signer=$SIGNER"
+          echo "mode=$MODE"     >> "$GITHUB_OUTPUT"
+          echo "msix=$MSIX"     >> "$GITHUB_OUTPUT"
+          echo "signer=$SIGNER" >> "$GITHUB_OUTPUT"
 
-  build-and-package:
+  build-unpackaged:
     needs: check-commit
-    if: needs.check-commit.outputs.build_mode != 'none'
+    if: needs.check-commit.outputs.mode != 'none'
     runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: powershell
     env:
-      BUILD_MODE: ${{ needs.check-commit.outputs.build_mode }}
+      BUILD_MODE: ${{ needs.check-commit.outputs.mode }}
       PUBLISH_DIR: Saku Overclock\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish
-
     steps:
-    - name: Checkout Source Code
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Setup .NET 10 SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '10.0.x'
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
-    - name: Setup MSBuild Tooling
-      uses: microsoft/setup-msbuild@v2
+      - name: Setup MSBuild Tooling
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Restore Solution (win-x64)
-      shell: powershell
-      run: dotnet restore "Saku Overclock.sln" -r win-x64
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.wixproj', '**/Directory.Packages.props', '**/Directory.Build.props', '**/packages.lock.json', '**/global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
-    # ---------- Сборка бинарников ----------
-    - name: Publish App (Release win-x64)
-      shell: powershell
-      run: |
-        dotnet publish "Saku Overclock\Saku Overclock.csproj" `
-          -c Release `
-          -r win-x64 `
-          -p:Platform=x64 `
-          -p:TargetFramework=net10.0-windows10.0.19041.0
+      - name: Restore Solution (win-x64)
+        run: dotnet restore "Saku Overclock.sln" -r win-x64
 
-    # ---------- ЭТАП 1: Подпись внутренних бинарников (Inner Sign) ----------
-    - name: Stage Binaries for Stage 1
-      shell: powershell
-      run: |
-        New-Item -ItemType Directory -Force -Path "Stage1_Unsigned" | Out-Null
-        Copy-Item "$env:PUBLISH_DIR\Saku Overclock.exe" "Stage1_Unsigned\"
-        Copy-Item "$env:PUBLISH_DIR\Saku Overclock.Service.exe" "Stage1_Unsigned\"
-        Copy-Item "$env:PUBLISH_DIR\Saku Overclock.Overlay.exe" "Stage1_Unsigned\"
-        # Если нужно подписать DLL, раскомментируй следующую строку:
-        # Copy-Item "$env:PUBLISH_DIR\*.dll" "Stage1_Unsigned\"
+      - name: Prepare test certificate and SignTool
+        env:
+          CERT_BASE64: ${{ secrets.SIGNING_CERT_BASE64 }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:CERT_BASE64) { throw "SIGNING_CERT_BASE64 secret is missing" }
+          $pfx = Join-Path $env:RUNNER_TEMP 'CI_SigningCert.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:CERT_BASE64.Trim()))
+          $st = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Filter signtool.exe -Recurse |
+                Where-Object { $_.DirectoryName -like '*\x64' } |
+                Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $st) { throw "signtool.exe not found" }
+          "PFX_PATH=$pfx" >> $env:GITHUB_ENV
+          "SIGNTOOL=$($st.FullName)" >> $env:GITHUB_ENV
 
-    - name: Upload Unsigned Binaries
-      id: upload_stage1
-      uses: actions/upload-artifact@v4
-      with:
-        name: Stage1-Unsigned-Binaries
-        path: Stage1_Unsigned
-        compression-level: 9
+      - name: Publish App (Release win-x64)
+        run: |
+          dotnet publish "Saku Overclock\Saku Overclock.csproj" `
+            -c Release `
+            -r win-x64 `
+            --no-restore `
+            -p:Platform=x64 `
+            -p:TargetFramework=net10.0-windows10.0.19041.0
 
-    - name: SignPath Stage 1 (fp_start)
-      uses: signpath/github-action-submit-signing-request@v1.3
-      with:
-        api-token: '${{ env.SIGNPATH_API_TOKEN }}'
-        organization-id: '${{ env.SIGNPATH_ORG_ID }}'
-        project-slug: '${{ env.SIGNPATH_PROJECT_SLUG }}'
-        signing-policy-slug: '${{ env.SIGNING_POLICY }}'
-        github-artifact-id: '${{ steps.upload_stage1.outputs.artifact-id }}'
-        artifact-configuration-slug: 'fp_start'
-        wait-for-completion: true
-        output-artifact-directory: '${{ github.workspace }}\Stage1_Signed'
+      - name: Sign inner binaries (test certificate)
+        env:
+          CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pass = $env:CERT_PASS.Trim()
+          $files = @(
+            "$env:PUBLISH_DIR\Saku Overclock.exe",
+            "$env:PUBLISH_DIR\Saku Overclock.Service.exe",
+            "$env:PUBLISH_DIR\Saku Overclock.Overlay.exe"
+          )
+          foreach ($f in $files) {
+            if (-not (Test-Path -LiteralPath $f)) { throw "File not found for signing: $f" }
+            Write-Output "Signing: $f"
+            & $env:SIGNTOOL sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $f
+            if ($LASTEXITCODE -ne 0) { throw "signtool failed: $f" }
+          }
 
-    - name: Inject Signed Binaries back to Publish Dir
-      shell: powershell
-      run: |
-        Write-Output "Replacing unsigned binaries with signed ones..."
-        Copy-Item "Stage1_Signed\*" "$env:PUBLISH_DIR\" -Force -Recurse
+      - name: Build Installer (WiX Bundle + MSI)
+        run: dotnet build "Setup\SakuBundle\SakuBundle.wixproj" -c Release
 
-    # ---------- Сборка установщиков ----------
-    - name: Build Installer (WiX Bundle + MSI)
-      shell: powershell
-      run: |
-        # WiX подхватит уже подписанные exe/dll из PUBLISH_DIR
-        dotnet build "Setup\SakuBundle\SakuBundle.wixproj" -c Release
+      - name: Stage installers
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path "staging" | Out-Null
+          Copy-Item "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe" "staging\"
+          Copy-Item "Setup\SakuMsi\bin\Release\SakuOverclock.msi" "staging\"
 
-    - name: Compile and Package MSIX
-      if: env.BUILD_MODE == 'full'
-      shell: powershell
-      run: |
-        # Собираем MSIX. Неважно, что он сгенерирует файлы заново, 
-        # SignPath проникнет внутрь пакета на Этапе 2 и переподпишет их.
-        msbuild "Saku Overclock\Saku Overclock.csproj" `
-          /p:Configuration=Release `
-          /p:Platform=x64 `
-          /p:EnableMsixTooling=true `
-          /p:GenerateAppxPackageOnBuild=true `
-          /p:AppxPackageSigningEnabled=false `
-          /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\MSIX\" `
-          /p:AppxBundle=Never
+      # build-ip: upload only installer .exe to SignPath, MSI signed with test certificate
+      - name: Sign MSI with test certificate (ip only)
+        if: env.BUILD_MODE == 'ip'
+        env:
+          CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pass = $env:CERT_PASS.Trim()
+          & $env:SIGNTOOL sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass "staging\SakuOverclock.msi"
+          if ($LASTEXITCODE -ne 0) { throw "signtool failed for MSI" }
 
-    # ---------- ЭТАП 2: Подпись релизных пакетов (Outer Sign) ----------
-    - name: Stage Installers for Stage 2
-      shell: powershell
-      run: |
-        New-Item -ItemType Directory -Force -Path "Stage2_Unsigned" | Out-Null
-        Copy-Item "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe" "Stage2_Unsigned\"
-        Copy-Item "Setup\SakuMsi\bin\Release\SakuOverclock.msi" "Stage2_Unsigned\"
-        
-        if ($env:BUILD_MODE -eq 'full') {
-            $msixFile = (Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts\MSIX" -Filter "*.msix" -Recurse | Select-Object -First 1).FullName
-            if ($msixFile) {
-                Copy-Item $msixFile "Stage2_Unsigned\"
+      - name: Upload unpackaged packages (intermediate)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-unpackaged
+          path: staging/*
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 1
+
+  # MSIX: building in parralel, not signing
+  build-msix:
+    needs: check-commit
+    if: needs.check-commit.outputs.msix == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup MSBuild Tooling
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', '**/*.wixproj', '**/Directory.Packages.props', '**/Directory.Build.props', '**/packages.lock.json', '**/global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore Solution (win-x64)
+        run: dotnet restore "Saku Overclock.sln" -r win-x64
+
+      # Valid for path 2 (build-ss): Change Publisher to test certificate ones
+      - name: Patch Publisher in Package.appxmanifest (ss only)
+        if: needs.check-commit.outputs.signer == 'test'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $old = 'Publisher="CN=Test certificate for ''Saku Overclock [OSS]''"'
+          $new = 'Publisher="CN=Sakura"'
+          $files = Get-ChildItem -Path . -Filter Package.appxmanifest -Recurse |
+                   Where-Object { $_.FullName -notmatch '\\(obj|bin)\\' }
+          if (-not $files) { throw "Package.appxmanifest not found" }
+          $changed = 0
+          foreach ($f in $files) {
+            $text = [IO.File]::ReadAllText($f.FullName)
+            if ($text.Contains($old)) {
+              [IO.File]::WriteAllText($f.FullName, $text.Replace($old, $new), (New-Object Text.UTF8Encoding($true)))
+              Write-Output "Patched: $($f.FullName)"
+              $changed++
             }
-        }
+          }
+          if ($changed -eq 0) { throw "Publisher line was not found in any Package.appxmanifest" }
 
-    - name: Upload Unsigned Installers
-      id: upload_stage2
-      uses: actions/upload-artifact@v4
-      with:
-        name: Stage2-Unsigned-Installers
-        path: Stage2_Unsigned
-        compression-level: 9
+      - name: Compile and Package MSIX (Release x64)
+        run: |
+          msbuild "Saku Overclock\Saku Overclock.csproj" `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:EnableMsixTooling=true `
+            /p:GenerateAppxPackageOnBuild=true `
+            /p:AppxPackageSigningEnabled=false `
+            /p:AppxPackageDir="${{ github.workspace }}\BuildArtifacts\MSIX\" `
+            /p:AppxBundle=Never
 
-    - name: SignPath Stage 2 (initial)
-      uses: signpath/github-action-submit-signing-request@v1.3
-      with:
-        api-token: '${{ env.SIGNPATH_API_TOKEN }}'
-        organization-id: '${{ env.SIGNPATH_ORG_ID }}'
-        project-slug: '${{ env.SIGNPATH_PROJECT_SLUG }}'
-        signing-policy-slug: '${{ env.SIGNING_POLICY }}'
-        github-artifact-id: '${{ steps.upload_stage2.outputs.artifact-id }}'
-        artifact-configuration-slug: 'initial'
-        wait-for-completion: true
-        output-artifact-directory: '${{ github.workspace }}\Stage2_Signed'
+      - name: Stage MSIX
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $msix = Get-ChildItem -Path "${{ github.workspace }}\BuildArtifacts\MSIX" -Filter "*.msix" -Recurse | Select-Object -First 1
+          if (-not $msix) { throw "MSIX file was not found" }
+          New-Item -ItemType Directory -Force -Path "staging" | Out-Null
+          Copy-Item $msix.FullName "staging\"
 
-    - name: Upload Signed Installer (Bundle EXE)
-      uses: actions/upload-artifact@v4
-      with:
-        name: Saku-Overclock-Signed-Installer
-        path: Stage2_Signed/**/*-Setup.exe 
-        if-no-files-found: error
+      - name: Upload MSIX package (intermediate)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-msix
+          path: staging/*
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 1
 
-    - name: Upload Signed OEM (MSI)
-      uses: actions/upload-artifact@v4
-      with:
-        name: Saku-Overclock-Signed-OEM-MSI
-        path: Stage2_Signed/**/*.msi
-        if-no-files-found: error
+  # Valid for path 1,2 is / ss: everything signed with test certificate
+  sign-test:
+    needs: [check-commit, build-unpackaged, build-msix]
+    if: >-
+      ${{ !cancelled()
+      && needs.check-commit.outputs.signer == 'test'
+      && needs.build-unpackaged.result == 'success'
+      && (needs.build-msix.result == 'success' || needs.build-msix.result == 'skipped') }}
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Download intermediate packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pkg-*
+          merge-multiple: true
+          path: pkgs
 
-    - name: Upload Signed MSIX Package
-      if: env.BUILD_MODE == 'full'
-      uses: actions/upload-artifact@v4
-      with:
-        name: Saku-Overclock-Signed-MSIX
-        path: Stage2_Signed/**/*.msix
-        if-no-files-found: error
+      - name: Prepare test certificate and SignTool
+        env:
+          CERT_BASE64: ${{ secrets.SIGNING_CERT_BASE64 }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:CERT_BASE64) { throw "SIGNING_CERT_BASE64 secret is missing" }
+          $pfx = Join-Path $env:RUNNER_TEMP 'CI_SigningCert.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:CERT_BASE64.Trim()))
+          $st = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Filter signtool.exe -Recurse |
+                Where-Object { $_.DirectoryName -like '*\x64' } |
+                Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $st) { throw "signtool.exe not found" }
+          "PFX_PATH=$pfx" >> $env:GITHUB_ENV
+          "SIGNTOOL=$($st.FullName)" >> $env:GITHUB_ENV
+
+      - name: Sign packages (test certificate)
+        env:
+          CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pass = $env:CERT_PASS.Trim()
+          $files = Get-ChildItem -Path pkgs -Recurse -Include *.exe, *.msi, *.msix
+          if (-not $files) { throw "Nothing to sign in pkgs" }
+          foreach ($f in $files) {
+            Write-Output "Signing: $($f.FullName)"
+            & $env:SIGNTOOL sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $f.FullName
+            if ($LASTEXITCODE -ne 0) { throw "signtool failed: $($f.Name)" }
+          }
+
+      - name: Upload Installer (Bundle EXE)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saku-Overclock-Installer
+          path: pkgs/*-Setup.exe
+          if-no-files-found: error
+
+      - name: Upload OEM (MSI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saku-Overclock-OEM-MSI
+          path: pkgs/*.msi
+          if-no-files-found: error
+
+      - name: Upload MSIX
+        if: needs.check-commit.outputs.msix == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saku-Overclock-MSIX
+          path: pkgs/*.msix
+          if-no-files-found: error
+
+  # Valid for path 3,4 ip / sp: SignPath. Works on ubuntu
+  sign-signpath:
+    needs: [check-commit, build-unpackaged, build-msix]
+    if: >-
+      ${{ !cancelled()
+      && needs.check-commit.outputs.signer == 'signpath'
+      && needs.build-unpackaged.result == 'success'
+      && (needs.build-msix.result == 'success' || needs.build-msix.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      contents: read
+      actions: read
+    env:
+      WITH_MSIX: ${{ needs.check-commit.outputs.msix }}
+    steps:
+      - name: Download intermediate packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pkg-*
+          merge-multiple: true
+          path: pkgs
+
+      - name: Stage files for SignPath
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p SignPath_In
+          cp pkgs/*-Setup.exe SignPath_In/
+          if [ "$WITH_MSIX" = "true" ]; then
+            cp pkgs/*.msi SignPath_In/
+            cp pkgs/*.msix SignPath_In/
+          fi
+          ls -la SignPath_In
+
+      - name: Upload bundle for SignPath
+        id: upload_signpath
+        uses: actions/upload-artifact@v4
+        with:
+          name: SignPath-Unsigned
+          path: SignPath_In
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 9
+
+      - name: SignPath (outer signing)
+        uses: signpath/github-action-submit-signing-request@v1.3
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ secrets.SIGNPATH_ORG_ID }}'
+          project-slug: '${{ env.SIGNPATH_PROJECT_SLUG }}'
+          signing-policy-slug: '${{ env.SIGNPATH_POLICY }}'
+          artifact-configuration-slug: '${{ env.WITH_MSIX == ''true'' && env.SIGNPATH_CONFIG_ALL || env.SIGNPATH_CONFIG_EXE_ONLY }}'
+          github-artifact-id: '${{ steps.upload_signpath.outputs.artifact-id }}'
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 20000
+          service-unavailable-timeout-in-seconds: 3600
+          output-artifact-directory: 'SignPath_Out'
+
+      - name: Upload Signed Installer (Bundle EXE)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saku-Overclock-Signed-Installer
+          path: SignPath_Out/**/*-Setup.exe
+          if-no-files-found: error
+
+      # ip: MSI OEM installer is not signed by SignPath, signed by test certificate on build stage
+      - name: Upload OEM (MSI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.WITH_MSIX == 'true' && 'Saku-Overclock-Signed-OEM-MSI' || 'Saku-Overclock-OEM-MSI' }}
+          path: ${{ env.WITH_MSIX == 'true' && 'SignPath_Out/**/*.msi' || 'pkgs/*.msi' }}
+          if-no-files-found: error
+
+      - name: Upload Signed MSIX
+        if: env.WITH_MSIX == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saku-Overclock-Signed-MSIX
+          path: SignPath_Out/**/*.msix
+          if-no-files-found: error
