@@ -65,8 +65,12 @@ public partial class CoreGatewayService : ICpuGateService
     public CodenameGeneration GetCodenameGeneration() => _hwSnapshot?.CodenameGeneration ?? default;
     public MemoryConfig GetMemoryConfig() => _hwSnapshot?.MemoryConfig ?? new MemoryConfig();
 
-    public async Task<string> GenerateDebugReportAsync() =>
-        await _ipc.SendCommandAsync("Generate_Debug_Report");
+    public async Task<string> GenerateDebugReportAsync()
+    {
+        var json = await _ipc.SendCommandAsync("Generate_Debug_Report");
+        if (string.IsNullOrEmpty(json)) return string.Empty;
+        return JsonSerializer.Deserialize(json, IpcJsonContext.Default.String) ?? string.Empty;
+    }
 }
 
 public partial class CoreGatewayService : IPstateGateService

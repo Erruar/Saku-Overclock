@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
+using System.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -14,6 +16,7 @@ using Saku_Overclock.Shared;
 using Saku_Overclock.Shared.Contracts;
 using Saku_Overclock.Shared.Models;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
+using Path = System.IO.Path;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
@@ -1793,13 +1796,39 @@ public sealed partial class ИнформацияPage
         _appSettings.NiIconsEnabled = NiIconsButton.IsChecked == true;
 
     /// <summary>
-    ///     Обработчик создания дебаг репорта
+    ///     Обработчик создания дебаг-репорта.
     /// </summary>
     private async void DebugReport_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            await _cpu.GenerateDebugReportAsync();
+            var report = await _cpu.GenerateDebugReportAsync();
+            if (string.IsNullOrWhiteSpace(report))
+            {
+                await LogHelper.LogError(new InvalidOperationException("Debug report is empty"));
+                return;
+            }
+
+            var newlineIndex = report.IndexOf('\n');
+            var fileNameLine = (newlineIndex >= 0 ? report[..newlineIndex] : report).TrimEnd('\r');
+            var body = newlineIndex >= 0 ? report[(newlineIndex + 1)..] : string.Empty;
+
+            var safeFileName = string.Concat(fileNameLine.Split(Path.GetInvalidFileNameChars()));
+            if (string.IsNullOrWhiteSpace(safeFileName))
+                safeFileName = "DebugReport";
+
+            var filePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Downloads",
+                $"{safeFileName}.txt");
+
+            var version = App.GetService<ViewModels.SettingsViewModel>().VersionDescription;
+
+            var content = $"{version}{Environment.NewLine}{body}";
+
+            await File.WriteAllTextAsync(filePath, content, Encoding.UTF8);
+
+            Process.Start("explorer.exe", $"/select,\"{Path.GetFullPath(filePath)}\"");
         }
         catch (Exception ex)
         {
