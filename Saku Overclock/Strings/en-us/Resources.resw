@@ -3279,16 +3279,22 @@ Set up a personalized undervolting level that will be applied to all premade pre
     <value>Auto Reapply</value>
   </data>
   <data name="Preset_AutoApplyOptionsDesc.Text" xml:space="preserve">
-    <value>Restore last applied overclocking parameters after opening the program</value>
+    <value>Restore last applied parameters after starting OS</value>
   </data>
   <data name="Preset_ReapplyOptions.Text" xml:space="preserve">
     <value>Reapply options</value>
   </data>
   <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
-    <value>Periodically restores your overclocking options every few seconds if changed by other apps</value>
+    <value>Periodically restores your options every few seconds if changed by other apps</value>
   </data>
   <data name="Preset_ReapplyOptionsSetDesc.Text" xml:space="preserve">
-    <value>Overclocking options restore time</value>
+    <value>Options restore time</value>
+  </data>
+  <data name="Settings_Safeguards_Desc.Text" xml:space="preserve">
+    <value>Adaptive safeguard</value>
+  </data>
+  <data name="Settings_EnableSafeguardsDesc.Text" xml:space="preserve">
+    <value>Automatically prevents applying recent settings if the system was previously unstable</value>
   </data>
   <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
     <value>NBFC is not installed on your device. It is impossible to change the cooler curve</value>

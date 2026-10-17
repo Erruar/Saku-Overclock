@@ -58,6 +58,8 @@ public sealed partial class ПрименениеPage
     private void LoadApplyOptions()
     {
         ApplyStart.IsOn = _appSettings.ReapplyLatestSettingsOnAppLaunch;
+        SafeguardsGrid.Visibility = ApplyStart.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        EnableSafeguards.IsOn = _appSettings.EnableSafeguards;
         AutoReapply.IsOn = _appSettings.ReapplyOverclock;
         AutoReapplyGrid.CornerRadius = AutoReapply.IsOn 
             ? new CornerRadius(0) 
@@ -123,6 +125,17 @@ public sealed partial class ПрименениеPage
     {
         if (!_isLoaded) return;
         _appSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
+        SafeguardsGrid.Visibility = ApplyStart.IsOn ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    /// <summary>
+    ///     Изменяет состояние адаптивной защиты применённых параметров разгона при запуске программы (включено,
+    ///     выключено)
+    /// </summary>
+    private void EnableSafeguards_OnToggled(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded) return;
+        _appSettings.EnableSafeguards = EnableSafeguards.IsOn;
     }
 
     /// <summary>

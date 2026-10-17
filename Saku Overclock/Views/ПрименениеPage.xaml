@@ -66,11 +66,32 @@
                                 <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
                                            Foreground="{ThemeResource TextFillColorSecondary}"
                                            x:Uid="Preset_AutoApplyOptionsDesc"
-                                           Text="Восстанавливать последние настройки при запуске приложения" />
+                                           Text="Восстанавливать последние настройки при запуске системы" />
                             </Grid>
                             <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
                                           OffContent="" OnContent="" x:Name="ApplyStart"
                                           Toggled="ApplyOptionsOnStart_Click" />
+                        </Grid>
+                        <Grid PointerPressed="ToggleTheSwitchByTag" x:Name="SafeguardsGrid" Tag="EnableSafeguards" Margin="0,2,0,0" Height="60"
+                              HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                            <Grid HorizontalAlignment="Left" Height="35" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <FontIcon Grid.Row="0" HorizontalAlignment="Left" Margin="17,0,0,-18"
+                                          Glyph="&#xEA18;" />
+                                <TextBlock Grid.Row="0" VerticalAlignment="Center" Margin="50,-2,0,-2"
+                                           x:Uid="Settings_Safeguards_Desc" FontSize="14"
+                                           Text="Адаптивная защита" />
+                                <TextBlock Margin="50,2,0,-2" Grid.Row="1" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondary}"
+                                           x:Uid="Settings_EnableSafeguardsDesc"
+                                           Text="Предотвращает применение последних настроек, если система ранее работала нестабильно" />
+                            </Grid>
+                            <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0"
+                                          OffContent="" OnContent="" x:Name="EnableSafeguards"
+                                          Toggled="EnableSafeguards_OnToggled" />
                         </Grid>
                         <Grid PointerPressed="ToggleTheSwitchByTag" Tag="AutoReapply" Margin="0,2,0,0" Height="60"
                               HorizontalAlignment="Stretch" CornerRadius="0,0,15,15" x:Name="AutoReapplyGrid"

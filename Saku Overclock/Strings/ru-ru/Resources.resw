@@ -3277,7 +3277,7 @@ Asus. Может не поддерживаться на
     <value>Применение при запуске</value>
   </data>
   <data name="Preset_AutoApplyOptionsDesc.Text" xml:space="preserve">
-    <value>Восстанавливать последние настройки при запуске приложения</value>
+    <value>Восстанавливать последние настройки при запуске системы</value>
   </data>
   <data name="Preset_ReapplyOptions.Text" xml:space="preserve">
     <value>Переприменение разгона</value>
@@ -3287,6 +3287,12 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Preset_ReapplyOptionsSetDesc.Text" xml:space="preserve">
     <value>Время переприменения параметров</value>
+  </data>
+  <data name="Settings_Safeguards_Desc.Text" xml:space="preserve">
+    <value>Адаптивная защита</value>
+  </data>
+  <data name="Settings_EnableSafeguardsDesc.Text" xml:space="preserve">
+    <value>Предотвращает применение последних настроек, если система ранее работала нестабильно</value>
   </data>
   <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
     <value>На вашем устройстве не установлен NBFC. Невозможно изменить кривую кулера</value>
