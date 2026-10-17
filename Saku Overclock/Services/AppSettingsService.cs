@@ -136,16 +136,16 @@ public partial class AppSettingsService : IAppSettingsService, IDisposable
         set { lock (_lock) _cache.BatteryPreset = value; ScheduleSave(); }
     }
 
-    public string RyzenAdjLine
-    {
-        get { lock (_lock) return _cache.RyzenAdjLine; }
-        set { lock (_lock) _cache.RyzenAdjLine = value; ScheduleSave(); }
-    }
-
     public bool AppFirstRun
     {
         get { lock (_lock) return _cache.AppFirstRun; }
         set { lock (_lock) _cache.AppFirstRun = value; ScheduleSave(); }
+    }
+    
+    public bool EnableSafeguards
+    {
+        get { lock (_lock) return _cache.EnableSafeguards; }
+        set { lock (_lock) _cache.EnableSafeguards = value; ScheduleSave(); }
     }
 
     private void ScheduleSave()
