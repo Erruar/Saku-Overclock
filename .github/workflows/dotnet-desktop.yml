@@ -154,6 +154,35 @@ jobs:
       - name: Build Installer (WiX Bundle + MSI)
         run: dotnet build "Setup\SakuBundle\SakuBundle.wixproj" -c Release
 
+      - name: Sign Burn engine (detach, sign, reattach)
+        env:
+          CERT_PASS: ${{ secrets.CERT_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pass = $env:CERT_PASS.Trim()
+          $bundle = "Setup\SakuBundle\bin\Release\SakuOverclock-Setup.exe"
+          $engine = Join-Path $env:RUNNER_TEMP "engine.exe"
+          if (-not (Test-Path -LiteralPath $bundle)) { throw "Bundle not found: $bundle" }
+
+          if (Test-Path ".config\dotnet-tools.json") {
+            dotnet tool restore
+          } elseif (-not (Get-Command wix -ErrorAction SilentlyContinue)) {
+            dotnet tool install --global wix --version "7.*"
+            if ($LASTEXITCODE -ne 0) { throw "Failed to install wix CLI" }
+            "$env:USERPROFILE\.dotnet\tools" >> $env:GITHUB_PATH
+            $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
+          }
+          $wix = if (Test-Path ".config\dotnet-tools.json") { "dotnet wix" } else { "wix" }
+
+          Invoke-Expression "$wix burn -acceptEula wix7 detach `"$bundle`" -engine `"$engine`""
+          if ($LASTEXITCODE -ne 0) { throw "wix burn detach failed" }
+
+          & $env:SIGNTOOL sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $engine
+          if ($LASTEXITCODE -ne 0) { throw "signtool failed for engine.exe" }
+
+          Invoke-Expression "$wix burn -acceptEula wix7 reattach `"$bundle`" -engine `"$engine`" -o `"$bundle`""
+          if ($LASTEXITCODE -ne 0) { throw "wix burn reattach failed" }
+
       - name: Stage installers
         run: |
           $ErrorActionPreference = 'Stop'
@@ -310,9 +339,7 @@ jobs:
           if (-not $files) { throw "Nothing to sign in pkgs" }
           foreach ($f in $files) {
             Write-Output "Signing: $($f.FullName)"
-            $extraArgs = @()
-            if ($f.Name -like '*-Setup.exe') { $extraArgs += '/as' }
-            & $env:SIGNTOOL sign @extraArgs /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $f.FullName
+            & $env:SIGNTOOL sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $f.FullName
             if ($LASTEXITCODE -ne 0) { throw "signtool failed: $($f.Name)" }
           }
 
