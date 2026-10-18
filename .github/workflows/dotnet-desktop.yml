@@ -310,7 +310,9 @@ jobs:
           if (-not $files) { throw "Nothing to sign in pkgs" }
           foreach ($f in $files) {
             Write-Output "Signing: $($f.FullName)"
-            & $env:SIGNTOOL sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $f.FullName
+            $extraArgs = @()
+            if ($f.Name -like '*-Setup.exe') { $extraArgs += '/as' }
+            & $env:SIGNTOOL sign @extraArgs /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $env:PFX_PATH /p $pass $f.FullName
             if ($LASTEXITCODE -ne 0) { throw "signtool failed: $($f.Name)" }
           }
 
