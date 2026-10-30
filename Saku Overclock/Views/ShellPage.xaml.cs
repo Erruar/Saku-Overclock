@@ -75,7 +75,7 @@ public sealed partial class ShellPage
     /// </summary>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (AppSettings.AppFirstRun)
+        if (FirstRunManager.GetFirstRun())
         {
             HideNavigationBar();
             Icon.Visibility = Visibility.Collapsed;
