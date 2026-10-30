@@ -19,20 +19,34 @@ public partial class TrayMenuService(
 {
     private TaskbarIcon? _mainTrayIcon;
     private TaskbarIcon? _minimalTrayIcon;
+    private bool _initialized;
+    private bool _minimalModeActive;
 
     public void Initialize()
     {
+        if (_initialized) return;
+        _initialized = true;
+        
+        TryInitializeMainTrayIcon();
+        RegisterCommands(CreateTrayCommands());
+        
+        if (_minimalModeActive) ApplyMinimalMode();
+        else EnsureTrayIconCreated();
+    }
+    
+    private bool TryInitializeMainTrayIcon()
+    {
+        if (_mainTrayIcon != null) return true;
         try
         {
             _mainTrayIcon = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
+            return true;
         }
         catch (Exception ex)
         {
             LogHelper.LogError($"[TrayIconService] Failed to initialize: {ex}");
+            return false;
         }
-
-        RegisterCommands(CreateTrayCommands());
-        EnsureTrayIconCreated();
     }
 
     public void RegisterCommands(ITrayCommandCollection commands)
@@ -48,6 +62,9 @@ public partial class TrayMenuService(
 
     public void EnsureTrayIconCreated()
     {
+        if (_minimalModeActive) return;
+        if (_mainTrayIcon == null && !TryInitializeMainTrayIcon()) return;
+        
         try
         {
             _mainTrayIcon?.ForceCreate(false);
@@ -60,25 +77,31 @@ public partial class TrayMenuService(
 
     public void RestoreDefaultMenu()
     {
+        _minimalModeActive = false;
+        
         _minimalTrayIcon?.Dispose();
         _minimalTrayIcon = null;
+        
+        if (!_initialized || (_mainTrayIcon == null && !TryInitializeMainTrayIcon())) return;
 
-        if (_mainTrayIcon != null)
-        {
-            _mainTrayIcon.Visibility = Visibility.Visible;
-            _mainTrayIcon.ForceCreate(false);
-        }
+        _mainTrayIcon!.Visibility = Visibility.Visible;
+        EnsureTrayIconCreated();
     }
 
     public void SetMinimalMode()
     {
-        if (_mainTrayIcon == null)
-        {
-            return;
-        }
+        _minimalModeActive = true;
+        if (!_initialized) return;
+        ApplyMinimalMode();
+    }
+    
+    private void ApplyMinimalMode()
+    {
+        if (_minimalTrayIcon != null) return;
 
-        _mainTrayIcon.Visibility = Visibility.Collapsed;
-        _minimalTrayIcon?.Dispose();
+        TryInitializeMainTrayIcon();
+        if (_mainTrayIcon != null)
+            _mainTrayIcon.Visibility = Visibility.Collapsed;
 
         try
         {
@@ -90,7 +113,8 @@ public partial class TrayMenuService(
             };
 
             var toggleCommand = new XamlUICommand();
-            toggleCommand.ExecuteRequested += (_, _) => windowStateManager.ToggleWindowVisibility();
+            toggleCommand.ExecuteRequested += (_, _) =>
+                windowStateManager.ToggleWindowVisibility();
 
             _minimalTrayIcon.LeftClickCommand = toggleCommand;
             _minimalTrayIcon.ForceCreate(false);
