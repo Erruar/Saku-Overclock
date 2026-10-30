@@ -3461,14 +3461,20 @@ Set up a personalized undervolting level that will be applied to all premade pre
   <data name="FirstLaunchTrainingApplyButtonStatus.Text" xml:space="preserve">
     <value>After applying the preset, you can see the application status</value>
   </data>
-  <data name="FirstLaunchFinishSetup.Text" xml:space="preserve">
-    <value>Finish setup</value>
+  <data name="FirstLaunchFinishSetup.Content" xml:space="preserve">
+    <value>Finish tour</value>
   </data>
   <data name="FirstLaunchFinishSection.Text" xml:space="preserve">
     <value>Final touches</value>
   </data>
   <data name="FirstLaunchLicenseSection.Text" xml:space="preserve">
     <value>License agreement</value>
+  </data>
+  <data name="FirstLaunchLicenseSectionCaption.Text" xml:space="preserve">
+    <value>Your device security</value>
+  </data>
+  <data name="FirstLaunchLicenseSectionCaptionDesc.Text" xml:space="preserve">
+    <value>Program controls processor parameters. You are responsible for operating equipment in modes other than those specified by the manufacturer</value>
   </data>
   <data name="FirstLaunchTrainingSettingArea.Text" xml:space="preserve">
     <value>Area with setting</value>
@@ -3486,7 +3492,112 @@ Set up a personalized undervolting level that will be applied to all premade pre
     <value>To switch any parameter in the program, just click on the setting area instead of reaching for the settings item</value>
   </data>
   <data name="FirstLaunchOcFinderPreparingPresets.Text" xml:space="preserve">
-    <value>Preparing presets</value>
+    <value>Your system status</value>
+  </data>
+  <data name="FirstLaunchOcFinderPreparingPresetsDesc.Text" xml:space="preserve">
+    <value>Your system is tested and ready to go</value>
+  </data>
+  <data name="FirstLaunchOcFinderPreparingPresetsFailedDesc.Text" xml:space="preserve">
+    <value>Your system does not meet the requirements</value>
+  </data>
+  <data name="FirstLaunchNextStage.Content" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="FirstLaunchFailedStage.Content" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="FirstLaunchFailedContinueStage.Content" xml:space="preserve">
+    <value>Continue using</value>
+  </data>
+  <data name="FirstLaunchCloseStage.Content" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="FirstLaunchLicenseClose.Content" xml:space="preserve">
+    <value>Decline and exit</value>
+  </data>
+  <data name="FirstLaunchProcessor.Text" xml:space="preserve">
+    <value>Processor</value>
+  </data>
+  <data name="FirstLaunchService.Text" xml:space="preserve">
+    <value>Program service</value>
+  </data>
+  <data name="FirstLaunchProcessorNotSupported.Text" xml:space="preserve">
+    <value>Not supported</value>
+  </data>
+  <data name="FirstLaunchProcessorSupported.Text" xml:space="preserve">
+    <value>Supported</value>
+  </data>
+  <data name="FirstLaunchProcessorUnknown.Text" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="FirstLaunchServiceRunning.Text" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="FirstLaunchServiceStopped.Text" xml:space="preserve">
+    <value>Stopped</value>
+  </data>
+  <data name="FirstLaunchServiceError.Text" xml:space="preserve">
+    <value>Internal error</value>
+  </data>
+  <data name="FirstLaunchDriverInstalled.Text" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="FirstLaunchDriverNotInstalled.Text" xml:space="preserve">
+    <value>Not installed</value>
+  </data>
+  <data name="FirstLaunchDriver.Text" xml:space="preserve">
+    <value>PawnIO driver</value>
+  </data>
+  <data name="FirstLaunchWelcomeTraining.Text" xml:space="preserve">
+    <value>Welcome to your new Saku Overclock</value>
+  </data>
+  <data name="FirstLaunchWelcomeTrainingDesc.Text" xml:space="preserve">
+    <value>Get to know your Saku Overclock and see what's new</value>
+  </data>
+  <data name="FirstLaunchTrainingAgree.Content" xml:space="preserve">
+    <value>Start Tour</value>
+  </data>
+  <data name="FirstLaunchTrainingClose.Content" xml:space="preserve">
+    <value>Skip and use program</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModes.Text" xml:space="preserve">
+    <value>Three operating modes</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModesDesc.Text" xml:space="preserve">
+    <value>Choose the mode that suits you. Switch between them at any time</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModesAuto.Text" xml:space="preserve">
+    <value>- program automatically adjusts to your workload</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModesManual.Text" xml:space="preserve">
+    <value>- full control over all settings</value>
+  </data>
+  <data name="FirstLaunchTrainingSafeLimits.Text" xml:space="preserve">
+    <value>Safe control</value>
+  </data>
+  <data name="FirstLaunchTrainingSafeLimitsDesc.Text" xml:space="preserve">
+    <value>Slider keeps values within a safe range for your device</value>
+  </data>
+  <data name="FirstLaunchTrainingSafeLimitsAboveDesc.Text" xml:space="preserve">
+    <value>Use value input field to set a value above the safe limit</value>
+  </data>
+  <data name="FirstLaunchTrainingPresetsApply.Text" xml:space="preserve">
+    <value>Preset system</value>
+  </data>
+  <data name="FirstLaunchTrainingPresetsApplyDesc.Text" xml:space="preserve">
+    <value>Select the appropriate operating mode and click "Apply"</value>
+  </data>
+  <data name="FirstLaunchTrainingPresetsApplyDoubleDesc.Text" xml:space="preserve">
+    <value>Double click on preset will apply it</value>
+  </data>
+  <data name="FirstLaunchTrainingBack.Content" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="FirstLaunchMoreAboutLicense.Content" xml:space="preserve">
+    <value>i Learn more about license</value>
+  </data>
+  <data name="FirstLaunchMoreAboutPreparing.Content" xml:space="preserve">
+    <value>i Learn more about testing</value>
   </data>
   <data name="Info_GenerateDebugReport.Text" xml:space="preserve">
     <value>Debug report</value>

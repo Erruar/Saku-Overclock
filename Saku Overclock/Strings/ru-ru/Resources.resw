@@ -3459,14 +3459,20 @@ Asus. Может не поддерживаться на
   <data name="FirstLaunchTrainingApplyButtonStatus.Text" xml:space="preserve">
     <value>После применения пресета можно увидеть статус применения</value>
   </data>
-  <data name="FirstLaunchFinishSetup.Text" xml:space="preserve">
-    <value>Завершить настройку</value>
+  <data name="FirstLaunchFinishSetup.Content" xml:space="preserve">
+    <value>Завершить тур</value>
   </data>
   <data name="FirstLaunchFinishSection.Text" xml:space="preserve">
     <value>Финальные штрихи</value>
   </data>
   <data name="FirstLaunchLicenseSection.Text" xml:space="preserve">
     <value>Лицензия приложения</value>
+  </data>
+  <data name="FirstLaunchLicenseSectionCaption.Text" xml:space="preserve">
+    <value>Ваша безопасность</value>
+  </data>
+  <data name="FirstLaunchLicenseSectionCaptionDesc.Text" xml:space="preserve">
+    <value>Программа управляет параметрами процессора. Вы несёте ответственность за эксплуатацию оборудования в режимах, отличных от заводских</value>
   </data>
   <data name="FirstLaunchTrainingSettingArea.Text" xml:space="preserve">
     <value>Область с настройкой</value>
@@ -3484,7 +3490,112 @@ Asus. Может не поддерживаться на
     <value>Для переключения любого параметра в программе достаточно нажать на область с настройкой вместо того чтобы тянуться к элементу настройки</value>
   </data>
   <data name="FirstLaunchOcFinderPreparingPresets.Text" xml:space="preserve">
-    <value>Подготовка пресетов</value>
+    <value>Состояние вашей системы</value>
+  </data>
+  <data name="FirstLaunchOcFinderPreparingPresetsDesc.Text" xml:space="preserve">
+    <value>Ваша система проверена и готова к работе</value>
+  </data>
+  <data name="FirstLaunchOcFinderPreparingPresetsFailedDesc.Text" xml:space="preserve">
+    <value>Ваша система не соответствует требованиям</value>
+  </data>
+  <data name="FirstLaunchNextStage.Content" xml:space="preserve">
+    <value>Продолжить</value>
+  </data>
+  <data name="FirstLaunchFailedStage.Content" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="FirstLaunchFailedContinueStage.Content" xml:space="preserve">
+    <value>Продолжить использование</value>
+  </data>
+  <data name="FirstLaunchCloseStage.Content" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="FirstLaunchLicenseClose.Content" xml:space="preserve">
+    <value>Отказаться и выйти</value>
+  </data>
+  <data name="FirstLaunchProcessor.Text" xml:space="preserve">
+    <value>Процессор</value>
+  </data>
+  <data name="FirstLaunchService.Text" xml:space="preserve">
+    <value>Сервис программы</value>
+  </data>
+  <data name="FirstLaunchProcessorNotSupported.Text" xml:space="preserve">
+    <value>Не поддерживается</value>
+  </data>
+  <data name="FirstLaunchProcessorSupported.Text" xml:space="preserve">
+    <value>Поддерживается</value>
+  </data>
+  <data name="FirstLaunchProcessorUnknown.Text" xml:space="preserve">
+    <value>Неизвестно</value>
+  </data>
+  <data name="FirstLaunchServiceRunning.Text" xml:space="preserve">
+    <value>Запущен</value>
+  </data>
+  <data name="FirstLaunchServiceStopped.Text" xml:space="preserve">
+    <value>Остановлен</value>
+  </data>
+  <data name="FirstLaunchServiceError.Text" xml:space="preserve">
+    <value>Внутренняя ошибка</value>
+  </data>
+  <data name="FirstLaunchDriverInstalled.Text" xml:space="preserve">
+    <value>Установлен</value>
+  </data>
+  <data name="FirstLaunchDriverNotInstalled.Text" xml:space="preserve">
+    <value>Не установлен</value>
+  </data>
+  <data name="FirstLaunchDriver.Text" xml:space="preserve">
+    <value>Драйвер PawnIO</value>
+  </data>
+  <data name="FirstLaunchWelcomeTraining.Text" xml:space="preserve">
+    <value>Добро пожаловать в Saku Overclock</value>
+  </data>
+  <data name="FirstLaunchWelcomeTrainingDesc.Text" xml:space="preserve">
+    <value>Приготовьтесь узнать больше о Saku Overclock и увидеть что нового</value>
+  </data>
+  <data name="FirstLaunchTrainingAgree.Content" xml:space="preserve">
+    <value>Начать тур</value>
+  </data>
+  <data name="FirstLaunchTrainingClose.Content" xml:space="preserve">
+    <value>Пропустить и перейти к использованию</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModes.Text" xml:space="preserve">
+    <value>Три режима работы</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModesDesc.Text" xml:space="preserve">
+    <value>Выберите режим, который подходит вам. Переключайтесь между ними в любой момент.</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModesAuto.Text" xml:space="preserve">
+    <value>- программа сама подстраивается под нагрузку</value>
+  </data>
+  <data name="FirstLaunchTrainingSafeLimits.Text" xml:space="preserve">
+    <value>Безопасные пределы</value>
+  </data>
+  <data name="FirstLaunchTrainingSafeLimitsDesc.Text" xml:space="preserve">
+    <value>Слайдер удерживает значения в безопасной зоне для вашего устройства</value>
+  </data>
+  <data name="FirstLaunchTrainingSafeLimitsAboveDesc.Text" xml:space="preserve">
+    <value>Используйте поле ввода справа от слайдера чтобы выставить значение выше безопасного лимита</value>
+  </data>
+  <data name="FirstLaunchTrainingBack.Content" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="FirstLaunchTrainingThreeModesManual.Text" xml:space="preserve">
+    <value>- полный контроль над всеми настройками</value>
+  </data>
+  <data name="FirstLaunchTrainingPresetsApply.Text" xml:space="preserve">
+    <value>Система пресетов</value>
+  </data>
+  <data name="FirstLaunchTrainingPresetsApplyDesc.Text" xml:space="preserve">
+    <value>Выберите подходящий режим работы и нажмите "Применить"</value>
+  </data>
+  <data name="FirstLaunchTrainingPresetsApplyDoubleDesc.Text" xml:space="preserve">
+    <value>Двойной клик по пресету также применит его</value>
+  </data>
+  <data name="FirstLaunchMoreAboutLicense.Content" xml:space="preserve">
+    <value>i Узнать больше о лицензии</value>
+  </data>
+  <data name="FirstLaunchMoreAboutPreparing.Content" xml:space="preserve">
+    <value>i Узнать больше о проверке</value>
   </data>
   <data name="Info_GenerateDebugReport.Text" xml:space="preserve">
     <value>Создать отчёт</value>

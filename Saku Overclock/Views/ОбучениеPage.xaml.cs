@@ -1,11 +1,21 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Diagnostics;
+using System.Numerics;
+using Windows.UI.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.Win32;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.Shared;
-using Saku_Overclock.Shared.Contracts;
+using Saku_Overclock.Shared.Models;
 using Saku_Overclock.ViewModels;
+using InfoBarSeverity = Microsoft.UI.Xaml.Controls.InfoBarSeverity;
+using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
@@ -14,12 +24,11 @@ public sealed partial class ОбучениеPage
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
     private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
     private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>(); // Управление треем
-    private static readonly IThemeSelectorService ThemeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
-    private static readonly IOcFinderGateService OcFinder = App.GetService<IOcFinderGateService>(); // Темы приложения
-    private static readonly IAppSettingsService
-        AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private bool _isLoaded;
+    private static readonly ILogger<ОбучениеPage> Logger = App.GetService<ILogger<ОбучениеPage>>(); // Логирование
+    private static readonly CoreGatewayService CoreGatewayService = App.GetService<CoreGatewayService>(); // Состояние сервиса
 
+    private bool _testFailed;
+    
     public ОбучениеPage()
     {
         InitializeComponent();
@@ -36,220 +45,76 @@ public sealed partial class ОбучениеPage
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _isLoaded = true;
         RunIntroSequence();
-        LoadQuickSettings();
+        LoadOcFinderTestPrompts();
+        LoadDefaultPresets();
     }
 
-    private void LoadQuickSettings()
+    private void LoadOcFinderTestPrompts()
     {
         try
         {
-            AutoStartComboBox.SelectedIndex = AppSettings.AutostartType is > -1 and < 3 ? AppSettings.AutostartType : 0;
-            AppHideToTray.IsOn = AppSettings.HideToTray;
-
-            ApplyStart.IsOn = AppSettings.ReapplyLatestSettingsOnAppLaunch;
-            AutoCheckUpdates.IsOn = AppSettings.CheckForUpdates;
-            AutoReapply.IsOn = AppSettings.ReapplyOverclock;
-            InitializeThemeSettings();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }    
-    }
-
-    /// <summary>
-    ///     Загружает параметры тем приложения
-    /// </summary>
-    private void InitializeThemeSettings()
-    {
-        ThemeComboBox.Items.Clear();
-
-        try
-        {
-            // Проверяем, что есть темы для загрузки
-            if (ThemeSelectorService.Themes.Count == 0)
+            var name = GetSystemInfo.ReadCpuInformation().name.TrimEnd();
+            OcFinderProcessorName.Text = name.Length > 35 ? name[..35] : name;
+            if (CoreGatewayService.IsServiceUnavailable)
             {
-                return;
+                OcFinderServiceState.Text = "FirstLaunchServiceStopped/Text".GetLocalized();
+                OcFinderServiceStateGlyph.Glyph = "\uEA39";
+                
+                OcFinderProcessorSupported.Text = "FirstLaunchProcessorUnknown/Text".GetLocalized();
+                OcFinderProcessorStateGlyph.Glyph = "\uE9CE";
+                _testFailed = true;
             }
-
-            foreach (var theme in ThemeSelectorService.Themes)
+            else
             {
-                try
+                OcFinderServiceState.Text = "FirstLaunchServiceRunning/Text".GetLocalized();
+                if (CoreGatewayService.IsAvailable)
                 {
-                    // Локализуем только темы с префиксом "Theme_"
-                    var displayName = theme.ThemeName.Contains("Theme_")
-                        ? theme.ThemeName.GetLocalized()
-                        : theme.ThemeName;
-
-                    ThemeComboBox.Items.Add(displayName);
+                    if (CoreGatewayService.GetCodenameGeneration() != CodenameGeneration.Unknown)
+                    {
+                        OcFinderProcessorSupported.Text = "FirstLaunchProcessorSupported/Text".GetLocalized();
+                        OcFinderProcessorStateGlyph.Glyph = "\uEC61";
+                    }
                 }
-                catch
+                else
                 {
-                    ThemeComboBox.Items.Add(theme.ThemeName);
+                    OcFinderServiceState.Text = "FirstLaunchServiceError/Text".GetLocalized();
+                    OcFinderServiceStateGlyph.Glyph = "\uEA39";
+                    _testFailed = true;
                 }
             }
 
-            // Проверяем индекс темы
-            if (AppSettings.ThemeType < 0 || AppSettings.ThemeType >= ThemeSelectorService.Themes.Count)
+            using var subKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
+            if (subKey != null && TryParseVersion(subKey.GetValue("DisplayVersion"), out var parsed) && parsed != null)
+                OcFinderDriverState.Text = "FirstLaunchDriverInstalled/Text".GetLocalized() + " " + parsed;
+            else
             {
-                // Сбрасываем на дефолтную тему
-                AppSettings.ThemeType = 0;
+                OcFinderDriverState.Text = "FirstLaunchDriverNotInstalled/Text".GetLocalized();
+                OcFinderDriverStateGlyph.Glyph = "\uEA39";
+                _testFailed = true;
             }
-
-            // Устанавливаем выбранную тему
-            ThemeComboBox.SelectedIndex = AppSettings.ThemeType;
         }
         catch (Exception ex)
         {
-            LogHelper.LogError(ex);
-
-            // Сбрасываем на безопасные значения
-            AppSettings.ThemeType = 0;
+            Logger.LogError("LoadOcFinderTestPrompts failed {ex}", ex);
         }
     }
-
-    /// <summary>
-    ///     Применяет выбранную тему из ThemeComboBox
-    /// </summary>
-    private void ThemesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    
+    private static bool TryParseVersion(object? val, out Version? version)
     {
-        if (!_isLoaded)
+        version = null;
+        if (val != null)
         {
-            return;
-        }
-
-        AppSettings.ThemeType = ThemeComboBox.SelectedIndex > -1 ? ThemeComboBox.SelectedIndex : 0;
-
-        if (ThemeSelectorService.Themes.Count == 0)
-        {
-            ThemeSelectorService.SetThemeAsync(ElementTheme.Default); // Список пуст -> системная тема
-            return;
-        }
-
-        if (AppSettings.ThemeType < 0 ||
-            AppSettings.ThemeType >= ThemeSelectorService.Themes.Count) // Защита от некорректного индекса
-        {
-            AppSettings.ThemeType = 0;
-        }
-
-        var selectedTheme = ThemeSelectorService.Themes[AppSettings.ThemeType];
-
-        if (AppSettings.ThemeType == 0)
-        {
-            ThemeSelectorService.SetThemeAsync(ElementTheme.Default);
-        }
-        else
-        {
-            ThemeSelectorService.SetThemeAsync(selectedTheme.ThemeLight
-                ? ElementTheme.Light
-                : ElementTheme.Dark); // Переключение состояния темы, на светлую, тёмную
-        }
-
-        // Обновляем UI-элементы
-        UpdateTheme();
-    }
-
-    /// <summary>
-    ///     Обновляет тему приложения в реальном времени
-    /// </summary>
-    private static void UpdateTheme()
-    {
-        NotificationsService.ShowNotification("Theme applied!",
-            "DEBUG MESSAGE",
-            InfoBarSeverity.Success);
-    }
-
-    /// <summary>
-    ///     Изменяет тип автозагрузки
-    /// </summary>
-    private void AutoStartComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.AutostartType = AutoStartComboBox.SelectedIndex;
-        if (AutoStartComboBox.SelectedIndex is 1 or 2)
-        {
-            AutoStartHelper.SetStartupTask();
-        }
-        else
-        {
-            AutoStartHelper.RemoveStartupTask();
-        }
-    }
-
-    /// <summary>
-    ///     Изменяет тип скрытия приложения в трей
-    /// </summary>
-    private void AppHideToTray_OnToggled(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.HideToTray = AppHideToTray.IsOn;
-    }
-
-    /// <summary>
-    ///     Изменяет состояние пере-применения последних применённых параметров разгона при запуске программы (включены,
-    ///     выключены)
-    /// </summary>
-    private void ApplyOptionsOnStart_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
-    }
-
-    /// <summary>
-    ///     Изменяет состояние пере-применение последних применённых параметров каждые несколько секунд (включено, выключено)
-    /// </summary>
-    private void AutoReapplyOptionsEverySeconds_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.ReapplyOverclock = AutoReapply.IsOn;
-        AppSettings.ReapplyOverclockTimer = 3;
-    }
-
-    /// <summary>
-    ///     Изменяет состояние автоматической проверки наличия обновлений программы (включено, выключено)
-    /// </summary>
-    private void AutoCheckUpdates_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded)
-        {
-            return;
-        }
-
-        AppSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
-    }
-
-    /// <summary>
-    ///     Изменяет состояние привязанных ToggleSwitch
-    /// </summary>
-    private void ToggleTheSwitchByTag(object sender, object e)
-    {
-        if (sender is FrameworkElement { Tag: string targetName })
-        {
-            // Ищем элемент по имени на текущей странице и меняем его состояние
-            var targetToggle = FindName(targetName) as ToggleSwitch;
-            if (targetToggle != null)
+            try
             {
-                targetToggle.IsOn = !targetToggle.IsOn;
+                version = new Version((val as string)!);
+                return true;
             }
+            catch (ArgumentException) { }
+            catch (FormatException) { }
+            catch (OverflowException) { }
         }
+        return false;
     }
 
     private void TargetNumberBox_FocusEngaged(object sender, object args)
@@ -306,9 +171,6 @@ public sealed partial class ОбучениеPage
     
     private void OpenLicenseSection()
     {
-        Pager.SelectedPageIndex = 0;
-        Pager.Visibility = Visibility.Visible;
-
         LicenseSection.Opacity = 0;
         LicenseSection.Visibility = Visibility.Visible;
 
@@ -339,18 +201,15 @@ public sealed partial class ОбучениеPage
     {
         try
         {
-            // ------------------------------------------------------------
             // 1. ЗАПУСК LOTTIE (БОЛЬШОЕ ЛОГО)
-            // ------------------------------------------------------------
-            // Загружаем анимацию
             IAnimatedVisualSource2 newIntro = new AnimatedVisuals.SakuLogo();
             WelcomeLogoIntro.Source = newIntro;
 
-            // "Прогрев" первого кадра (опционально, убирает моргание)
+            // "Прогрев" первого кадра (убирает моргание)
             await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
-            await Task.Delay(50); // Даем потоку отрисовки вздохнуть
+            await Task.Delay(50); 
 
-            // Играем основную часть (Рисование)
+            // Играем основную часть 
             // Логотип сейчас огромный (500x500) по центру
             await WelcomeLogoIntro.PlayAsync(0, 350d / 373d, false);
             WelcomeLogoIntro.Pause();
@@ -358,14 +217,11 @@ public sealed partial class ОбучениеPage
             // Пауза "Наслаждения брендом"
             await Task.Delay(TimeSpan.FromSeconds(0.6));
 
-            // ------------------------------------------------------------
             // 2. БЕЗОПАСНАЯ ПОДМЕНА (Lottie -> PNG)
-            // ------------------------------------------------------------
-            // Мы делаем это ДО движения, чтобы не перегружать рендерер.
 
             var hideStoryBoard = new Storyboard();
 
-            var hideDuration = new Duration(TimeSpan.FromSeconds(1.1)); // Чуть больше секунды
+            var hideDuration = new Duration(TimeSpan.FromSeconds(1.1)); 
             var animHide = new DoubleAnimation
             {
                 To = 0,
@@ -391,21 +247,16 @@ public sealed partial class ОбучениеPage
 
             await Task.Delay(TimeSpan.FromSeconds(1.1));
 
-            WelcomeLogoIntro.Source = null; // Выгружаем ресурсы (теперь безопасно)
+            WelcomeLogoIntro.Source = null;
 
-            // ------------------------------------------------------------
             // 3. АНИМАЦИЯ: "КИНЕТИЧЕСКИЙ РАЗЪЕЗД"
-            // ------------------------------------------------------------
 
             var moveStoryboard = new Storyboard();
 
-            // QuinticEase EaseOut - "Apple Curve". 
-            // Очень резкий старт и очень долгая, мягкая остановка.
             var quintEase = new QuinticEase { EasingMode = EasingMode.EaseOut };
-            var duration = new Duration(TimeSpan.FromSeconds(1.1)); // Чуть больше секунды
+            var duration = new Duration(TimeSpan.FromSeconds(1.1));
 
-            // === А. Логотип: Уменьшение ===
-            // Уменьшаем с 1.0 (500px) до 0.4 (200px) - подбери scale по вкусу
+            // 3.1. Логотип: Уменьшение
             var animScaleX = new DoubleAnimation
             {
                 To = 0.4,
@@ -419,8 +270,7 @@ public sealed partial class ОбучениеPage
                 EasingFunction = quintEase
             };
 
-            // === Б. Логотип: Сдвиг Влево ===
-            // Сдвигаем влево, чтобы освободить место справа
+            // 3.2. Логотип: Сдвиг Влево
             var animMoveLogo = new DoubleAnimation
             {
                 To = -160,
@@ -428,9 +278,8 @@ public sealed partial class ОбучениеPage
                 EasingFunction = quintEase
             };
 
-            // === В. Текст: Сдвиг Вправо (Навстречу) ===
-            // Текст "выезжает" из-за логотипа вправо. 
-            // Он был на -50, станет на 140 (справа от лого)
+            // 3.3. Текст: Сдвиг Вправо 
+            // Текст "выезжает" из-за логотипа вправо
             var animMoveText = new DoubleAnimation
             {
                 To = 130,
@@ -445,17 +294,14 @@ public sealed partial class ОбучениеPage
                 EasingFunction = quintEase
             };
 
-            // === Г. Текст: Проявление ===
+            // 3.4. Текст: Проявление
             // Появляется чуть позже начала движения
             var animFadeText = new DoubleAnimation
             {
                 To = 1,
                 BeginTime = TimeSpan.FromSeconds(0.15),
                 Duration = new Duration(TimeSpan.FromSeconds(0.8))
-                // Тут Easing не обязателен, линейное появление смотрится чисто
             };
-
-            // --- Привязки ---
 
             // Лого Scale
             Storyboard.SetTarget(animScaleX, LogoScale);
@@ -487,12 +333,9 @@ public sealed partial class ОбучениеPage
 
             moveStoryboard.Begin();
 
-            // Ждем чтения (3-4 секунды)
             await Task.Delay(3500);
 
-            // ------------------------------------------------------------
             // 4. ФИНАЛ: УХОД НА ЛИЦЕНЗИЮ
-            // ------------------------------------------------------------
             var exitStoryboard = new Storyboard();
 
             // Все плавно растворяется
@@ -510,32 +353,163 @@ public sealed partial class ОбучениеPage
 
             await Task.Delay(500);
 
-            // Переход
             OpenLicenseSection();
 
-            // Скрываем, чтобы не мешало кликам
             CenterContent.Visibility = Visibility.Collapsed;
 
         }
         catch (Exception ex)
         {
-            // Логирование, если нужно. 
-            // В продакшене лучше не игнорировать полностью, но для UI анимации - безопасно.
-            System.Diagnostics.Debug.WriteLine($"Animation Error: {ex.Message}");
+            Debug.WriteLine($"Animation Error: {ex.Message}");
         }
     }
 
+    private void LoadDefaultPresets()
+    {
+        PresetCustom.Children.Clear();
+        var presets = new Preset[]
+        {
+            new() { PresetName = "Preset_SmartPreset".GetLocalized(), PresetIcon = "\uF4A5" },
+            new() { PresetName = "Preset_PowerfulPreset".GetLocalized(), PresetIcon = "\uEC4A" },
+        };
+        for (var i = 0; i < presets.Length; i++)
+        {
+            var preset = presets[i];
+            var isChecked = i == 0;
+
+            var presetName = preset.PresetName;
+            
+            var toggleButton = new ToggleButton
+            {
+                Tag = i,
+                Margin = new Thickness(0, 7, 0, 0),
+                CornerRadius = new CornerRadius(16),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Shadow = new ThemeShadow(),
+                Translation = new Vector3(0, 0, 20),
+                IsChecked = isChecked,
+                Content = new Grid
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Margin = new Thickness(-5, -5, -4, -5),
+                    Children =
+                    {
+                        new FontIcon
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            Margin = new Thickness(7, 0, 0, 0),
+                            Glyph = preset.PresetIcon == string.Empty ? "\uE718" : preset.PresetIcon
+                        },
+                        new TextBlock
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            Margin = new Thickness(36, 5, 5, 5),
+                            FontWeight = new FontWeight(500),
+                            Text = presetName
+                        }
+                    }
+                }
+            };
+            toggleButton.Checked += ToggleButton_Checked;
+            toggleButton.Unchecked += ToggleButton_Unchecked;
+            toggleButton.Unloaded += (_, _) =>
+            {
+                toggleButton.Checked -= ToggleButton_Checked;
+                toggleButton.Unchecked -= ToggleButton_Unchecked;
+            };
+            PresetCustom.Children.Add(toggleButton);
+        }
+    }
+
+    private bool _userSwitchPreset;
+    private string
+        _doubleClickApplyPrev =
+            string.Empty;
+
+    /// <summary>
+    ///     Запрещает отмену выделения ToggleButton пресета
+    /// </summary>
+    private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
+    {
+        if (_userSwitchPreset)
+        {
+            return;
+        }
+
+        ((ToggleButton)sender).IsChecked = true;
+    }
+
+    /// <summary>
+    ///     Обработка выбора и активации пресета
+    /// </summary>
+    private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            _userSwitchPreset = true;
+            var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot);
+            foreach (var button in toggleButtons)
+            {
+                if (button != sender as ToggleButton)
+                {
+                    button.IsChecked = false;
+                }
+            }
+
+            var name = string.Empty;
+            var desc = string.Empty;
+            var toggle = sender as ToggleButton;
+            var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(toggle!);
+            foreach (var block in textBlocks)
+            {
+                if (block.FontWeight == new FontWeight(700))
+                {
+                    name = block.Text;
+                }
+                else
+                {
+                    if (block.TextWrapping == TextWrapping.Wrap)
+                    {
+                        desc = block.Text;
+                    }
+                }
+            }
+
+            if (_doubleClickApplyPrev == name + desc + toggle?.Tag)
+            {
+                ApplyButton_Click(null, null);
+            }
+
+            _doubleClickApplyPrev = name + desc + toggle?.Tag;
+            if (toggle?.Tag is string)
+            {
+            }
+            else
+            {
+            }
+
+            await Task.Delay(20);
+            _userSwitchPreset = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("Preset switch toggle failed {ex}", ex);
+        }
+    }
 
     private async void AcceptButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            if (LicenseAcceptButton.IsChecked == false)
+            if (!_testFailed)
             {
-                AcceptErrTeachingTip.IsOpen = true;
-                return;
+                OcFinderContinueUsingRow.Height = new GridLength(0);
+                OcFinderExit.RemoveFromParent();
+                OcFinderContinue.Content = "FirstLaunchNextStage/Content".GetLocalized();
+                OcFinderSystemReadyState.Text = "FirstLaunchOcFinderPreparingPresetsDesc/Text".GetLocalized();
             }
-            await ChangeSection(LicenseSection, QuickSettings);
+            await ChangeSection(LicenseSection, OcFinderScanSection);
         }
         catch (Exception ex) 
         {
@@ -543,7 +517,7 @@ public sealed partial class ОбучениеPage
         }
     }
 
-    private async Task ChangeSection(Grid from, Grid to)
+    private static async Task ChangeSection(Grid from, Grid to)
     {
 
         to.Visibility = Visibility.Visible;
@@ -552,14 +526,14 @@ public sealed partial class ОбучениеPage
         {
             To = 0,
             BeginTime = TimeSpan.FromSeconds(0),
-            Duration = new Duration(TimeSpan.FromSeconds(0.9)),
+            Duration = new Duration(TimeSpan.FromSeconds(0.8)),
             EnableDependentAnimation = true
         };
         var fadeIn = new DoubleAnimation
         {
             To = 1,
             BeginTime = TimeSpan.FromSeconds(0.9),
-            Duration = new Duration(TimeSpan.FromSeconds(0.9)),
+            Duration = new Duration(TimeSpan.FromSeconds(0.8)),
             EnableDependentAnimation = true
         };
         Storyboard.SetTarget(fadeIn, to);
@@ -571,253 +545,20 @@ public sealed partial class ОбучениеPage
         storyboard.Children.Add(fadeIn);
         storyboard.Begin();
 
-        Pager.SelectedPageIndex += 1;
-        await Task.Delay(TimeSpan.FromSeconds(1.8));
+        await Task.Delay(TimeSpan.FromSeconds(1.7));
 
         from.Visibility = Visibility.Collapsed;
     }
 
-    private async void QuickSettingsDone_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await ChangeSection(QuickSettings, OcFinderScanSection);
-            await AnimateOcFinderSearch();
-            await ChangeSection(OcFinderScanSection, TrainingSection /*OcFinderPresetsSection*/);
-
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    }
-
-    private async Task AnimateOcFinderSearch()
-    {
-        var quintEaseOut = new QuinticEase { EasingMode = EasingMode.EaseOut };
-        var quintEaseInOut = new QuinticEase { EasingMode = EasingMode.EaseInOut };
-
-        // === 1. Движение влево ===
-        // Scale: 2.0 -> 1.7
-        // X: 5 -> -126
-        // Длительность: 1.1с
-        {
-            var sb = new Storyboard
-            {
-                Duration = TimeSpan.FromSeconds(1.1)
-            };
-
-            var scaleX = new DoubleAnimation
-            {
-                To = 1.7,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-            var scaleY = new DoubleAnimation
-            {
-                To = 1.7,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-            var moveX = new DoubleAnimation
-            {
-                To = -126,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-
-            Storyboard.SetTarget(scaleX, SearchScale);
-            Storyboard.SetTargetProperty(scaleX, "ScaleX");
-            Storyboard.SetTarget(scaleY, SearchScale);
-            Storyboard.SetTargetProperty(scaleY, "ScaleY");
-
-            Storyboard.SetTarget(moveX, SearchTransform);
-            Storyboard.SetTargetProperty(moveX, "X");
-
-            sb.Children.Add(scaleX);
-            sb.Children.Add(scaleY);
-            sb.Children.Add(moveX);
-
-            sb.Begin();
-            await Task.Delay(TimeSpan.FromSeconds(1.1));
-        }
-
-        // === 2. Долгое движение вправо ===
-        // Scale: 1.7 -> 1.5
-        // X: -126 -> 134
-        // Длительность: 1.8с
-        {
-            var sb = new Storyboard
-            {
-                Duration = TimeSpan.FromSeconds(1.8)
-            };
-
-            var scaleX = new DoubleAnimation
-            {
-                To = 1.5,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseInOut
-            };
-            var scaleY = new DoubleAnimation
-            {
-                To = 1.5,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseInOut
-            };
-            var moveX = new DoubleAnimation
-            {
-                To = 134,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseInOut
-            };
-
-            Storyboard.SetTarget(scaleX, SearchScale);
-            Storyboard.SetTargetProperty(scaleX, "ScaleX");
-            Storyboard.SetTarget(scaleY, SearchScale);
-            Storyboard.SetTargetProperty(scaleY, "ScaleY");
-
-            Storyboard.SetTarget(moveX, SearchTransform);
-            Storyboard.SetTargetProperty(moveX, "X");
-
-            sb.Children.Add(scaleX);
-            sb.Children.Add(scaleY);
-            sb.Children.Add(moveX);
-
-            sb.Begin();
-            var cpuPower = await OcFinder.GetCpuPowerAsync();
-            SearchSign.Text = "OcFinderCpuPower".GetLocalized() + cpuPower + "W";
-                
-            await Task.Delay(TimeSpan.FromSeconds(2.9));
-        }
-
-        // === 3. Движение влево ===
-        // Scale: 1.5 -> 1.3
-        // X: 134 -> 4
-        // Длительность: 1.1с
-        {
-            var sb = new Storyboard
-            {
-                Duration = TimeSpan.FromSeconds(1.1)
-            };
-
-            var scaleX = new DoubleAnimation
-            {
-                To = 1.3,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-            var scaleY = new DoubleAnimation
-            {
-                To = 1.3,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-            var moveX = new DoubleAnimation
-            {
-                To = 4,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-
-            Storyboard.SetTarget(scaleX, SearchScale);
-            Storyboard.SetTargetProperty(scaleX, "ScaleX");
-            Storyboard.SetTarget(scaleY, SearchScale);
-            Storyboard.SetTargetProperty(scaleY, "ScaleY");
-
-            Storyboard.SetTarget(moveX, SearchTransform);
-            Storyboard.SetTargetProperty(moveX, "X");
-
-            sb.Children.Add(scaleX);
-            sb.Children.Add(scaleY);
-            sb.Children.Add(moveX);
-
-            sb.Begin();
-            SearchSign.Text = await OcFinder.IsUndervoltingAvailableAsync()
-                ? "OcFinderUndervoltingAvailableStatus".GetLocalized()
-                : "OcFinderUnableToSetUndervoltingStatus".GetLocalized();
-            await Task.Delay(TimeSpan.FromSeconds(4));
-        }
-
-        // === 4. Увеличение лупы ===
-        // Scale: 1.3 -> 2.0
-        // Длительность: 0.5с
-        {
-            var sb = new Storyboard
-            {
-                Duration = TimeSpan.FromSeconds(0.5)
-            };
-
-            var scaleX = new DoubleAnimation
-            {
-                To = 2.0,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-            var scaleY = new DoubleAnimation
-            {
-                To = 2.0,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-
-            Storyboard.SetTarget(scaleX, SearchScale);
-            Storyboard.SetTargetProperty(scaleX, "ScaleX");
-            Storyboard.SetTarget(scaleY, SearchScale);
-            Storyboard.SetTargetProperty(scaleY, "ScaleY");
-
-            sb.Children.Add(scaleX);
-            sb.Children.Add(scaleY);
-
-            sb.Begin();
-            SearchSign.Text = "OcFinderPresetsCreating".GetLocalized();
-            await Task.Delay(TimeSpan.FromSeconds(4.5));
-        }
-
-        // === 5. Быстрое уменьшение лупы ===
-        // Scale: 2.0 -> 1.7
-        // Длительность: 0.3с
-        {
-            var sb = new Storyboard
-            {
-                Duration = TimeSpan.FromSeconds(0.3)
-            };
-
-            var scaleX = new DoubleAnimation
-            {
-                To = 1.7,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-            var scaleY = new DoubleAnimation
-            {
-                To = 1.7,
-                Duration = sb.Duration,
-                EasingFunction = quintEaseOut
-            };
-
-            Storyboard.SetTarget(scaleX, SearchScale);
-            Storyboard.SetTargetProperty(scaleX, "ScaleX");
-            Storyboard.SetTarget(scaleY, SearchScale);
-            Storyboard.SetTargetProperty(scaleY, "ScaleY");
-
-            sb.Children.Add(scaleX);
-            sb.Children.Add(scaleY);
-
-            sb.Begin();
-            SearchSign.Text = "OcFinderSystemScanningFinal".GetLocalized();
-            await Task.Delay(TimeSpan.FromSeconds(4.8));
-        }
-    }
-
     private void TrainingDone_Click(object sender, RoutedEventArgs e)
     {
-        AppSettings.AppFirstRun = false;
+        FirstRunManager.PassFirstRun();
         ShowNavbarAndControls();
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!);
     }
 
-    private async void ApplyButton_Click(object sender, RoutedEventArgs e)
+    private async void ApplyButton_Click(object? sender, RoutedEventArgs? e)
     {
         try
         {
@@ -836,6 +577,112 @@ public sealed partial class ОбучениеPage
         catch (Exception ex)
         {
             await LogHelper.LogError(ex);
+        }
+    }
+
+    private void ExitLicenseButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Exit();
+    }
+
+    private void ShowFullLicense_OnClick(object sender, RoutedEventArgs e)
+    {
+        FullLicenseText.Visibility = Visibility.Visible;
+    }
+
+    private void CloseFullLicense_OnClick(object sender, RoutedEventArgs e)
+    {
+        FullLicenseText.Visibility = Visibility.Collapsed;
+    }
+
+    private async void OcFinderContinue_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var failed = _testFailed;
+            if ((sender as Button)!.Name == "OcFinderExit") failed = !failed;
+            if (failed) Application.Current.Exit();
+            else await ChangeSection(OcFinderScanSection, TrainingSection);
+            
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("OcFinder Continue failed {ex}", ex);
+        }
+    }
+
+    private void OcFinderAboutPreparing_OnClick(object sender, RoutedEventArgs e) => Process.Start(
+        new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models") { UseShellExecute = true });
+
+    private async void TrainingAgree_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(TrainingSection, TrainingSectionThreeModes);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("TrainingAgree failed {ex}", ex);
+        }
+    }
+
+    private async void TrainingThreeModesBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(TrainingSectionThreeModes, TrainingSection);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("TrainingAgree failed {ex}", ex);
+        }
+    }
+
+    private async void TrainingThreeModesNext_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(TrainingSectionThreeModes, TrainingSectionSafeLimits);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("TrainingAgree failed {ex}", ex);
+        }
+    }
+
+    private async void TrainingSafeLimitsNext_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(TrainingSectionSafeLimits, TrainingSectionPresetsApply);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("TrainingAgree failed {ex}", ex);
+        }
+    }
+
+    private async void TrainingSafeLimitsBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(TrainingSectionSafeLimits, TrainingSectionThreeModes);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("TrainingAgree failed {ex}", ex);
+        }
+    }
+
+    private async void TrainingPresetsApplyBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChangeSection(TrainingSectionPresetsApply, TrainingSectionSafeLimits);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("TrainingAgree failed {ex}", ex);
         }
     }
 }
