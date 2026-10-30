@@ -138,14 +138,7 @@ public class WindowStateManagerService(
     {
         // Remove event
         App.MainWindow.Activated -= MainWindow_Activated;
-
-        // Redirect the user to the app's initial setup page upon the first launch
-        if (settingsService.AppFirstRun)
-        {
-            var navigationService = App.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(ViewModels.ОбучениеViewModel).FullName!);
-        }
-
+        
         // Hide app to tray
         if (settingsService.AutostartType ==
             AutoStartWithHideToTray)
