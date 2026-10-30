@@ -70,7 +70,8 @@ public sealed partial class ПресетыPage
             _presetChanging = false;
             Applyer.OnStringSettingsApplied += OnPresetApplied;
             Applyer.PresetChanged += PresetChanged;
-            SelectedPresetDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
+            SelectedPresetName.Text = "No presets found";
+            SelectedPresetDescription.Text = "Create a new ones";
 
             LoadPresets();
             await CheckPlatformConditions();

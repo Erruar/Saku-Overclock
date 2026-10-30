@@ -170,26 +170,26 @@
                                 <Run>TDP</Run>
                                 <Run x:Name="TdpValueSensorText"
                                      Foreground="{ThemeResource AccentFillColorDefaultBrush}">
-                                    18
+                                    -
                                 </Run>
                                 <Run>/</Run>
-                                <Run x:Name="TdpLimitSensorText" Text="20W" />
+                                <Run x:Name="TdpLimitSensorText" Text="-W" />
                             </TextBlock>
 
                             <TextBlock FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Top">
                                 <Run x:Name="CpuFreqSensorText"
-                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}" Text="5.5" />
+                                     Foreground="{ThemeResource AccentFillColorDefaultBrush}" Text="-" />
                             </TextBlock>
 
                             <TextBlock Margin="10,0,0,0" FontWeight="SemiBold">
                                 <Run>CPU </Run>
-                                <Run x:Name="CpuTempSensorText" Text="44C"
+                                <Run x:Name="CpuTempSensorText" Text="-C"
                                      Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
                             </TextBlock>
 
                             <TextBlock x:Name="GpuTempSensorStackPanel" Margin="10,0,0,0" FontWeight="SemiBold">
                                 <Run>GPU </Run>
-                                <Run x:Name="GpuTempSensorText" Text="37C"
+                                <Run x:Name="GpuTempSensorText" Text="-C"
                                      Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
                             </TextBlock>
                         </StackPanel>

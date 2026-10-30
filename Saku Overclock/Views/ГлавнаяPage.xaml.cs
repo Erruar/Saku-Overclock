@@ -133,6 +133,7 @@ public sealed partial class ГлавнаяPage
             InfoCpuCores.Text = CpuService.Cores.ToString();
             InfoCpuThreads.Text = Environment.ProcessorCount.ToString();
 
+            if (string.IsNullOrEmpty(InfoCpuName.Text)) InfoCpuName.Text = "Processor";
             if (DeveloperMockupMode)
             {
                 InfoCpuName.Text = "AMD Ryzen Eng Sample 104";

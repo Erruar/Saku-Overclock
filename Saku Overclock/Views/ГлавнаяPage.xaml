@@ -80,11 +80,11 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                    <TextBlock Text="Ryzen 9 8945HS \w Radeon 890M" x:Name="InfoCpuName" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Processor" x:Name="InfoCpuName" TextWrapping="Wrap"/>
                                     <TextBlock>
-                                        <Run FontWeight="SemiBold" FontSize="24" Text="8" x:Name="InfoCpuCores"/>
+                                        <Run FontWeight="SemiBold" FontSize="24" Text="-" x:Name="InfoCpuCores"/>
                                         <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">C</Run>
-                                        <Run FontWeight="SemiBold" FontSize="24" Text="16" x:Name="InfoCpuThreads"/>
+                                        <Run FontWeight="SemiBold" FontSize="24" Text="-" x:Name="InfoCpuThreads"/>
                                         <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">T</Run>
                                     </TextBlock>
                                 </StackPanel>
@@ -99,7 +99,7 @@
                             <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                 <TextBlock x:Uid="Main_CpuTemp" Text="Температура процессора" TextWrapping="Wrap"/>
                                 <TextBlock>
-                                    <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsTemp" Text="43"/>
+                                    <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsTemp" Text="-"/>
                                     <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">C</Run>
                                 </TextBlock>
                             </StackPanel>
@@ -139,7 +139,7 @@
                                     <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                         <TextBlock x:Uid="Main_CpuLoad" Text="Загрузка процессора" TextWrapping="Wrap"/>
                                         <TextBlock>
-                                            <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsBusy" Text="70"/>
+                                            <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsBusy" Text="-"/>
                                             <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">%</Run>
                                         </TextBlock>
                                     </StackPanel>
@@ -156,7 +156,7 @@
                                     <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                         <TextBlock x:Uid="Main_CpuFreq" Text="Частота процессора" TextWrapping="Wrap"/>
                                         <TextBlock>
-                                            <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsFreq" Text="5.0"/>
+                                            <Run FontWeight="SemiBold" FontSize="24" x:Name="IndicatorsFreq" Text="-"/>
                                             <Run FontWeight="Medium" x:Uid="infoAGHZRun" Foreground="{ThemeResource TextFillColorSecondary}">GHz</Run>
                                         </TextBlock>
                                     </StackPanel>
@@ -196,7 +196,7 @@
                                         </StackPanel>
                                         <Grid Grid.Column="1">
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsRam" Text="7.6"/>
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsRam" Text="-"/>
                                                 <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">GB</Run>
                                             </TextBlock>
                                         </Grid>
@@ -212,7 +212,7 @@
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsFast" Text="70"/>
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsFast" Text="-"/>
                                                 <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">W</Run>
                                             </TextBlock>
                                         </Grid>
@@ -228,7 +228,7 @@
                                         </StackPanel>
                                         <Grid Grid.Column="1">
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsBatteryPercent" Text="70"/>
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsBatteryPercent" Text="-"/>
                                                 <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">%</Run>
                                             </TextBlock>
                                         </Grid>
@@ -244,7 +244,7 @@
                                         </StackPanel>
                                         <Grid Grid.Column="1">
                                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsVrmEdc" Text="30"/>
+                                                <Run FontWeight="SemiBold" FontSize="18" x:Name="IndicatorsVrmEdc" Text="-"/>
                                                 <Run FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}">A</Run>
                                             </TextBlock>
                                         </Grid>
