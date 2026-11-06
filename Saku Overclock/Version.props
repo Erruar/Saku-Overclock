@@ -1,0 +1,7 @@
+﻿<Project>
+  <PropertyGroup>
+    <ClientVersion>1.1.30.0</ClientVersion>
+    <OverlayVersion>1.0.0.0</OverlayVersion>
+    <ServiceVersion>1.0.0.0</ServiceVersion>
+  </PropertyGroup>
+</Project>
