@@ -99,17 +99,17 @@ public class ActivationService(
     }
 
     /// <summary>
-    ///     On startup behaviour
+    ///     On startup behavior
     /// </summary>
     private async Task StartupAsync()
     {
         // 1. Set required app theme
         themeSelectorService.SetRequestedThemeAsync();
 
-        // 3. Tray icon and menu
+        // 2. Tray icon and menu
         trayMenuService.Initialize();
 
-        // 4. Update checking
+        // 3. Update checking
         await updateCheckerService.CheckForUpdates();
     }
 }

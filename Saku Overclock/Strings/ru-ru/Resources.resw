@@ -2227,11 +2227,10 @@ Overclock будут проигнорированы,
     <value>Saku Overclock продолжает развиваться, чтобы раскрыть весь потенциал вашего устройства</value>
   </data>
   <data name="Update_New_Update.Text" xml:space="preserve">
-    <value>НОВОЕ
-ОБНОВЛЕНИЕ</value>
+    <value>Доступно обновление</value>
   </data>
-  <data name="Update_New_UpdateButton.Text" xml:space="preserve">
-    <value>Обновить!</value>
+  <data name="Update_New_UpdateButton.Content" xml:space="preserve">
+    <value>Обновить сейчас</value>
   </data>
   <data name="Update_New_UpdateDownloading.Text" xml:space="preserve">
     <value>Скачивание обновления...</value>
@@ -2627,7 +2626,32 @@ Asus. Может не поддерживаться на
     <value>Доступно обновление приложения</value>
   </data>
   <data name="Update_New_UpdateButton_Cancel.Content" xml:space="preserve">
-    <value>Позже</value>
+    <value>Напомнить позже</value>
+  </data>
+  <data name="UpdateLearnMore.Content" xml:space="preserve">
+    <value>Подробнее...</value>
+  </data>
+  <data name="UpdatePreparingButtonSign" xml:space="preserve">
+    <value>Подготовка...</value>
+  </data>
+  <data name="UpdatePreparingTitle" xml:space="preserve">
+    <value>Выполняется обновление</value>
+  </data>
+  <data name="UpdatePreparingSubtitle" xml:space="preserve">
+    <value>Подготовка обновления...</value>
+  </data>
+  <data name="UpdateFailedTitle" xml:space="preserve">
+    <value>Сбой обновления</value>
+  </data>
+  <data name="UpdateFailedSubtitle" xml:space="preserve">
+    <value>Что-то пошло не так в процессе обновления. Попробуйте ещё раз или продолжите использование программы</value>
+  </data>
+  <data name="UpdateRetryButtonSign" xml:space="preserve">
+    <value>Повторить обновление</value>
+  </data>
+  <data name="UpdateReleaseNotes" xml:space="preserve">
+    <value>**Ключевые изменения:**
+</value>
   </data>
   <data name="Settings_Pivot_About.Text" xml:space="preserve">
     <value>О приложении</value>

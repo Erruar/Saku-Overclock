@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Octokit;
@@ -21,11 +21,11 @@ public sealed partial class ОбновлениеPage
         App.GetService<ОбновлениеViewModel>();
         InitializeComponent();
         TrayMenuService.SetMinimalMode();
-        HideNavigationBar();
+        GetUpdates();
 
         Loaded += (_, _) =>
         {
-            GetUpdates();
+            HideNavigationBar();
         };
     }
 
@@ -44,17 +44,10 @@ public sealed partial class ОбновлениеPage
                 _newVersion = UpdateCheckerService.GetNewVersion();
             }
 
-            UpdateNewTime.Text = _newVersion?.PublishedAt!.Value
-                .UtcDateTime
-                .ToLocalTime()
-                .ToString("f", CultureInfo.CurrentUICulture);
-            UpdateNewVer.Text = UpdateCheckerService.ParseVersion().ToString();
+            UpdateVersion.Text = UpdateCheckerService.ParseVersion().ToString();
             MainChangelogContent.Children.Clear();
-            if (UpdateCheckerService.GetGithubInfoString() == string.Empty)
-            {
-                await UpdateCheckerService.CheckForUpdates();
-            }
 
+            if (UpdateCheckerService.IsDev) UpdateType.Text = "dev";
             NotesWriterService.UpdateReleaseNotesBrushes(AccentTextBrush.Background,
                 TextSecondaryBrush.Background,
                 ControlStrongBrush.Background);
@@ -75,6 +68,20 @@ public sealed partial class ОбновлениеPage
             "true",
             InfoBarSeverity.Informational);
     }
+    
+    private void ShowUpdateFailed()
+    {
+        UpdateCancel.Visibility = Visibility.Visible;
+        UpdatePercentBar.Visibility = Visibility.Collapsed;
+
+        UpdateProceed.IsEnabled = true;
+        UpdateProceed.Content = "UpdateRetryButtonSign".GetLocalized();
+
+        UpdateTitle.Text = "UpdateFailedTitle".GetLocalized();
+        UpdateSubtitle.Text = "UpdateFailedSubtitle".GetLocalized();
+
+        UpdateIcon.Glyph = "\uE783";
+    }
 
     #endregion
 
@@ -84,27 +91,38 @@ public sealed partial class ОбновлениеPage
     {
         try
         {
-            UpdateButtonGrid.Visibility = Visibility.Collapsed;
-            UpdateDownloadingStackPanel.Visibility = Visibility.Visible;
             if (_newVersion == null)
-            {
                 return;
-            }
 
-            // Прогресс для обновления UI
-            var progress = new Progress<(double percent, string elapsed, string left)>(value =>
-            {
-                UpdatePercentBar.Value = value.percent;
-                UpdateNewUpdateDownloading.Text = $"{(int)value.percent}%";
-                UpdateNewDownloadingReqTime.Text = value.left;
-                UpdateNewDownloadingLeftTime.Text = value.elapsed;
-            });
+            UpdateIcon.Glyph = "\uE895";
+            UpdateCancel.Visibility = Visibility.Collapsed;
+            UpdatePercentBar.Visibility = Visibility.Visible;
+
+            UpdateProceed.IsEnabled = false;
+            UpdateProceed.Content = "UpdatePreparingButtonSign".GetLocalized();
+
+            UpdateTitle.Text = "UpdatePreparingTitle".GetLocalized();
+            UpdateSubtitle.Text = "UpdatePreparingSubtitle".GetLocalized();
+
+            UpdatePercentBar.Value = 0;
+
+            var progress = new Progress<(double percent, string elapsed, string left)>(
+                value =>
+                {
+                    UpdatePercentBar.Value = value.percent;
+                });
 
             await UpdateCheckerService.DownloadAndUpdate(_newVersion, progress);
         }
         catch (Exception exception)
         {
             await LogHelper.TraceIt_TraceError(exception);
+
+            ShowUpdateFailed();
+
+            await App.MainWindow.ShowMessageDialogAsync(
+                "Main_ErrorReleaseLoad".GetLocalized() + exception.Message,
+                "Error".GetLocalized());
         }
     }
 
@@ -114,6 +132,9 @@ public sealed partial class ОбновлениеPage
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
     }
+    
+    private void UpdateLearnAbout_OnClick(object sender, RoutedEventArgs e) => Process.Start(
+        new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/releases") { UseShellExecute = true });
 
     #endregion
 }

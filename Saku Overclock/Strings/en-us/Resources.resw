@@ -2192,17 +2192,41 @@ without opening extra windows</value>
     <value>Saku Overclock keeps evolving to unlock your device’s full potential</value>
   </data>
   <data name="Update_New_Update.Text" xml:space="preserve">
-    <value>NEW
-UPDATE</value>
+    <value>Аvailable Update</value>
   </data>
-  <data name="Update_New_UpdateButton.Text" xml:space="preserve">
-    <value>Update!</value>
+  <data name="Update_New_UpdateButton.Content" xml:space="preserve">
+    <value>Update Now</value>
+  </data>
+  <data name="UpdateLearnMore.Content" xml:space="preserve">
+    <value>Learn more...</value>
+  </data>
+  <data name="UpdatePreparingButtonSign" xml:space="preserve">
+    <value>Preparing...</value>
+  </data>
+  <data name="UpdatePreparingTitle" xml:space="preserve">
+    <value>Processing Update</value>
+  </data>
+  <data name="UpdatePreparingSubtitle" xml:space="preserve">
+    <value>Preparing Update...</value>
+  </data>
+  <data name="UpdateFailedTitle" xml:space="preserve">
+    <value>Update Failed</value>
+  </data>
+  <data name="UpdateFailedSubtitle" xml:space="preserve">
+    <value>Something wet wrong when updating program. Try again or continue using program</value>
+  </data>
+  <data name="UpdateRetryButtonSign" xml:space="preserve">
+    <value>Retry Update</value>
   </data>
   <data name="Update_New_UpdateDownloading.Text" xml:space="preserve">
     <value>Downloading update...</value>
   </data>
   <data name="Update_New_ver.Text" xml:space="preserve">
     <value>New version: </value>
+  </data>
+  <data name="UpdateReleaseNotes" xml:space="preserve">
+    <value>**Highlights:**
+</value>
   </data>
   <data name="Main_Actions.Text" xml:space="preserve">
     <value>More</value>
@@ -2630,7 +2654,7 @@ Use of the Saku Software implies intervention in the standard operating modes of
     <value>Application update available</value>
   </data>
   <data name="Update_New_UpdateButton_Cancel.Content" xml:space="preserve">
-    <value>Later</value>
+    <value>Remind later</value>
   </data>
   <data name="Settings_Pivot_About.Text" xml:space="preserve">
     <value>About</value>

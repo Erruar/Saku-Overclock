@@ -27,6 +27,8 @@ public interface IUpdateCheckerService
     /// <returns>New app version</returns>
     Version ParseVersion();
     
+    bool IsDev { get; }
+    
     /// <summary>
     ///     Download and run update
     /// </summary>
