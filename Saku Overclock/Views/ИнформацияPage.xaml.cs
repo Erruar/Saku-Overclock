@@ -40,6 +40,7 @@ public sealed partial class ИнформацияPage
     private double _totalRam;
     private bool _loaded; // Страница загружена
     private static bool _isBristol; // Если процессор Bristol 
+    private static bool _isDali; // Если процессор Dali/Picasso 
     private bool _doNotTrackBattery; // Флаг не использования батареи 
     private bool _isBatteryInformationLoaded; // Флаг обновления информации о батарее
     private bool _isDiscreteGpuInformationLoaded; // Флаг обновления информации о дискретной видеокарте
@@ -236,7 +237,11 @@ public sealed partial class ИнформацияPage
                 }
 
                 CpuCodename.Text = _cpu.CpuCodeName;
-                _isBristol = _cpu.GetCodenameGeneration() == CodenameGeneration.Fp4;
+                var codeGen = _cpu.GetCodenameGeneration();
+                _isBristol = codeGen == CodenameGeneration.Fp4;
+                _isDali = codeGen == CodenameGeneration.Fp5 && 
+                          (_cpu.CpuCodeName.Contains("Dali", StringComparison.CurrentCultureIgnoreCase) 
+                           || _cpu.CpuCodeName.Contains("Picasso", StringComparison.CurrentCultureIgnoreCase));
                 SmuVersion.Text = _cpu.SmuVersion + " / " + _cpu.PowerTableVersion.ToString("X");
             }
             else
@@ -1577,7 +1582,7 @@ public sealed partial class ИнформацияPage
                 // Секция процессора или P-States
                 GroupCpu or GroupCpuPst => _isBristol 
                     ? _numberOfCores / 2 : // Делим ядра на Compute Units
-                    _numberOfCores > 2
+                    _numberOfCores > 2 || _isDali // Фикс количества ядер на Dali - там нет сенсоров для потоков
                         ? _numberOfCores // Если ядер больше 2, используем количество ядер
                         : CpuSectionComboBox.SelectedIndex == 0
                             ? _numberOfLogicalProcessors // Если выбрано отображение частоты, используем логические процессоры
