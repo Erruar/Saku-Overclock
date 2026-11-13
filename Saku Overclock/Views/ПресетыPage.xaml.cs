@@ -1309,6 +1309,7 @@ public sealed partial class ПресетыPage
         if (NotReady) return;
 
         CurrentCpuModesSettings.CpuFrequency04Fix.IsEnabled = state == BandCrowdStates.Manual;
+        CurrentCpuModesSettings.CpuFrequency04Fix.Value = state == BandCrowdStates.Manual ? 1 : 0;
         PresetManager.UpdatePreset(_presetIndex);
     }
 
