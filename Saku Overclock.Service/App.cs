@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.WindowsServices;
+using Saku_Overclock.Core.Adaptive;
+using Saku_Overclock.Core.Adaptive.Contracts;
 using Saku_Overclock.Core.Contracts;
 using Saku_Overclock.Core.Services;
 using Saku_Overclock.Shared.Contracts;
@@ -43,6 +45,8 @@ public static class App
         builder.Services.AddSingleton<CoreMetricsCalculator>();
         builder.Services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
         builder.Services.AddSingleton<ICpuService, CpuService>();
+        builder.Services.AddSingleton<IAdaptiveFeatureHost, AdaptiveFeatureHost>();
+        builder.Services.AddSingleton<IAdaptiveStateMachineService, AdaptiveStateMachineService>();
         builder.Services.AddSingleton<IOcFinderService, OcFinderService>();
         builder.Services.AddSingleton<IApplyerService, ApplyerService>();
         builder.Services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
